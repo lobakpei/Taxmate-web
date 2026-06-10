@@ -1,0 +1,1822 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#F5F7F9">
+<title>TaxMate UK</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+/* ════════════════════════════════════════════════════
+   TAXMATE UK v2 — warm, modern, close to people
+   ════════════════════════════════════════════════════ */
+:root{
+  --bg:#F5F7F9;
+  --card:#FFFFFF;
+  --ink:#16202B;
+  --muted:#6B7686;
+  --line:#ECEFF3;
+  --brand:#0AA968;          /* fresh green */
+  --brand-deep:#067A4B;
+  --brand-soft:#E6F7EF;
+  --teal:#0D8C86;
+  --coral:#E5484D;          /* expenses */
+  --coral-soft:#FDEDEE;
+  --blue:#3478F6;
+  --blue-soft:#EAF1FE;
+  --amber:#B47D12;
+  --amber-soft:#FCF3DF;
+  --r-lg:24px; --r-md:18px; --r-sm:12px;
+  --shadow:0 1px 2px rgba(22,32,43,.05),0 10px 30px rgba(22,32,43,.07);
+  --shadow-sm:0 1px 2px rgba(22,32,43,.06);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{-webkit-text-size-adjust:100%}
+body{font-family:'Plus Jakarta Sans','Noto Sans Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);
+  font-size:16px;line-height:1.5;min-height:100vh}
+[dir=rtl] body{font-family:'Noto Sans Arabic','Plus Jakarta Sans',system-ui,sans-serif}
+button{font-family:inherit;-webkit-tap-highlight-color:transparent}
+.num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em;direction:ltr;unicode-bidi:isolate}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(10,169,104,.45);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+
+/* ── header ── */
+.top{padding:18px 20px 4px;display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto}
+.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));
+  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px;flex-shrink:0;
+  box-shadow:0 4px 12px rgba(10,169,104,.3)}
+.top .name{font-weight:800;font-size:19px;letter-spacing:-.4px}
+.top .name span{color:var(--brand)}
+.year-pill{margin-inline-start:auto;position:relative}
+.year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
+  background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
+[dir=rtl] .year-pill select{padding:8px 14px 8px 30px}
+.year-pill::after{content:'▾';position:absolute;inset-inline-end:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
+
+main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
+.h1{font-size:24px;font-weight:800;letter-spacing:-.5px;margin:8px 0 14px}
+.h2{font-size:17px;font-weight:800;letter-spacing:-.3px;margin:22px 0 10px}
+.sub{font-size:14px;color:var(--muted)}
+
+/* ── hero (home) ── */
+.hero{border-radius:var(--r-lg);padding:22px;color:#fff;margin-bottom:14px;
+  background:linear-gradient(135deg,#0BAA6B 0%,#0A9573 55%,#0D8C86 100%);
+  box-shadow:0 14px 34px rgba(10,150,110,.35);position:relative;overflow:hidden}
+.hero::before{content:'';position:absolute;width:220px;height:220px;border-radius:50%;
+  background:rgba(255,255,255,.09);top:-110px;inset-inline-end:-60px}
+.hero .hi{font-size:14px;font-weight:600;opacity:.9}
+.hero .label{font-size:13px;font-weight:600;opacity:.85;margin-top:12px}
+.hero .big{font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin:2px 0 14px}
+.hero .pills{display:flex;gap:10px;position:relative}
+.hero .pill{flex:1;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
+.hero .pill .pl{font-size:12px;font-weight:600;opacity:.85}
+.hero .pill .pv{font-size:17px;font-weight:800;margin-top:1px}
+
+/* ── cards ── */
+.card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+.card.flat{box-shadow:var(--shadow-sm)}
+.row{display:flex;align-items:center;gap:13px}
+.row+.row{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
+.ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
+.grow{flex:1;min-width:0}
+.t{font-size:15px;font-weight:700}
+.s{font-size:12.5px;color:var(--muted);margin-top:1px}
+.v{font-weight:800;font-size:15px;white-space:nowrap}
+.chev{color:#C2C9D2;font-size:18px;font-weight:700}
+.pos{color:var(--brand-deep)} .neg{color:var(--coral)} .mut{color:var(--muted)}
+
+/* figure rows */
+.frow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
+.frow:last-child{border-bottom:none;padding-bottom:0}
+.frow:first-child{padding-top:0}
+.frow .fl{color:var(--ink)}
+.frow .fl small{display:block;font-size:12px;color:var(--muted);font-weight:500}
+.frow .fv{font-weight:800;white-space:nowrap}
+.frow.total .fl,.frow.total .fv{font-weight:800;font-size:16px}
+.frow.total{border-top:2px solid var(--ink);border-bottom:0;margin-top:4px;padding-top:12px}
+
+/* ── buttons ── */
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border:0;cursor:pointer;
+  border-radius:999px;font-size:16px;font-weight:800;color:#fff;background:var(--brand);
+  box-shadow:0 6px 16px rgba(10,169,104,.32);transition:transform .12s}
+.btn:active{transform:scale(.97)}
+.btn.ink{background:var(--ink);box-shadow:0 6px 16px rgba(22,32,43,.25)}
+.btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
+.btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
+.btn.coral{background:var(--coral);box-shadow:0 6px 16px rgba(229,72,77,.3)}
+.link{background:none;border:0;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;padding:4px}
+.link.danger{color:var(--coral)}
+
+.tagchip{display:inline-block;font-size:11px;font-weight:800;padding:4px 10px;border-radius:999px}
+.tagchip.blue{background:var(--blue-soft);color:var(--blue)}
+.tagchip.grey{background:#F0F2F5;color:var(--muted)}
+.tagchip.green{background:var(--brand-soft);color:var(--brand-deep)}
+
+.notice{border-radius:var(--r-md);padding:13px 15px;font-size:14px;line-height:1.5;margin-bottom:14px}
+.notice.green{background:var(--brand-soft);color:#065438}
+.notice.amber{background:var(--amber-soft);color:#6b4a06}
+
+/* ── chips ── */
+.chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex-shrink:0;font-size:14px;font-weight:700;padding:8px 16px;cursor:pointer;border-radius:999px;
+  background:var(--card);border:1px solid var(--line);color:var(--muted);box-shadow:var(--shadow-sm)}
+.chip.on{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* ── entries ── */
+.month{font-size:13px;font-weight:800;color:var(--muted);padding:16px 4px 8px;display:flex;justify-content:space-between;text-transform:capitalize}
+.elist{background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm);overflow:hidden}
+.entry{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;border:0;background:none;width:100%;text-align:start}
+.entry+.entry{border-top:1px solid var(--line)}
+.entry:active{background:#FAFBFC}
+.edot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.entry .grow .t{font-size:14.5px}
+.empty{padding:40px 22px;text-align:center;background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
+.empty .big-emoji{font-size:40px;margin-bottom:10px}
+.empty .t{font-size:16px;margin-bottom:4px}
+
+/* ── forms ── */
+.fg{margin-bottom:16px}
+.fg>label{display:block;font-size:14px;font-weight:700;margin-bottom:6px}
+.fg .fhint{font-size:12.5px;color:var(--muted);margin:-2px 0 8px}
+input[type=text],input[type=number],input[type=date],select,textarea{
+  width:100%;font-family:inherit;font-size:16px;padding:13px 15px;border:1.5px solid var(--line);
+  border-radius:var(--r-sm);background:#FAFBFC;color:var(--ink);-webkit-appearance:none;appearance:none}
+input:focus,select:focus{border-color:var(--brand);background:#fff}
+input.err{border-color:var(--coral);background:var(--coral-soft)}
+.ferr{font-size:13px;font-weight:700;color:var(--coral);margin-top:5px;display:none}
+.ferr.show{display:block}
+.amt{position:relative}
+.amt .cur{position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);font-size:21px;font-weight:800;color:var(--muted)}
+.amt input{padding-inline-start:38px;font-size:24px;font-weight:800}
+.seg{display:flex;background:#EEF1F4;border-radius:999px;padding:4px}
+.seg button{flex:1;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+.pctrow{display:flex;gap:8px;flex-wrap:wrap}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
+  cursor:pointer;display:flex;align-items:center;gap:8px;text-align:start;color:var(--ink)}
+.catbtn.on{border-color:var(--brand);background:var(--brand-soft);font-weight:800}
+.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+
+/* ── sheets ── */
+.sb{display:none;position:fixed;inset:0;background:rgba(16,24,32,.45);z-index:200;align-items:flex-end;justify-content:center}
+.sb.open{display:flex}
+.sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
+  border-radius:28px 28px 0 0;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
+.sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:6px auto 16px}
+.sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px}
+.sheet .sact{display:flex;gap:10px;margin-top:20px}
+.sheet .sact .btn{flex:1}
+
+/* ── tab bar ── */
+nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
+  border-top:1px solid var(--line);display:flex;max-width:640px;margin:0 auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
+  border-radius:22px 22px 0 0}
+nav button{flex:1;background:none;border:0;cursor:pointer;padding:7px 2px;border-radius:16px;
+  display:flex;flex-direction:column;align-items:center;gap:3px;color:#97A1AE;font-size:10.5px;font-weight:700}
+nav button svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+nav button.on{color:var(--brand-deep);background:var(--brand-soft)}
+.small{font-size:12px;color:var(--muted);line-height:1.55;margin:16px 4px}
+details.help{background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm);margin-bottom:14px}
+details.help summary{padding:14px 16px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer;list-style:none}
+details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height:1.6}
+.avatar{width:44px;height:44px;border-radius:50%;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+</style>
+</head>
+<body>
+
+<div class="top">
+  <div class="logo">£</div>
+  <div class="name">Tax<span>Mate</span></div>
+  <div class="year-pill"><select id="yearSel" onchange="setYear(this.value)"></select></div>
+</div>
+
+<main id="page"></main>
+<nav id="nav"></nav>
+
+<!-- entry sheet -->
+<div class="sb" id="sb-entry"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" id="en-title"></div>
+  <div class="fg">
+    <label for="en-amount" data-i18n="f.amount"></label>
+    <div class="amt"><span class="cur">£</span>
+      <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+    <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
+  </div>
+  <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date"></div>
+  <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz"></select></div>
+  <div class="fg"><label data-i18n="f.category"></label><div class="catgrid" id="en-cats"></div></div>
+  <div class="fg" id="en-folder-group" style="display:none">
+    <label for="en-folder" data-i18n="fd.title"></label>
+    <div style="display:flex;gap:8px">
+      <select id="en-folder" style="flex:1" onchange="EN.folderId=this.value||null"></select>
+      <button type="button" class="btn soft" style="width:auto;padding:0 18px" onclick="openFolderSheet()">＋</button>
+    </div>
+  </div>
+  <div class="fg" id="en-pct-group">
+    <label data-i18n="f.bizUse"></label>
+    <div class="fhint" data-i18n="f.bizUseHint"></div>
+    <div class="pctrow" id="en-pcts"></div>
+  </div>
+  <div class="fg">
+    <label for="en-desc"><span data-i18n="f.note"></span> <span style="font-weight:500;color:var(--muted)" data-i18n="f.optional"></span></label>
+    <input type="text" id="en-desc" maxlength="80">
+  </div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('entry')" data-i18n="c.cancel"></button>
+    <button class="btn" id="en-save" onclick="saveEntry()" data-i18n="c.save"></button>
+  </div>
+  <div style="margin-top:14px;text-align:center">
+    <button class="link danger" id="en-delete" style="display:none" onclick="deleteEntry()" data-i18n="f.deleteEntry"></button>
+  </div>
+</div></div>
+
+<!-- business sheet -->
+<div class="sb" id="sb-biz"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" id="bz-title"></div>
+  <div class="fg">
+    <label for="bz-name" data-i18n="b.name"></label>
+    <input type="text" id="bz-name" maxlength="40">
+    <div class="ferr" id="bz-name-err" data-i18n="b.nameErr"></div>
+  </div>
+  <div class="fg">
+    <label data-i18n="b.setup"></label>
+    <div class="seg">
+      <button type="button" onclick="setStruct('sole')" id="bz-s-sole" data-i18n="b.justMe"></button>
+      <button type="button" onclick="setStruct('partnership')" id="bz-s-part" data-i18n="b.partnership"></button>
+    </div>
+    <div class="fhint" style="margin-top:8px" id="bz-struct-hint"></div>
+  </div>
+  <div class="fg" id="bz-share-group" style="display:none">
+    <label for="bz-share" data-i18n="b.share"></label>
+    <input type="number" id="bz-share" inputmode="numeric" min="1" max="100" value="50">
+  </div>
+  <div id="bz-sync" style="margin-bottom:4px"></div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('biz')" data-i18n="c.cancel"></button>
+    <button class="btn" onclick="saveBiz()" data-i18n="c.save"></button>
+  </div>
+  <div style="margin-top:14px;text-align:center">
+    <button class="link danger" id="bz-delete" style="display:none" onclick="deleteBiz()" data-i18n="b.delete"></button>
+  </div>
+</div></div>
+
+<!-- HMRC position sheet -->
+<div class="sb" id="sb-adj"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" data-i18n="a.title"></div>
+  <div class="sub" style="margin-bottom:18px" data-i18n="a.sub"></div>
+  <div class="fg">
+    <label for="adj-poa" data-i18n="a.poaLabel"></label>
+    <div class="fhint" data-i18n="a.poaHint"></div>
+    <div class="amt"><span class="cur">£</span>
+      <input type="number" id="adj-poa" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+  </div>
+  <div class="fg">
+    <label for="adj-prior" data-i18n="a.priorLabel"></label>
+    <div class="fhint" data-i18n="a.priorHint"></div>
+    <div class="amt"><span class="cur">£</span>
+      <input type="number" id="adj-prior" inputmode="decimal" step="0.01" placeholder="0.00"></div>
+  </div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('adj')" data-i18n="c.cancel"></button>
+    <button class="btn" onclick="saveAdj()" data-i18n="c.save"></button>
+  </div>
+</div></div>
+
+<!-- custom category sheet -->
+<div class="sb" id="sb-cat"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" data-i18n="cc.add"></div>
+  <div class="fg"><label for="cc-name" data-i18n="cc.name"></label><input type="text" id="cc-name" maxlength="24">
+    <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
+  <div class="fg"><label for="cc-emoji" data-i18n="cc.emoji"></label><input type="text" id="cc-emoji" maxlength="4" placeholder="🏷️"></div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('cat')" data-i18n="c.cancel"></button>
+    <button class="btn" onclick="saveCat()" data-i18n="c.save"></button>
+  </div>
+</div></div>
+
+<!-- folder sheet -->
+<div class="sb" id="sb-folder"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" data-i18n="fd.add"></div>
+  <div class="fg"><label for="fd-name" data-i18n="fd.name"></label><input type="text" id="fd-name" maxlength="30">
+    <div class="ferr" id="fd-name-err" data-i18n="b.nameErr"></div></div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('folder')" data-i18n="c.cancel"></button>
+    <button class="btn" onclick="saveFolder()" data-i18n="c.save"></button>
+  </div>
+</div></div>
+
+<!-- confirm sheet -->
+<div class="sb" id="sb-confirm"><div class="sheet">
+  <div class="grab"></div>
+  <div class="stitle" id="cf-title"></div>
+  <div class="sub" id="cf-msg" style="margin-bottom:8px"></div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('confirm')" data-i18n="c.cancel"></button>
+    <button class="btn coral" id="cf-yes" data-i18n="c.yes"></button>
+  </div>
+</div></div>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script>
+/* ═══════════ i18n ═══════════ */
+const LOCALES = { en:'en-GB', zh:'zh-HK', pl:'pl-PL', ro:'ro-RO', es:'es-ES', ur:'ur-PK' };
+const LANG_NAMES = { en:'English', zh:'繁體中文', pl:'Polski', ro:'Română', es:'Español', ur:'اردو' };
+
+const I18N = {
+en:{
+ 'nav.home':'Home','nav.income':'Income','nav.expenses':'Expenses','nav.tax':'Tax','nav.more':'More',
+ 'c.save':'Save','c.cancel':'Cancel','c.edit':'Edit','c.yes':'Yes, do it','c.active':'Active',
+ 'home.hi':'Hello 👋','home.profit':'Your profit · {y}','home.in':'Money in','home.out':'Money out',
+ 'home.taxT':'Set aside for tax','home.taxS':'Estimated tax on your profit so far','home.biz':'Your businesses','home.addBiz':'Add a business',
+ 'home.recent':'Recent activity','home.share':'your share',
+ 'tag.sole':'Sole trader','tag.part':'Partnership','tag.your':'your {n}%',
+ 'w.title':'Welcome to TaxMate 👋','w.sub':'Track your self-employed money and see your real tax bill — free, private, no sign-up.',
+ 'w.priv':'🔒 Private by design. Your figures never leave this phone.',
+ 'w.steps':'1 · Add your business\n2 · Log income and expenses as you go\n3 · The Tax tab keeps a live bill, so 31 January never surprises you',
+ 'w.start':'Add your first business',
+ 'inc.title':'Income','inc.add':'Add income','inc.empty':'No income logged yet','inc.emptyS':'Add money as it comes in — your tax estimate stays live.',
+ 'exp.title':'Expenses','exp.add':'Add expense','exp.empty':'No expenses yet','exp.emptyS':'Every expense you log can shrink your tax bill.',
+ 'flt.all':'All',
+ 'f.amount':'Amount','f.date':'Date','f.business':'Business','f.category':'Category','f.note':'Note','f.optional':'(optional)',
+ 'f.amountErr':'Enter an amount greater than 0','f.bizUse':'Business use',
+ 'f.bizUseHint':'Partly personal (like your phone)? Claim only the business share — HMRC expects a fair split.',
+ 'f.addIncome':'Add income','f.editIncome':'Edit income','f.addExpense':'Add expense','f.editExpense':'Edit expense','f.deleteEntry':'Delete this entry',
+ 'b.add':'Add a business','b.edit':'Edit business','b.name':'Business name','b.nameErr':'Enter a name',
+ 'b.setup':'How is it set up?','b.justMe':'Just me','b.partnership':'Partnership',
+ 'b.soleHint':'You work for yourself and keep all the profit.','b.partHint':'You run it with someone else and split the profit. Only your share is taxed.',
+ 'b.share':'Your share of profit (%)','b.delete':'Delete this business and its entries',
+ 'tax.bill':'Estimated bill · {y}','tax.it':'Income Tax','tax.c4':'Class 4 NI','tax.fileBy':'File & pay by {d}',
+ 'tax.taT':'Expenses vs £1,000 allowance','tax.taHint':'HMRC lets you knock a flat £1,000 off your self-employed income instead of claiming real expenses (not partnerships). Whichever gives the smaller profit wins — TaxMate compares both for you.',
+ 'tax.taActual':'Profit with actual expenses','tax.taAllow':'Profit with £1,000 allowance','tax.taBest':'Best for you',
+ 'tax.taSave':'saves {x} of profit','tax.auto':'Auto','tax.allowance':'Allowance','tax.expensesOpt':'Expenses',
+ 'tax.using':'Using: {x}','tax.autoNote':'Auto always picks whichever is cheaper for you.',
+ 'tax.usingAllow':'£1,000 trading allowance','tax.usingExp':'actual expenses',
+ 'tax.how':'How it’s worked out','tax.taxableP':'Your taxable profit',
+ 'tax.pa':'Personal Allowance','tax.paHint':'tax-free amount everyone gets','tax.paRed':'reduced — income over £100,000',
+ 'tax.taxable':'Taxable income','tax.basic':'Basic rate','tax.higher':'Higher rate','tax.addl':'Additional rate','tax.on':'on',
+ 'tax.c4Hint':'6% on profit £12,570–£50,270, 2% above','tax.c2':'Class 2 National Insurance',
+ 'tax.c2Paid':'profits over £{x}, so it counts as paid — free State Pension credit',
+ 'tax.c2Vol':'profits under £{x} — you can pay £{v} voluntarily to protect your State Pension record','tax.opt':'optional',
+ 'tax.total':'Total bill','tax.payT':'What you’ll actually pay','tax.editPos':'Edit',
+ 'tax.thisBill':'This year’s bill (above)','tax.priorAdj':'Adjustment from last year','tax.priorAdjS':'under/overpayment carried forward',
+ 'tax.poaPaid':'Payments on account already made','tax.balancing':'Balancing payment due 31 Jan',
+ 'tax.refund':'💚 Looks like a refund. If this stays negative after filing, HMRC owes you money back.',
+ 'tax.datesT':'Payment dates','tax.poaWhy':'Your bill is over £1,000, so HMRC also asks for two payments on account towards next year — half each.',
+ 'tax.janS':'balancing payment + 1st payment on account','tax.julS':'2nd payment on account',
+ 'tax.poaReduce':'Expect a lower profit next year? You can ask HMRC to reduce your payments on account — but reduce too far and they charge interest.',
+ 'tax.noPoa':'your full bill — no payments on account needed (under £1,000)',
+ 'tax.accT':'How accurate is this?',
+ 'tax.accB':'Uses {y} rates for England, Wales and Northern Ireland (Scotland has different Income Tax bands). Assumes self-employment is your only income — PAYE jobs, savings interest, dividends and student loans aren’t included yet. A planning estimate, not tax advice: always confirm with HMRC or an accountant before filing.',
+ 'tax.disc':'Estimate only — not tax advice.',
+ 'a.title':'Your HMRC position','a.sub':'Two numbers from your last Self Assessment that change what you actually pay this year.',
+ 'a.poaLabel':'Payments on account already made for this year','a.poaHint':'The advance payments (31 Jan + 31 Jul) HMRC asked for based on last year. Enter the total, or 0 if none.',
+ 'a.priorLabel':'Adjustment from last year','a.priorHint':'Underpaid last year and it rolled forward? Enter it as positive. Overpaid and it’s being knocked off? Enter negative (e.g. -120).',
+ 'm.title':'Settings','m.biz':'Businesses','m.lang':'Language','m.backup':'Back up & restore',
+ 'm.backupHint':'Your data lives only on this device. Export a backup regularly and keep it safe.',
+ 'm.export':'Download backup (JSON)','m.csv':'Export entries (CSV for Excel)','m.restore':'Restore from backup',
+ 'm.danger':'Danger zone','m.reset':'Delete all data on this device',
+ 'm.resetT':'Delete everything?','m.resetM':'This wipes all businesses, entries and settings from this device. There is no undo. Export a backup first if in doubt.',
+ 'm.foot':'TaxMate UK · free, private, offline. Estimates only — not tax advice.',
+ 'd.entryT':'Delete this entry?','d.entryM':'It will be removed permanently.',
+ 'd.bizT':'Delete this business?','d.bizM':'All its income and expense entries will be deleted too. There is no undo.',
+ 'r.title':'Restore this backup?','r.msg':'It will replace everything currently on this device.','r.bad':'That file is not a TaxMate backup.',
+ 'cat.vehicle':'Vehicle & fuel','cat.travel':'Travel & parking','cat.phone':'Phone & internet','cat.home':'Home working',
+ 'cat.equip':'Equipment & tools','cat.office':'Office & admin','cat.stock':'Stock & materials','cat.insure':'Insurance',
+ 'cat.fees':'Professional fees','cat.market':'Marketing & subs','cat.repair':'Repairs','cat.other':'Other expense',
+ 'cat.sales':'Work income','cat.tips':'Tips & bonuses','cat.royalty':'Royalties','cat.otherin':'Other income',
+ 'fd.title':'Folder','fd.add':'New folder','fd.name':'Folder name','fd.none':'No folder','fd.manage':'Folders','fd.deleteM':'Entries keep their data — they just lose this folder label.','fd.all':'All folders',
+ 'cc.add':'New category','cc.name':'Category name','cc.emoji':'Emoji (optional)','cc.manage':'My categories','cc.deleteM':'Entries using it will show as "Other".',
+ 'pro.title':'TaxMate Pro','pro.sub':'Free is full-featured forever. Pro adds convenience on top.','pro.f1':'Partner sync — one partnership, every phone','pro.f2':'Receipt photos','pro.f3':'Smart AI tips','pro.soon':'coming soon','pro.preview':'Try Pro free (preview)','pro.on':'Pro active',
+ 'sy.title':'Partner sync','sy.enable':'Sync with my partner','sy.code':'Partnership code','sy.invite':'Invite my partner','sy.inviteMsg':'Join my business "{n}" on TaxMate UK — enter code {c}','sy.join':'Got a code from your partner? Enter it and everything syncs automatically.','sy.enterCode':'Enter the 6-character code','sy.synced':'Synced','sy.badCode':'Code not found — check it and try again.','sy.needPro':'Partner sync is a Pro feature — unlock it in More.','sy.needNet':'Couldn\'t reach the sync service — check your connection.','sy.setup':'Sync isn\'t configured in this copy of the app yet.','sy.leave':'Stop syncing on this device','sy.copied':'Copied!','sy.saveFirst':'Save the business first, then turn on sync.',
+ 'ac.title':'Account & cloud','ac.why':'Sign in and your figures follow you — new phone, same data. Free.','ac.google':'Continue with Google','ac.apple':'Continue with Apple','ac.signedAs':'Signed in as','ac.signout':'Sign out','ac.signoutM':'Your data stays on this phone and in your cloud. Sign in again anytime.','ac.local':'This device only — sign in to back up automatically.','ac.cloudOn':'Cloud backup on','ac.err':'Sign-in didn\'t work — try again.','ac.needNet':'Sign-in needs a connection.' 
+},
+zh:{
+ 'nav.home':'主頁','nav.income':'收入','nav.expenses':'開支','nav.tax':'稅務','nav.more':'更多',
+ 'c.save':'儲存','c.cancel':'取消','c.edit':'編輯','c.yes':'確定','c.active':'使用中',
+ 'home.hi':'你好 👋','home.profit':'你嘅利潤 · {y}','home.in':'收入','home.out':'開支',
+ 'home.taxT':'預留交稅','home.taxS':'根據目前利潤估算嘅稅款','home.biz':'你嘅生意','home.addBiz':'新增生意',
+ 'home.recent':'最近記錄','home.share':'你嘅份額',
+ 'tag.sole':'個體經營','tag.part':'合夥','tag.your':'你佔 {n}%',
+ 'w.title':'歡迎使用 TaxMate 👋','w.sub':'記錄自僱收支,實時睇到真正要交幾多稅 — 免費、私隱、毋須註冊。',
+ 'w.priv':'🔒 私隱至上。你嘅數據只儲存喺呢部手機。',
+ 'w.steps':'1 · 新增你嘅生意\n2 · 隨手記低收入同開支\n3 · 「稅務」頁實時計好條數,1月31日唔會再嚇親你',
+ 'w.start':'新增第一盤生意',
+ 'inc.title':'收入','inc.add':'新增收入','inc.empty':'未有收入記錄','inc.emptyS':'有錢入就記低 — 稅款估算實時更新。',
+ 'exp.title':'開支','exp.add':'新增開支','exp.empty':'未有開支記錄','exp.emptyS':'每筆開支都可以幫你慳稅。',
+ 'flt.all':'全部',
+ 'f.amount':'金額','f.date':'日期','f.business':'生意','f.category':'類別','f.note':'備註','f.optional':'(可不填)',
+ 'f.amountErr':'請輸入大於 0 嘅金額','f.bizUse':'業務用途比例',
+ 'f.bizUseHint':'部分私人使用(例如電話)?只申報業務部分 — HMRC 要求合理分攤。',
+ 'f.addIncome':'新增收入','f.editIncome':'編輯收入','f.addExpense':'新增開支','f.editExpense':'編輯開支','f.deleteEntry':'刪除此記錄',
+ 'b.add':'新增生意','b.edit':'編輯生意','b.name':'生意名稱','b.nameErr':'請輸入名稱',
+ 'b.setup':'經營模式','b.justMe':'淨係我','b.partnership':'合夥',
+ 'b.soleHint':'自己一個做,利潤全歸你。','b.partHint':'同人合夥分利潤,只有你嗰份需要交稅。',
+ 'b.share':'你嘅利潤份額 (%)','b.delete':'刪除此生意及所有記錄',
+ 'tax.bill':'估算稅款 · {y}','tax.it':'入息稅','tax.c4':'Class 4 國民保險','tax.fileBy':'{d} 前報稅及繳款',
+ 'tax.taT':'實報開支 vs £1,000 免稅額','tax.taHint':'HMRC 容許你唔報實際開支,改為喺自僱收入直接扣 £1,000(Trading Allowance,合夥不適用)。邊樣利潤細用邊樣 — TaxMate 自動同你比較。',
+ 'tax.taActual':'實報開支後利潤','tax.taAllow':'用 £1,000 免稅額後利潤','tax.taBest':'最抵選擇',
+ 'tax.taSave':'慳 {x} 利潤','tax.auto':'自動','tax.allowance':'免稅額','tax.expensesOpt':'實報',
+ 'tax.using':'使用中:{x}','tax.autoNote':'「自動」永遠幫你揀最抵嗰個。',
+ 'tax.usingAllow':'£1,000 trading allowance','tax.usingExp':'實報開支',
+ 'tax.how':'計算明細','tax.taxableP':'你嘅應稅利潤',
+ 'tax.pa':'個人免稅額','tax.paHint':'人人都有嘅免稅額','tax.paRed':'已調低 — 收入超過 £100,000',
+ 'tax.taxable':'應稅收入','tax.basic':'基本稅率','tax.higher':'高稅率','tax.addl':'附加稅率','tax.on':'於',
+ 'tax.c4Hint':'利潤 £12,570–£50,270 收 6%,以上收 2%','tax.c2':'Class 2 國民保險',
+ 'tax.c2Paid':'利潤超過 £{x},自動當已繳 — 免費取得國家退休金供款記錄',
+ 'tax.c2Vol':'利潤低於 £{x} — 可自願繳 £{v} 保障國家退休金記錄','tax.opt':'自選',
+ 'tax.total':'總稅款','tax.payT':'實際要畀幾多','tax.editPos':'編輯',
+ 'tax.thisBill':'今年稅款(上面)','tax.priorAdj':'上年度調整','tax.priorAdjS':'上年多交/少交滾存',
+ 'tax.poaPaid':'已繳 Payments on Account','tax.balancing':'1月31日尾數 (Balancing Payment)',
+ 'tax.refund':'💚 似乎有得退稅。報稅後如果仍係負數,HMRC 會退錢畀你。',
+ 'tax.datesT':'繳款日期','tax.poaWhy':'稅款超過 £1,000,HMRC 會要求預繳下年度兩期 Payments on Account — 每期一半。',
+ 'tax.janS':'尾數 + 下年度第一期預繳','tax.julS':'下年度第二期預繳',
+ 'tax.poaReduce':'預計下年利潤會跌?可以向 HMRC 申請調低預繳 — 但調得太低會收利息。',
+ 'tax.noPoa':'全數繳付 — 稅款不足 £1,000,毋須預繳',
+ 'tax.accT':'呢個估算有幾準?',
+ 'tax.accB':'採用 {y} 年度英格蘭、威爾斯及北愛爾蘭稅率(蘇格蘭入息稅階不同)。假設自僱係你唯一收入 — 受僱 (PAYE)、利息、股息及學生貸款未計算在內。只屬規劃估算,並非稅務意見:報稅前請向 HMRC 或會計師核實。',
+ 'tax.disc':'只屬估算 — 並非稅務意見。',
+ 'a.title':'你嘅 HMRC 狀況','a.sub':'上次 Self Assessment 嘅兩個數字,會影響你今年實際要畀幾多。',
+ 'a.poaLabel':'今年度已繳嘅 Payments on Account','a.poaHint':'HMRC 根據上年稅款要求嘅兩期預繳(1月31日+7月31日)。輸入總額,冇就填 0。',
+ 'a.priorLabel':'上年度調整','a.priorHint':'上年交少咗滾存落今年?填正數。上年交多咗要扣減?填負數(例如 -120)。',
+ 'm.title':'設定','m.biz':'生意','m.lang':'語言','m.backup':'備份與還原',
+ 'm.backupHint':'數據只儲存喺呢部裝置。請定期匯出備份並妥善保存。',
+ 'm.export':'下載備份 (JSON)','m.csv':'匯出記錄 (CSV 可開 Excel)','m.restore':'由備份還原',
+ 'm.danger':'危險地帶','m.reset':'刪除此裝置所有數據',
+ 'm.resetT':'刪除所有數據?','m.resetM':'將清除此裝置上所有生意、記錄及設定,無法復原。如有疑問請先匯出備份。',
+ 'm.foot':'TaxMate UK · 免費、私隱、離線。只屬估算 — 並非稅務意見。',
+ 'd.entryT':'刪除此記錄?','d.entryM':'將會永久移除。',
+ 'd.bizT':'刪除此生意?','d.bizM':'其所有收入及開支記錄亦會一併刪除,無法復原。',
+ 'r.title':'還原此備份?','r.msg':'將取代此裝置上現有所有數據。','r.bad':'此檔案並非 TaxMate 備份。',
+ 'cat.vehicle':'車輛及燃油','cat.travel':'交通及泊車','cat.phone':'電話及網絡','cat.home':'在家工作',
+ 'cat.equip':'設備及工具','cat.office':'辦公及行政','cat.stock':'存貨及材料','cat.insure':'保險',
+ 'cat.fees':'專業費用','cat.market':'宣傳及訂閱','cat.repair':'維修','cat.other':'其他開支',
+ 'cat.sales':'工作收入','cat.tips':'小費及獎金','cat.royalty':'版稅','cat.otherin':'其他收入',
+ 'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'冇資料夾','fd.manage':'資料夾','fd.deleteM':'入面嘅記錄唔會消失,只係除去資料夾標籤。','fd.all':'全部資料夾',
+ 'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji(可不填)','cc.manage':'我嘅類別','cc.deleteM':'使用中嘅記錄會顯示為「其他」。',
+ 'pro.title':'TaxMate Pro','pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。','pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到','pro.f2':'收據相簿','pro.f3':'AI 智能貼士','pro.soon':'即將推出','pro.preview':'免費試用 Pro(預覽)','pro.on':'Pro 使用中',
+ 'sy.title':'拍檔同步','sy.enable':'同拍檔同步','sy.code':'合夥代碼','sy.invite':'邀請拍檔','sy.inviteMsg':'嚟 TaxMate UK 加入我盤生意「{n}」— 輸入代碼 {c}','sy.join':'收到拍檔嘅代碼?輸入後所有數據自動同步。','sy.enterCode':'輸入六位代碼','sy.synced':'已同步','sy.badCode':'搵唔到呢個代碼,請檢查後再試。','sy.needPro':'拍檔同步係 Pro 功能,喺「更多」解鎖。','sy.needNet':'連接唔到同步服務,請檢查網絡。','sy.setup':'呢個版本未設定同步服務。','sy.leave':'喺呢部裝置停止同步','sy.copied':'已複製!','sy.saveFirst':'請先儲存生意,再開啟同步。',
+ 'ac.title':'帳戶與雲端','ac.why':'登入後數據跟住你走 — 換新電話,數據照舊。免費。','ac.google':'用 Google 繼續','ac.apple':'用 Apple 繼續','ac.signedAs':'已登入','ac.signout':'登出','ac.signoutM':'數據會保留喺呢部電話同你嘅雲端,隨時可以再登入。','ac.local':'只限呢部裝置 — 登入即自動雲端備份。','ac.cloudOn':'雲端備份開啟','ac.err':'登入失敗,請再試。','ac.needNet':'登入需要網絡連接。' 
+},
+pl:{
+ 'nav.home':'Start','nav.income':'Przychody','nav.expenses':'Wydatki','nav.tax':'Podatek','nav.more':'Więcej',
+ 'c.save':'Zapisz','c.cancel':'Anuluj','c.edit':'Edytuj','c.yes':'Tak, zrób to','c.active':'Aktywny',
+ 'home.hi':'Cześć 👋','home.profit':'Twój zysk · {y}','home.in':'Przychody','home.out':'Wydatki',
+ 'home.taxT':'Odłóż na podatek','home.taxS':'Szacowany podatek od dotychczasowego zysku','home.biz':'Twoje firmy','home.addBiz':'Dodaj firmę',
+ 'home.recent':'Ostatnie wpisy','home.share':'twój udział',
+ 'tag.sole':'Sole trader','tag.part':'Spółka (partnership)','tag.your':'twoje {n}%',
+ 'w.title':'Witaj w TaxMate 👋','w.sub':'Zapisuj przychody i wydatki z samozatrudnienia i widź swój prawdziwy rachunek podatkowy — za darmo, prywatnie, bez rejestracji.',
+ 'w.priv':'🔒 Prywatność przede wszystkim. Twoje dane nigdy nie opuszczają tego telefonu.',
+ 'w.steps':'1 · Dodaj swoją firmę\n2 · Zapisuj przychody i wydatki na bieżąco\n3 · Zakładka Podatek liczy rachunek na żywo — 31 stycznia już Cię nie zaskoczy',
+ 'w.start':'Dodaj pierwszą firmę',
+ 'inc.title':'Przychody','inc.add':'Dodaj przychód','inc.empty':'Brak przychodów','inc.emptyS':'Zapisuj pieniądze na bieżąco — szacunek podatku aktualizuje się na żywo.',
+ 'exp.title':'Wydatki','exp.add':'Dodaj wydatek','exp.empty':'Brak wydatków','exp.emptyS':'Każdy zapisany wydatek może zmniejszyć Twój podatek.',
+ 'flt.all':'Wszystko',
+ 'f.amount':'Kwota','f.date':'Data','f.business':'Firma','f.category':'Kategoria','f.note':'Notatka','f.optional':'(opcjonalnie)',
+ 'f.amountErr':'Wpisz kwotę większą niż 0','f.bizUse':'Użytek firmowy',
+ 'f.bizUseHint':'Częściowo prywatne (np. telefon)? Odlicz tylko część firmową — HMRC oczekuje uczciwego podziału.',
+ 'f.addIncome':'Dodaj przychód','f.editIncome':'Edytuj przychód','f.addExpense':'Dodaj wydatek','f.editExpense':'Edytuj wydatek','f.deleteEntry':'Usuń ten wpis',
+ 'b.add':'Dodaj firmę','b.edit':'Edytuj firmę','b.name':'Nazwa firmy','b.nameErr':'Wpisz nazwę',
+ 'b.setup':'Forma działalności','b.justMe':'Tylko ja','b.partnership':'Spółka',
+ 'b.soleHint':'Pracujesz na własny rachunek i cały zysk jest Twój.','b.partHint':'Prowadzisz z kimś i dzielicie zysk. Opodatkowany jest tylko Twój udział.',
+ 'b.share':'Twój udział w zysku (%)','b.delete':'Usuń firmę i jej wpisy',
+ 'tax.bill':'Szacowany podatek · {y}','tax.it':'Income Tax','tax.c4':'Class 4 NI','tax.fileBy':'Złóż i zapłać do {d}',
+ 'tax.taT':'Wydatki vs ulga £1,000','tax.taHint':'HMRC pozwala odliczyć ryczałtem £1,000 od przychodu z samozatrudnienia zamiast realnych wydatków (nie dotyczy spółek). Wygrywa mniejszy zysk — TaxMate porównuje oba warianty.',
+ 'tax.taActual':'Zysk z realnymi wydatkami','tax.taAllow':'Zysk z ulgą £1,000','tax.taBest':'Najlepsze dla Ciebie',
+ 'tax.taSave':'oszczędza {x} zysku','tax.auto':'Auto','tax.allowance':'Ulga','tax.expensesOpt':'Wydatki',
+ 'tax.using':'Używasz: {x}','tax.autoNote':'Auto zawsze wybiera tańszą opcję.',
+ 'tax.usingAllow':'ulga £1,000 (trading allowance)','tax.usingExp':'realne wydatki',
+ 'tax.how':'Jak to policzono','tax.taxableP':'Twój zysk do opodatkowania',
+ 'tax.pa':'Personal Allowance','tax.paHint':'kwota wolna od podatku dla każdego','tax.paRed':'obniżona — dochód ponad £100,000',
+ 'tax.taxable':'Dochód do opodatkowania','tax.basic':'Stawka podstawowa','tax.higher':'Stawka wyższa','tax.addl':'Stawka dodatkowa','tax.on':'od',
+ 'tax.c4Hint':'6% od zysku £12,570–£50,270, 2% powyżej','tax.c2':'Class 2 National Insurance',
+ 'tax.c2Paid':'zysk ponad £{x}, więc liczy się jako opłacone — darmowy kredyt do State Pension',
+ 'tax.c2Vol':'zysk poniżej £{x} — możesz dobrowolnie płacić £{v}, by chronić swoją State Pension','tax.opt':'opcjonalne',
+ 'tax.total':'Razem do zapłaty','tax.payT':'Ile faktycznie zapłacisz','tax.editPos':'Edytuj',
+ 'tax.thisBill':'Tegoroczny rachunek (powyżej)','tax.priorAdj':'Korekta z zeszłego roku','tax.priorAdjS':'niedopłata/nadpłata przeniesiona',
+ 'tax.poaPaid':'Wpłacone już payments on account','tax.balancing':'Dopłata (balancing payment) do 31 sty',
+ 'tax.refund':'💚 Wygląda na zwrot. Jeśli po złożeniu zeznania nadal będzie ujemne, HMRC odda Ci pieniądze.',
+ 'tax.datesT':'Terminy płatności','tax.poaWhy':'Rachunek przekracza £1,000, więc HMRC poprosi też o dwie zaliczki (payments on account) na przyszły rok — po połowie.',
+ 'tax.janS':'dopłata + 1. zaliczka na przyszły rok','tax.julS':'2. zaliczka na przyszły rok',
+ 'tax.poaReduce':'Spodziewasz się niższego zysku? Możesz poprosić HMRC o obniżenie zaliczek — ale za zbyt niskie naliczą odsetki.',
+ 'tax.noPoa':'cały rachunek — zaliczki niepotrzebne (poniżej £1,000)',
+ 'tax.accT':'Jak dokładny jest ten szacunek?',
+ 'tax.accB':'Stawki {y} dla Anglii, Walii i Irlandii Płn. (Szkocja ma inne progi). Zakłada, że samozatrudnienie to Twój jedyny dochód — etat (PAYE), odsetki, dywidendy i kredyt studencki nie są jeszcze uwzględnione. To szacunek do planowania, nie porada podatkowa — przed złożeniem potwierdź z HMRC lub księgowym.',
+ 'tax.disc':'Tylko szacunek — to nie porada podatkowa.',
+ 'a.title':'Twoja sytuacja z HMRC','a.sub':'Dwie liczby z ostatniego Self Assessment, które zmieniają to, ile faktycznie zapłacisz.',
+ 'a.poaLabel':'Wpłacone już zaliczki na ten rok','a.poaHint':'Zaliczki (31 sty + 31 lip) wyliczone z zeszłorocznego rachunku. Wpisz sumę lub 0.',
+ 'a.priorLabel':'Korekta z zeszłego roku','a.priorHint':'Niedopłata przeniesiona na ten rok? Wpisz na plus. Nadpłata do odliczenia? Wpisz na minus (np. -120).',
+ 'm.title':'Ustawienia','m.biz':'Firmy','m.lang':'Język','m.backup':'Kopia zapasowa',
+ 'm.backupHint':'Dane są tylko na tym urządzeniu. Regularnie eksportuj kopię i trzymaj ją w bezpiecznym miejscu.',
+ 'm.export':'Pobierz kopię (JSON)','m.csv':'Eksport wpisów (CSV do Excela)','m.restore':'Przywróć z kopii',
+ 'm.danger':'Strefa ryzyka','m.reset':'Usuń wszystkie dane z urządzenia',
+ 'm.resetT':'Usunąć wszystko?','m.resetM':'Usunie wszystkie firmy, wpisy i ustawienia z tego urządzenia. Nie da się tego cofnąć. W razie wątpliwości najpierw zrób kopię.',
+ 'm.foot':'TaxMate UK · darmowy, prywatny, offline. Tylko szacunki — nie porada podatkowa.',
+ 'd.entryT':'Usunąć ten wpis?','d.entryM':'Zostanie trwale usunięty.',
+ 'd.bizT':'Usunąć tę firmę?','d.bizM':'Wszystkie jej przychody i wydatki też zostaną usunięte. Nie da się tego cofnąć.',
+ 'r.title':'Przywrócić tę kopię?','r.msg':'Zastąpi wszystko, co jest teraz na urządzeniu.','r.bad':'To nie jest kopia TaxMate.',
+ 'cat.vehicle':'Pojazd i paliwo','cat.travel':'Podróże i parking','cat.phone':'Telefon i internet','cat.home':'Praca z domu',
+ 'cat.equip':'Sprzęt i narzędzia','cat.office':'Biuro i administracja','cat.stock':'Towar i materiały','cat.insure':'Ubezpieczenie',
+ 'cat.fees':'Usługi profesjonalne','cat.market':'Marketing i subskrypcje','cat.repair':'Naprawy','cat.other':'Inny wydatek',
+ 'cat.sales':'Przychód z pracy','cat.tips':'Napiwki i bonusy','cat.royalty':'Tantiemy','cat.otherin':'Inny przychód',
+ 'fd.title':'Folder','fd.add':'Nowy folder','fd.name':'Nazwa folderu','fd.none':'Bez folderu','fd.manage':'Foldery','fd.deleteM':'Wpisy zachowają dane — stracą tylko etykietę folderu.','fd.all':'Wszystkie foldery',
+ 'cc.add':'Nowa kategoria','cc.name':'Nazwa kategorii','cc.emoji':'Emoji (opcjonalnie)','cc.manage':'Moje kategorie','cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
+ 'pro.title':'TaxMate Pro','pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.','pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon','pro.f2':'Zdjęcia paragonów','pro.f3':'Inteligentne wskazówki AI','pro.soon':'wkrótce','pro.preview':'Wypróbuj Pro za darmo (podgląd)','pro.on':'Pro aktywne',
+ 'sy.title':'Synchronizacja z partnerem','sy.enable':'Synchronizuj z partnerem','sy.code':'Kod spółki','sy.invite':'Zaproś partnera','sy.inviteMsg':'Dołącz do mojej firmy „{n}" w TaxMate UK — wpisz kod {c}','sy.join':'Masz kod od partnera? Wpisz go, a wszystko zsynchronizuje się automatycznie.','sy.enterCode':'Wpisz 6-znakowy kod','sy.synced':'Zsynchronizowano','sy.badCode':'Nie znaleziono kodu — sprawdź i spróbuj ponownie.','sy.needPro':'Synchronizacja to funkcja Pro — odblokuj w Więcej.','sy.needNet':'Brak połączenia z usługą — sprawdź internet.','sy.setup':'Ta kopia aplikacji nie ma jeszcze skonfigurowanej synchronizacji.','sy.leave':'Przestań synchronizować na tym urządzeniu','sy.copied':'Skopiowano!','sy.saveFirst':'Najpierw zapisz firmę, potem włącz synchronizację.',
+ 'ac.title':'Konto i chmura','ac.why':'Zaloguj się, a Twoje dane pójdą za Tobą — nowy telefon, te same dane. Za darmo.','ac.google':'Kontynuuj z Google','ac.apple':'Kontynuuj z Apple','ac.signedAs':'Zalogowano jako','ac.signout':'Wyloguj','ac.signoutM':'Dane zostają na tym telefonie i w chmurze. Zaloguj się ponownie kiedy chcesz.','ac.local':'Tylko to urządzenie — zaloguj się, by mieć automatyczną kopię.','ac.cloudOn':'Kopia w chmurze włączona','ac.err':'Logowanie nie powiodło się — spróbuj ponownie.','ac.needNet':'Logowanie wymaga połączenia.' 
+},
+ro:{
+ 'nav.home':'Acasă','nav.income':'Venituri','nav.expenses':'Cheltuieli','nav.tax':'Taxe','nav.more':'Altele',
+ 'c.save':'Salvează','c.cancel':'Anulează','c.edit':'Editează','c.yes':'Da, continuă','c.active':'Activ',
+ 'home.hi':'Salut 👋','home.profit':'Profitul tău · {y}','home.in':'Venituri','home.out':'Cheltuieli',
+ 'home.taxT':'Pune deoparte pentru taxe','home.taxS':'Taxa estimată pe profitul de până acum','home.biz':'Afacerile tale','home.addBiz':'Adaugă o afacere',
+ 'home.recent':'Activitate recentă','home.share':'partea ta',
+ 'tag.sole':'Sole trader','tag.part':'Parteneriat','tag.your':'partea ta {n}%',
+ 'w.title':'Bun venit la TaxMate 👋','w.sub':'Urmărește banii din activitatea independentă și vezi factura reală de taxe — gratuit, privat, fără cont.',
+ 'w.priv':'🔒 Privat prin design. Cifrele tale nu părăsesc niciodată acest telefon.',
+ 'w.steps':'1 · Adaugă afacerea ta\n2 · Notează veniturile și cheltuielile pe parcurs\n3 · Fila Taxe ține factura la zi — 31 ianuarie nu te mai ia prin surprindere',
+ 'w.start':'Adaugă prima afacere',
+ 'inc.title':'Venituri','inc.add':'Adaugă venit','inc.empty':'Niciun venit înregistrat','inc.emptyS':'Notează banii pe măsură ce intră — estimarea taxei se actualizează live.',
+ 'exp.title':'Cheltuieli','exp.add':'Adaugă cheltuială','exp.empty':'Nicio cheltuială încă','exp.emptyS':'Fiecare cheltuială notată îți poate micșora taxa.',
+ 'flt.all':'Toate',
+ 'f.amount':'Suma','f.date':'Data','f.business':'Afacere','f.category':'Categorie','f.note':'Notă','f.optional':'(opțional)',
+ 'f.amountErr':'Introdu o sumă mai mare de 0','f.bizUse':'Utilizare pentru afacere',
+ 'f.bizUseHint':'Parțial personal (de ex. telefonul)? Deduce doar partea de afacere — HMRC așteaptă o împărțire corectă.',
+ 'f.addIncome':'Adaugă venit','f.editIncome':'Editează venit','f.addExpense':'Adaugă cheltuială','f.editExpense':'Editează cheltuială','f.deleteEntry':'Șterge această înregistrare',
+ 'b.add':'Adaugă o afacere','b.edit':'Editează afacerea','b.name':'Numele afacerii','b.nameErr':'Introdu un nume',
+ 'b.setup':'Cum este organizată?','b.justMe':'Doar eu','b.partnership':'Parteneriat',
+ 'b.soleHint':'Lucrezi pe cont propriu și păstrezi tot profitul.','b.partHint':'O conduci cu altcineva și împărțiți profitul. Doar partea ta este impozitată.',
+ 'b.share':'Partea ta din profit (%)','b.delete':'Șterge afacerea și înregistrările ei',
+ 'tax.bill':'Factura estimată · {y}','tax.it':'Income Tax','tax.c4':'Class 4 NI','tax.fileBy':'Depune și plătește până la {d}',
+ 'tax.taT':'Cheltuieli vs alocația de £1,000','tax.taHint':'HMRC îți permite să scazi £1,000 fix din venitul independent în loc de cheltuielile reale (nu pentru parteneriate). Câștigă profitul mai mic — TaxMate le compară pentru tine.',
+ 'tax.taActual':'Profit cu cheltuieli reale','tax.taAllow':'Profit cu alocația £1,000','tax.taBest':'Cel mai bun pentru tine',
+ 'tax.taSave':'economisește {x} din profit','tax.auto':'Auto','tax.allowance':'Alocație','tax.expensesOpt':'Cheltuieli',
+ 'tax.using':'Folosești: {x}','tax.autoNote':'Auto alege mereu varianta mai ieftină pentru tine.',
+ 'tax.usingAllow':'alocația £1,000 (trading allowance)','tax.usingExp':'cheltuieli reale',
+ 'tax.how':'Cum se calculează','tax.taxableP':'Profitul tău impozabil',
+ 'tax.pa':'Personal Allowance','tax.paHint':'suma neimpozabilă pe care o primește oricine','tax.paRed':'redusă — venit peste £100,000',
+ 'tax.taxable':'Venit impozabil','tax.basic':'Cota de bază','tax.higher':'Cota superioară','tax.addl':'Cota adițională','tax.on':'la',
+ 'tax.c4Hint':'6% pe profit £12,570–£50,270, 2% peste','tax.c2':'Class 2 National Insurance',
+ 'tax.c2Paid':'profit peste £{x}, deci contează ca plătit — credit gratuit la State Pension',
+ 'tax.c2Vol':'profit sub £{x} — poți plăti voluntar £{v} ca să-ți protejezi State Pension','tax.opt':'opțional',
+ 'tax.total':'Total de plată','tax.payT':'Cât plătești de fapt','tax.editPos':'Editează',
+ 'tax.thisBill':'Factura acestui an (de mai sus)','tax.priorAdj':'Ajustare de anul trecut','tax.priorAdjS':'sub/supra-plată reportată',
+ 'tax.poaPaid':'Payments on account deja plătite','tax.balancing':'Plata de regularizare până la 31 ian',
+ 'tax.refund':'💚 Pare o rambursare. Dacă rămâne negativ după depunere, HMRC îți datorează bani.',
+ 'tax.datesT':'Date de plată','tax.poaWhy':'Factura depășește £1,000, deci HMRC cere și două plăți în avans (payments on account) pentru anul viitor — jumătate fiecare.',
+ 'tax.janS':'regularizare + prima plată în avans','tax.julS':'a doua plată în avans',
+ 'tax.poaReduce':'Te aștepți la profit mai mic anul viitor? Poți cere HMRC să reducă plățile în avans — dar dacă reduci prea mult, percep dobândă.',
+ 'tax.noPoa':'toată factura — fără plăți în avans (sub £1,000)',
+ 'tax.accT':'Cât de exactă este estimarea?',
+ 'tax.accB':'Folosește cotele {y} pentru Anglia, Țara Galilor și Irlanda de Nord (Scoția are alte praguri). Presupune că activitatea independentă e singurul tău venit — joburile PAYE, dobânzile, dividendele și împrumutul de student nu sunt încă incluse. E o estimare de planificare, nu consultanță fiscală — confirmă cu HMRC sau un contabil înainte de depunere.',
+ 'tax.disc':'Doar estimare — nu este consultanță fiscală.',
+ 'a.title':'Situația ta cu HMRC','a.sub':'Două cifre din ultimul Self Assessment care schimbă cât plătești de fapt anul acesta.',
+ 'a.poaLabel':'Plăți în avans deja făcute pentru acest an','a.poaHint':'Avansurile (31 ian + 31 iul) cerute de HMRC pe baza anului trecut. Introdu totalul sau 0.',
+ 'a.priorLabel':'Ajustare de anul trecut','a.priorHint':'Ai plătit prea puțin și s-a reportat? Introdu cu plus. Ai plătit prea mult și se scade? Introdu cu minus (ex. -120).',
+ 'm.title':'Setări','m.biz':'Afaceri','m.lang':'Limbă','m.backup':'Backup și restaurare',
+ 'm.backupHint':'Datele există doar pe acest dispozitiv. Exportă regulat un backup și păstrează-l în siguranță.',
+ 'm.export':'Descarcă backup (JSON)','m.csv':'Exportă înregistrări (CSV pentru Excel)','m.restore':'Restaurează din backup',
+ 'm.danger':'Zonă periculoasă','m.reset':'Șterge toate datele de pe dispozitiv',
+ 'm.resetT':'Ștergi totul?','m.resetM':'Șterge toate afacerile, înregistrările și setările de pe acest dispozitiv. Nu se poate anula. Fă un backup mai întâi dacă ai dubii.',
+ 'm.foot':'TaxMate UK · gratuit, privat, offline. Doar estimări — nu consultanță fiscală.',
+ 'd.entryT':'Ștergi această înregistrare?','d.entryM':'Va fi eliminată definitiv.',
+ 'd.bizT':'Ștergi această afacere?','d.bizM':'Toate veniturile și cheltuielile ei vor fi șterse. Nu se poate anula.',
+ 'r.title':'Restaurezi acest backup?','r.msg':'Va înlocui tot ce este acum pe dispozitiv.','r.bad':'Fișierul nu este un backup TaxMate.',
+ 'cat.vehicle':'Vehicul și combustibil','cat.travel':'Transport și parcare','cat.phone':'Telefon și internet','cat.home':'Lucru de acasă',
+ 'cat.equip':'Echipamente și unelte','cat.office':'Birou și administrare','cat.stock':'Stoc și materiale','cat.insure':'Asigurare',
+ 'cat.fees':'Servicii profesionale','cat.market':'Marketing și abonamente','cat.repair':'Reparații','cat.other':'Altă cheltuială',
+ 'cat.sales':'Venit din muncă','cat.tips':'Bacșișuri și bonusuri','cat.royalty':'Drepturi de autor','cat.otherin':'Alt venit',
+ 'fd.title':'Folder','fd.add':'Folder nou','fd.name':'Numele folderului','fd.none':'Fără folder','fd.manage':'Foldere','fd.deleteM':'Înregistrările își păstrează datele — pierd doar eticheta de folder.','fd.all':'Toate folderele',
+ 'cc.add':'Categorie nouă','cc.name':'Numele categoriei','cc.emoji':'Emoji (opțional)','cc.manage':'Categoriile mele','cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
+ 'pro.title':'TaxMate Pro','pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.','pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon','pro.f2':'Poze cu bonuri','pro.f3':'Sfaturi AI inteligente','pro.soon':'în curând','pro.preview':'Încearcă Pro gratuit (preview)','pro.on':'Pro activ',
+ 'sy.title':'Sincronizare cu partenerul','sy.enable':'Sincronizează cu partenerul meu','sy.code':'Cod de parteneriat','sy.invite':'Invită partenerul','sy.inviteMsg':'Alătură-te afacerii mele „{n}" pe TaxMate UK — introdu codul {c}','sy.join':'Ai un cod de la partener? Introdu-l și totul se sincronizează automat.','sy.enterCode':'Introdu codul de 6 caractere','sy.synced':'Sincronizat','sy.badCode':'Codul nu a fost găsit — verifică și încearcă din nou.','sy.needPro':'Sincronizarea este o funcție Pro — deblocheaz-o în Altele.','sy.needNet':'Nu s-a putut contacta serviciul — verifică conexiunea.','sy.setup':'Această copie a aplicației nu are sincronizarea configurată.','sy.leave':'Oprește sincronizarea pe acest dispozitiv','sy.copied':'Copiat!','sy.saveFirst':'Salvează afacerea mai întâi, apoi pornește sincronizarea.',
+ 'ac.title':'Cont și cloud','ac.why':'Conectează-te și datele te urmează — telefon nou, aceleași date. Gratuit.','ac.google':'Continuă cu Google','ac.apple':'Continuă cu Apple','ac.signedAs':'Conectat ca','ac.signout':'Deconectare','ac.signoutM':'Datele rămân pe acest telefon și în cloud. Reconectează-te oricând.','ac.local':'Doar acest dispozitiv — conectează-te pentru backup automat.','ac.cloudOn':'Backup în cloud activ','ac.err':'Conectarea a eșuat — încearcă din nou.','ac.needNet':'Conectarea necesită internet.' 
+},
+es:{
+ 'nav.home':'Inicio','nav.income':'Ingresos','nav.expenses':'Gastos','nav.tax':'Impuestos','nav.more':'Más',
+ 'c.save':'Guardar','c.cancel':'Cancelar','c.edit':'Editar','c.yes':'Sí, hazlo','c.active':'Activo',
+ 'home.hi':'Hola 👋','home.profit':'Tu beneficio · {y}','home.in':'Ingresos','home.out':'Gastos',
+ 'home.taxT':'Aparta para impuestos','home.taxS':'Impuesto estimado sobre tu beneficio hasta ahora','home.biz':'Tus negocios','home.addBiz':'Añadir un negocio',
+ 'home.recent':'Actividad reciente','home.share':'tu parte',
+ 'tag.sole':'Autónomo','tag.part':'Sociedad (partnership)','tag.your':'tu {n}%',
+ 'w.title':'Bienvenido a TaxMate 👋','w.sub':'Registra tu dinero como autónomo y ve tu factura fiscal real — gratis, privado, sin registro.',
+ 'w.priv':'🔒 Privado por diseño. Tus cifras nunca salen de este teléfono.',
+ 'w.steps':'1 · Añade tu negocio\n2 · Apunta ingresos y gastos sobre la marcha\n3 · La pestaña Impuestos mantiene la factura al día — el 31 de enero ya no te sorprenderá',
+ 'w.start':'Añade tu primer negocio',
+ 'inc.title':'Ingresos','inc.add':'Añadir ingreso','inc.empty':'Sin ingresos registrados','inc.emptyS':'Apunta el dinero según llega — la estimación se actualiza en vivo.',
+ 'exp.title':'Gastos','exp.add':'Añadir gasto','exp.empty':'Sin gastos todavía','exp.emptyS':'Cada gasto registrado puede reducir tu factura fiscal.',
+ 'flt.all':'Todos',
+ 'f.amount':'Importe','f.date':'Fecha','f.business':'Negocio','f.category':'Categoría','f.note':'Nota','f.optional':'(opcional)',
+ 'f.amountErr':'Introduce un importe mayor que 0','f.bizUse':'Uso para el negocio',
+ 'f.bizUseHint':'¿Parcialmente personal (como tu móvil)? Deduce solo la parte del negocio — HMRC espera un reparto justo.',
+ 'f.addIncome':'Añadir ingreso','f.editIncome':'Editar ingreso','f.addExpense':'Añadir gasto','f.editExpense':'Editar gasto','f.deleteEntry':'Eliminar esta entrada',
+ 'b.add':'Añadir un negocio','b.edit':'Editar negocio','b.name':'Nombre del negocio','b.nameErr':'Introduce un nombre',
+ 'b.setup':'¿Cómo está organizado?','b.justMe':'Solo yo','b.partnership':'Sociedad',
+ 'b.soleHint':'Trabajas por tu cuenta y todo el beneficio es tuyo.','b.partHint':'Lo llevas con alguien más y repartís el beneficio. Solo tu parte tributa.',
+ 'b.share':'Tu parte del beneficio (%)','b.delete':'Eliminar este negocio y sus entradas',
+ 'tax.bill':'Factura estimada · {y}','tax.it':'Income Tax','tax.c4':'Class 4 NI','tax.fileBy':'Presenta y paga antes del {d}',
+ 'tax.taT':'Gastos vs deducción de £1,000','tax.taHint':'HMRC te permite restar £1,000 fijos de tus ingresos como autónomo en vez de los gastos reales (no para sociedades). Gana el beneficio menor — TaxMate compara ambos por ti.',
+ 'tax.taActual':'Beneficio con gastos reales','tax.taAllow':'Beneficio con deducción de £1,000','tax.taBest':'Lo mejor para ti',
+ 'tax.taSave':'ahorra {x} de beneficio','tax.auto':'Auto','tax.allowance':'Deducción','tax.expensesOpt':'Gastos',
+ 'tax.using':'Usando: {x}','tax.autoNote':'Auto siempre elige la opción más barata para ti.',
+ 'tax.usingAllow':'deducción £1,000 (trading allowance)','tax.usingExp':'gastos reales',
+ 'tax.how':'Cómo se calcula','tax.taxableP':'Tu beneficio imponible',
+ 'tax.pa':'Personal Allowance','tax.paHint':'cantidad libre de impuestos para todos','tax.paRed':'reducida — ingresos sobre £100,000',
+ 'tax.taxable':'Renta imponible','tax.basic':'Tipo básico','tax.higher':'Tipo superior','tax.addl':'Tipo adicional','tax.on':'sobre',
+ 'tax.c4Hint':'6% sobre beneficio £12,570–£50,270, 2% por encima','tax.c2':'Class 2 National Insurance',
+ 'tax.c2Paid':'beneficio sobre £{x}, así que cuenta como pagado — crédito gratis para la State Pension',
+ 'tax.c2Vol':'beneficio bajo £{x} — puedes pagar £{v} voluntariamente para proteger tu State Pension','tax.opt':'opcional',
+ 'tax.total':'Factura total','tax.payT':'Lo que pagarás realmente','tax.editPos':'Editar',
+ 'tax.thisBill':'Factura de este año (arriba)','tax.priorAdj':'Ajuste del año pasado','tax.priorAdjS':'pago de menos/de más arrastrado',
+ 'tax.poaPaid':'Payments on account ya realizados','tax.balancing':'Pago de regularización el 31 ene',
+ 'tax.refund':'💚 Parece una devolución. Si sigue negativo tras presentar, HMRC te debe dinero.',
+ 'tax.datesT':'Fechas de pago','tax.poaWhy':'Tu factura supera £1,000, así que HMRC también pide dos pagos a cuenta para el próximo año — mitad cada uno.',
+ 'tax.janS':'regularización + 1er pago a cuenta','tax.julS':'2º pago a cuenta',
+ 'tax.poaReduce':'¿Esperas menos beneficio el próximo año? Puedes pedir a HMRC reducir los pagos a cuenta — pero si reduces de más, cobran intereses.',
+ 'tax.noPoa':'toda tu factura — sin pagos a cuenta (menos de £1,000)',
+ 'tax.accT':'¿Qué tan precisa es esta estimación?',
+ 'tax.accB':'Usa los tipos de {y} para Inglaterra, Gales e Irlanda del Norte (Escocia tiene tramos distintos). Asume que el trabajo autónomo es tu único ingreso — empleos PAYE, intereses, dividendos y préstamo estudiantil aún no se incluyen. Es una estimación de planificación, no asesoría fiscal — confirma con HMRC o un contable antes de presentar.',
+ 'tax.disc':'Solo estimación — no es asesoría fiscal.',
+ 'a.title':'Tu situación con HMRC','a.sub':'Dos cifras de tu último Self Assessment que cambian lo que pagas realmente este año.',
+ 'a.poaLabel':'Pagos a cuenta ya hechos para este año','a.poaHint':'Los anticipos (31 ene + 31 jul) que HMRC pidió según el año pasado. Pon el total, o 0 si ninguno.',
+ 'a.priorLabel':'Ajuste del año pasado','a.priorHint':'¿Pagaste de menos y se arrastró? Pon positivo. ¿Pagaste de más y se descuenta? Pon negativo (ej. -120).',
+ 'm.title':'Ajustes','m.biz':'Negocios','m.lang':'Idioma','m.backup':'Copia de seguridad',
+ 'm.backupHint':'Tus datos solo viven en este dispositivo. Exporta una copia regularmente y guárdala a salvo.',
+ 'm.export':'Descargar copia (JSON)','m.csv':'Exportar entradas (CSV para Excel)','m.restore':'Restaurar desde copia',
+ 'm.danger':'Zona de peligro','m.reset':'Borrar todos los datos del dispositivo',
+ 'm.resetT':'¿Borrar todo?','m.resetM':'Borra todos los negocios, entradas y ajustes de este dispositivo. No se puede deshacer. Exporta una copia antes si tienes dudas.',
+ 'm.foot':'TaxMate UK · gratis, privado, sin conexión. Solo estimaciones — no asesoría fiscal.',
+ 'd.entryT':'¿Eliminar esta entrada?','d.entryM':'Se eliminará permanentemente.',
+ 'd.bizT':'¿Eliminar este negocio?','d.bizM':'Todas sus entradas también se eliminarán. No se puede deshacer.',
+ 'r.title':'¿Restaurar esta copia?','r.msg':'Reemplazará todo lo que hay ahora en el dispositivo.','r.bad':'Ese archivo no es una copia de TaxMate.',
+ 'cat.vehicle':'Vehículo y combustible','cat.travel':'Viajes y parking','cat.phone':'Teléfono e internet','cat.home':'Trabajo en casa',
+ 'cat.equip':'Equipo y herramientas','cat.office':'Oficina y administración','cat.stock':'Stock y materiales','cat.insure':'Seguro',
+ 'cat.fees':'Servicios profesionales','cat.market':'Marketing y suscripciones','cat.repair':'Reparaciones','cat.other':'Otro gasto',
+ 'cat.sales':'Ingreso por trabajo','cat.tips':'Propinas y bonus','cat.royalty':'Regalías','cat.otherin':'Otro ingreso',
+ 'fd.title':'Carpeta','fd.add':'Nueva carpeta','fd.name':'Nombre de la carpeta','fd.none':'Sin carpeta','fd.manage':'Carpetas','fd.deleteM':'Las entradas conservan sus datos — solo pierden la etiqueta.','fd.all':'Todas las carpetas',
+ 'cc.add':'Nueva categoría','cc.name':'Nombre de la categoría','cc.emoji':'Emoji (opcional)','cc.manage':'Mis categorías','cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
+ 'pro.title':'TaxMate Pro','pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.','pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles','pro.f2':'Fotos de recibos','pro.f3':'Consejos inteligentes con IA','pro.soon':'próximamente','pro.preview':'Prueba Pro gratis (vista previa)','pro.on':'Pro activo',
+ 'sy.title':'Sincronización con socio','sy.enable':'Sincronizar con mi socio','sy.code':'Código de la sociedad','sy.invite':'Invitar a mi socio','sy.inviteMsg':'Únete a mi negocio «{n}» en TaxMate UK — introduce el código {c}','sy.join':'¿Tienes un código de tu socio? Introdúcelo y todo se sincroniza automáticamente.','sy.enterCode':'Introduce el código de 6 caracteres','sy.synced':'Sincronizado','sy.badCode':'Código no encontrado — revísalo e inténtalo de nuevo.','sy.needPro':'La sincronización es una función Pro — desbloquéala en Más.','sy.needNet':'No se pudo conectar — revisa tu conexión.','sy.setup':'Esta copia de la app aún no tiene la sincronización configurada.','sy.leave':'Dejar de sincronizar en este dispositivo','sy.copied':'¡Copiado!','sy.saveFirst':'Guarda el negocio primero y luego activa la sincronización.',
+ 'ac.title':'Cuenta y nube','ac.why':'Inicia sesión y tus datos te siguen — móvil nuevo, mismos datos. Gratis.','ac.google':'Continuar con Google','ac.apple':'Continuar con Apple','ac.signedAs':'Sesión iniciada como','ac.signout':'Cerrar sesión','ac.signoutM':'Tus datos se quedan en este móvil y en tu nube. Vuelve a entrar cuando quieras.','ac.local':'Solo este dispositivo — inicia sesión para copia automática.','ac.cloudOn':'Copia en la nube activa','ac.err':'No se pudo iniciar sesión — inténtalo de nuevo.','ac.needNet':'Iniciar sesión requiere conexión.' 
+},
+ur:{
+ 'nav.home':'ہوم','nav.income':'آمدنی','nav.expenses':'اخراجات','nav.tax':'ٹیکس','nav.more':'مزید',
+ 'c.save':'محفوظ کریں','c.cancel':'منسوخ','c.edit':'ترمیم','c.yes':'جی ہاں','c.active':'فعال',
+ 'home.hi':'السلام علیکم 👋','home.profit':'آپ کا منافع · {y}','home.in':'آمدنی','home.out':'اخراجات',
+ 'home.taxT':'ٹیکس کے لیے رقم الگ رکھیں','home.taxS':'اب تک کے منافع پر تخمینی ٹیکس','home.biz':'آپ کے کاروبار','home.addBiz':'کاروبار شامل کریں',
+ 'home.recent':'حالیہ اندراجات','home.share':'آپ کا حصہ',
+ 'tag.sole':'سول ٹریڈر','tag.part':'پارٹنرشپ','tag.your':'آپ کا {n}%',
+ 'w.title':'TaxMate میں خوش آمدید 👋','w.sub':'اپنی سیلف ایمپلائڈ آمدنی و اخراجات لکھیں اور اصل ٹیکس بل دیکھیں — مفت، نجی، بغیر اکاؤنٹ۔',
+ 'w.priv':'🔒 آپ کا ڈیٹا صرف اسی فون پر رہتا ہے، کہیں اپلوڈ نہیں ہوتا۔',
+ 'w.steps':'1 · اپنا کاروبار شامل کریں\n2 · آمدنی اور اخراجات ساتھ ساتھ لکھتے رہیں\n3 · ٹیکس ٹیب آپ کا بل ہر وقت تازہ رکھتا ہے — 31 جنوری اب حیران نہیں کرے گی',
+ 'w.start':'پہلا کاروبار شامل کریں',
+ 'inc.title':'آمدنی','inc.add':'آمدنی شامل کریں','inc.empty':'ابھی کوئی آمدنی درج نہیں','inc.emptyS':'جیسے ہی پیسے آئیں لکھ لیں — ٹیکس کا تخمینہ خود بخود تازہ ہوتا ہے۔',
+ 'exp.title':'اخراجات','exp.add':'خرچ شامل کریں','exp.empty':'ابھی کوئی خرچ درج نہیں','exp.emptyS':'ہر درج شدہ خرچ آپ کا ٹیکس کم کر سکتا ہے۔',
+ 'flt.all':'تمام',
+ 'f.amount':'رقم','f.date':'تاریخ','f.business':'کاروبار','f.category':'زمرہ','f.note':'نوٹ','f.optional':'(اختیاری)',
+ 'f.amountErr':'0 سے زیادہ رقم درج کریں','f.bizUse':'کاروباری استعمال',
+ 'f.bizUseHint':'کچھ ذاتی استعمال بھی ہے (جیسے فون)؟ صرف کاروباری حصہ کلیم کریں — HMRC منصفانہ تقسیم چاہتا ہے۔',
+ 'f.addIncome':'آمدنی شامل کریں','f.editIncome':'آمدنی میں ترمیم','f.addExpense':'خرچ شامل کریں','f.editExpense':'خرچ میں ترمیم','f.deleteEntry':'یہ اندراج حذف کریں',
+ 'b.add':'کاروبار شامل کریں','b.edit':'کاروبار میں ترمیم','b.name':'کاروبار کا نام','b.nameErr':'نام درج کریں',
+ 'b.setup':'کاروبار کی شکل','b.justMe':'صرف میں','b.partnership':'پارٹنرشپ',
+ 'b.soleHint':'آپ اکیلے کام کرتے ہیں اور سارا منافع آپ کا ہے۔','b.partHint':'آپ کسی کے ساتھ چلاتے ہیں اور منافع بانٹتے ہیں۔ صرف آپ کے حصے پر ٹیکس لگتا ہے۔',
+ 'b.share':'منافع میں آپ کا حصہ (%)','b.delete':'یہ کاروبار اور اس کے اندراجات حذف کریں',
+ 'tax.bill':'تخمینی بل · {y}','tax.it':'انکم ٹیکس','tax.c4':'کلاس 4 NI','tax.fileBy':'{d} تک جمع کرائیں اور ادا کریں',
+ 'tax.taT':'اخراجات بمقابلہ £1,000 الاؤنس','tax.taHint':'HMRC اجازت دیتا ہے کہ اصل اخراجات کے بجائے سیلف ایمپلائڈ آمدنی سے سیدھے £1,000 کاٹ لیں (پارٹنرشپ پر لاگو نہیں)۔ جس سے منافع کم ہو وہی بہتر — TaxMate دونوں کا موازنہ کرتا ہے۔',
+ 'tax.taActual':'اصل اخراجات کے ساتھ منافع','tax.taAllow':'£1,000 الاؤنس کے ساتھ منافع','tax.taBest':'آپ کے لیے بہترین',
+ 'tax.taSave':'{x} منافع کی بچت','tax.auto':'خودکار','tax.allowance':'الاؤنس','tax.expensesOpt':'اخراجات',
+ 'tax.using':'استعمال میں: {x}','tax.autoNote':'خودکار ہمیشہ آپ کے لیے سستا آپشن چنتا ہے۔',
+ 'tax.usingAllow':'£1,000 ٹریڈنگ الاؤنس','tax.usingExp':'اصل اخراجات',
+ 'tax.how':'حساب کیسے ہوا','tax.taxableP':'آپ کا قابلِ ٹیکس منافع',
+ 'tax.pa':'پرسنل الاؤنس','tax.paHint':'ٹیکس فری رقم جو سب کو ملتی ہے','tax.paRed':'کم کر دی گئی — آمدنی £100,000 سے زیادہ',
+ 'tax.taxable':'قابلِ ٹیکس آمدنی','tax.basic':'بنیادی شرح','tax.higher':'اعلیٰ شرح','tax.addl':'اضافی شرح','tax.on':'پر',
+ 'tax.c4Hint':'منافع £12,570–£50,270 پر 6%، اس سے اوپر 2%','tax.c2':'کلاس 2 نیشنل انشورنس',
+ 'tax.c2Paid':'منافع £{x} سے زیادہ، لہٰذا ادا شدہ شمار ہوگا — اسٹیٹ پنشن کریڈٹ مفت',
+ 'tax.c2Vol':'منافع £{x} سے کم — اسٹیٹ پنشن ریکارڈ بچانے کے لیے رضاکارانہ £{v} دے سکتے ہیں','tax.opt':'اختیاری',
+ 'tax.total':'کل بل','tax.payT':'اصل میں کتنا دینا ہوگا','tax.editPos':'ترمیم',
+ 'tax.thisBill':'اس سال کا بل (اوپر)','tax.priorAdj':'پچھلے سال کی ایڈجسٹمنٹ','tax.priorAdjS':'کم/زیادہ ادائیگی آگے منتقل',
+ 'tax.poaPaid':'پہلے سے ادا شدہ payments on account','tax.balancing':'بقایا ادائیگی 31 جنوری تک',
+ 'tax.refund':'💚 لگتا ہے ریفنڈ بنتا ہے۔ فائل کرنے کے بعد بھی منفی رہا تو HMRC آپ کو پیسے واپس کرے گا۔',
+ 'tax.datesT':'ادائیگی کی تاریخیں','tax.poaWhy':'بل £1,000 سے زیادہ ہے، اس لیے HMRC اگلے سال کے لیے دو پیشگی ادائیگیاں (payments on account) بھی مانگے گا — آدھی آدھی۔',
+ 'tax.janS':'بقایا + اگلے سال کی پہلی پیشگی قسط','tax.julS':'اگلے سال کی دوسری پیشگی قسط',
+ 'tax.poaReduce':'اگلے سال منافع کم ہونے کی توقع؟ HMRC سے پیشگی ادائیگیاں کم کرنے کی درخواست کر سکتے ہیں — مگر زیادہ کم کرائیں تو سود لگے گا۔',
+ 'tax.noPoa':'پورا بل — پیشگی ادائیگی کی ضرورت نہیں (£1,000 سے کم)',
+ 'tax.accT':'یہ تخمینہ کتنا درست ہے؟',
+ 'tax.accB':'{y} کی شرحیں انگلینڈ، ویلز اور شمالی آئرلینڈ کے لیے (اسکاٹ لینڈ کے سلیب مختلف ہیں)۔ فرض ہے کہ سیلف ایمپلائمنٹ ہی آپ کی واحد آمدنی ہے — PAYE ملازمت، سود، ڈیویڈنڈ اور اسٹوڈنٹ لون ابھی شامل نہیں۔ یہ منصوبہ بندی کا تخمینہ ہے، ٹیکس مشورہ نہیں — فائل کرنے سے پہلے HMRC یا اکاؤنٹنٹ سے تصدیق کریں۔',
+ 'tax.disc':'صرف تخمینہ — ٹیکس مشورہ نہیں۔',
+ 'a.title':'HMRC کے ساتھ آپ کی پوزیشن','a.sub':'پچھلے Self Assessment کے دو ہندسے جو بدلتے ہیں کہ اس سال آپ اصل میں کتنا دیں گے۔',
+ 'a.poaLabel':'اس سال کے لیے پہلے سے ادا شدہ پیشگی ادائیگیاں','a.poaHint':'پچھلے سال کے بل کی بنیاد پر HMRC کی مانگی ہوئی قسطیں (31 جنوری + 31 جولائی)۔ کل رقم لکھیں، نہ ہو تو 0۔',
+ 'a.priorLabel':'پچھلے سال کی ایڈجسٹمنٹ','a.priorHint':'پچھلے سال کم ادا کیا اور آگے آ گیا؟ مثبت لکھیں۔ زیادہ ادا کیا اور کٹ رہا ہے؟ منفی لکھیں (مثلاً ‎-120)۔',
+ 'm.title':'ترتیبات','m.biz':'کاروبار','m.lang':'زبان','m.backup':'بیک اپ اور بحالی',
+ 'm.backupHint':'ڈیٹا صرف اسی ڈیوائس پر ہے۔ باقاعدگی سے بیک اپ نکالیں اور محفوظ رکھیں۔',
+ 'm.export':'بیک اپ ڈاؤن لوڈ کریں (JSON)','m.csv':'اندراجات ایکسپورٹ کریں (Excel کے لیے CSV)','m.restore':'بیک اپ سے بحال کریں',
+ 'm.danger':'خطرے کا علاقہ','m.reset':'اس ڈیوائس کا تمام ڈیٹا حذف کریں',
+ 'm.resetT':'سب کچھ حذف کریں؟','m.resetM':'اس ڈیوائس کے تمام کاروبار، اندراجات اور ترتیبات مٹ جائیں گی۔ واپسی ممکن نہیں۔ شک ہو تو پہلے بیک اپ نکال لیں۔',
+ 'm.foot':'TaxMate UK · مفت، نجی، آف لائن۔ صرف تخمینے — ٹیکس مشورہ نہیں۔',
+ 'd.entryT':'یہ اندراج حذف کریں؟','d.entryM':'مستقل طور پر حذف ہو جائے گا۔',
+ 'd.bizT':'یہ کاروبار حذف کریں؟','d.bizM':'اس کی تمام آمدنی و اخراجات بھی حذف ہو جائیں گے۔ واپسی ممکن نہیں۔',
+ 'r.title':'یہ بیک اپ بحال کریں؟','r.msg':'ڈیوائس پر موجود سب کچھ بدل جائے گا۔','r.bad':'یہ فائل TaxMate بیک اپ نہیں ہے۔',
+ 'cat.vehicle':'گاڑی اور ایندھن','cat.travel':'سفر اور پارکنگ','cat.phone':'فون اور انٹرنیٹ','cat.home':'گھر سے کام',
+ 'cat.equip':'سامان اور اوزار','cat.office':'دفتر اور انتظام','cat.stock':'اسٹاک اور مواد','cat.insure':'انشورنس',
+ 'cat.fees':'پیشہ ورانہ فیس','cat.market':'مارکیٹنگ اور سبسکرپشن','cat.repair':'مرمت','cat.other':'دیگر خرچ',
+ 'cat.sales':'کام کی آمدنی','cat.tips':'ٹپس اور بونس','cat.royalty':'رائلٹی','cat.otherin':'دیگر آمدنی',
+ 'fd.title':'فولڈر','fd.add':'نیا فولڈر','fd.name':'فولڈر کا نام','fd.none':'کوئی فولڈر نہیں','fd.manage':'فولڈرز','fd.deleteM':'اندراجات کا ڈیٹا محفوظ رہے گا — صرف فولڈر کا لیبل ہٹے گا۔','fd.all':'تمام فولڈرز',
+ 'cc.add':'نیا زمرہ','cc.name':'زمرے کا نام','cc.emoji':'ایموجی (اختیاری)','cc.manage':'میرے زمرے','cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
+ 'pro.title':'TaxMate Pro','pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔','pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر','pro.f2':'رسیدوں کی تصاویر','pro.f3':'AI ٹپس','pro.soon':'جلد آرہا ہے','pro.preview':'Pro مفت آزمائیں (پیش منظر)','pro.on':'Pro فعال',
+ 'sy.title':'پارٹنر سنک','sy.enable':'اپنے پارٹنر سے سنک کریں','sy.code':'پارٹنرشپ کوڈ','sy.invite':'پارٹنر کو دعوت دیں','sy.inviteMsg':'TaxMate UK پر میرے کاروبار «{n}» میں شامل ہوں — کوڈ {c} درج کریں','sy.join':'پارٹنر سے کوڈ ملا؟ درج کریں اور سب کچھ خودبخود سنک ہو جائے گا۔','sy.enterCode':'6 حرفی کوڈ درج کریں','sy.synced':'سنک ہو گیا','sy.badCode':'کوڈ نہیں ملا — چیک کر کے دوبارہ کوشش کریں۔','sy.needPro':'پارٹنر سنک Pro فیچر ہے — «مزید» میں کھولیں۔','sy.needNet':'سروس سے رابطہ نہیں ہو سکا — کنکشن چیک کریں۔','sy.setup':'اس کاپی میں سنک ابھی سیٹ اپ نہیں ہوا۔','sy.leave':'اس ڈیوائس پر سنک بند کریں','sy.copied':'کاپی ہو گیا!','sy.saveFirst':'پہلے کاروبار محفوظ کریں، پھر سنک آن کریں۔',
+ 'ac.title':'اکاؤنٹ اور کلاؤڈ','ac.why':'سائن ان کریں اور ڈیٹا آپ کے ساتھ چلے گا — نیا فون، وہی ڈیٹا۔ مفت۔','ac.google':'Google سے جاری رکھیں','ac.apple':'Apple سے جاری رکھیں','ac.signedAs':'سائن ان بطور','ac.signout':'سائن آؤٹ','ac.signoutM':'ڈیٹا اس فون اور آپ کے کلاؤڈ میں محفوظ رہے گا۔ جب چاہیں دوبارہ سائن ان کریں۔','ac.local':'صرف یہ ڈیوائس — خودکار بیک اپ کے لیے سائن ان کریں۔','ac.cloudOn':'کلاؤڈ بیک اپ آن','ac.err':'سائن ان ناکام — دوبارہ کوشش کریں۔','ac.needNet':'سائن ان کے لیے انٹرنیٹ درکار ہے۔' 
+}
+};
+
+function t(key, vars){
+  let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
+  if(vars) for(const k in vars) s = s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+function applyStaticI18n(){
+  document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
+  document.documentElement.lang = S.settings.lang;
+  document.documentElement.dir = S.settings.lang==='ur' ? 'rtl' : 'ltr';
+}
+function locale(){ return LOCALES[S.settings.lang] || 'en-GB'; }
+
+/* ═══════════ constants ═══════════ */
+const PCT_OPTIONS = [100,75,50,25,10];
+const CATS = {
+  expense:[
+    {id:'vehicle',e:'⛽',dot:'#E5484D'},{id:'travel',e:'🅿️',dot:'#F47738'},{id:'phone',e:'📱',dot:'#3478F6'},
+    {id:'home',e:'🏠',dot:'#9B59B6'},{id:'equip',e:'🧰',dot:'#0AA968'},{id:'office',e:'🗂️',dot:'#6B7686'},
+    {id:'stock',e:'📦',dot:'#85994B'},{id:'insure',e:'🛡️',dot:'#0D8C86'},{id:'fees',e:'💼',dot:'#1F4E9C'},
+    {id:'market',e:'📣',dot:'#B47D12'},{id:'repair',e:'🔧',dot:'#7B8794'},{id:'other',e:'🧾',dot:'#16202B'}
+  ],
+  income:[
+    {id:'sales',e:'💷',dot:'#0AA968'},{id:'tips',e:'✨',dot:'#85994B'},
+    {id:'royalty',e:'🎵',dot:'#9B59B6'},{id:'otherin',e:'➕',dot:'#6B7686'}
+  ]
+};
+function allCats(kind){ return CATS[kind].concat((S.customCats&&S.customCats[kind])||[]); }
+function catById(id){
+  const cc = S.customCats||{income:[],expense:[]};
+  const all = CATS.expense.concat(CATS.income, cc.expense||[], cc.income||[]);
+  return all.find(c=>c.id===id) || {id:'other',e:'🧾',dot:'#B1B4B6'};
+}
+function catName(id){ const c = catById(id); return c.custom ? c.name : t('cat.'+c.id); }
+function folderById(id){ return S.folders.find(f=>f.id===id); }
+
+const TAXCFG = {
+  '2024-25':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6725,c2Weekly:3.45,tradingAllowance:1000,poaThreshold:1000,fileDeadline:'31 Jan 2026'},
+  '2025-26':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6845,c2Weekly:3.50,tradingAllowance:1000,poaThreshold:1000,fileDeadline:'31 Jan 2027'},
+  '2026-27':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6845,c2Weekly:3.50,tradingAllowance:1000,poaThreshold:1000,fileDeadline:'31 Jan 2028'}
+};
+function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
+
+/* ═══════════ state ═══════════ */
+const STORE_KEY = 'taxmateuk_v1';
+const DEFAULT_STATE = {
+  v:2, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
+  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', settings:{lang:'en', pro:false}
+};
+let S = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(STORE_KEY);
+    if(!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    const s = JSON.parse(raw);
+    const merged = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), s);
+    merged.settings = Object.assign({lang:'en', pro:false}, s.settings||{});
+    merged.customCats = Object.assign({income:[],expense:[]}, s.customCats||{});
+    if(!Array.isArray(merged.folders)) merged.folders = [];
+    return merged;
+  }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+}
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
+function yd(){
+  if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto'};
+  return S.yearData[S.year];
+}
+
+/* ═══════════ helpers ═══════════ */
+const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+const fmt = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
+const fmt0 = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{maximumFractionDigits:0});
+const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const todayISO = () => { const d=new Date(); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); };
+
+function currentTaxYear(){
+  const d = new Date(); const y = d.getFullYear();
+  const after = (d.getMonth()>3)||(d.getMonth()===3&&d.getDate()>=6);
+  const start = after ? y : y-1;
+  return start+'-'+String((start+1)%100).padStart(2,'0');
+}
+function yearRange(yr){
+  const s = parseInt(yr.slice(0,4),10);
+  return {from:s+'-04-06', to:(s+1)+'-04-05'};
+}
+function inYear(dateISO, yr){ const r = yearRange(yr); return dateISO>=r.from && dateISO<=r.to; }
+function yearOptions(){
+  const set = new Set([currentTaxYear(), S.year]);
+  const cy = parseInt(currentTaxYear().slice(0,4),10);
+  set.add((cy-1)+'-'+String(cy%100).padStart(2,'0'));
+  set.add((cy+1)+'-'+String((cy+2)%100).padStart(2,'0'));
+  S.entries.forEach(e=>{
+    const d = new Date(e.date+'T12:00:00'); if(isNaN(d)) return;
+    let y = d.getFullYear();
+    const after = (d.getMonth()>3)||(d.getMonth()===3&&d.getDate()>=6);
+    if(!after) y-=1;
+    set.add(y+'-'+String((y+1)%100).padStart(2,'0'));
+  });
+  return Array.from(set).sort();
+}
+function effExact(e){
+  if(e.kind!=='expense') return e.amount;
+  const p = (e.pct==null?100:e.pct);
+  return e.amount*p/100;
+}
+function entriesFor(yr,bizId,kind){
+  return S.entries.filter(e=> inYear(e.date,yr) && (bizId==null||e.bizId===bizId) && (kind==null||e.kind===kind));
+}
+function bizById(id){ return S.businesses.find(b=>b.id===id); }
+const AVATAR_COLORS = ['#0AA968','#3478F6','#9B59B6','#F47738','#0D8C86','#E5484D'];
+function bizColor(b){ const i = S.businesses.indexOf(b); return AVATAR_COLORS[(i<0?0:i)%AVATAR_COLORS.length]; }
+
+/* ═══════════ tax engine (tested) ═══════════ */
+function bizFigures(b,yr){
+  const inc = entriesFor(yr,b.id,'income').reduce((s,e)=>s+e.amount,0);
+  const exp = entriesFor(yr,b.id,'expense').reduce((s,e)=>s+effExact(e),0);
+  return {income:inc, expenses:exp, profit:inc-exp};
+}
+function calcTax(yr){
+  const cfg = cfgFor(yr);
+  const d = S.yearData[yr] || {poaPaid:0,priorAdj:0,taMode:'auto'};
+  let soleIncome=0, soleExpenses=0, partShareProfit=0;
+  const perBiz = S.businesses.map(b=>{
+    const f = bizFigures(b,yr);
+    if(b.structure==='partnership') partShareProfit += f.profit*(b.share||50)/100;
+    else { soleIncome+=f.income; soleExpenses+=f.expenses; }
+    return Object.assign({biz:b},f);
+  });
+  const profitActual = soleIncome - soleExpenses;
+  const profitAllowance = Math.max(0, soleIncome - Math.min(cfg.tradingAllowance, soleIncome));
+  const allowanceAvailable = soleIncome>0;
+  const allowanceBetter = allowanceAvailable && (profitAllowance < profitActual);
+  let taMode = d.taMode||'auto', taUsed;
+  if(taMode==='allowance') taUsed=true;
+  else if(taMode==='expenses') taUsed=false;
+  else taUsed = allowanceBetter;
+  if(!allowanceAvailable) taUsed=false;
+  const soleProfit = taUsed ? profitAllowance : profitActual;
+  const myProfit = soleProfit + partShareProfit;
+  const profitForNIC = Math.max(0,myProfit);
+  let pa = cfg.pa;
+  if(myProfit>cfg.paTaperFrom) pa = Math.max(0, cfg.pa - Math.floor((myProfit-cfg.paTaperFrom)/2));
+  const taxable = Math.max(0, myProfit-pa);
+  const higherLimit = Math.max(cfg.basicBand, cfg.addlFrom-pa);
+  const basicAmt = Math.min(taxable,cfg.basicBand);
+  const higherAmt = Math.min(Math.max(taxable-cfg.basicBand,0), higherLimit-cfg.basicBand);
+  const addlAmt = Math.max(taxable-higherLimit,0);
+  const incomeTax = basicAmt*cfg.basic + higherAmt*cfg.higher + addlAmt*cfg.addl;
+  const c4 = Math.min(Math.max(profitForNIC-cfg.c4Low,0), cfg.c4High-cfg.c4Low)*cfg.c4Main
+           + Math.max(profitForNIC-cfg.c4High,0)*cfg.c4Upper;
+  const class2TreatedPaid = profitForNIC >= cfg.c2SmallProfits;
+  const class2Voluntary = Math.round(cfg.c2Weekly*52*100)/100;
+  const liability = incomeTax + c4;
+  const priorAdj = Number(d.priorAdj)||0;
+  const poaPaid = Number(d.poaPaid)||0;
+  const balancing = liability + priorAdj - poaPaid;
+  const poaRequired = liability > cfg.poaThreshold;
+  const poaEach = poaRequired ? liability/2 : 0;
+  const janTotal = balancing + poaEach;
+  return {cfg,perBiz,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
+          taUsed,taMode,soleProfit,partShareProfit,myProfit,pa,taxable,basicAmt,higherAmt,addlAmt,
+          incomeTax,class4:c4,class2TreatedPaid,class2Voluntary,liability,priorAdj,poaPaid,balancing,
+          poaRequired,poaEach,janTotal};
+}
+
+/* ═══════════ navigation ═══════════ */
+const NAV_ICONS = {
+  home:'<svg viewBox="0 0 24 24"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>',
+  income:'<svg viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5 12l7-7 7 7"/></svg>',
+  expenses:'<svg viewBox="0 0 24 24"><path d="M12 5v14"/><path d="M19 12l-7 7-7-7"/></svg>',
+  tax:'<svg viewBox="0 0 24 24"><path d="M9 14l6-6"/><circle cx="9.5" cy="8.5" r="1.4"/><circle cx="14.5" cy="13.5" r="1.4"/><rect x="4" y="3" width="16" height="18" rx="4"/></svg>',
+  more:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>'
+};
+function renderNav(){
+  document.getElementById('nav').innerHTML = ['home','income','expenses','tax','more'].map(n=>
+    `<button class="${S.tab===n?'on':''}" onclick="go('${n}')">${NAV_ICONS[n]}<span>${t('nav.'+n)}</span></button>`).join('');
+}
+function go(tab){ S.tab=tab; save(); render(); window.scrollTo(0,0); }
+function setYear(y){ S.year=y; save(); render(); }
+function renderYearSel(){
+  document.getElementById('yearSel').innerHTML =
+    yearOptions().map(y=>`<option value="${y}" ${y===S.year?'selected':''}>${y}</option>`).join('');
+}
+
+function render(){
+  applyStaticI18n(); renderYearSel(); renderNav();
+  const page = document.getElementById('page');
+  if(!S.businesses.length && S.tab!=='more'){ page.innerHTML = welcome(); return; }
+  if(S.tab==='home') page.innerHTML = pageHome();
+  else if(S.tab==='income') page.innerHTML = pageList('income');
+  else if(S.tab==='expenses') page.innerHTML = pageList('expense');
+  else if(S.tab==='tax') page.innerHTML = pageTax();
+  else page.innerHTML = pageMore();
+}
+
+/* ═══════════ welcome ═══════════ */
+function welcome(){
+  const steps = t('w.steps').split('\n').map(s=>`<div style="margin-bottom:8px;font-size:14.5px">${esc(s)}</div>`).join('');
+  return `
+  <div class="hero">
+    <div class="hi" style="font-size:22px;font-weight:800">${t('w.title')}</div>
+    <div style="margin-top:8px;font-size:14.5px;opacity:.95;line-height:1.55">${t('w.sub')}</div>
+  </div>
+  <div class="notice green">${t('w.priv')}</div>
+  <div class="card">${steps}
+    <button class="btn" style="margin-top:14px" onclick="openBiz()">${t('w.start')}</button>
+  </div>`;
+}
+
+/* ═══════════ HOME (dashboard only) ═══════════ */
+function pageHome(){
+  const tx = calcTax(S.year);
+  const totalIn = entriesFor(S.year,null,'income').reduce((s,e)=>s+e.amount,0);
+  const totalOut = entriesFor(S.year,null,'expense').reduce((s,e)=>s+effExact(e),0);
+  const owe = Math.max(0,tx.liability);
+
+  const bizCards = tx.perBiz.map(p=>{
+    const col = bizColor(p.biz);
+    return `<div class="row">
+      <div class="avatar" style="background:${col}">${esc((p.biz.name||'?').trim().charAt(0).toUpperCase())}</div>
+      <div class="grow">
+        <div class="t">${esc(p.biz.name)}</div>
+        <div class="s">${p.biz.structure==='partnership' ? t('tag.part')+' · '+t('tag.your',{n:p.biz.share||50}) : t('tag.sole')}</div>
+      </div>
+      <div style="text-align:end">
+        <div class="v num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</div>
+        <button class="link" onclick="openBiz('${p.biz.id}')">${t('c.edit')}</button>
+      </div>
+    </div>`;
+  }).join('');
+
+  const recent = S.entries.filter(e=>inYear(e.date,S.year)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
+  const recentHTML = recent.length ? `
+    <div class="h2">${t('home.recent')}</div>
+    <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
+
+  return `
+  <div class="hero">
+    <div class="hi">${t('home.hi')}</div>
+    <div class="label">${t('home.profit',{y:S.year})}</div>
+    <div class="big num">${fmt(tx.myProfit)}</div>
+    <div class="pills">
+      <button class="pill" onclick="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
+      <button class="pill" onclick="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
+    </div>
+  </div>
+
+  <div class="card" style="cursor:pointer" onclick="go('tax')">
+    <div class="row">
+      <div class="ico" style="background:var(--brand-soft)">🐷</div>
+      <div class="grow">
+        <div class="t">${t('home.taxT')}</div>
+        <div class="s">${t('home.taxS')}</div>
+      </div>
+      <div class="v num">${fmt0(owe)}</div>
+      <div class="chev">›</div>
+    </div>
+  </div>
+
+  <div class="h2">${t('home.biz')}</div>
+  <div class="card">${bizCards}</div>
+  <button class="btn soft" onclick="openBiz()">+ ${t('home.addBiz')}</button>
+  ${recentHTML}
+  <p class="small">${t('w.priv')}</p>`;
+}
+
+/* ═══════════ INCOME / EXPENSES lists ═══════════ */
+function entryRow(e){
+  const c = catById(e.cat);
+  const b = bizById(e.bizId);
+  const pctNote = (e.kind==='expense'&&e.pct!=null&&e.pct<100) ? ` · ${e.pct}%` : '';
+  const d = new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
+  return `<button class="entry" onclick="openEntry('${e.kind}','${e.id}')">
+    <div class="edot" style="background:${c.dot}1A">${c.e}</div>
+    <div class="grow">
+      <div class="t">${esc(e.desc)||esc(catName(c.id))}</div>
+      <div class="s">${d} · ${esc(catName(c.id))}${b?' · '+esc(b.name):''}${pctNote}</div>
+    </div>
+    <div class="v num ${e.kind==='income'?'pos':'neg'}">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
+  </button>`;
+}
+
+function pageList(kind){
+  const isInc = kind==='income';
+  const fKey = isInc?'incFilter':'expFilter';
+  const filt = S[fKey];
+
+  const chips = S.businesses.length>1 ?
+    `<div class="chips">
+      <button class="chip ${filt==='all'?'on':''}" onclick="setFilter('${fKey}','all')">${t('flt.all')}</button>
+      ${S.businesses.map(b=>`<button class="chip ${filt===b.id?'on':''}" onclick="setFilter('${fKey}','${b.id}')">${esc(b.name)}</button>`).join('')}
+    </div>` : '';
+
+  const fchips = (!isInc && S.folders.length) ?
+    `<div class="chips">
+      <button class="chip ${S.expFolder==='all'?'on':''}" onclick="setFilter('expFolder','all')">${t('fd.all')}</button>
+      ${S.folders.map(f=>`<button class="chip ${S.expFolder===f.id?'on':''}" onclick="setFilter('expFolder','${f.id}')">📁 ${esc(f.name)}</button>`).join('')}
+    </div>` : '';
+
+  let list = entriesFor(S.year, filt==='all'?null:filt, kind).sort((a,b)=>b.date.localeCompare(a.date));
+  if(!isInc && S.expFolder!=='all') list = list.filter(e=>e.folderId===S.expFolder);
+  const total = list.reduce((s,e)=>s+(isInc?e.amount:effExact(e)),0);
+  let body='';
+  if(!list.length){
+    body = `<div class="empty"><div class="big-emoji">${isInc?'🌱':'🧾'}</div>
+      <div class="t">${t(isInc?'inc.empty':'exp.empty')}</div>
+      <div class="s">${t(isInc?'inc.emptyS':'exp.emptyS')}</div></div>`;
+  } else {
+    const groups={};
+    list.forEach(e=>{ const k=e.date.slice(0,7); (groups[k]=groups[k]||[]).push(e); });
+    body = Object.keys(groups).sort().reverse().map(k=>{
+      const lbl = new Date(k+'-15T12:00:00').toLocaleDateString(locale(),{month:'long',year:'numeric'});
+      const sub = groups[k].reduce((s,e)=>s+(isInc?e.amount:effExact(e)),0);
+      return `<div class="month"><span>${lbl}</span><span class="num ${isInc?'pos':'neg'}">${isInc?'+':'−'}${fmt(sub).replace('−','')}</span></div>
+        <div class="elist">${groups[k].map(entryRow).join('')}</div>`;
+    }).join('');
+  }
+
+  return `
+  <div class="h1" style="display:flex;align-items:baseline;justify-content:space-between">
+    <span>${t(isInc?'inc.title':'exp.title')}</span>
+    <span class="num ${isInc?'pos':'neg'}" style="font-size:18px">${isInc?'+':'−'}${fmt(total).replace('−','')}</span>
+  </div>
+  <button class="btn ${isInc?'':'ink'}" style="margin-bottom:14px" onclick="openEntry('${kind}')">+ ${t(isInc?'inc.add':'exp.add')}</button>
+  ${chips}
+  ${fchips}
+  ${body}`;
+}
+function setFilter(key,v){ S[key]=v; save(); render(); }
+
+/* ═══════════ TAX ═══════════ */
+function pageTax(){
+  const tx = calcTax(S.year);
+  const cfg = tx.cfg;
+
+  let taBlock='';
+  if(tx.allowanceAvailable){
+    const saving = Math.abs(tx.profitActual - tx.profitAllowance);
+    taBlock = `
+    <div class="card">
+      <div class="t" style="margin-bottom:6px">${t('tax.taT')}</div>
+      <div class="s" style="margin-bottom:12px">${t('tax.taHint')}</div>
+      <div class="frow"><span class="fl">${t('tax.taActual')}</span><span class="fv num">${fmt(tx.profitActual)}</span></div>
+      <div class="frow"><span class="fl">${t('tax.taAllow')}</span><span class="fv num">${fmt(tx.profitAllowance)}</span></div>
+      <div class="frow"><span class="fl" style="font-weight:800">${t('tax.taBest')}</span>
+        <span class="tagchip green">${tx.allowanceBetter ? t('tax.allowance') : t('tax.expensesOpt')}${saving>0.005?' · '+t('tax.taSave',{x:fmt0(saving)}):''}</span></div>
+      <div style="margin-top:14px">
+        <div class="seg">
+          <button type="button" class="${tx.taMode==='auto'?'on':''}" onclick="setTaMode('auto')">${t('tax.auto')}</button>
+          <button type="button" class="${tx.taMode==='allowance'?'on':''}" onclick="setTaMode('allowance')">${t('tax.allowance')}</button>
+          <button type="button" class="${tx.taMode==='expenses'?'on':''}" onclick="setTaMode('expenses')">${t('tax.expensesOpt')}</button>
+        </div>
+        <div class="s" style="margin-top:8px">${t('tax.using',{x: tx.taUsed?t('tax.usingAllow'):t('tax.usingExp')})} · ${t('tax.autoNote')}</div>
+      </div>
+    </div>`;
+  }
+
+  const class2Row = tx.class2TreatedPaid
+    ? `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Paid',{x:cfg.c2SmallProfits.toLocaleString()})}</small></span><span class="fv num">£0.00</span></div>`
+    : `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Vol',{x:cfg.c2SmallProfits.toLocaleString(),v:tx.class2Voluntary.toFixed(2)})}</small></span><span class="fv mut">${t('tax.opt')}</span></div>`;
+
+  return `
+  <div class="hero" style="background:linear-gradient(135deg,#1B2B3C,#16202B)">
+    <div class="label">${t('tax.bill',{y:S.year})}</div>
+    <div class="big num">${fmt(Math.max(tx.liability,0))}</div>
+    <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
+  </div>
+
+  ${taBlock}
+
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">${t('tax.how')}</div>
+    ${tx.perBiz.map(p=>`<div class="frow"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('tag.your',{n:p.biz.share||50})} = ${fmt(p.profit*(p.biz.share||50)/100)}</small>`:''}</span><span class="fv num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</span></div>`).join('')}
+    <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num">${fmt(tx.myProfit)}</span></div>
+  </div>
+
+  <div class="card">
+    <div class="frow"><span class="fl">${t('tax.pa')} <small>${tx.pa<cfg.pa?t('tax.paRed'):t('tax.paHint')}</small></span><span class="fv num">−${fmt(tx.pa).replace('−','')}</span></div>
+    <div class="frow"><span class="fl">${t('tax.taxable')}</span><span class="fv num">${fmt(tx.taxable)}</span></div>
+    ${tx.basicAmt>0?`<div class="frow"><span class="fl">${t('tax.basic')} · 20% ${t('tax.on')} ${fmt0(tx.basicAmt)}</span><span class="fv num">${fmt(tx.basicAmt*cfg.basic)}</span></div>`:''}
+    ${tx.higherAmt>0?`<div class="frow"><span class="fl">${t('tax.higher')} · 40% ${t('tax.on')} ${fmt0(tx.higherAmt)}</span><span class="fv num">${fmt(tx.higherAmt*cfg.higher)}</span></div>`:''}
+    ${tx.addlAmt>0?`<div class="frow"><span class="fl">${t('tax.addl')} · 45% ${t('tax.on')} ${fmt0(tx.addlAmt)}</span><span class="fv num">${fmt(tx.addlAmt*cfg.addl)}</span></div>`:''}
+    <div class="frow"><span class="fl">${t('tax.c4')} <small>${t('tax.c4Hint')}</small></span><span class="fv num">${fmt(tx.class4)}</span></div>
+    ${class2Row}
+    <div class="frow total"><span class="fl">${t('tax.total')}</span><span class="fv num">${fmt(tx.liability)}</span></div>
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+      <div class="t">${t('tax.payT')}</div>
+      <button class="link" onclick="openAdj()">${t('tax.editPos')}</button>
+    </div>
+    <div class="frow"><span class="fl">${t('tax.thisBill')}</span><span class="fv num">${fmt(tx.liability)}</span></div>
+    <div class="frow"><span class="fl">${t('tax.priorAdj')} <small>${t('tax.priorAdjS')}</small></span><span class="fv num ${tx.priorAdj>0?'neg':(tx.priorAdj<0?'pos':'')}">${fmt(tx.priorAdj)}</span></div>
+    <div class="frow"><span class="fl">${t('tax.poaPaid')}</span><span class="fv num pos">−${fmt(tx.poaPaid).replace('−','')}</span></div>
+    <div class="frow total"><span class="fl">${t('tax.balancing')}</span><span class="fv num ${tx.balancing>0?'neg':'pos'}">${fmt(tx.balancing)}</span></div>
+    ${tx.balancing<-0.005?`<div class="notice green" style="margin:12px 0 0">${t('tax.refund')}</div>`:''}
+  </div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">${t('tax.datesT')}</div>
+    ${tx.poaRequired?`
+      <div class="s" style="margin-bottom:10px">${t('tax.poaWhy')}</div>
+      <div class="frow"><span class="fl"><b>31 Jan</b> <small>${t('tax.janS')}</small></span><span class="fv num neg">${fmt(tx.janTotal)}</span></div>
+      <div class="frow"><span class="fl"><b>31 Jul</b> <small>${t('tax.julS')}</small></span><span class="fv num neg">${fmt(tx.poaEach)}</span></div>
+      <div class="s" style="margin-top:10px">${t('tax.poaReduce')}</div>
+    `:`
+      <div class="frow"><span class="fl"><b>31 Jan</b> <small>${t('tax.noPoa')}</small></span><span class="fv num ${tx.balancing>0?'neg':''}">${fmt(Math.max(tx.balancing,0))}</span></div>
+    `}
+  </div>
+
+  <details class="help"><summary>${t('tax.accT')}</summary><div class="hb">${t('tax.accB',{y:S.year})}</div></details>
+  <p class="small">${t('tax.disc')}</p>`;
+}
+function setTaMode(m){ yd().taMode=m; save(); render(); }
+
+/* ═══════════ MORE ═══════════ */
+function pageMore(){
+  return `
+  <div class="h1">${t('m.title')}</div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">${t('m.biz')}</div>
+    ${S.businesses.length? S.businesses.map(b=>`
+      <div class="row">
+        <div class="avatar" style="background:${bizColor(b)};width:36px;height:36px;font-size:15px">${esc((b.name||'?').trim().charAt(0).toUpperCase())}</div>
+        <div class="grow"><div class="t" style="font-size:14.5px">${esc(b.name)}</div>
+          <div class="s">${b.structure==='partnership'?t('tag.part')+' · '+t('tag.your',{n:b.share||50}):t('tag.sole')}</div></div>
+        <button class="link" onclick="openBiz('${b.id}')">${t('c.edit')}</button>
+      </div>`).join(''):''}
+    <button class="btn soft" style="margin-top:14px" onclick="openBiz()">+ ${t('home.addBiz')}</button>
+  </div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">${t('m.lang')}</div>
+    <div class="catgrid">
+      ${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:8px">☁️ ${t('ac.title')}</div>
+    ${cloudUser() ? `
+      <div class="row">
+        <div class="avatar" style="background:var(--brand)">${esc(((cloudUser().displayName||cloudUser().email||'?').trim().charAt(0)||'?').toUpperCase())}</div>
+        <div class="grow">
+          <div class="t" style="font-size:14.5px">${esc(cloudUser().displayName||t('ac.signedAs'))}</div>
+          <div class="s">${esc(cloudUser().email||'')}</div>
+          <div class="s pos" style="font-weight:700">${t('ac.cloudOn')} ✓</div>
+        </div>
+      </div>
+      <button class="link danger" style="margin-top:12px" onclick="confirmAction(t('ac.signout'), t('ac.signoutM'), doSignOut)">${t('ac.signout')}</button>
+    ` : `
+      <div class="s" style="margin-bottom:14px">${t('ac.why')}</div>
+      <button class="btn ghost" style="margin-bottom:10px" onclick="signIn('google')">
+        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
+        ${t('ac.google')}</button>
+      <button class="btn ink" onclick="signIn('apple')"> ${t('ac.apple')}</button>
+      <div class="s" style="margin-top:12px">${t('ac.local')}</div>
+    `}
+  </div>
+
+  <div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="t">✨ ${t('pro.title')}</div>
+      ${S.settings.pro?`<span class="tagchip green">${t('pro.on')}</span>`:''}
+    </div>
+    <div class="s" style="margin-bottom:12px">${t('pro.sub')}</div>
+    <div class="frow"><span class="fl">🤝 ${t('pro.f1')}</span><span class="fv">${S.settings.pro?'✓':''}</span></div>
+    <div class="frow"><span class="fl">📸 ${t('pro.f2')}</span><span class="tagchip grey">${t('pro.soon')}</span></div>
+    <div class="frow"><span class="fl">🤖 ${t('pro.f3')}</span><span class="tagchip grey">${t('pro.soon')}</span></div>
+    ${S.settings.pro?'':`<button class="btn ink" style="margin-top:14px" onclick="S.settings.pro=true;save();render()">${t('pro.preview')}</button>`}
+  </div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:6px">🤝 ${t('sy.title')}</div>
+    <div class="s" style="margin-bottom:12px">${t('sy.join')}</div>
+    <div style="display:flex;gap:8px">
+      <input type="text" id="join-code" maxlength="6" placeholder="ABC123" autocapitalize="characters"
+        style="flex:1;text-transform:uppercase;letter-spacing:3px;font-weight:800;text-align:center">
+      <button class="btn" style="width:auto;padding:0 22px" onclick="joinPartnership()">→</button>
+    </div>
+    <div class="s" id="join-msg" style="margin-top:8px"></div>
+  </div>
+
+  ${(S.customCats.expense.length||S.customCats.income.length)?`<div class="card">
+    <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>
+    ${S.customCats.expense.concat(S.customCats.income).map(c=>`
+      <div class="frow"><span class="fl">${c.e} ${esc(c.name)}</span>
+      <button class="link danger" onclick="confirmAction('${esc(c.name).replace(/'/g,"\\'")}', t('cc.deleteM'), ()=>deleteCustomCat('${c.id}'))">✕</button></div>`).join('')}
+  </div>`:''}
+
+  ${S.folders.length?`<div class="card">
+    <div class="t" style="margin-bottom:10px">📁 ${t('fd.manage')}</div>
+    ${S.folders.map(f=>`
+      <div class="frow"><span class="fl">📁 ${esc(f.name)}</span>
+      <button class="link danger" onclick="confirmAction('${esc(f.name).replace(/'/g,"\\'")}', t('fd.deleteM'), ()=>deleteFolder('${f.id}'))">✕</button></div>`).join('')}
+    <button class="btn soft" style="margin-top:14px" onclick="openFolderSheet()">+ ${t('fd.add')}</button>
+  </div>`:''}
+
+  <div class="card">
+    <div class="t" style="margin-bottom:6px">${t('m.backup')}</div>
+    <div class="s" style="margin-bottom:14px">${t('m.backupHint')}</div>
+    <button class="btn" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
+    <button class="btn ghost" style="margin-bottom:10px" onclick="exportCSV()">${t('m.csv')}</button>
+    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+    <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
+  </div>
+
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">${t('m.danger')}</div>
+    <button class="link danger" onclick="confirmAction(t('m.resetT'),t('m.resetM'),resetAll)">${t('m.reset')}</button>
+  </div>
+  <p class="small">${t('m.foot')}</p>`;
+}
+function setLang(l){ S.settings.lang=l; save(); render(); }
+
+/* ═══════════ entry sheet ═══════════ */
+let EN = {id:null, kind:'expense', cat:null, pct:100};
+function openEntry(kind, id){
+  const e = id ? S.entries.find(x=>x.id===id) : null;
+  EN = e ? {id:e.id, kind:e.kind, cat:e.cat, pct:(e.pct==null?100:e.pct), folderId:(e.folderId||null)}
+         : {id:null, kind:kind||'expense', cat:null, pct:100, folderId:(kind==='expense'&&S.expFolder!=='all')?S.expFolder:null};
+  const isInc = EN.kind==='income';
+  document.getElementById('en-title').textContent = e ? t(isInc?'f.editIncome':'f.editExpense') : t(isInc?'f.addIncome':'f.addExpense');
+  document.getElementById('en-amount').value = e?e.amount:'';
+  document.getElementById('en-amount').classList.remove('err');
+  document.getElementById('en-amount-err').classList.remove('show');
+  document.getElementById('en-date').value = e?e.date:todayISO();
+  document.getElementById('en-desc').value = e?(e.desc||''):'';
+  document.getElementById('en-delete').style.display = e?'inline':'none';
+  const sel = document.getElementById('en-biz');
+  sel.innerHTML = S.businesses.map(b=>`<option value="${b.id}">${esc(b.name)}</option>`).join('');
+  if(e) sel.value = e.bizId;
+  else { const f = isInc?S.incFilter:S.expFilter; if(f!=='all'&&bizById(f)) sel.value=f; }
+  document.getElementById('en-biz-group').style.display = S.businesses.length>1?'block':'none';
+  paintEntry(); openSheet('entry');
+}
+function paintEntry(){
+  const cats = allCats(EN.kind);
+  if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
+  document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
+  document.getElementById('en-cats').innerHTML = cats.map(c=>
+    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(c.id))}</button>`).join('')
+    + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
+  document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
+    `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
+  const fg = document.getElementById('en-folder-group');
+  fg.style.display = EN.kind==='expense' ? 'block' : 'none';
+  const fsel = document.getElementById('en-folder');
+  fsel.innerHTML = `<option value="">${t('fd.none')}</option>` +
+    S.folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
+  fsel.value = EN.folderId || '';
+}
+function openCatSheet(){
+  document.getElementById('cc-name').value='';
+  document.getElementById('cc-emoji').value='';
+  document.getElementById('cc-name').classList.remove('err');
+  document.getElementById('cc-name-err').classList.remove('show');
+  openSheet('cat');
+}
+function saveCat(){
+  const name = document.getElementById('cc-name').value.trim();
+  if(!name){
+    document.getElementById('cc-name').classList.add('err');
+    document.getElementById('cc-name-err').classList.add('show');
+    return;
+  }
+  const emoji = document.getElementById('cc-emoji').value.trim() || '🏷️';
+  const c = {id:'c_'+uid(), name, e:emoji, dot:AVATAR_COLORS[(S.customCats[EN.kind].length+2)%AVATAR_COLORS.length], custom:true};
+  S.customCats[EN.kind].push(c);
+  EN.cat = c.id;
+  save(); closeSheet('cat'); paintEntry();
+}
+function deleteCustomCat(id){
+  S.customCats.expense = S.customCats.expense.filter(c=>c.id!==id);
+  S.customCats.income = S.customCats.income.filter(c=>c.id!==id);
+  save(); render();
+}
+function openFolderSheet(){
+  document.getElementById('fd-name').value='';
+  document.getElementById('fd-name').classList.remove('err');
+  document.getElementById('fd-name-err').classList.remove('show');
+  openSheet('folder');
+}
+function saveFolder(){
+  const name = document.getElementById('fd-name').value.trim();
+  if(!name){
+    document.getElementById('fd-name').classList.add('err');
+    document.getElementById('fd-name-err').classList.add('show');
+    return;
+  }
+  const f = {id:'f_'+uid(), name};
+  S.folders.push(f); save(); closeSheet('folder');
+  if(document.getElementById('sb-entry').classList.contains('open')){ EN.folderId=f.id; paintEntry(); }
+  else render();
+}
+function deleteFolder(id){
+  S.folders = S.folders.filter(f=>f.id!==id);
+  S.entries.forEach(e=>{ if(e.folderId===id) e.folderId=null; });
+  if(S.expFolder===id) S.expFolder='all';
+  save(); render();
+}
+function setCat(c){ EN.cat=c; paintEntry(); }
+function setPct(p){ EN.pct=p; paintEntry(); }
+function saveEntry(){
+  const amt = parseFloat(document.getElementById('en-amount').value);
+  if(!(amt>0)){
+    document.getElementById('en-amount').classList.add('err');
+    document.getElementById('en-amount-err').classList.add('show');
+    return;
+  }
+  const rec = {
+    id:EN.id||uid(),
+    bizId:document.getElementById('en-biz').value||(S.businesses[0]&&S.businesses[0].id),
+    kind:EN.kind,
+    date:document.getElementById('en-date').value||todayISO(),
+    amount:Math.round(amt*100)/100,
+    cat:EN.cat,
+    pct:EN.kind==='expense'?EN.pct:null,
+    folderId:EN.kind==='expense'?(document.getElementById('en-folder').value||null):null,
+    desc:document.getElementById('en-desc').value.trim()
+  };
+  if(EN.id){ const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec; }
+  else S.entries.push(rec);
+  save(); pushEntryRemote(rec); closeSheet('entry'); render();
+}
+function deleteEntry(){
+  confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
+    const e = S.entries.find(x=>x.id===EN.id);
+    S.entries = S.entries.filter(x=>x.id!==EN.id);
+    if(e) deleteEntryRemote(e.bizId, e.id);
+    save(); closeSheet('entry'); render();
+  });
+}
+
+/* ═══════════ business sheet ═══════════ */
+let BZ = {id:null, structure:'sole'};
+function openBiz(id){
+  const b = id?bizById(id):null;
+  BZ = b ? {id:b.id, structure:b.structure||'sole'} : {id:null, structure:'sole'};
+  document.getElementById('bz-title').textContent = b?t('b.edit'):t('b.add');
+  document.getElementById('bz-name').value = b?b.name:'';
+  document.getElementById('bz-name').classList.remove('err');
+  document.getElementById('bz-name-err').classList.remove('show');
+  document.getElementById('bz-share').value = b?(b.share||50):50;
+  document.getElementById('bz-delete').style.display = b?'inline':'none';
+  paintStruct(); paintSync(); openSheet('biz');
+}
+function setStruct(s){ BZ.structure=s; paintStruct(); }
+function paintStruct(){
+  document.getElementById('bz-s-sole').classList.toggle('on', BZ.structure==='sole');
+  document.getElementById('bz-s-part').classList.toggle('on', BZ.structure==='partnership');
+  document.getElementById('bz-share-group').style.display = BZ.structure==='partnership'?'block':'none';
+  document.getElementById('bz-struct-hint').textContent = BZ.structure==='partnership'?t('b.partHint'):t('b.soleHint');
+  paintSync();
+}
+function paintSync(){
+  const el = document.getElementById('bz-sync');
+  if(!el) return;
+  el.innerHTML = '';
+  if(BZ.structure!=='partnership') return;
+  if(!BZ.id){ el.innerHTML = `<div class="s" style="margin-bottom:10px">💡 ${t('sy.saveFirst')}</div>`; return; }
+  const b = bizById(BZ.id); if(!b) return;
+  if(!S.settings.pro){ el.innerHTML = `<div class="notice amber">🔒 ${t('sy.needPro')}</div>`; return; }
+  if(!fbConfigured()){ el.innerHTML = `<div class="notice amber">⚙️ ${t('sy.setup')}</div>`; return; }
+  if(b.syncCode){
+    el.innerHTML = `
+      <div class="notice green" style="text-align:center">
+        <div style="font-size:12px;font-weight:700">${t('sy.code')} · ${t('sy.synced')} ✓</div>
+        <div class="num" style="font-size:32px;font-weight:800;letter-spacing:7px;margin:6px 0 10px">${b.syncCode}</div>
+        <button class="btn" onclick="invitePartner('${b.id}')">💌 ${t('sy.invite')}</button>
+        <div style="margin-top:10px"><button class="link danger" onclick="leaveSync('${b.id}')">${t('sy.leave')}</button></div>
+      </div>`;
+  } else {
+    el.innerHTML = `<button class="btn ink" style="margin-bottom:12px" onclick="enableSync('${BZ.id}')">🤝 ${t('sy.enable')}</button>`;
+  }
+}
+function saveBiz(){
+  const name = document.getElementById('bz-name').value.trim();
+  if(!name){
+    document.getElementById('bz-name').classList.add('err');
+    document.getElementById('bz-name-err').classList.add('show');
+    return;
+  }
+  let share = parseInt(document.getElementById('bz-share').value,10);
+  if(!(share>=1&&share<=100)) share=50;
+  let newId = null;
+  if(BZ.id){
+    const b = bizById(BZ.id);
+    b.name=name; b.structure=BZ.structure; b.share=BZ.structure==='partnership'?share:100;
+    pushBizRemote(b);
+  } else {
+    newId = uid();
+    S.businesses.push({id:newId,name,structure:BZ.structure,share:BZ.structure==='partnership'?share:100});
+  }
+  save(); closeSheet('biz'); render();
+  if(newId && BZ.structure==='partnership'){ setTimeout(()=>openBiz(newId), 260); }
+}
+function deleteBiz(){
+  confirmAction(t('d.bizT'), t('d.bizM'), ()=>{
+    S.entries = S.entries.filter(e=>e.bizId!==BZ.id);
+    S.businesses = S.businesses.filter(b=>b.id!==BZ.id);
+    if(S.incFilter===BZ.id) S.incFilter='all';
+    if(S.expFilter===BZ.id) S.expFilter='all';
+    save(); closeSheet('biz'); render();
+  });
+}
+
+/* ═══════════ HMRC position sheet ═══════════ */
+function openAdj(){
+  const d = yd();
+  document.getElementById('adj-poa').value = d.poaPaid||'';
+  document.getElementById('adj-prior').value = d.priorAdj||'';
+  openSheet('adj');
+}
+function saveAdj(){
+  const d = yd();
+  d.poaPaid = Math.max(0, parseFloat(document.getElementById('adj-poa').value)||0);
+  d.priorAdj = parseFloat(document.getElementById('adj-prior').value)||0;
+  save(); closeSheet('adj'); render();
+}
+
+/* ═══════════ confirm / sheets ═══════════ */
+function confirmAction(title,msg,fn){
+  document.getElementById('cf-title').textContent = title;
+  document.getElementById('cf-msg').textContent = msg;
+  document.getElementById('cf-yes').onclick = ()=>{ closeSheet('confirm'); fn(); };
+  openSheet('confirm');
+}
+function resetAll(){
+  localStorage.removeItem(STORE_KEY);
+  S = JSON.parse(JSON.stringify(DEFAULT_STATE));
+  render();
+}
+function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); }
+function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); }
+document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+
+/* ═══════════ export / import ═══════════ */
+function exportJSON(){
+  const blob = new Blob([JSON.stringify(S,null,2)],{type:'application/json'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'taxmate-backup-'+todayISO()+'.json';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function exportCSV(){
+  const head = 'Date,Business,Type,Category,Description,Amount,Business use %,Claimable amount\n';
+  const q = s=>'"'+String(s||'').replace(/"/g,'""')+'"';
+  const rows = S.entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{
+    const b = bizById(e.bizId);
+    return [e.date,q(b?b.name:''),e.kind,q(catName(e.cat)),q(e.desc),e.amount.toFixed(2),
+            e.kind==='expense'?(e.pct==null?100:e.pct):'',
+            (e.kind==='expense'?effExact(e):e.amount).toFixed(2)].join(',');
+  }).join('\n');
+  const blob = new Blob(['\ufeff'+head+rows],{type:'text/csv'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = 'taxmate-entries-'+todayISO()+'.csv';
+  a.click(); URL.revokeObjectURL(a.href);
+}
+function importJSON(ev){
+  const f = ev.target.files[0]; if(!f) return;
+  const r = new FileReader();
+  r.onload = e=>{
+    try{
+      const data = JSON.parse(e.target.result);
+      if(!data || !Array.isArray(data.businesses)){ alert(t('r.bad')); return; }
+      confirmAction(t('r.title'), t('r.msg'), ()=>{
+        S = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), data);
+        S.settings = Object.assign({lang:'en'}, data.settings||{});
+        save(); render();
+      });
+    }catch(err){ alert(t('r.bad')); }
+  };
+  r.readAsText(f);
+  ev.target.value='';
+}
+
+/* ═══════════ Firebase partner sync ═══════════ */
+// 一次性設定:喺 Firebase Console 開個 project,啟用 Anonymous Auth + Firestore,
+// 然後將 Web app config 貼喺下面 (Project settings → Your apps → Web)。
+// 留空 = sync 功能自動隱藏,app 其餘 100% 照常運作。
+const FIREBASE_CONFIG = {
+  apiKey: "AIzaSyCX3--xiJs3JRdD9gNND9wf-I3MERHeA90",
+  authDomain: "taxmate-uk-2.firebaseapp.com",
+  projectId: "taxmate-uk-2",
+  storageBucket: "taxmate-uk-2.firebasestorage.app",
+  messagingSenderId: "995936701479",
+  appId: "1:995936701479:web:ed61c51a65e61aa1d21202"
+};
+
+let FB = { db:null, uid:null, ready:false, subs:{} };
+function fbConfigured(){ return (typeof firebase!=='undefined') && !!FIREBASE_CONFIG.apiKey; }
+async function ensureFB(){
+  if(!fbConfigured()) return null;
+  if(FB.ready) return FB.db;
+  try{
+    if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    FB.db = firebase.firestore();
+    try{ await FB.db.enablePersistence({synchronizeTabs:true}); }catch(e){}
+    FB.ready = true;
+    watchAuth();
+    return FB.db;
+  }catch(e){ console.warn('Sync init failed', e); return null; }
+}
+async function ensureAuth(){
+  const db = await ensureFB(); if(!db) return null;
+  const cur = firebase.auth().currentUser;
+  if(cur) return cur;
+  try{ const cred = await firebase.auth().signInAnonymously(); FB.uid = cred.user.uid; return cred.user; }
+  catch(e){ console.warn(e); return null; }
+}
+function genCode(){
+  const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let c = '';
+  for(let i=0;i<6;i++) c += A[Math.floor(Math.random()*A.length)];
+  return c;
+}
+async function enableSync(bizId){
+  const b = bizById(bizId); if(!b) return;
+  const db = await ensureFB();
+  if(!db){ alert(t(fbConfigured()?'sy.needNet':'sy.setup')); return; }
+  const u = await ensureAuth();
+  if(!u){ alert(t('sy.needNet')); return; }
+  const code = genCode();
+  try{
+    await db.collection('partnerships').doc(code).set({
+      bizId: b.id, name: b.name, structure: 'partnership',
+      createdBy: u.uid, createdAt: Date.now(), v: 1
+    });
+    const batch = db.batch();
+    S.entries.filter(e=>e.bizId===b.id).forEach(e=>{
+      batch.set(db.collection('partnerships').doc(code).collection('entries').doc(e.id), e);
+    });
+    await batch.commit();
+    b.syncCode = code; save();
+    subscribeSync(code, b.id);
+    paintSync(); render();
+  }catch(e){ console.warn(e); alert(t('sy.needNet')); }
+}
+function subscribeSync(code, bizId){
+  if(FB.subs[code]) return;
+  FB.subs[code] = true; // 鎖住避免重複訂閱
+  ensureAuth().then(u=>{
+    const db = FB.db;
+    if(!u || !db){ delete FB.subs[code]; return; }
+    const unsubs = [];
+    unsubs.push(db.collection('partnerships').doc(code).onSnapshot(doc=>{
+      const d = doc.data(); if(!d) return;
+      const b = bizById(bizId);
+      if(b && d.name && b.name !== d.name){ b.name = d.name; save(); render(); }
+    }, ()=>{}));
+    unsubs.push(db.collection('partnerships').doc(code).collection('entries').onSnapshot(snap=>{
+      const remote = [];
+      snap.forEach(x=>remote.push(x.data()));
+      S.entries = S.entries.filter(e=>e.bizId!==bizId).concat(remote);
+      save(); render();
+    }, ()=>{}));
+    FB.subs[code] = unsubs;
+  });
+}
+async function joinPartnership(){
+  const input = document.getElementById('join-code');
+  const msg = document.getElementById('join-msg');
+  const code = (input && input.value || '').trim().toUpperCase();
+  if(code.length !== 6){ if(msg) msg.textContent = t('sy.enterCode'); return; }
+  if(!S.settings.pro){ if(msg) msg.textContent = t('sy.needPro'); return; }
+  const db = await ensureFB();
+  if(!db){ if(msg) msg.textContent = t(fbConfigured()?'sy.needNet':'sy.setup'); return; }
+  const u = await ensureAuth();
+  if(!u){ if(msg) msg.textContent = t('sy.needNet'); return; }
+  try{
+    const doc = await db.collection('partnerships').doc(code).get();
+    if(!doc.exists){ if(msg) msg.textContent = t('sy.badCode'); return; }
+    const d = doc.data();
+    const existing = bizById(d.bizId);
+    if(!existing) S.businesses.push({id:d.bizId, name:d.name, structure:'partnership', share:50, syncCode:code});
+    else existing.syncCode = code;
+    save();
+    subscribeSync(code, d.bizId);
+    go('home');
+  }catch(e){ console.warn(e); if(msg) msg.textContent = t('sy.needNet'); }
+}
+function leaveSync(bizId){
+  const b = bizById(bizId); if(!b || !b.syncCode) return;
+  const subs = FB.subs[b.syncCode];
+  if(Array.isArray(subs)) subs.forEach(u=>{ try{u();}catch(e){} });
+  delete FB.subs[b.syncCode];
+  delete b.syncCode;
+  save(); paintSync(); render();
+}
+function invitePartner(bizId){
+  const b = bizById(bizId); if(!b || !b.syncCode) return;
+  const text = t('sy.inviteMsg',{n:b.name, c:b.syncCode}) + '\n' + location.href.split('#')[0];
+  if(navigator.share){ navigator.share({text}).catch(()=>{}); }
+  else if(navigator.clipboard && navigator.clipboard.writeText){ navigator.clipboard.writeText(text).then(()=>alert(t('sy.copied'))).catch(()=>prompt('', text)); }
+  else prompt('', text);
+}
+function pushEntryRemote(rec){
+  const b = bizById(rec.bizId);
+  if(!b || !b.syncCode || !FB.ready) return;
+  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(rec.id).set(rec).catch(()=>{});
+}
+function deleteEntryRemote(bizId, id){
+  const b = bizById(bizId);
+  if(!b || !b.syncCode || !FB.ready) return;
+  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(id).delete().catch(()=>{});
+}
+function pushBizRemote(b){
+  if(!b || !b.syncCode || !FB.ready) return;
+  FB.db.collection('partnerships').doc(b.syncCode).set({name:b.name},{merge:true}).catch(()=>{});
+}
+
+/* ═══════════ Account & personal cloud sync ═══════════ */
+let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, lastPushed:'' };
+function cloudUser(){
+  try{
+    if(typeof firebase==='undefined' || !firebase.apps || !firebase.apps.length) return null;
+    const u = firebase.auth().currentUser;
+    return (u && !u.isAnonymous) ? u : null;
+  }catch(e){ return null; }
+}
+function watchAuth(){
+  if(watchAuth.done) return; watchAuth.done = true;
+  firebase.auth().onAuthStateChanged(u=>{
+    if(u && !u.isAnonymous) startUserSync(u);
+    else stopUserSync();
+    render();
+  });
+}
+async function signIn(kind){
+  const db = await ensureFB();
+  if(!db){ alert(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
+  const provider = (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
+                                    : new firebase.auth.GoogleAuthProvider();
+  try{
+    const cur = firebase.auth().currentUser;
+    if(cur && cur.isAnonymous){
+      // 升級匿名帳戶 → 保留 uid,partnership membership 唔會斷
+      try{ await cur.linkWithPopup(provider); }
+      catch(e){
+        if(e && e.code==='auth/credential-already-in-use' && e.credential){
+          await firebase.auth().signInWithCredential(e.credential);
+        } else throw e;
+      }
+    } else {
+      await firebase.auth().signInWithPopup(provider);
+    }
+  }catch(e){
+    if(e && e.code==='auth/popup-closed-by-user') return;
+    console.warn(e); alert(t('ac.err'));
+  }
+}
+function doSignOut(){
+  stopUserSync();
+  try{ firebase.auth().signOut(); }catch(e){}
+  render();
+}
+function userRoot(uid){ return FB.db.collection('users').doc(uid); }
+
+async function startUserSync(u){
+  if(CLOUD.metaUnsub) return;
+  const uid = u.uid;
+  try{
+    /* 1 ── 初次合併:雲端有嘅補入本地(以 id 去重) */
+    const metaDoc = await userRoot(uid).collection('app').doc('meta').get();
+    const entSnap = await userRoot(uid).collection('entries').get();
+    if(metaDoc.exists){
+      const m = metaDoc.data();
+      (m.businesses||[]).forEach(rb=>{ if(!bizById(rb.id)) S.businesses.push(rb); });
+      (m.folders||[]).forEach(rf=>{ if(!folderById(rf.id)) S.folders.push(rf); });
+      ['income','expense'].forEach(k=>{
+        ((m.customCats&&m.customCats[k])||[]).forEach(rc=>{
+          if(!S.customCats[k].find(c=>c.id===rc.id)) S.customCats[k].push(rc);
+        });
+      });
+      Object.keys(m.yearData||{}).forEach(y=>{ S.yearData[y] = Object.assign({}, S.yearData[y]||{}, m.yearData[y]); });
+      if(m.settings && m.settings.pro) S.settings.pro = true;
+    }
+    const localIds = new Set(S.entries.map(e=>e.id));
+    entSnap.forEach(d=>{ const re=d.data(); if(re && !localIds.has(re.id)) S.entries.push(re); });
+    try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+
+    /* 2 ── 推合併結果上雲 */
+    await pushUserState(uid, true);
+
+    /* 3 ── 實時訂閱(其他裝置改嘢即時反映) */
+    CLOUD.metaUnsub = userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
+      const m = doc.data(); if(!m || CLOUD.applying) return;
+      CLOUD.applying = true;
+      if(Array.isArray(m.businesses)) S.businesses = m.businesses;
+      if(Array.isArray(m.folders)) S.folders = m.folders;
+      if(m.customCats) S.customCats = Object.assign({income:[],expense:[]}, m.customCats);
+      if(m.yearData) S.yearData = m.yearData;
+      if(m.settings && typeof m.settings.pro==='boolean') S.settings.pro = m.settings.pro;
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      CLOUD.applying = false;
+      render();
+      S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+    }, ()=>{});
+    CLOUD.entUnsub = userRoot(uid).collection('entries').onSnapshot(snap=>{
+      if(CLOUD.applying) return;
+      CLOUD.applying = true;
+      const remote = []; snap.forEach(d=>remote.push(d.data()));
+      const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
+      const partnerEntries = S.entries.filter(e=>partnerBiz.has(e.bizId));
+      S.entries = remote.filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
+      try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      CLOUD.applying = false;
+      render();
+    }, ()=>{});
+
+    S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+    render();
+  }catch(e){ console.warn('user sync failed', e); }
+}
+function stopUserSync(){
+  if(CLOUD.metaUnsub){ try{CLOUD.metaUnsub();}catch(e){} CLOUD.metaUnsub=null; }
+  if(CLOUD.entUnsub){ try{CLOUD.entUnsub();}catch(e){} CLOUD.entUnsub=null; }
+  CLOUD.lastPushed='';
+}
+async function pushUserState(uid, force){
+  if(!FB.ready) return;
+  if(!uid){ const cu = cloudUser(); if(!cu) return; uid = cu.uid; }
+  const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
+  const meta = { businesses:S.businesses, folders:S.folders, customCats:S.customCats,
+                 yearData:S.yearData, settings:{pro:!!S.settings.pro}, updatedAt:Date.now() };
+  const mine = S.entries.filter(e=>!partnerBiz.has(e.bizId));
+  const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
+  if(!force && payload === CLOUD.lastPushed) return;
+  CLOUD.lastPushed = payload;
+  try{
+    await userRoot(uid).collection('app').doc('meta').set(meta);
+    const entSnap = await userRoot(uid).collection('entries').get();
+    const remoteIds = new Set(); entSnap.forEach(d=>remoteIds.add(d.id));
+    const localIds = new Set(mine.map(e=>e.id));
+    const batch = FB.db.batch();
+    mine.forEach(e=>batch.set(userRoot(uid).collection('entries').doc(e.id), e));
+    remoteIds.forEach(id=>{ if(!localIds.has(id)) batch.delete(userRoot(uid).collection('entries').doc(id)); });
+    await batch.commit();
+  }catch(e){ console.warn('cloud push failed', e); }
+}
+function scheduleCloudPush(){
+  if(!cloudUser() || CLOUD.applying) return;
+  clearTimeout(CLOUD.pushTimer);
+  CLOUD.pushTimer = setTimeout(()=>pushUserState(), 1200);
+}
+
+/* ═══════════ Cloud tax rates (免重新上架嘅年度更新) ═══════════ */
+const RATES_CACHE_KEY = 'taxmateuk_rates_v1';
+function applyCachedRates(){
+  try{
+    const c = localStorage.getItem(RATES_CACHE_KEY);
+    if(c) Object.assign(TAXCFG, JSON.parse(c));
+  }catch(e){}
+}
+async function loadCloudRates(){
+  const db = await ensureFB(); if(!db) return;
+  try{
+    const doc = await db.collection('appConfig').doc('taxRates').get();
+    if(doc.exists){
+      const years = (doc.data()||{}).years || {};
+      if(Object.keys(years).length){
+        Object.assign(TAXCFG, years);
+        try{ localStorage.setItem(RATES_CACHE_KEY, JSON.stringify(years)); }catch(e){}
+        render();
+      }
+    }
+  }catch(e){ console.warn('rates fetch failed', e); }
+}
+
+/* ═══════════ boot ═══════════ */
+applyCachedRates();
+render();
+if(fbConfigured()){
+  ensureFB().then(db=>{ if(db) loadCloudRates(); });
+}
+// 重啟時自動重新訂閱所有已同步嘅合夥生意
+S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+</script>
+</body>
+</html>
