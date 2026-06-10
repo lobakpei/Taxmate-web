@@ -334,7 +334,7 @@ const LANG_NAMES = { en:'English', zh:'繁體中文', pl:'Polski', ro:'Română'
 
 const I18N = {
 en:{
- 'nav.home':'Home','nav.income':'Income','nav.expenses':'Expenses','nav.tax':'Tax','nav.more':'More',
+ 'nav.home':'Home','nav.income':'Income','nav.expenses':'Expenses','nav.tax':'Tax','nav.more':'Settings',
  'c.save':'Save','c.cancel':'Cancel','c.edit':'Edit','c.yes':'Yes, do it','c.active':'Active',
  'home.hi':'Hello 👋','home.profit':'Your profit · {y}','home.in':'Money in','home.out':'Money out',
  'home.taxT':'Set aside for tax','home.taxS':'Estimated tax on your profit so far','home.biz':'Your businesses','home.addBiz':'Add a business',
@@ -401,35 +401,35 @@ en:{
  'ac.title':'Account & cloud','ac.why':'Sign in and your figures follow you — new phone, same data. Free.','ac.google':'Continue with Google','ac.apple':'Continue with Apple','ac.signedAs':'Signed in as','ac.signout':'Sign out','ac.signoutM':'Your data stays on this phone and in your cloud. Sign in again anytime.','ac.local':'This device only — sign in to back up automatically.','ac.cloudOn':'Cloud backup on','ac.err':'Sign-in didn\'t work — try again.','ac.needNet':'Sign-in needs a connection.' 
 },
 zh:{
- 'nav.home':'主頁','nav.income':'收入','nav.expenses':'開支','nav.tax':'稅務','nav.more':'更多',
+ 'nav.home':'主頁','nav.income':'收入','nav.expenses':'開支','nav.tax':'稅務','nav.more':'設定',
  'c.save':'儲存','c.cancel':'取消','c.edit':'編輯','c.yes':'確定','c.active':'使用中',
- 'home.hi':'你好 👋','home.profit':'你嘅利潤 · {y}','home.in':'收入','home.out':'開支',
- 'home.taxT':'預留交稅','home.taxS':'根據目前利潤估算嘅稅款','home.biz':'你嘅生意','home.addBiz':'新增生意',
- 'home.recent':'最近記錄','home.share':'你嘅份額',
+ 'home.hi':'你好 👋','home.profit':'你的利潤 · {y}','home.in':'收入','home.out':'開支',
+ 'home.taxT':'預留交稅','home.taxS':'根據目前利潤估算的稅款','home.biz':'你的業務','home.addBiz':'新增業務',
+ 'home.recent':'最近記錄','home.share':'你的份額',
  'tag.sole':'個體經營','tag.part':'合夥','tag.your':'你佔 {n}%',
- 'w.title':'歡迎使用 TaxMate 👋','w.sub':'記錄自僱收支,實時睇到真正要交幾多稅 — 免費、私隱、毋須註冊。',
- 'w.priv':'🔒 私隱至上。你嘅數據只儲存喺呢部手機。',
- 'w.steps':'1 · 新增你嘅生意\n2 · 隨手記低收入同開支\n3 · 「稅務」頁實時計好條數,1月31日唔會再嚇親你',
- 'w.start':'新增第一盤生意',
- 'inc.title':'收入','inc.add':'新增收入','inc.empty':'未有收入記錄','inc.emptyS':'有錢入就記低 — 稅款估算實時更新。',
- 'exp.title':'開支','exp.add':'新增開支','exp.empty':'未有開支記錄','exp.emptyS':'每筆開支都可以幫你慳稅。',
+ 'w.title':'歡迎使用 TaxMate 👋','w.sub':'記錄自僱收支，即時查看真實稅款估算 — 免費、私密、無需註冊。',
+ 'w.priv':'🔒 私隱至上。您的數據僅儲存於本裝置。',
+ 'w.steps':'1 · 新增你的業務\n2 · 隨時記錄收入與開支\n3 · 「稅務」頁面即時計算稅款，令1月31日不再令你措手不及',
+ 'w.start':'新增第一個業務',
+ 'inc.title':'收入','inc.add':'新增收入','inc.empty':'未有收入記錄','inc.emptyS':'隨時記錄收入 — 稅款估算即時更新。',
+ 'exp.title':'開支','exp.add':'新增開支','exp.empty':'未有開支記錄','exp.emptyS':'每筆開支均有助減低應繳稅款。',
  'flt.all':'全部',
  'f.amount':'金額','f.date':'日期','f.business':'生意','f.category':'類別','f.note':'備註','f.optional':'(可不填)',
- 'f.amountErr':'請輸入大於 0 嘅金額','f.bizUse':'業務用途比例',
+ 'f.amountErr':'請輸入大於 0 的金額','f.bizUse':'業務用途比例',
  'f.bizUseHint':'部分私人使用(例如電話)?只申報業務部分 — HMRC 要求合理分攤。',
  'f.addIncome':'新增收入','f.editIncome':'編輯收入','f.addExpense':'新增開支','f.editExpense':'編輯開支','f.deleteEntry':'刪除此記錄',
  'b.add':'新增生意','b.edit':'編輯生意','b.name':'生意名稱','b.nameErr':'請輸入名稱',
  'b.setup':'經營模式','b.justMe':'淨係我','b.partnership':'合夥',
  'b.soleHint':'自己一個做,利潤全歸你。','b.partHint':'同人合夥分利潤,只有你嗰份需要交稅。',
- 'b.share':'你嘅利潤份額 (%)','b.delete':'刪除此生意及所有記錄',
+ 'b.share':'你的利潤份額 (%)','b.delete':'刪除此業務及所有記錄',
  'tax.bill':'估算稅款 · {y}','tax.it':'入息稅','tax.c4':'Class 4 國民保險','tax.fileBy':'{d} 前報稅及繳款',
- 'tax.taT':'實報開支 vs £1,000 免稅額','tax.taHint':'HMRC 容許你唔報實際開支,改為喺自僱收入直接扣 £1,000(Trading Allowance,合夥不適用)。邊樣利潤細用邊樣 — TaxMate 自動同你比較。',
+ 'tax.taT':'實報開支 vs £1,000 免稅額','tax.taHint':'HMRC允許以 £1,000 統一扣除額代替實際開支（Trading Allowance，不適用於合夥）。以利潤較低的方式計算為佳 — TaxMate自動為你比較。',
  'tax.taActual':'實報開支後利潤','tax.taAllow':'用 £1,000 免稅額後利潤','tax.taBest':'最抵選擇',
- 'tax.taSave':'慳 {x} 利潤','tax.auto':'自動','tax.allowance':'免稅額','tax.expensesOpt':'實報',
+ 'tax.taSave':'節省 {x} 利潤','tax.auto':'自動','tax.allowance':'免稅額','tax.expensesOpt':'實報',
  'tax.using':'使用中:{x}','tax.autoNote':'「自動」永遠幫你揀最抵嗰個。',
  'tax.usingAllow':'£1,000 trading allowance','tax.usingExp':'實報開支',
- 'tax.how':'計算明細','tax.taxableP':'你嘅應稅利潤',
- 'tax.pa':'個人免稅額','tax.paHint':'人人都有嘅免稅額','tax.paRed':'已調低 — 收入超過 £100,000',
+ 'tax.how':'計算明細','tax.taxableP':'你的應稅利潤',
+ 'tax.pa':'個人免稅額','tax.paHint':'人人均有的免稅額','tax.paRed':'已調低 — 收入超過 £100,000',
  'tax.taxable':'應稅收入','tax.basic':'基本稅率','tax.higher':'高稅率','tax.addl':'附加稅率','tax.on':'於',
  'tax.c4Hint':'利潤 £12,570–£50,270 收 6%,以上收 2%','tax.c2':'Class 2 國民保險',
  'tax.c2Paid':'利潤超過 £{x},自動當已繳 — 免費取得國家退休金供款記錄',
@@ -445,11 +445,11 @@ zh:{
  'tax.accT':'呢個估算有幾準?',
  'tax.accB':'採用 {y} 年度英格蘭、威爾斯及北愛爾蘭稅率(蘇格蘭入息稅階不同)。假設自僱係你唯一收入 — 受僱 (PAYE)、利息、股息及學生貸款未計算在內。只屬規劃估算,並非稅務意見:報稅前請向 HMRC 或會計師核實。',
  'tax.disc':'只屬估算 — 並非稅務意見。',
- 'a.title':'你嘅 HMRC 狀況','a.sub':'上次 Self Assessment 嘅兩個數字,會影響你今年實際要畀幾多。',
- 'a.poaLabel':'今年度已繳嘅 Payments on Account','a.poaHint':'HMRC 根據上年稅款要求嘅兩期預繳(1月31日+7月31日)。輸入總額,冇就填 0。',
+ 'a.title':'你的 HMRC 狀況','a.sub':'來自上次 Self Assessment 的兩個數字，將影響你今年的實際應繳金額。',
+ 'a.poaLabel':'今年度已繳的 Payments on Account','a.poaHint':'HMRC根據上年稅款要求的兩期預繳（1月31日+7月31日），請輸入總額；如無則填 0。',
  'a.priorLabel':'上年度調整','a.priorHint':'上年交少咗滾存落今年?填正數。上年交多咗要扣減?填負數(例如 -120)。',
  'm.title':'設定','m.biz':'生意','m.lang':'語言','m.backup':'備份與還原',
- 'm.backupHint':'數據只儲存喺呢部裝置。請定期匯出備份並妥善保存。',
+ 'm.backupHint':'數據僅儲存於本裝置。請定期匯出備份並妥善保存。',
  'm.export':'下載備份 (JSON)','m.csv':'匯出記錄 (CSV 可開 Excel)','m.restore':'由備份還原',
  'm.danger':'危險地帶','m.reset':'刪除此裝置所有數據',
  'm.resetT':'刪除所有數據?','m.resetM':'將清除此裝置上所有生意、記錄及設定,無法復原。如有疑問請先匯出備份。',
@@ -461,14 +461,14 @@ zh:{
  'cat.equip':'設備及工具','cat.office':'辦公及行政','cat.stock':'存貨及材料','cat.insure':'保險',
  'cat.fees':'專業費用','cat.market':'宣傳及訂閱','cat.repair':'維修','cat.other':'其他開支',
  'cat.sales':'工作收入','cat.tips':'小費及獎金','cat.royalty':'版稅','cat.otherin':'其他收入',
- 'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'冇資料夾','fd.manage':'資料夾','fd.deleteM':'入面嘅記錄唔會消失,只係除去資料夾標籤。','fd.all':'全部資料夾',
- 'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji(可不填)','cc.manage':'我嘅類別','cc.deleteM':'使用中嘅記錄會顯示為「其他」。',
+ 'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'無資料夾','fd.manage':'資料夾','fd.deleteM':'資料夾內的記錄不會消失，只會移除資料夾標籤。','fd.all':'全部資料夾',
+ 'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji（可不填）','cc.manage':'我的類別','cc.deleteM':'使用中的記錄將顯示為「其他」。',
  'pro.title':'TaxMate Pro','pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。','pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到','pro.f2':'收據相簿','pro.f3':'AI 智能貼士','pro.soon':'即將推出','pro.preview':'免費試用 Pro(預覽)','pro.on':'Pro 使用中',
- 'sy.title':'拍檔同步','sy.enable':'同拍檔同步','sy.code':'合夥代碼','sy.invite':'邀請拍檔','sy.inviteMsg':'嚟 TaxMate UK 加入我盤生意「{n}」— 輸入代碼 {c}','sy.join':'收到拍檔嘅代碼?輸入後所有數據自動同步。','sy.enterCode':'輸入六位代碼','sy.synced':'已同步','sy.badCode':'搵唔到呢個代碼,請檢查後再試。','sy.needPro':'拍檔同步係 Pro 功能,喺「更多」解鎖。','sy.needNet':'連接唔到同步服務,請檢查網絡。','sy.setup':'呢個版本未設定同步服務。','sy.leave':'喺呢部裝置停止同步','sy.copied':'已複製!','sy.saveFirst':'請先儲存生意,再開啟同步。',
- 'ac.title':'帳戶與雲端','ac.why':'登入後數據跟住你走 — 換新電話,數據照舊。免費。','ac.google':'用 Google 繼續','ac.apple':'用 Apple 繼續','ac.signedAs':'已登入','ac.signout':'登出','ac.signoutM':'數據會保留喺呢部電話同你嘅雲端,隨時可以再登入。','ac.local':'只限呢部裝置 — 登入即自動雲端備份。','ac.cloudOn':'雲端備份開啟','ac.err':'登入失敗,請再試。','ac.needNet':'登入需要網絡連接。' 
+ 'sy.title':'合夥人同步','sy.enable':'與合夥人同步','sy.code':'合夥代碼','sy.invite':'邀請合夥人','sy.inviteMsg':'請在 TaxMate UK 加入我的業務「{n}」— 輸入代碼 {c}','sy.join':'收到合夥人的代碼？輸入後所有數據將自動同步。','sy.enterCode':'輸入六位代碼','sy.synced':'已同步','sy.badCode':'找不到此代碼，請確認後重試。','sy.needPro':'合夥人同步為 Pro 功能，請在「設定」中解鎖。','sy.needNet':'無法連接同步服務，請檢查網絡。','sy.setup':'此版本尚未設定同步服務。','sy.leave':'在本裝置停止同步','sy.copied':'已複製!','sy.saveFirst':'請先儲存業務，再開啟同步。',
+ 'ac.title':'帳戶與雲端','ac.why':'登入後數據隨你而行 — 更換新裝置，數據依然完好。免費。','ac.google':'用 Google 繼續','ac.apple':'用 Apple 繼續','ac.signedAs':'已登入','ac.signout':'登出','ac.signoutM':'數據將保留於本裝置及雲端，可隨時重新登入。','ac.local':'僅限本裝置 — 登入後即自動雲端備份。','ac.cloudOn':'雲端備份開啟','ac.err':'登入失敗,請再試。','ac.needNet':'登入需要網絡連接。' 
 },
 pl:{
- 'nav.home':'Start','nav.income':'Przychody','nav.expenses':'Wydatki','nav.tax':'Podatek','nav.more':'Więcej',
+ 'nav.home':'Start','nav.income':'Przychody','nav.expenses':'Wydatki','nav.tax':'Podatek','nav.more':'Ustawienia',
  'c.save':'Zapisz','c.cancel':'Anuluj','c.edit':'Edytuj','c.yes':'Tak, zrób to','c.active':'Aktywny',
  'home.hi':'Cześć 👋','home.profit':'Twój zysk · {y}','home.in':'Przychody','home.out':'Wydatki',
  'home.taxT':'Odłóż na podatek','home.taxS':'Szacowany podatek od dotychczasowego zysku','home.biz':'Twoje firmy','home.addBiz':'Dodaj firmę',
@@ -535,7 +535,7 @@ pl:{
  'ac.title':'Konto i chmura','ac.why':'Zaloguj się, a Twoje dane pójdą za Tobą — nowy telefon, te same dane. Za darmo.','ac.google':'Kontynuuj z Google','ac.apple':'Kontynuuj z Apple','ac.signedAs':'Zalogowano jako','ac.signout':'Wyloguj','ac.signoutM':'Dane zostają na tym telefonie i w chmurze. Zaloguj się ponownie kiedy chcesz.','ac.local':'Tylko to urządzenie — zaloguj się, by mieć automatyczną kopię.','ac.cloudOn':'Kopia w chmurze włączona','ac.err':'Logowanie nie powiodło się — spróbuj ponownie.','ac.needNet':'Logowanie wymaga połączenia.' 
 },
 ro:{
- 'nav.home':'Acasă','nav.income':'Venituri','nav.expenses':'Cheltuieli','nav.tax':'Taxe','nav.more':'Altele',
+ 'nav.home':'Acasă','nav.income':'Venituri','nav.expenses':'Cheltuieli','nav.tax':'Taxe','nav.more':'Setări',
  'c.save':'Salvează','c.cancel':'Anulează','c.edit':'Editează','c.yes':'Da, continuă','c.active':'Activ',
  'home.hi':'Salut 👋','home.profit':'Profitul tău · {y}','home.in':'Venituri','home.out':'Cheltuieli',
  'home.taxT':'Pune deoparte pentru taxe','home.taxS':'Taxa estimată pe profitul de până acum','home.biz':'Afacerile tale','home.addBiz':'Adaugă o afacere',
@@ -602,7 +602,7 @@ ro:{
  'ac.title':'Cont și cloud','ac.why':'Conectează-te și datele te urmează — telefon nou, aceleași date. Gratuit.','ac.google':'Continuă cu Google','ac.apple':'Continuă cu Apple','ac.signedAs':'Conectat ca','ac.signout':'Deconectare','ac.signoutM':'Datele rămân pe acest telefon și în cloud. Reconectează-te oricând.','ac.local':'Doar acest dispozitiv — conectează-te pentru backup automat.','ac.cloudOn':'Backup în cloud activ','ac.err':'Conectarea a eșuat — încearcă din nou.','ac.needNet':'Conectarea necesită internet.' 
 },
 es:{
- 'nav.home':'Inicio','nav.income':'Ingresos','nav.expenses':'Gastos','nav.tax':'Impuestos','nav.more':'Más',
+ 'nav.home':'Inicio','nav.income':'Ingresos','nav.expenses':'Gastos','nav.tax':'Impuestos','nav.more':'Ajustes',
  'c.save':'Guardar','c.cancel':'Cancelar','c.edit':'Editar','c.yes':'Sí, hazlo','c.active':'Activo',
  'home.hi':'Hola 👋','home.profit':'Tu beneficio · {y}','home.in':'Ingresos','home.out':'Gastos',
  'home.taxT':'Aparta para impuestos','home.taxS':'Impuesto estimado sobre tu beneficio hasta ahora','home.biz':'Tus negocios','home.addBiz':'Añadir un negocio',
@@ -669,7 +669,7 @@ es:{
  'ac.title':'Cuenta y nube','ac.why':'Inicia sesión y tus datos te siguen — móvil nuevo, mismos datos. Gratis.','ac.google':'Continuar con Google','ac.apple':'Continuar con Apple','ac.signedAs':'Sesión iniciada como','ac.signout':'Cerrar sesión','ac.signoutM':'Tus datos se quedan en este móvil y en tu nube. Vuelve a entrar cuando quieras.','ac.local':'Solo este dispositivo — inicia sesión para copia automática.','ac.cloudOn':'Copia en la nube activa','ac.err':'No se pudo iniciar sesión — inténtalo de nuevo.','ac.needNet':'Iniciar sesión requiere conexión.' 
 },
 ur:{
- 'nav.home':'ہوم','nav.income':'آمدنی','nav.expenses':'اخراجات','nav.tax':'ٹیکس','nav.more':'مزید',
+ 'nav.home':'ہوم','nav.income':'آمدنی','nav.expenses':'اخراجات','nav.tax':'ٹیکس','nav.more':'ترتیبات',
  'c.save':'محفوظ کریں','c.cancel':'منسوخ','c.edit':'ترمیم','c.yes':'جی ہاں','c.active':'فعال',
  'home.hi':'السلام علیکم 👋','home.profit':'آپ کا منافع · {y}','home.in':'آمدنی','home.out':'اخراجات',
  'home.taxT':'ٹیکس کے لیے رقم الگ رکھیں','home.taxS':'اب تک کے منافع پر تخمینی ٹیکس','home.biz':'آپ کے کاروبار','home.addBiz':'کاروبار شامل کریں',
@@ -1154,99 +1154,110 @@ function setTaMode(m){ yd().taMode=m; save(); render(); }
 
 /* ═══════════ MORE ═══════════ */
 function pageMore(){
-  return `
-  <div class="h1">${t('m.title')}</div>
+  const GOOGLE_SVG = `<svg width="17" height="17" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>`;
+  const secHead = lbl => `<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;padding:20px 4px 8px">${lbl}</div>`;
 
-  <div class="card">
-    <div class="t" style="margin-bottom:10px">${t('m.biz')}</div>
-    ${S.businesses.length? S.businesses.map(b=>`
-      <div class="row">
-        <div class="avatar" style="background:${bizColor(b)};width:36px;height:36px;font-size:15px">${esc((b.name||'?').trim().charAt(0).toUpperCase())}</div>
-        <div class="grow"><div class="t" style="font-size:14.5px">${esc(b.name)}</div>
-          <div class="s">${b.structure==='partnership'?t('tag.part')+' · '+t('tag.your',{n:b.share||50}):t('tag.sole')}</div></div>
-        <button class="link" onclick="openBiz('${b.id}')">${t('c.edit')}</button>
-      </div>`).join(''):''}
-    <button class="btn soft" style="margin-top:14px" onclick="openBiz()">+ ${t('home.addBiz')}</button>
-  </div>
-
-  <div class="card">
-    <div class="t" style="margin-bottom:10px">${t('m.lang')}</div>
-    <div class="catgrid">
-      ${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}
+  const accountCard = `<div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
+      <div style="font-size:18px">☁️</div><div class="t">${t('ac.title')}</div>
     </div>
-  </div>
-
-  <div class="card">
-    <div class="t" style="margin-bottom:8px">☁️ ${t('ac.title')}</div>
     ${cloudUser() ? `
       <div class="row">
         <div class="avatar" style="background:var(--brand)">${esc(((cloudUser().displayName||cloudUser().email||'?').trim().charAt(0)||'?').toUpperCase())}</div>
         <div class="grow">
           <div class="t" style="font-size:14.5px">${esc(cloudUser().displayName||t('ac.signedAs'))}</div>
           <div class="s">${esc(cloudUser().email||'')}</div>
-          <div class="s pos" style="font-weight:700">${t('ac.cloudOn')} ✓</div>
+          <div class="s pos" style="font-weight:700;margin-top:2px">${t('ac.cloudOn')} ✓</div>
         </div>
       </div>
-      <button class="link danger" style="margin-top:12px" onclick="confirmAction(t('ac.signout'), t('ac.signoutM'), doSignOut)">${t('ac.signout')}</button>
+      <button class="link danger" style="margin-top:14px;display:block" onclick="confirmAction(t('ac.signout'),t('ac.signoutM'),doSignOut)">${t('ac.signout')}</button>
     ` : `
       <div class="s" style="margin-bottom:14px">${t('ac.why')}</div>
-      <button class="btn ghost" style="margin-bottom:10px" onclick="signIn('google')">
-        <svg width="18" height="18" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>
-        ${t('ac.google')}</button>
-      <button class="btn ink" onclick="signIn('apple')"> ${t('ac.apple')}</button>
+      <button class="btn ghost" style="margin-bottom:10px;gap:10px" onclick="signIn('google')">${GOOGLE_SVG}${t('ac.google')}</button>
+      <button class="btn ink" style="gap:8px" onclick="signIn('apple')"> ${t('ac.apple')}</button>
       <div class="s" style="margin-top:12px">${t('ac.local')}</div>
     `}
-  </div>
+  </div>`;
 
-  <div class="card">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
-      <div class="t">✨ ${t('pro.title')}</div>
-      ${S.settings.pro?`<span class="tagchip green">${t('pro.on')}</span>`:''}
+  const proCard = `<div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:18px">✨</div>
+      <div class="t">${t('pro.title')}</div>
+      ${S.settings.pro?`<span class="tagchip green" style="margin-inline-start:auto">${t('pro.on')}</span>`:''}
     </div>
     <div class="s" style="margin-bottom:12px">${t('pro.sub')}</div>
     <div class="frow"><span class="fl">🤝 ${t('pro.f1')}</span><span class="fv">${S.settings.pro?'✓':''}</span></div>
     <div class="frow"><span class="fl">📸 ${t('pro.f2')}</span><span class="tagchip grey">${t('pro.soon')}</span></div>
     <div class="frow"><span class="fl">🤖 ${t('pro.f3')}</span><span class="tagchip grey">${t('pro.soon')}</span></div>
     ${S.settings.pro?'':`<button class="btn ink" style="margin-top:14px" onclick="S.settings.pro=true;save();render()">${t('pro.preview')}</button>`}
-  </div>
+  </div>`;
 
-  <div class="card">
-    <div class="t" style="margin-bottom:6px">🤝 ${t('sy.title')}</div>
+  const bizCard = `<div class="card">
+    ${S.businesses.length? S.businesses.map(b=>`
+      <div class="row">
+        <div class="avatar" style="background:${bizColor(b)};width:38px;height:38px;font-size:15px">${esc((b.name||'?').trim().charAt(0).toUpperCase())}</div>
+        <div class="grow">
+          <div class="t" style="font-size:14.5px">${esc(b.name)}</div>
+          <div class="s">${b.structure==='partnership'?t('tag.part')+' · '+t('tag.your',{n:b.share||50}):t('tag.sole')}${b.syncCode?' · <span style="color:var(--brand);font-weight:700">🔗 '+t('sy.synced')+'</span>':''}</div>
+        </div>
+        <button class="link" onclick="openBiz('${b.id}')">${t('c.edit')}</button>
+      </div>`).join(''):''}
+    <button class="btn soft" style="margin-top:${S.businesses.length?14:0}px" onclick="openBiz()">+ ${t('home.addBiz')}</button>
+  </div>`;
+
+  const syncCard = `<div class="card">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div style="font-size:18px">🤝</div><div class="t">${t('sy.title')}</div>
+    </div>
     <div class="s" style="margin-bottom:12px">${t('sy.join')}</div>
     <div style="display:flex;gap:8px">
       <input type="text" id="join-code" maxlength="6" placeholder="ABC123" autocapitalize="characters"
-        style="flex:1;text-transform:uppercase;letter-spacing:3px;font-weight:800;text-align:center">
-      <button class="btn" style="width:auto;padding:0 22px" onclick="joinPartnership()">→</button>
+        style="flex:1;text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px;padding:12px">
+      <button class="btn" style="width:auto;padding:0 22px;font-size:20px" onclick="joinPartnership()">→</button>
     </div>
     <div class="s" id="join-msg" style="margin-top:8px"></div>
-  </div>
+  </div>`;
 
-  ${(S.customCats.expense.length||S.customCats.income.length)?`<div class="card">
-    <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>
-    ${S.customCats.expense.concat(S.customCats.income).map(c=>`
-      <div class="frow"><span class="fl">${c.e} ${esc(c.name)}</span>
-      <button class="link danger" onclick="confirmAction('${esc(c.name).replace(/'/g,"\\'")}', t('cc.deleteM'), ()=>deleteCustomCat('${c.id}'))">✕</button></div>`).join('')}
-  </div>`:''}
+  const organiseSection = [
+    (S.customCats.expense.length||S.customCats.income.length)?`<div class="card">
+      <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>
+      ${S.customCats.expense.concat(S.customCats.income).map(c=>`
+        <div class="frow"><span class="fl">${c.e} ${esc(c.name)}</span>
+        <button class="link danger" onclick="confirmAction('${esc(c.name).replace(/'/g,"\\'")}',t('cc.deleteM'),()=>deleteCustomCat('${c.id}'))">✕</button></div>`).join('')}
+    </div>`:'',
+    S.folders.length?`<div class="card">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
+        <div class="t">📁 ${t('fd.manage')}</div>
+        <button class="link" onclick="openFolderSheet()">+ ${t('fd.add')}</button>
+      </div>
+      ${S.folders.map(f=>`
+        <div class="frow"><span class="fl">📁 ${esc(f.name)}</span>
+        <button class="link danger" onclick="confirmAction('${esc(f.name).replace(/'/g,"\\'")}',t('fd.deleteM'),()=>deleteFolder('${f.id}'))">✕</button></div>`).join('')}
+    </div>`:`<button class="btn soft" onclick="openFolderSheet()">📁 + ${t('fd.add')}</button>`
+  ].join('');
 
-  ${S.folders.length?`<div class="card">
-    <div class="t" style="margin-bottom:10px">📁 ${t('fd.manage')}</div>
-    ${S.folders.map(f=>`
-      <div class="frow"><span class="fl">📁 ${esc(f.name)}</span>
-      <button class="link danger" onclick="confirmAction('${esc(f.name).replace(/'/g,"\\'")}', t('fd.deleteM'), ()=>deleteFolder('${f.id}'))">✕</button></div>`).join('')}
-    <button class="btn soft" style="margin-top:14px" onclick="openFolderSheet()">+ ${t('fd.add')}</button>
-  </div>`:''}
-
+  return `
+  <div class="h1">${t('m.title')}</div>
+  ${secHead('You')}
+  ${accountCard}${proCard}
+  ${secHead('Businesses')}
+  ${bizCard}${syncCard}
+  ${secHead('Organise')}
+  ${organiseSection}
+  ${secHead('Data')}
   <div class="card">
-    <div class="t" style="margin-bottom:6px">${t('m.backup')}</div>
+    <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
+    <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
+  </div>
+  <div class="card">
+    <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
     <div class="s" style="margin-bottom:14px">${t('m.backupHint')}</div>
     <button class="btn" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
     <button class="btn ghost" style="margin-bottom:10px" onclick="exportCSV()">${t('m.csv')}</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
   </div>
-
   <div class="card">
-    <div class="t" style="margin-bottom:10px">${t('m.danger')}</div>
     <button class="link danger" onclick="confirmAction(t('m.resetT'),t('m.resetM'),resetAll)">${t('m.reset')}</button>
   </div>
   <p class="small">${t('m.foot')}</p>`;
@@ -1376,7 +1387,7 @@ function deleteEntry(){
 let BZ = {id:null, structure:'sole'};
 function openBiz(id){
   const b = id?bizById(id):null;
-  BZ = b ? {id:b.id, structure:b.structure||'sole'} : {id:null, structure:'sole'};
+  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null} : {id:null, structure:'sole', pendingCode:null};
   document.getElementById('bz-title').textContent = b?t('b.edit'):t('b.add');
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
@@ -1391,6 +1402,11 @@ function paintStruct(){
   document.getElementById('bz-s-part').classList.toggle('on', BZ.structure==='partnership');
   document.getElementById('bz-share-group').style.display = BZ.structure==='partnership'?'block':'none';
   document.getElementById('bz-struct-hint').textContent = BZ.structure==='partnership'?t('b.partHint'):t('b.soleHint');
+  // 新生意揀咗 Partnership → 即刻預生成 code
+  if(BZ.structure==='partnership' && !BZ.id && !BZ.pendingCode){
+    BZ.pendingCode = genCode();
+  }
+  if(BZ.structure==='sole') BZ.pendingCode = null;
   paintSync();
 }
 function paintSync(){
@@ -1402,7 +1418,17 @@ function paintSync(){
   const b = bizById(BZ.id); if(!b) return;
   if(!S.settings.pro){ el.innerHTML = `<div class="notice amber">🔒 ${t('sy.needPro')}</div>`; return; }
   if(!fbConfigured()){ el.innerHTML = `<div class="notice amber">⚙️ ${t('sy.setup')}</div>`; return; }
-  if(b.syncCode){
+  // 新生意:顯示 pendingCode，儲存時自動啟用
+  if(!BZ.id && BZ.pendingCode){
+    el.innerHTML = `
+      <div class="notice green" style="text-align:center">
+        <div style="font-size:12px;font-weight:700">🤝 ${t('sy.code')} · Ready to activate</div>
+        <div class="num" style="font-size:34px;font-weight:800;letter-spacing:7px;margin:8px 0 6px">${BZ.pendingCode}</div>
+        <div style="font-size:12px;opacity:.8">Share this code with your partner — it activates when you save.</div>
+      </div>`;
+    return;
+  }
+  if(b && b.syncCode){
     el.innerHTML = `
       <div class="notice green" style="text-align:center">
         <div style="font-size:12px;font-weight:700">${t('sy.code')} · ${t('sy.synced')} ✓</div>
@@ -1430,10 +1456,35 @@ function saveBiz(){
     pushBizRemote(b);
   } else {
     newId = uid();
-    S.businesses.push({id:newId,name,structure:BZ.structure,share:BZ.structure==='partnership'?share:100});
+    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100};
+    // Partnership + Pro + Firebase: 一次過儲存並推上雲端
+    if(BZ.structure==='partnership' && BZ.pendingCode && S.settings.pro && fbConfigured()){
+      newBiz.syncCode = BZ.pendingCode;
+    }
+    S.businesses.push(newBiz);
   }
   save(); closeSheet('biz'); render();
-  if(newId && BZ.structure==='partnership'){ setTimeout(()=>openBiz(newId), 260); }
+  // 有 pendingCode → 直接啟用 sync，唔使重開 sheet
+  if(newId && BZ.pendingCode && S.businesses[S.businesses.length-1].syncCode){
+    const code = BZ.pendingCode;
+    ensureAuth().then(u=>{
+      if(!u) return;
+      FB.db.collection('partnerships').doc(code).set({
+        bizId: newId, name, structure:'partnership', createdBy: u.uid, createdAt: Date.now(), v:1
+      }).then(()=>{
+        const batch = FB.db.batch();
+        S.entries.filter(e=>e.bizId===newId).forEach(e=>{
+          batch.set(FB.db.collection('partnerships').doc(code).collection('entries').doc(e.id), e);
+        });
+        return batch.commit();
+      }).then(()=>{
+        subscribeSync(code, newId);
+      }).catch(e=>console.warn('sync push failed', e));
+    });
+  } else if(newId && BZ.structure==='partnership'){
+    // Pro 未開或無 Firebase:儲存後重開 sheet 讓用家見到 sync 掣
+    setTimeout(()=>openBiz(newId), 260);
+  }
 }
 function deleteBiz(){
   confirmAction(t('d.bizT'), t('d.bizM'), ()=>{
