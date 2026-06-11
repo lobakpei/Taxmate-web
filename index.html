@@ -183,6 +183,14 @@ details.help{background:var(--card);border-radius:var(--r-md);box-shadow:var(--s
 details.help summary{padding:14px 16px;font-size:14px;font-weight:700;color:var(--blue);cursor:pointer;list-style:none}
 details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height:1.6}
 .avatar{width:44px;height:44px;border-radius:50%;color:#fff;font-weight:800;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.receipt-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer;border:1.5px solid var(--line)}
+.receipt-add{width:56px;height:56px;border-radius:10px;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;flex-shrink:0;background:#FAFBFC;color:var(--muted)}
+.receipt-add:active{background:var(--brand-soft)}
+.lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+.lightbox img{max-width:96vw;max-height:80vh;border-radius:16px;object-fit:contain}
+.lightbox-bar{display:flex;gap:16px}
+.lightbox-bar button{background:rgba(255,255,255,.15);border:0;color:#fff;font-size:14px;font-weight:700;padding:10px 22px;border-radius:999px;cursor:pointer}
+.lightbox-bar button.danger{background:rgba(229,72,77,.35)}
 </style>
 </head>
 <body>
@@ -220,6 +228,14 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <label data-i18n="f.bizUse"></label>
     <div class="fhint" data-i18n="f.bizUseHint"></div>
     <div class="pctrow" id="en-pcts"></div>
+  </div>
+  <div class="fg" id="en-receipt-group">
+    <label data-i18n="rc.add"></label>
+    <div style="display:flex;gap:10px;align-items:center">
+      <div id="en-receipt-thumb-wrap"></div>
+      <input type="file" id="en-receipt-file" accept="image/*" capture="environment" style="display:none" onchange="onReceiptFile(event)">
+    </div>
+    <div class="s" id="en-receipt-status" style="margin-top:6px"></div>
   </div>
   <div class="fg">
     <label for="en-desc"><span data-i18n="f.note"></span> <span style="font-weight:500;color:var(--muted)" data-i18n="f.optional"></span></label>
@@ -327,6 +343,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
 <script>
 /* ═══════════ i18n ═══════════ */
 const LOCALES = { en:'en-GB', zh:'zh-HK', pl:'pl-PL', ro:'ro-RO', es:'es-ES', ur:'ur-PK' };
@@ -393,7 +410,8 @@ en:{
  'cat.vehicle':'Vehicle & fuel','cat.travel':'Travel & parking','cat.phone':'Phone & internet','cat.home':'Home working',
  'cat.equip':'Equipment & tools','cat.office':'Office & admin','cat.stock':'Stock & materials','cat.insure':'Insurance',
  'cat.fees':'Professional fees','cat.market':'Marketing & subs','cat.repair':'Repairs','cat.other':'Other expense',
- 'cat.sales':'Work income','cat.tips':'Tips & bonuses','cat.royalty':'Royalties','cat.otherin':'Other income',
+ 'cat.sales':'Work income','cat.tips':'Tips & bonuses','cat.royalty':'Royalties','cat.otherin':'Other income','cat.otherin':'Other income',
+ 'rc.add':'Add receipt','rc.view':'View receipt','rc.delete':'Delete receipt','rc.uploading':'Uploading…','rc.uploadErr':'Upload failed — try again','rc.deleteConfirm':'Delete this receipt photo?','rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.',
  'fd.title':'Folder','fd.add':'New folder','fd.name':'Folder name','fd.none':'No folder','fd.manage':'Folders','fd.deleteM':'Entries keep their data — they just lose this folder label.','fd.all':'All folders',
  'cc.add':'New category','cc.name':'Category name','cc.emoji':'Emoji (optional)','cc.manage':'My categories','cc.deleteM':'Entries using it will show as "Other".',
  'pro.title':'TaxMate Pro','pro.sub':'Free is full-featured forever. Pro adds convenience on top.','pro.f1':'Partner sync — one partnership, every phone','pro.f2':'Receipt photos','pro.f3':'Smart AI tips','pro.soon':'coming soon','pro.preview':'Try Pro free (preview)','pro.on':'Pro active',
@@ -460,7 +478,8 @@ zh:{
  'cat.vehicle':'車輛及燃油','cat.travel':'交通及泊車','cat.phone':'電話及網絡','cat.home':'在家工作',
  'cat.equip':'設備及工具','cat.office':'辦公及行政','cat.stock':'存貨及材料','cat.insure':'保險',
  'cat.fees':'專業費用','cat.market':'宣傳及訂閱','cat.repair':'維修','cat.other':'其他開支',
- 'cat.sales':'工作收入','cat.tips':'小費及獎金','cat.royalty':'版稅','cat.otherin':'其他收入',
+ 'cat.sales':'工作收入','cat.tips':'小費及獎金','cat.royalty':'版稅','cat.otherin':'其他收入','cat.otherin':'其他收入',
+ 'rc.add':'新增收據','rc.view':'查看收據','rc.delete':'刪除收據','rc.uploading':'上傳中…','rc.uploadErr':'上傳失敗，請再試','rc.deleteConfirm':'刪除此收據相片？','rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。',
  'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'無資料夾','fd.manage':'資料夾','fd.deleteM':'資料夾內的記錄不會消失，只會移除資料夾標籤。','fd.all':'全部資料夾',
  'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji（可不填）','cc.manage':'我的類別','cc.deleteM':'使用中的記錄將顯示為「其他」。',
  'pro.title':'TaxMate Pro','pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。','pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到','pro.f2':'收據相簿','pro.f3':'AI 智能貼士','pro.soon':'即將推出','pro.preview':'免費試用 Pro(預覽)','pro.on':'Pro 使用中',
@@ -527,7 +546,8 @@ pl:{
  'cat.vehicle':'Pojazd i paliwo','cat.travel':'Podróże i parking','cat.phone':'Telefon i internet','cat.home':'Praca z domu',
  'cat.equip':'Sprzęt i narzędzia','cat.office':'Biuro i administracja','cat.stock':'Towar i materiały','cat.insure':'Ubezpieczenie',
  'cat.fees':'Usługi profesjonalne','cat.market':'Marketing i subskrypcje','cat.repair':'Naprawy','cat.other':'Inny wydatek',
- 'cat.sales':'Przychód z pracy','cat.tips':'Napiwki i bonusy','cat.royalty':'Tantiemy','cat.otherin':'Inny przychód',
+ 'cat.sales':'Przychód z pracy','cat.tips':'Napiwki i bonusy','cat.royalty':'Tantiemy','cat.otherin':'Inny przychód','cat.otherin':'Inny przychód',
+ 'rc.add':'Dodaj paragon','rc.view':'Zobacz paragon','rc.delete':'Usuń paragon','rc.uploading':'Przesyłanie…','rc.uploadErr':'Błąd przesyłania — spróbuj ponownie','rc.deleteConfirm':'Usunąć to zdjęcie paragonu?','rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.',
  'fd.title':'Folder','fd.add':'Nowy folder','fd.name':'Nazwa folderu','fd.none':'Bez folderu','fd.manage':'Foldery','fd.deleteM':'Wpisy zachowają dane — stracą tylko etykietę folderu.','fd.all':'Wszystkie foldery',
  'cc.add':'Nowa kategoria','cc.name':'Nazwa kategorii','cc.emoji':'Emoji (opcjonalnie)','cc.manage':'Moje kategorie','cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
  'pro.title':'TaxMate Pro','pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.','pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon','pro.f2':'Zdjęcia paragonów','pro.f3':'Inteligentne wskazówki AI','pro.soon':'wkrótce','pro.preview':'Wypróbuj Pro za darmo (podgląd)','pro.on':'Pro aktywne',
@@ -594,7 +614,8 @@ ro:{
  'cat.vehicle':'Vehicul și combustibil','cat.travel':'Transport și parcare','cat.phone':'Telefon și internet','cat.home':'Lucru de acasă',
  'cat.equip':'Echipamente și unelte','cat.office':'Birou și administrare','cat.stock':'Stoc și materiale','cat.insure':'Asigurare',
  'cat.fees':'Servicii profesionale','cat.market':'Marketing și abonamente','cat.repair':'Reparații','cat.other':'Altă cheltuială',
- 'cat.sales':'Venit din muncă','cat.tips':'Bacșișuri și bonusuri','cat.royalty':'Drepturi de autor','cat.otherin':'Alt venit',
+ 'cat.sales':'Venit din muncă','cat.tips':'Bacșișuri și bonusuri','cat.royalty':'Drepturi de autor','cat.otherin':'Alt venit','cat.otherin':'Alt venit',
+ 'rc.add':'Adaugă bon','rc.view':'Vezi bon','rc.delete':'Șterge bon','rc.uploading':'Se încarcă…','rc.uploadErr':'Eroare la încărcare — încearcă din nou','rc.deleteConfirm':'Ștergi această fotografie?','rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.',
  'fd.title':'Folder','fd.add':'Folder nou','fd.name':'Numele folderului','fd.none':'Fără folder','fd.manage':'Foldere','fd.deleteM':'Înregistrările își păstrează datele — pierd doar eticheta de folder.','fd.all':'Toate folderele',
  'cc.add':'Categorie nouă','cc.name':'Numele categoriei','cc.emoji':'Emoji (opțional)','cc.manage':'Categoriile mele','cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
  'pro.title':'TaxMate Pro','pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.','pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon','pro.f2':'Poze cu bonuri','pro.f3':'Sfaturi AI inteligente','pro.soon':'în curând','pro.preview':'Încearcă Pro gratuit (preview)','pro.on':'Pro activ',
@@ -661,7 +682,8 @@ es:{
  'cat.vehicle':'Vehículo y combustible','cat.travel':'Viajes y parking','cat.phone':'Teléfono e internet','cat.home':'Trabajo en casa',
  'cat.equip':'Equipo y herramientas','cat.office':'Oficina y administración','cat.stock':'Stock y materiales','cat.insure':'Seguro',
  'cat.fees':'Servicios profesionales','cat.market':'Marketing y suscripciones','cat.repair':'Reparaciones','cat.other':'Otro gasto',
- 'cat.sales':'Ingreso por trabajo','cat.tips':'Propinas y bonus','cat.royalty':'Regalías','cat.otherin':'Otro ingreso',
+ 'cat.sales':'Ingreso por trabajo','cat.tips':'Propinas y bonus','cat.royalty':'Regalías','cat.otherin':'Otro ingreso','cat.otherin':'Otro ingreso',
+ 'rc.add':'Añadir recibo','rc.view':'Ver recibo','rc.delete':'Eliminar recibo','rc.uploading':'Subiendo…','rc.uploadErr':'Error al subir — inténtalo de nuevo','rc.deleteConfirm':'¿Eliminar esta foto del recibo?','rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.',
  'fd.title':'Carpeta','fd.add':'Nueva carpeta','fd.name':'Nombre de la carpeta','fd.none':'Sin carpeta','fd.manage':'Carpetas','fd.deleteM':'Las entradas conservan sus datos — solo pierden la etiqueta.','fd.all':'Todas las carpetas',
  'cc.add':'Nueva categoría','cc.name':'Nombre de la categoría','cc.emoji':'Emoji (opcional)','cc.manage':'Mis categorías','cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
  'pro.title':'TaxMate Pro','pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.','pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles','pro.f2':'Fotos de recibos','pro.f3':'Consejos inteligentes con IA','pro.soon':'próximamente','pro.preview':'Prueba Pro gratis (vista previa)','pro.on':'Pro activo',
@@ -728,7 +750,8 @@ ur:{
  'cat.vehicle':'گاڑی اور ایندھن','cat.travel':'سفر اور پارکنگ','cat.phone':'فون اور انٹرنیٹ','cat.home':'گھر سے کام',
  'cat.equip':'سامان اور اوزار','cat.office':'دفتر اور انتظام','cat.stock':'اسٹاک اور مواد','cat.insure':'انشورنس',
  'cat.fees':'پیشہ ورانہ فیس','cat.market':'مارکیٹنگ اور سبسکرپشن','cat.repair':'مرمت','cat.other':'دیگر خرچ',
- 'cat.sales':'کام کی آمدنی','cat.tips':'ٹپس اور بونس','cat.royalty':'رائلٹی','cat.otherin':'دیگر آمدنی',
+ 'cat.sales':'کام کی آمدنی','cat.tips':'ٹپس اور بونس','cat.royalty':'رائلٹی','cat.otherin':'دیگر آمدنی','cat.otherin':'دیگر آمدنی',
+ 'rc.add':'رسید شامل کریں','rc.view':'رسید دیکھیں','rc.delete':'رسید حذف کریں','rc.uploading':'اپلوڈ ہو رہا ہے…','rc.uploadErr':'اپلوڈ ناکام — دوبارہ کوشش کریں','rc.deleteConfirm':'یہ رسید کی تصویر حذف کریں؟','rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔',
  'fd.title':'فولڈر','fd.add':'نیا فولڈر','fd.name':'فولڈر کا نام','fd.none':'کوئی فولڈر نہیں','fd.manage':'فولڈرز','fd.deleteM':'اندراجات کا ڈیٹا محفوظ رہے گا — صرف فولڈر کا لیبل ہٹے گا۔','fd.all':'تمام فولڈرز',
  'cc.add':'نیا زمرہ','cc.name':'زمرے کا نام','cc.emoji':'ایموجی (اختیاری)','cc.manage':'میرے زمرے','cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
  'pro.title':'TaxMate Pro','pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔','pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر','pro.f2':'رسیدوں کی تصاویر','pro.f3':'AI ٹپس','pro.soon':'جلد آرہا ہے','pro.preview':'Pro مفت آزمائیں (پیش منظر)','pro.on':'Pro فعال',
@@ -1014,7 +1037,8 @@ function entryRow(e){
       <div class="t">${esc(e.desc)||esc(catName(c.id))}</div>
       <div class="s">${d} · ${esc(catName(c.id))}${b?' · '+esc(b.name):''}${pctNote}</div>
     </div>
-    <div class="v num ${e.kind==='income'?'pos':'neg'}">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
+    ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${e.receiptUrl}" onclick="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
+    <div class="v num ${e.kind==='income'?'pos':'neg'}" style="margin-inline-start:${e.receiptUrl?4:0}px">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
   </button>`;
 }
 
@@ -1268,8 +1292,8 @@ function setLang(l){ S.settings.lang=l; save(); render(); }
 let EN = {id:null, kind:'expense', cat:null, pct:100};
 function openEntry(kind, id){
   const e = id ? S.entries.find(x=>x.id===id) : null;
-  EN = e ? {id:e.id, kind:e.kind, cat:e.cat, pct:(e.pct==null?100:e.pct), folderId:(e.folderId||null)}
-         : {id:null, kind:kind||'expense', cat:null, pct:100, folderId:(kind==='expense'&&S.expFolder!=='all')?S.expFolder:null};
+  EN = e ? {id:e.id, kind:e.kind, cat:e.cat, pct:(e.pct==null?100:e.pct), folderId:(e.folderId||null), receiptUrl:(e.receiptUrl||null), receiptPath:(e.receiptPath||null)}
+         : {id:null, kind:kind||'expense', cat:null, pct:100, folderId:(kind==='expense'&&S.expFolder!=='all')?S.expFolder:null, receiptUrl:null, receiptPath:null};
   const isInc = EN.kind==='income';
   document.getElementById('en-title').textContent = e ? t(isInc?'f.editIncome':'f.editExpense') : t(isInc?'f.addIncome':'f.addExpense');
   document.getElementById('en-amount').value = e?e.amount:'';
@@ -1294,6 +1318,18 @@ function paintEntry(){
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
+  // 收據相簿
+  const rg = document.getElementById('en-receipt-group');
+  rg.style.display = EN.kind==='expense' ? 'block' : 'none';
+  const rw = document.getElementById('en-receipt-thumb-wrap');
+  if(EN.receiptUrl){
+    rw.innerHTML = `<img class="receipt-thumb" src="${EN.receiptUrl}" onclick="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
+  } else {
+    rw.innerHTML = S.settings.pro
+      ? `<div class="receipt-add" onclick="document.getElementById('en-receipt-file').click()">📷</div>`
+      : `<div class="receipt-add" onclick="alert(t('rc.proOnly'))" title="${t('rc.proOnly')}">🔒</div>`;
+  }
+  document.getElementById('en-receipt-status').textContent = '';
   const fg = document.getElementById('en-folder-group');
   fg.style.display = EN.kind==='expense' ? 'block' : 'none';
   const fsel = document.getElementById('en-folder');
@@ -1368,6 +1404,8 @@ function saveEntry(){
     cat:EN.cat,
     pct:EN.kind==='expense'?EN.pct:null,
     folderId:EN.kind==='expense'?(document.getElementById('en-folder').value||null):null,
+    receiptUrl: EN.receiptUrl||null,
+    receiptPath: EN.receiptPath||null,
     desc:document.getElementById('en-desc').value.trim()
   };
   if(EN.id){ const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec; }
@@ -1859,6 +1897,113 @@ async function loadCloudRates(){
     }
   }catch(e){ console.warn('rates fetch failed', e); }
 }
+
+/* ═══════════ Receipt photo engine ═══════════ */
+function storageBucket(){
+  try{ return fbConfigured() && FB.ready ? firebase.storage() : null; }catch(e){ return null; }
+}
+function receiptPath(entryId){ return `receipts/${firebase.auth().currentUser.uid}/${entryId}.jpg`; }
+
+async function onReceiptFile(ev){
+  const file = ev.target.files[0]; if(!file) return;
+  ev.target.value='';
+  if(!S.settings.pro){ alert(t('rc.proOnly')); return; }
+  const st = document.getElementById('en-receipt-status');
+  st.textContent = t('rc.uploading');
+  try{
+    // 壓縮到 ~200KB
+    const compressed = await compressImage(file, 1200, 0.82);
+    const db = await ensureFB(); if(!db){ st.textContent = t('rc.uploadErr'); return; }
+    const u = firebase.auth().currentUser; if(!u){ st.textContent = t('rc.uploadErr'); return; }
+    const entId = EN.id || uid();
+    if(!EN.id) EN.id = entId;
+    const path = `receipts/${u.uid}/${entId}.jpg`;
+    const stor = firebase.storage();
+    const ref = stor.ref(path);
+    await ref.put(compressed, {contentType:'image/jpeg'});
+    const url = await ref.getDownloadURL();
+    EN.receiptUrl = url;
+    EN.receiptPath = path;
+    st.textContent = '';
+    paintEntry();
+  }catch(e){ console.warn(e); st.textContent = t('rc.uploadErr'); }
+}
+
+function compressImage(file, maxW, quality){
+  return new Promise((res,rej)=>{
+    const img = new Image();
+    const url = URL.createObjectURL(file);
+    img.onload = ()=>{
+      URL.revokeObjectURL(url);
+      const scale = Math.min(1, maxW/Math.max(img.width,img.height));
+      const w = Math.round(img.width*scale), h = Math.round(img.height*scale);
+      const c = document.createElement('canvas'); c.width=w; c.height=h;
+      c.getContext('2d').drawImage(img,0,0,w,h);
+      c.toBlob(b=>b?res(b):rej(new Error('compress fail')),'image/jpeg',quality);
+    };
+    img.onerror = rej;
+    img.src = url;
+  });
+}
+
+async function deleteReceiptFromStorage(path){
+  if(!path || !FB.ready) return;
+  try{ await firebase.storage().ref(path).delete(); }catch(e){}
+}
+
+// deleteEntry: 連相片一齊刪
+const _origDeleteEntry = deleteEntry;
+deleteEntry = function(){
+  confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
+    const e = S.entries.find(x=>x.id===EN.id);
+    S.entries = S.entries.filter(x=>x.id!==EN.id);
+    if(e){ deleteEntryRemote(e.bizId, e.id); if(e.receiptPath) deleteReceiptFromStorage(e.receiptPath); }
+    save(); closeSheet('entry'); render();
+  });
+};
+
+// Lightbox
+let LB = {url:'', path:''};
+function openLightbox(url, path){
+  LB = {url, path};
+  let lb = document.getElementById('taxmate-lightbox');
+  if(!lb){
+    lb = document.createElement('div');
+    lb.id = 'taxmate-lightbox';
+    lb.className = 'lightbox';
+    lb.innerHTML = `<img id="lb-img" src=""><div class="lightbox-bar">
+      <button onclick="closeLightbox()">✕ Close</button>
+      <button class="danger" onclick="confirmDeleteReceipt()">${'🗑 '+t('rc.delete')}</button>
+    </div>`;
+    lb.addEventListener('click',e=>{ if(e.target===lb) closeLightbox(); });
+    document.body.appendChild(lb);
+  }
+  document.getElementById('lb-img').src = url;
+  lb.style.display = 'flex';
+}
+function closeLightbox(){ const lb=document.getElementById('taxmate-lightbox'); if(lb) lb.style.display='none'; }
+function confirmDeleteReceipt(){
+  closeLightbox();
+  confirmAction(t('rc.deleteConfirm'), '', async()=>{
+    if(LB.path) await deleteReceiptFromStorage(LB.path);
+    // 更新 entry
+    const e = S.entries.find(x=>x.receiptPath===LB.path||x.receiptUrl===LB.url);
+    if(e){ e.receiptUrl=null; e.receiptPath=null; pushEntryRemote(e); }
+    if(EN.receiptPath===LB.path){ EN.receiptUrl=null; EN.receiptPath=null; paintEntry(); }
+    save(); render();
+  });
+}
+
+/* ═══════════ Storage security rules reminder ═══════════ */
+// Firebase Storage Rules (貼入 Console → Storage → Rules):
+// rules_version = '2';
+// service firebase.storage {
+//   match /b/{bucket}/o {
+//     match /receipts/{userId}/{fileName} {
+//       allow read, write: if request.auth != null && request.auth.uid == userId;
+//     }
+//   }
+// }
 
 /* ═══════════ boot ═══════════ */
 applyCachedRates();
