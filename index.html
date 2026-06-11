@@ -1444,17 +1444,15 @@ function pageMore(){
   ${organiseSection}
   ${secHead('Data')}
   <div class="card">
-    <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
-    <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
-  </div>
-  <div class="card">
     <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}</div>
-    <div class="s" style="margin-bottom:12px">Full year summary — for yourself, your accountant, or a mortgage application.</div>
+    <div class="s" style="margin-bottom:12px">Full year summary for yourself, your accountant, or a mortgage application.</div>
     <button class="btn soft" onclick="generatePDF()">📄 ${t('pdf.download')}</button>
   </div>
   <div class="card">
     <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
-    <div class="s" style="margin-bottom:12px">${cloudUser()?'<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — ':''} ${t('m.backupHint')}</div>
+    <div class="s" style="margin-bottom:12px">${cloudUser()
+      ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
+      : ''}${t('m.backupHint')}</div>
     <button class="btn ghost" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
