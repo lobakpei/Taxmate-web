@@ -1180,8 +1180,8 @@ function pageTax(){
   </div>
 
   <details class="help"><summary>${t('tax.accT')}</summary><div class="hb">${t('tax.accB',{y:S.year})}</div></details>
-  <button class="btn soft" style="margin-bottom:6px" onclick="generatePDF()">📄 \${t('pdf.download')}</button>
-  <p class="small">\${t('tax.disc')}</p>`;
+  <button class="btn soft" style="margin-bottom:6px" onclick="generatePDF()">📄 ${t('pdf.download')}</button>
+  <p class="small">${t('tax.disc')}</p>`;
 }
 function setTaMode(m){ yd().taMode=m; save(); render(); }
 
@@ -1928,6 +1928,7 @@ function generatePDF(){
   const AMBER  = [252,243,223];
   const AMBERT = [107, 80, 20];
 
+  function pdfFmt(n){ return (n<0?'-':'')+'£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}); }
   function setFont(size, weight, colour){
     doc.setFontSize(size);
     doc.setFont('helvetica', weight==='bold'?'bold':'normal');
@@ -1960,10 +1961,10 @@ function generatePDF(){
 
   // ── SUMMARY CARDS (2×2 grid) ──
   const cards = [
-    {label:t('pdf.income'),  val:'£'+tx.soleIncome.toFixed(2),          bg:[230,247,240], fg:GREEN},
-    {label:t('pdf.expenses'),val:'£'+(tx.soleExpenses).toFixed(2),       bg:[253,237,238], fg:[200,50,55]},
-    {label:t('pdf.profit'),  val:'£'+tx.myProfit.toFixed(2),             bg:[234,241,254], fg:[30,90,200]},
-    {label:t('pdf.estTax'),  val:'£'+Math.max(tx.liability,0).toFixed(2),bg:AMBER,         fg:AMBERT},
+    {label:t('pdf.income'),  val:pdfFmt(tx.soleIncome),             bg:[230,247,240], fg:GREEN},
+    {label:t('pdf.expenses'),val:pdfFmt(tx.soleExpenses),           bg:[253,237,238], fg:[200,50,55]},
+    {label:t('pdf.profit'),  val:pdfFmt(tx.myProfit),               bg:[234,241,254], fg:[30,90,200]},
+    {label:t('pdf.estTax'),  val:pdfFmt(Math.max(tx.liability,0)),  bg:AMBER,         fg:AMBERT},
   ];
   const cw = (CW-4)/2, ch = 16;
   cards.forEach((c,i)=>{
@@ -1993,7 +1994,7 @@ function generatePDF(){
         e.date,
         catName(e.cat),
         e.desc||'—',
-        '£'+e.amount.toFixed(2)
+        pdfFmt(e.amount)
       ]),
     });
     y = doc.lastAutoTable.finalY + 8;
@@ -2018,9 +2019,9 @@ function generatePDF(){
         e.date,
         catName(e.cat),
         e.desc||'—',
-        '£'+e.amount.toFixed(2),
+        pdfFmt(e.amount),
         (e.pct==null?100:e.pct)+'%',
-        '£'+effExact(e).toFixed(2)
+        pdfFmt(effExact(e))
       ]),
     });
     y = doc.lastAutoTable.finalY + 8;
@@ -2032,14 +2033,14 @@ function generatePDF(){
   if(y > 220){ doc.addPage(); y = 14; }
   setFont(11,'bold',INK); doc.text(t('pdf.taxCalc'), M, y); y += 5;
   const taxRows = [
-    [t('pdf.income'),   '£'+tx.soleIncome.toFixed(2)],
-    [t('pdf.expenses'), '−£'+tx.soleExpenses.toFixed(2)],
-    [t('pdf.profit'),   '£'+tx.myProfit.toFixed(2)],
-    [t('pdf.pa'),       '−£'+tx.pa.toFixed(2)],
-    [t('pdf.taxable'),  '£'+tx.taxable.toFixed(2)],
-    [t('pdf.incomeTax'),'£'+tx.incomeTax.toFixed(2)],
-    [t('pdf.class4'),   '£'+tx.class4.toFixed(2)],
-    [t('pdf.total'),    '£'+tx.liability.toFixed(2)],
+    [t('pdf.income'),   pdfFmt(tx.soleIncome)],
+    [t('pdf.expenses'), '-'+pdfFmt(tx.soleExpenses).replace('-','')],
+    [t('pdf.profit'),   pdfFmt(tx.myProfit)],
+    [t('pdf.pa'),       '-'+pdfFmt(tx.pa).replace('-','')],
+    [t('pdf.taxable'),  pdfFmt(tx.taxable)],
+    [t('pdf.incomeTax'),pdfFmt(tx.incomeTax)],
+    [t('pdf.class4'),   pdfFmt(tx.class4)],
+    [t('pdf.total'),    pdfFmt(tx.liability)],
   ];
   doc.autoTable({
     startY: y,
