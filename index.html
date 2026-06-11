@@ -162,6 +162,11 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 
 /* ── sheets ── */
 .sb{display:none;position:fixed;inset:0;background:rgba(16,24,32,.45);z-index:200;align-items:flex-end;justify-content:center}
+body.sheet-open{overflow:hidden}
+.toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%) translateY(-80px);
+  background:var(--ink);color:#fff;font-size:14px;font-weight:700;padding:11px 22px;border-radius:999px;
+  z-index:400;box-shadow:0 8px 24px rgba(16,24,32,.25);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;white-space:nowrap}
+.toast.show{transform:translateX(-50%) translateY(0)}
 .sb.open{display:flex}
 .sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
   border-radius:28px 28px 0 0;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
@@ -214,7 +219,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
       <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
     <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
   </div>
-  <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date"></div>
+  <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
   <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz"></select></div>
   <div class="fg"><label data-i18n="f.category"></label><div class="catgrid" id="en-cats"></div></div>
   <div class="fg" id="en-folder-group" style="display:none">
@@ -440,7 +445,19 @@ en:{
  'tip.mileage_t':'Compare mileage vs receipts','tip.mileage_b':'You have vehicle costs logged but haven\'t entered your mileage. Scroll up to check if the 45p/mile rate beats your actual costs.',
  'tip.receipt_t':'Missing receipt photos','tip.receipt_b':'{n} expense {e} no receipt photo. HMRC can ask for proof — attach photos while the receipts are fresh.',
  'tip.entry':'entry has','tip.entry':'entry has',
- 'acc.export':'Download accountant pack (CSV)','acc.prepared':'Prepared by TaxMate UK — estimate only, not tax advice','tip.entries':'entries have',
+ 'acc.export':'Download accountant pack (CSV)','acc.prepared':'Prepared by TaxMate UK — estimate only, not tax advice','acc.prepared':'Prepared by TaxMate UK — estimate only, not tax advice',
+ 'qt.title':'Quarterly breakdown','qt.q1':'Q1  6 Apr – 5 Jul','qt.q2':'Q2  6 Jul – 5 Oct','qt.q3':'Q3  6 Oct – 5 Jan','qt.q4':'Q4  6 Jan – 5 Apr',
+ 'qt.current':'current','qt.income':'Income','qt.expenses':'Expenses','qt.profit':'Profit','qt.noData':'No entries this quarter.',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD applies to you from April 2026 — your profit is over £50,000.','mtd.30k':'MTD applies to you from April 2027 — your profit is over £30,000.',
+ 'mtd.20k':'MTD applies to you from April 2028 — your profit is over £20,000.','mtd.ok':'MTD not required yet — threshold is £20,000. Keep records in case rules change.',
+ 'mtd.what':'MTD means filing quarterly updates via HMRC-approved software instead of one annual return.',
+ 'cal.export':'Add tax dates to calendar (.ics)','cal.desc':'UK tax deadlines with 7-day reminders — opens in your calendar app.',
+ 'nb.jan':'Self Assessment due in {n} day{s} — 31 January','nb.jul':'Payment on account due in {n} day{s} — 31 July',
+ 'nb.today_jan':'Self Assessment due TODAY — 31 January','nb.today_jul':'Payment on account due TODAY — 31 July',
+ 'nb.days':'days','nb.day':'day','nb.days':'days','nb.day':'day',
+ 'toast.saved':'Saved','toast.deleted':'Deleted','toast.restored':'Backup restored','toast.calAdded':'Calendar file downloaded',
+ 'f.catErr':'Pick a category','f.dateOtherYear':'This date falls in tax year {y} — the entry will show there.',
+ 'tax.emptyT':'Add a business to see your tax estimate','tax.emptyS':'Your tax picture appears here once you add a business and start logging income.','tip.entries':'entries have',
  'fd.title':'Folder','fd.add':'New folder','fd.name':'Folder name','fd.none':'No folder','fd.manage':'Folders','fd.deleteM':'Entries keep their data — they just lose this folder label.','fd.all':'All folders',
  'cc.add':'New category','cc.name':'Category name','cc.emoji':'Emoji (optional)','cc.manage':'My categories','cc.deleteM':'Entries using it will show as "Other".',
  'pro.title':'TaxMate Pro','pro.sub':'Free is full-featured forever. Pro adds convenience on top.','pro.f1':'Partner sync — one partnership, every phone','pro.f2':'Receipt photos','pro.f3':'Smart AI tips','pro.soon':'coming soon','pro.preview':'Try Pro free (preview)','pro.on':'Pro active',
@@ -535,7 +552,19 @@ zh:{
  'tip.mileage_t':'比較里程與實報開支','tip.mileage_b':'你已記錄車輛開支，但尚未輸入里程。向上捲動查看 45p/英里方案是否比實際開支更合算。',
  'tip.receipt_t':'缺少收據相片','tip.receipt_b':'{n} 筆開支{e}未附收據相片。HMRC 可能要求提供證明，請趁收據仍在手時補拍。',
  'tip.entry':'筆','tip.entry':'筆',
- 'acc.export':'下載會計師報告 (CSV)','acc.prepared':'由 TaxMate UK 生成 — 僅屬估算，並非稅務意見','tip.entries':'筆',
+ 'acc.export':'下載會計師報告 (CSV)','acc.prepared':'由 TaxMate UK 生成 — 僅屬估算，並非稅務意見','acc.prepared':'由 TaxMate UK 生成 — 僅屬估算，並非稅務意見',
+ 'qt.title':'季度明細','qt.q1':'第1季  4月6日 – 7月5日','qt.q2':'第2季  7月6日 – 10月5日','qt.q3':'第3季  10月6日 – 翌年1月5日','qt.q4':'第4季  1月6日 – 4月5日',
+ 'qt.current':'當前','qt.income':'收入','qt.expenses':'開支','qt.profit':'利潤','qt.noData':'本季無記錄。',
+ 'mtd.title':'數碼報稅 (MTD)','mtd.50k':'你的利潤超過 £50,000 — MTD 自2026年4月起適用。','mtd.30k':'你的利潤超過 £30,000 — MTD 自2027年4月起適用。',
+ 'mtd.20k':'你的利潤超過 £20,000 — MTD 自2028年4月起適用。','mtd.ok':'暫不需要 MTD — 起徵點為 £20,000。',
+ 'mtd.what':'MTD 要求每季透過 HMRC 認可軟件提交更新，代替每年一次申報。',
+ 'cal.export':'新增稅務日期至日曆 (.ics)','cal.desc':'英國稅務截止日期，附7天前提醒。',
+ 'nb.jan':'{n}天後截止 Self Assessment — 1月31日','nb.jul':'{n}天後繳交 Payment on account — 7月31日',
+ 'nb.today_jan':'今日截止 Self Assessment — 1月31日','nb.today_jul':'今日截止 Payment on account — 7月31日',
+ 'nb.days':'天','nb.day':'天','nb.days':'天','nb.day':'天',
+ 'toast.saved':'已儲存','toast.deleted':'已刪除','toast.restored':'備份已還原','toast.calAdded':'日曆檔案已下載',
+ 'f.catErr':'請選擇類別','f.dateOtherYear':'此日期屬於 {y} 稅務年度 — 記錄將顯示在該年度。',
+ 'tax.emptyT':'新增業務後即可查看稅款估算','tax.emptyS':'新增業務並開始記錄收入後，你的稅務概況將在此顯示。','tip.entries':'筆',
  'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'無資料夾','fd.manage':'資料夾','fd.deleteM':'資料夾內的記錄不會消失，只會移除資料夾標籤。','fd.all':'全部資料夾',
  'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji（可不填）','cc.manage':'我的類別','cc.deleteM':'使用中的記錄將顯示為「其他」。',
  'pro.title':'TaxMate Pro','pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。','pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到','pro.f2':'收據相簿','pro.f3':'AI 智能貼士','pro.soon':'即將推出','pro.preview':'免費試用 Pro(預覽)','pro.on':'Pro 使用中',
@@ -630,7 +659,19 @@ pl:{
  'tip.mileage_t':'Porównaj kilometry z wydatkami','tip.mileage_b':'Masz wydatki na pojazd, ale nie wpisałeś mil. Przewiń w górę i sprawdź stawkę 45p/milę.',
  'tip.receipt_t':'Brakuje zdjęć paragonów','tip.receipt_b':'{n} wydatk{e} bez zdjęcia. HMRC może poprosić o dowody.',
  'tip.entry':'i','tip.entry':'i',
- 'acc.export':'Pobierz raport dla księgowego (CSV)','acc.prepared':'Wygenerowano przez TaxMate UK — tylko szacunek, nie porada podatkowa','tip.entries':'ów',
+ 'acc.export':'Pobierz raport dla księgowego (CSV)','acc.prepared':'Wygenerowano przez TaxMate UK — tylko szacunek, nie porada podatkowa','acc.prepared':'Wygenerowano przez TaxMate UK — tylko szacunek, nie porada podatkowa',
+ 'qt.title':'Podział kwartalny','qt.q1':'K1  6 kwi – 5 lip','qt.q2':'K2  6 lip – 5 paź','qt.q3':'K3  6 paź – 5 sty','qt.q4':'K4  6 sty – 5 kwi',
+ 'qt.current':'bieżący','qt.income':'Przychody','qt.expenses':'Wydatki','qt.profit':'Zysk','qt.noData':'Brak wpisów w tym kwartale.',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD dotyczy Cię od kwietnia 2026 — zysk ponad £50,000.','mtd.30k':'MTD dotyczy Cię od kwietnia 2027 — zysk ponad £30,000.',
+ 'mtd.20k':'MTD dotyczy Cię od kwietnia 2028 — zysk ponad £20,000.','mtd.ok':'MTD jeszcze nie wymagane — próg to £20,000.',
+ 'mtd.what':'MTD wymaga kwartalnych aktualizacji przez zatwierdzone oprogramowanie zamiast rocznego zeznania.',
+ 'cal.export':'Dodaj terminy podatkowe do kalendarza (.ics)','cal.desc':'Terminy podatkowe UK z przypomnieniami 7 dni wcześniej.',
+ 'nb.jan':'Self Assessment za {n} dzień/dni — 31 stycznia','nb.jul':'Payment on account za {n} dzień/dni — 31 lipca',
+ 'nb.today_jan':'Dziś termin Self Assessment — 31 stycznia','nb.today_jul':'Dziś termin Payment on account — 31 lipca',
+ 'nb.days':'dni','nb.day':'dzień','nb.days':'dni','nb.day':'dzień',
+ 'toast.saved':'Zapisano','toast.deleted':'Usunięto','toast.restored':'Przywrócono kopię','toast.calAdded':'Pobrano plik kalendarza',
+ 'f.catErr':'Wybierz kategorię','f.dateOtherYear':'Ta data należy do roku podatkowego {y} — wpis pojawi się tam.',
+ 'tax.emptyT':'Dodaj firmę, aby zobaczyć podatek','tax.emptyS':'Twój obraz podatkowy pojawi się tutaj po dodaniu firmy i rozpoczęciu rejestrowania przychodów.','tip.entries':'ów',
  'fd.title':'Folder','fd.add':'Nowy folder','fd.name':'Nazwa folderu','fd.none':'Bez folderu','fd.manage':'Foldery','fd.deleteM':'Wpisy zachowają dane — stracą tylko etykietę folderu.','fd.all':'Wszystkie foldery',
  'cc.add':'Nowa kategoria','cc.name':'Nazwa kategorii','cc.emoji':'Emoji (opcjonalnie)','cc.manage':'Moje kategorie','cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
  'pro.title':'TaxMate Pro','pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.','pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon','pro.f2':'Zdjęcia paragonów','pro.f3':'Inteligentne wskazówki AI','pro.soon':'wkrótce','pro.preview':'Wypróbuj Pro za darmo (podgląd)','pro.on':'Pro aktywne',
@@ -725,7 +766,19 @@ ro:{
  'tip.mileage_t':'Compară kilometrajul cu cheltuielile','tip.mileage_b':'Ai cheltuieli cu vehiculul dar nu ai introdus mile. Derulează în sus pentru comparație.',
  'tip.receipt_t':'Poze bonuri lipsă','tip.receipt_b':'{n} cheltuial{e} fără poze. HMRC poate cere dovezi.',
  'tip.entry':'ă','tip.entry':'ă',
- 'acc.export':'Descarcă raport contabil (CSV)','acc.prepared':'Generat de TaxMate UK — doar estimare, nu consultanță fiscală','tip.entries':'e',
+ 'acc.export':'Descarcă raport contabil (CSV)','acc.prepared':'Generat de TaxMate UK — doar estimare, nu consultanță fiscală','acc.prepared':'Generat de TaxMate UK — doar estimare, nu consultanță fiscală',
+ 'qt.title':'Detalii trimestriale','qt.q1':'T1  6 apr – 5 iul','qt.q2':'T2  6 iul – 5 oct','qt.q3':'T3  6 oct – 5 ian','qt.q4':'T4  6 ian – 5 apr',
+ 'qt.current':'curent','qt.income':'Venituri','qt.expenses':'Cheltuieli','qt.profit':'Profit','qt.noData':'Nicio intrare în acest trimestru.',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD se aplică din aprilie 2026 — profit peste £50,000.','mtd.30k':'MTD se aplică din aprilie 2027 — profit peste £30,000.',
+ 'mtd.20k':'MTD se aplică din aprilie 2028 — profit peste £20,000.','mtd.ok':'MTD nu este necesar deocamdată — pragul este £20,000.',
+ 'mtd.what':'MTD înseamnă trimiterea de actualizări trimestriale prin software aprobat de HMRC.',
+ 'cal.export':'Adaugă date fiscale în calendar (.ics)','cal.desc':'Date limită fiscale UK cu memento 7 zile înainte.',
+ 'nb.jan':'Self Assessment în {n} zi/zile — 31 ianuarie','nb.jul':'Payment on account în {n} zi/zile — 31 iulie',
+ 'nb.today_jan':'Termen azi Self Assessment — 31 ianuarie','nb.today_jul':'Termen azi Payment on account — 31 iulie',
+ 'nb.days':'zile','nb.day':'zi','nb.days':'zile','nb.day':'zi',
+ 'toast.saved':'Salvat','toast.deleted':'Șters','toast.restored':'Backup restaurat','toast.calAdded':'Fișier calendar descărcat',
+ 'f.catErr':'Alege o categorie','f.dateOtherYear':'Această dată aparține anului fiscal {y} — intrarea va apărea acolo.',
+ 'tax.emptyT':'Adaugă o afacere pentru estimarea taxelor','tax.emptyS':'Situația ta fiscală apare aici după ce adaugi o afacere și începi să înregistrezi venituri.','tip.entries':'e',
  'fd.title':'Folder','fd.add':'Folder nou','fd.name':'Numele folderului','fd.none':'Fără folder','fd.manage':'Foldere','fd.deleteM':'Înregistrările își păstrează datele — pierd doar eticheta de folder.','fd.all':'Toate folderele',
  'cc.add':'Categorie nouă','cc.name':'Numele categoriei','cc.emoji':'Emoji (opțional)','cc.manage':'Categoriile mele','cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
  'pro.title':'TaxMate Pro','pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.','pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon','pro.f2':'Poze cu bonuri','pro.f3':'Sfaturi AI inteligente','pro.soon':'în curând','pro.preview':'Încearcă Pro gratuit (preview)','pro.on':'Pro activ',
@@ -820,9 +873,45 @@ es:{
  'tip.mileage_t':'Compara millaje vs gastos reales','tip.mileage_b':'Tienes gastos de vehículo pero no has introducido millas. Sube para comparar.',
  'tip.receipt_t':'Fotos de recibos pendientes','tip.receipt_b':'{n} gasto{e} sin foto. HMRC puede pedir pruebas.',
  'tip.entry':'','tip.entry':'',
- 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','tip.entry':'','tip.entry':'',
- 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
- 'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','tip.entries':'s',
+ 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
+ 'qt.title':'سہ ماہی تفصیل','qt.q1':'Q1  6 اپریل – 5 جولائی','qt.q2':'Q2  6 جولائی – 5 اکتوبر','qt.q3':'Q3  6 اکتوبر – 5 جنوری','qt.q4':'Q4  6 جنوری – 5 اپریل',
+ 'qt.current':'موجودہ','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','qt.noData':'اس سہ ماہی میں کوئی اندراج نہیں۔',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD آپ پر اپریل 2026 سے لاگو — منافع £50,000 سے زیادہ۔','mtd.30k':'MTD آپ پر اپریل 2027 سے لاگو — منافع £30,000 سے زیادہ۔',
+ 'mtd.20k':'MTD آپ پر اپریل 2028 سے لاگو — منافع £20,000 سے زیادہ۔','mtd.ok':'ابھی MTD ضروری نہیں — حد £20,000 ہے۔',
+ 'mtd.what':'MTD کا مطلب ہے HMRC منظور شدہ سافٹ ویئر سے سہ ماہی اپڈیٹس۔',
+ 'cal.export':'ٹیکس تاریخیں کیلنڈر میں شامل کریں (.ics)','cal.desc':'برطانوی ٹیکس آخری تاریخیں، 7 دن پہلے یاددہانی کے ساتھ۔',
+ 'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
+ 'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
+ 'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
+ 'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔','tip.entry':'','tip.entry':'',
+ 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
+ 'qt.title':'سہ ماہی تفصیل','qt.q1':'Q1  6 اپریل – 5 جولائی','qt.q2':'Q2  6 جولائی – 5 اکتوبر','qt.q3':'Q3  6 اکتوبر – 5 جنوری','qt.q4':'Q4  6 جنوری – 5 اپریل',
+ 'qt.current':'موجودہ','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','qt.noData':'اس سہ ماہی میں کوئی اندراج نہیں۔',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD آپ پر اپریل 2026 سے لاگو — منافع £50,000 سے زیادہ۔','mtd.30k':'MTD آپ پر اپریل 2027 سے لاگو — منافع £30,000 سے زیادہ۔',
+ 'mtd.20k':'MTD آپ پر اپریل 2028 سے لاگو — منافع £20,000 سے زیادہ۔','mtd.ok':'ابھی MTD ضروری نہیں — حد £20,000 ہے۔',
+ 'mtd.what':'MTD کا مطلب ہے HMRC منظور شدہ سافٹ ویئر سے سہ ماہی اپڈیٹس۔',
+ 'cal.export':'ٹیکس تاریخیں کیلنڈر میں شامل کریں (.ics)','cal.desc':'برطانوی ٹیکس آخری تاریخیں، 7 دن پہلے یاددہانی کے ساتھ۔',
+ 'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
+ 'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
+ 'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
+ 'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔',
+ 'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal',
+ 'qt.title':'Desglose trimestral','qt.q1':'T1  6 abr – 5 jul','qt.q2':'T2  6 jul – 5 oct','qt.q3':'T3  6 oct – 5 ene','qt.q4':'T4  6 ene – 5 abr',
+ 'qt.current':'actual','qt.income':'Ingresos','qt.expenses':'Gastos','qt.profit':'Beneficio','qt.noData':'Sin entradas este trimestre.',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD te aplica desde abril 2026 — beneficio sobre £50,000.','mtd.30k':'MTD te aplica desde abril 2027 — beneficio sobre £30,000.',
+ 'mtd.20k':'MTD te aplica desde abril 2028 — beneficio sobre £20,000.','mtd.ok':'MTD no requerido aún — umbral £20,000.',
+ 'mtd.what':'MTD significa enviar actualizaciones trimestriales a través de software aprobado por HMRC.',
+ 'cal.export':'Añadir fechas fiscales al calendario (.ics)','cal.desc':'Fechas límite fiscales UK con recordatorio 7 días antes.',
+ 'nb.jan':'Self Assessment en {n} día/días — 31 enero','nb.jul':'Payment on account en {n} día/días — 31 julio',
+ 'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
+ 'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
+ 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado',
+ 'f.catErr':'Elige una categoría','f.dateOtherYear':'Esta fecha pertenece al año fiscal {y} — la entrada aparecerá allí.',
+ 'tax.emptyT':'Añade un negocio para ver tu estimación','tax.emptyS':'Tu panorama fiscal aparece aquí cuando añadas un negocio y registres ingresos.','tip.entry':'','tip.entries':'s',
  'fd.title':'Carpeta','fd.add':'Nueva carpeta','fd.name':'Nombre de la carpeta','fd.none':'Sin carpeta','fd.manage':'Carpetas','fd.deleteM':'Las entradas conservan sus datos — solo pierden la etiqueta.','fd.all':'Todas las carpetas',
  'cc.add':'Nueva categoría','cc.name':'Nombre de la categoría','cc.emoji':'Emoji (opcional)','cc.manage':'Mis categorías','cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
  'pro.title':'TaxMate Pro','pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.','pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles','pro.f2':'Fotos de recibos','pro.f3':'Consejos inteligentes con IA','pro.soon':'próximamente','pro.preview':'Prueba Pro gratis (vista previa)','pro.on':'Pro activo',
@@ -917,9 +1006,45 @@ ur:{
  'tip.mileage_t':'میل بمقابلہ اخراجات چیک کریں','tip.mileage_b':'آپ نے گاڑی کے اخراجات درج کیے ہیں لیکن میل نہیں بھرے۔ اوپر سکرول کریں اور 45p/میل کا موازنہ کریں۔',
  'tip.receipt_t':'رسید کی تصاویر غائب','tip.receipt_b':'{n} اخراجات{e} بغیر تصویر۔ HMRC ثبوت مانگ سکتا ہے۔',
  'tip.entry':'','tip.entry':'',
- 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','tip.entry':'','tip.entry':'',
- 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
- 'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','tip.entries':'',
+ 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
+ 'qt.title':'سہ ماہی تفصیل','qt.q1':'Q1  6 اپریل – 5 جولائی','qt.q2':'Q2  6 جولائی – 5 اکتوبر','qt.q3':'Q3  6 اکتوبر – 5 جنوری','qt.q4':'Q4  6 جنوری – 5 اپریل',
+ 'qt.current':'موجودہ','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','qt.noData':'اس سہ ماہی میں کوئی اندراج نہیں۔',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD آپ پر اپریل 2026 سے لاگو — منافع £50,000 سے زیادہ۔','mtd.30k':'MTD آپ پر اپریل 2027 سے لاگو — منافع £30,000 سے زیادہ۔',
+ 'mtd.20k':'MTD آپ پر اپریل 2028 سے لاگو — منافع £20,000 سے زیادہ۔','mtd.ok':'ابھی MTD ضروری نہیں — حد £20,000 ہے۔',
+ 'mtd.what':'MTD کا مطلب ہے HMRC منظور شدہ سافٹ ویئر سے سہ ماہی اپڈیٹس۔',
+ 'cal.export':'ٹیکس تاریخیں کیلنڈر میں شامل کریں (.ics)','cal.desc':'برطانوی ٹیکس آخری تاریخیں، 7 دن پہلے یاددہانی کے ساتھ۔',
+ 'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
+ 'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
+ 'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
+ 'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔','tip.entry':'','tip.entry':'',
+ 'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
+ 'qt.title':'سہ ماہی تفصیل','qt.q1':'Q1  6 اپریل – 5 جولائی','qt.q2':'Q2  6 جولائی – 5 اکتوبر','qt.q3':'Q3  6 اکتوبر – 5 جنوری','qt.q4':'Q4  6 جنوری – 5 اپریل',
+ 'qt.current':'موجودہ','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','qt.noData':'اس سہ ماہی میں کوئی اندراج نہیں۔',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD آپ پر اپریل 2026 سے لاگو — منافع £50,000 سے زیادہ۔','mtd.30k':'MTD آپ پر اپریل 2027 سے لاگو — منافع £30,000 سے زیادہ۔',
+ 'mtd.20k':'MTD آپ پر اپریل 2028 سے لاگو — منافع £20,000 سے زیادہ۔','mtd.ok':'ابھی MTD ضروری نہیں — حد £20,000 ہے۔',
+ 'mtd.what':'MTD کا مطلب ہے HMRC منظور شدہ سافٹ ویئر سے سہ ماہی اپڈیٹس۔',
+ 'cal.export':'ٹیکس تاریخیں کیلنڈر میں شامل کریں (.ics)','cal.desc':'برطانوی ٹیکس آخری تاریخیں، 7 دن پہلے یاددہانی کے ساتھ۔',
+ 'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
+ 'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
+ 'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
+ 'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔',
+ 'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal',
+ 'qt.title':'Desglose trimestral','qt.q1':'T1  6 abr – 5 jul','qt.q2':'T2  6 jul – 5 oct','qt.q3':'T3  6 oct – 5 ene','qt.q4':'T4  6 ene – 5 abr',
+ 'qt.current':'actual','qt.income':'Ingresos','qt.expenses':'Gastos','qt.profit':'Beneficio','qt.noData':'Sin entradas este trimestre.',
+ 'mtd.title':'Making Tax Digital (MTD)','mtd.50k':'MTD te aplica desde abril 2026 — beneficio sobre £50,000.','mtd.30k':'MTD te aplica desde abril 2027 — beneficio sobre £30,000.',
+ 'mtd.20k':'MTD te aplica desde abril 2028 — beneficio sobre £20,000.','mtd.ok':'MTD no requerido aún — umbral £20,000.',
+ 'mtd.what':'MTD significa enviar actualizaciones trimestriales a través de software aprobado por HMRC.',
+ 'cal.export':'Añadir fechas fiscales al calendario (.ics)','cal.desc':'Fechas límite fiscales UK con recordatorio 7 días antes.',
+ 'nb.jan':'Self Assessment en {n} día/días — 31 enero','nb.jul':'Payment on account en {n} día/días — 31 julio',
+ 'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
+ 'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
+ 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado',
+ 'f.catErr':'Elige una categoría','f.dateOtherYear':'Esta fecha pertenece al año fiscal {y} — la entrada aparecerá allí.',
+ 'tax.emptyT':'Añade un negocio para ver tu estimación','tax.emptyS':'Tu panorama fiscal aparece aquí cuando añadas un negocio y registres ingresos.','tip.entries':'',
  'fd.title':'فولڈر','fd.add':'نیا فولڈر','fd.name':'فولڈر کا نام','fd.none':'کوئی فولڈر نہیں','fd.manage':'فولڈرز','fd.deleteM':'اندراجات کا ڈیٹا محفوظ رہے گا — صرف فولڈر کا لیبل ہٹے گا۔','fd.all':'تمام فولڈرز',
  'cc.add':'نیا زمرہ','cc.name':'زمرے کا نام','cc.emoji':'ایموجی (اختیاری)','cc.manage':'میرے زمرے','cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
  'pro.title':'TaxMate Pro','pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔','pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر','pro.f2':'رسیدوں کی تصاویر','pro.f3':'AI ٹپس','pro.soon':'جلد آرہا ہے','pro.preview':'Pro مفت آزمائیں (پیش منظر)','pro.on':'Pro فعال',
@@ -1174,6 +1299,7 @@ function pageHome(){
     </div>
   </div>
 
+  ${deadlineBanner()}
   <div class="card" style="cursor:pointer" onclick="go('tax')">
     <div class="row">
       <div class="ico" style="background:var(--brand-soft)">🐷</div>
@@ -1260,6 +1386,14 @@ function setFilter(key,v){ S[key]=v; save(); render(); }
 
 /* ═══════════ TAX ═══════════ */
 function pageTax(){
+  if(!S.businesses.length){
+    return '<div class="h1">'+t('nav.tax')+'</div>'
+      +'<div class="card" style="text-align:center;padding:40px 24px">'
+      +'<div style="font-size:44px;margin-bottom:12px">📊</div>'
+      +'<div class="t" style="margin-bottom:8px">'+t('tax.emptyT')+'</div>'
+      +'<div class="s" style="margin-bottom:18px">'+t('tax.emptyS')+'</div>'
+      +'<button class="btn" onclick="openBiz()">+ '+t('home.addBiz')+'</button></div>';
+  }
   const tx = calcTax(S.year);
   const cfg = tx.cfg;
 
@@ -1296,8 +1430,11 @@ function pageTax(){
     <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
   </div>
 
+  ${deadlineBanner()}
   ${taBlock}
 
+  ${quarterlyCard()}
+  ${mtdCard()}
   ${mileageCard()}
 
   <div class="card">
@@ -1453,6 +1590,8 @@ function pageMore(){
     <div class="s" style="margin-bottom:12px">${cloudUser()
       ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
       : ''}${t('m.backupHint')}</div>
+    <button class="btn ghost" style="margin-bottom:10px" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
+    <div class="s" style="margin-bottom:10px">${t('cal.desc')}</div>
     <button class="btn ghost" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
@@ -1564,11 +1703,43 @@ function deleteFolder(id){
 }
 function setCat(c){ EN.cat=c; paintEntry(); }
 function setPct(p){ EN.pct=p; paintEntry(); }
+function dateToTaxYear(dateStr){
+  const d = new Date(dateStr+'T12:00:00');
+  const y = d.getFullYear();
+  const apr6 = new Date(y,3,6);
+  const startY = d >= apr6 ? y : y-1;
+  return startY + '-' + String((startY+1)%100).padStart(2,'0');
+}
+function checkEntryDate(dateStr){
+  const hint = document.getElementById('en-date-hint');
+  if(!hint || !dateStr) return;
+  const entryYr = dateToTaxYear(dateStr);
+  if(entryYr !== S.year){
+    hint.textContent = t('f.dateOtherYear',{y:entryYr});
+    hint.style.display = 'block';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
 function saveEntry(){
   const amt = parseFloat(document.getElementById('en-amount').value);
   if(!(amt>0)){
     document.getElementById('en-amount').classList.add('err');
     document.getElementById('en-amount-err').classList.add('show');
+    document.getElementById('en-amount').focus();
+    return;
+  }
+  if(!EN.cat){
+    const catGrid = document.getElementById('en-cats');
+    if(catGrid){
+      catGrid.style.outline='2px solid var(--coral)';
+      catGrid.style.outlineOffset='4px';
+      catGrid.style.borderRadius='12px';
+      if(catGrid.scrollIntoView) catGrid.scrollIntoView({behavior:'smooth',block:'center'});
+      setTimeout(()=>{ catGrid.style.outline=''; },2200);
+    }
+    toast(t('f.catErr'));
     return;
   }
   const rec = {
@@ -1586,7 +1757,7 @@ function saveEntry(){
   };
   if(EN.id){ const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec; }
   else S.entries.push(rec);
-  save(); pushEntryRemote(rec); closeSheet('entry'); render();
+  save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
 }
 function deleteEntry(){
   confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
@@ -1677,7 +1848,7 @@ function saveBiz(){
     }
     S.businesses.push(newBiz);
   }
-  save(); closeSheet('biz'); render();
+  save(); closeSheet('biz'); render(); toast(t('toast.saved'));
   // 有 pendingCode → 直接啟用 sync，唔使重開 sheet
   if(newId && BZ.pendingCode && S.businesses[S.businesses.length-1].syncCode){
     const code = BZ.pendingCode;
@@ -1736,9 +1907,24 @@ function resetAll(){
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
   render();
 }
-function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); }
-function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); }
-document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o) o.classList.remove('open'); }));
+function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); document.body.classList.add('sheet-open'); }
+function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); }
+
+/* Toast feedback */
+let _toastTimer=null;
+function toast(msg){
+  let el = document.getElementById('taxmate-toast');
+  if(!el){
+    el = document.createElement('div');
+    el.id='taxmate-toast'; el.className='toast';
+    document.body.appendChild(el);
+  }
+  el.textContent = msg;
+  requestAnimationFrame(()=>el.classList.add('show'));
+  clearTimeout(_toastTimer);
+  _toastTimer = setTimeout(()=>el.classList.remove('show'), 2000);
+}
+document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o){ o.classList.remove('open'); document.body.classList.remove('sheet-open'); } }));
 
 /* ═══════════ export / import ═══════════ */
 function exportJSON(){
@@ -1871,7 +2057,7 @@ function importJSON(ev){
       confirmAction(t('r.title'), t('r.msg'), ()=>{
         S = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), data);
         S.settings = Object.assign({lang:'en'}, data.settings||{});
-        save(); render();
+        save(); render(); toast(t('toast.restored'));
       });
     }catch(err){ alert(t('r.bad')); }
   };
@@ -2393,6 +2579,124 @@ function sa104Card(){
   return html;
 }
 
+/* ═══════════ Quarterly + MTD + Calendar + Deadline Banner ═══════════ */
+
+// UK tax quarters
+const QUARTERS = [
+  {id:'Q1', from:[3,6],  to:[6,5]},  // Apr 6 – Jul 5
+  {id:'Q2', from:[6,6],  to:[9,5]},  // Jul 6 – Oct 5
+  {id:'Q3', from:[9,6],  to:[0,5]},  // Oct 6 – Jan 5 (month 0 = Jan next year)
+  {id:'Q4', from:[0,6],  to:[3,5]},  // Jan 6 – Apr 5
+];
+function quarterRange(qIdx, yr){
+  const y = parseInt(yr.slice(0,4));
+  const q = QUARTERS[qIdx];
+  const fromY = q.from[0]<3 ? y+1 : y;
+  const toY   = q.to[0]<3   ? y+1 : y;
+  const pad = n => String(n).padStart(2,'0');
+  return {
+    from: fromY+'-'+pad(q.from[0]+1)+'-'+pad(q.from[1]),
+    to:   toY  +'-'+pad(q.to[0]+1)  +'-'+pad(q.to[1]),
+    label: t('qt.'+q.id.toLowerCase()),
+    id: q.id
+  };
+}
+function currentQuarterIdx(yr){
+  const today = new Date().toISOString().slice(0,10);
+  for(let i=0;i<4;i++){
+    const r = quarterRange(i,yr);
+    if(today>=r.from && today<=r.to) return i;
+  }
+  return -1;
+}
+
+function quarterlyCard(){
+  const yr = S.year;
+  const curQ = currentQuarterIdx(yr);
+  const rows = [0,1,2,3].map(i=>{
+    const r = quarterRange(i,yr);
+    const entries = S.entries.filter(e=>e.date>=r.from && e.date<=r.to);
+    const inc = entries.filter(e=>e.kind==='income').reduce((s,e)=>s+Math.max(0,e.amount),0);
+    const exp = entries.filter(e=>e.kind==='expense').reduce((s,e)=>s+Math.max(0,effExact(e)),0);
+    const profit = inc-exp;
+    const isCur = i===curQ;
+    return '<div style="padding:11px 0;border-bottom:1px solid var(--line)'+(i===3?';border-bottom:none':'')+'">'
+      +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+      +'<span style="font-size:13px;font-weight:800;color:'+(isCur?'var(--brand-deep)':'var(--muted)')+'">'+r.label
+      +(isCur?' <span class="tagchip green" style="font-size:10px">'+t('qt.current')+'</span>':'')+'</span>'
+      +'<span style="font-size:13px;font-weight:800;color:'+(profit>=0?'var(--brand-deep)':'var(--coral)')+'" class="num">'+fmt(profit)+'</span></div>'
+      +(inc>0||exp>0
+        ? '<div style="display:flex;gap:12px">'
+          +'<span style="font-size:12px;color:var(--muted)">'+t('qt.income')+' <b class="num" style="color:var(--ink)">'+fmt(inc)+'</b></span>'
+          +'<span style="font-size:12px;color:var(--muted)">'+t('qt.expenses')+' <b class="num" style="color:var(--ink)">'+fmt(exp)+'</b></span></div>'
+        : '<div style="font-size:12px;color:var(--muted)">'+t('qt.noData')+'</div>')
+      +'</div>';
+  }).join('');
+  return '<div class="card"><div class="t" style="margin-bottom:2px">📊 '+t('qt.title')+'</div>'
+    +'<div class="s" style="margin-bottom:10px">'+yr+'</div>'+rows+'</div>';
+}
+
+function mtdCard(){
+  const yr = S.year;
+  const profit = calcTax(yr).myProfit;
+  let msg='', col='var(--muted)', bg='var(--bg)';
+  if(profit>=50000){msg=t('mtd.50k'); col='var(--coral)'; bg='var(--coral-soft)';}
+  else if(profit>=30000){msg=t('mtd.30k'); col='var(--amber)'; bg='var(--amber-soft)';}
+  else if(profit>=20000){msg=t('mtd.20k'); col='#6b4a06'; bg='var(--amber-soft)';}
+  else{msg=t('mtd.ok'); col='var(--muted)'; bg='#F5F7F9';}
+  return '<div class="card"><div class="t" style="margin-bottom:6px">🏛 '+t('mtd.title')+'</div>'
+    +'<div style="background:'+bg+';border-radius:12px;padding:12px 14px;margin-bottom:8px">'
+    +'<div style="font-size:13px;font-weight:700;color:'+col+'">'+msg+'</div></div>'
+    +'<div class="s">'+t('mtd.what')+'</div></div>';
+}
+
+// Deadline banner (shown on Home + Tax pages if within 7 days)
+function deadlineBanner(){
+  const today = new Date();
+  const yr = S.year;
+  const y = parseInt(yr.slice(0,4))+1; // filing year = tax year end +1
+  const deadlines = [
+    {date: new Date(y,0,31), keyToday:'nb.today_jan', key:'nb.jan'},
+    {date: new Date(y,6,31), keyToday:'nb.today_jul', key:'nb.jul'},
+  ];
+  for(const d of deadlines){
+    const diff = Math.round((d.date-today)/(1000*60*60*24));
+    if(diff<0 || diff>7) continue;
+    if(diff===0) return '<div class="notice" style="background:#FDEDEE;color:var(--coral);font-weight:700;margin-bottom:14px">⏰ '+t(d.keyToday)+'</div>';
+    const s = diff===1?t('nb.day'):t('nb.days');
+    return '<div class="notice amber" style="margin-bottom:14px;font-weight:700">⏰ '+t(d.key,{n:diff,s:''})+'</div>';
+  }
+  return '';
+}
+
+// .ics calendar export
+function exportCalendar(){
+  const yr = S.year;
+  const y = parseInt(yr.slice(0,4))+1;
+  const tx = calcTax(yr);
+  const NL = '\r\n';
+  function icsDate(d){ const y=d.getFullYear(),m=String(d.getMonth()+1).padStart(2,'0'),dy=String(d.getDate()).padStart(2,'0'); return ''+y+m+dy; }
+  const alarm = desc => ['BEGIN:VALARM','TRIGGER:-P7D','ACTION:DISPLAY','DESCRIPTION:'+desc+' in 7 days','END:VALARM'].join(NL);
+  const event = (uid,date,summary,desc) => {
+    const d = new Date(date); const d2 = new Date(d); d2.setDate(d2.getDate()+1);
+    return ['BEGIN:VEVENT','UID:'+uid+'-taxmate@uk','DTSTART;VALUE=DATE:'+icsDate(d),'DTEND;VALUE=DATE:'+icsDate(d2),'SUMMARY:'+summary,'DESCRIPTION:'+desc,alarm(summary),'END:VEVENT'].join(NL);
+  }
+  const events = [
+    event('jan-'+yr, new Date(y,0,31), 'Self Assessment deadline '+yr,
+      'File return + pay balancing payment. TaxMate estimate: '+fmt(tx.balancing)),
+    tx.poaRequired ? event('jul-'+yr, new Date(y,6,31), 'Payment on account due '+yr,
+      '2nd payment on account. TaxMate estimate: '+fmt(tx.poaEach)) : null,
+    event('yearend-'+yr, new Date(parseInt(yr.slice(0,4))+1,3,5), 'Tax year end '+yr,
+      'UK tax year ends. Complete your records for '+yr+'.'),
+  ].filter(Boolean);
+  const lines = ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//TaxMate UK//EN','CALSCALE:GREGORIAN'].concat(events).concat(['END:VCALENDAR']);
+  const ics = lines.join(NL);
+  const blob = new Blob([ics],{type:'text/calendar'});
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob); a.download = 'taxmate-'+yr+'.ics';
+  a.click(); URL.revokeObjectURL(a.href); toast(t('toast.calAdded'));
+}
+
 function mileageCard(){
   const yr = S.year;
   const mi = calcMileage(yr);
@@ -2680,7 +2984,7 @@ deleteEntry = function(){
     const e = S.entries.find(x=>x.id===EN.id);
     S.entries = S.entries.filter(x=>x.id!==EN.id);
     if(e){ deleteEntryRemote(e.bizId, e.id); if(e.receiptPath) deleteReceiptFromStorage(e.receiptPath); }
-    save(); closeSheet('entry'); render();
+    save(); closeSheet('entry'); render(); toast(t('toast.deleted'));
   });
 };
 
