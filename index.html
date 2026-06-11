@@ -344,6 +344,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
 /* ═══════════ i18n ═══════════ */
 const LOCALES = { en:'en-GB', zh:'zh-HK', pl:'pl-PL', ro:'ro-RO', es:'es-ES', ur:'ur-PK' };
@@ -411,7 +413,8 @@ en:{
  'cat.equip':'Equipment & tools','cat.office':'Office & admin','cat.stock':'Stock & materials','cat.insure':'Insurance',
  'cat.fees':'Professional fees','cat.market':'Marketing & subs','cat.repair':'Repairs','cat.other':'Other expense',
  'cat.sales':'Work income','cat.tips':'Tips & bonuses','cat.royalty':'Royalties','cat.otherin':'Other income','cat.otherin':'Other income',
- 'rc.add':'Add receipt','rc.view':'View receipt','rc.delete':'Delete receipt','rc.uploading':'Uploading…','rc.uploadErr':'Upload failed — try again','rc.deleteConfirm':'Delete this receipt photo?','rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.',
+ 'rc.add':'Add receipt','rc.view':'View receipt','rc.delete':'Delete receipt','rc.uploading':'Uploading…','rc.uploadErr':'Upload failed — try again','rc.deleteConfirm':'Delete this receipt photo?','rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.','rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.',
+ 'pdf.download':'Download PDF report','pdf.title':'Tax Summary','pdf.generated':'Generated','pdf.business':'Business','pdf.structure':'Structure','pdf.period':'Tax year','pdf.income':'Total income','pdf.expenses':'Total expenses (claimable)','pdf.profit':'Profit','pdf.estTax':'Estimated tax','pdf.incomeDetail':'Income entries','pdf.expenseDetail':'Expense entries','pdf.taxCalc':'Tax calculation','pdf.date':'Date','pdf.category':'Category','pdf.description':'Description','pdf.amount':'Amount','pdf.bizPct':'Biz %','pdf.claimable':'Claimable','pdf.pa':'Personal Allowance','pdf.taxable':'Taxable income','pdf.incomeTax':'Income Tax','pdf.class4':'Class 4 NI','pdf.total':'Total bill','pdf.disclaimer':'Estimate only — not tax advice. Confirm with HMRC or an accountant before filing.','pdf.noEntries':'No entries for this period.',
  'fd.title':'Folder','fd.add':'New folder','fd.name':'Folder name','fd.none':'No folder','fd.manage':'Folders','fd.deleteM':'Entries keep their data — they just lose this folder label.','fd.all':'All folders',
  'cc.add':'New category','cc.name':'Category name','cc.emoji':'Emoji (optional)','cc.manage':'My categories','cc.deleteM':'Entries using it will show as "Other".',
  'pro.title':'TaxMate Pro','pro.sub':'Free is full-featured forever. Pro adds convenience on top.','pro.f1':'Partner sync — one partnership, every phone','pro.f2':'Receipt photos','pro.f3':'Smart AI tips','pro.soon':'coming soon','pro.preview':'Try Pro free (preview)','pro.on':'Pro active',
@@ -479,7 +482,8 @@ zh:{
  'cat.equip':'設備及工具','cat.office':'辦公及行政','cat.stock':'存貨及材料','cat.insure':'保險',
  'cat.fees':'專業費用','cat.market':'宣傳及訂閱','cat.repair':'維修','cat.other':'其他開支',
  'cat.sales':'工作收入','cat.tips':'小費及獎金','cat.royalty':'版稅','cat.otherin':'其他收入','cat.otherin':'其他收入',
- 'rc.add':'新增收據','rc.view':'查看收據','rc.delete':'刪除收據','rc.uploading':'上傳中…','rc.uploadErr':'上傳失敗，請再試','rc.deleteConfirm':'刪除此收據相片？','rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。',
+ 'rc.add':'新增收據','rc.view':'查看收據','rc.delete':'刪除收據','rc.uploading':'上傳中…','rc.uploadErr':'上傳失敗，請再試','rc.deleteConfirm':'刪除此收據相片？','rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。','rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。',
+ 'pdf.download':'下載 PDF 報告','pdf.title':'稅務摘要','pdf.generated':'生成日期','pdf.business':'業務','pdf.structure':'類型','pdf.period':'稅務年度','pdf.income':'總收入','pdf.expenses':'總開支（可申報）','pdf.profit':'利潤','pdf.estTax':'估算稅款','pdf.incomeDetail':'收入明細','pdf.expenseDetail':'開支明細','pdf.taxCalc':'稅款計算','pdf.date':'日期','pdf.category':'類別','pdf.description':'描述','pdf.amount':'金額','pdf.bizPct':'業務%','pdf.claimable':'可申報','pdf.pa':'個人免稅額','pdf.taxable':'應稅收入','pdf.incomeTax':'入息稅','pdf.class4':'Class 4 NI','pdf.total':'總稅款','pdf.disclaimer':'僅屬估算 — 並非稅務意見。申報前請向 HMRC 或會計師核實。','pdf.noEntries':'此期間無記錄。',
  'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'無資料夾','fd.manage':'資料夾','fd.deleteM':'資料夾內的記錄不會消失，只會移除資料夾標籤。','fd.all':'全部資料夾',
  'cc.add':'新增類別','cc.name':'類別名稱','cc.emoji':'Emoji（可不填）','cc.manage':'我的類別','cc.deleteM':'使用中的記錄將顯示為「其他」。',
  'pro.title':'TaxMate Pro','pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。','pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到','pro.f2':'收據相簿','pro.f3':'AI 智能貼士','pro.soon':'即將推出','pro.preview':'免費試用 Pro(預覽)','pro.on':'Pro 使用中',
@@ -547,7 +551,8 @@ pl:{
  'cat.equip':'Sprzęt i narzędzia','cat.office':'Biuro i administracja','cat.stock':'Towar i materiały','cat.insure':'Ubezpieczenie',
  'cat.fees':'Usługi profesjonalne','cat.market':'Marketing i subskrypcje','cat.repair':'Naprawy','cat.other':'Inny wydatek',
  'cat.sales':'Przychód z pracy','cat.tips':'Napiwki i bonusy','cat.royalty':'Tantiemy','cat.otherin':'Inny przychód','cat.otherin':'Inny przychód',
- 'rc.add':'Dodaj paragon','rc.view':'Zobacz paragon','rc.delete':'Usuń paragon','rc.uploading':'Przesyłanie…','rc.uploadErr':'Błąd przesyłania — spróbuj ponownie','rc.deleteConfirm':'Usunąć to zdjęcie paragonu?','rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.',
+ 'rc.add':'Dodaj paragon','rc.view':'Zobacz paragon','rc.delete':'Usuń paragon','rc.uploading':'Przesyłanie…','rc.uploadErr':'Błąd przesyłania — spróbuj ponownie','rc.deleteConfirm':'Usunąć to zdjęcie paragonu?','rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.','rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.',
+ 'pdf.download':'Pobierz raport PDF','pdf.title':'Podsumowanie podatkowe','pdf.generated':'Wygenerowano','pdf.business':'Firma','pdf.structure':'Forma','pdf.period':'Rok podatkowy','pdf.income':'Łączne przychody','pdf.expenses':'Łączne wydatki (do odliczenia)','pdf.profit':'Zysk','pdf.estTax':'Szacowany podatek','pdf.incomeDetail':'Przychody','pdf.expenseDetail':'Wydatki','pdf.taxCalc':'Obliczenie podatku','pdf.date':'Data','pdf.category':'Kategoria','pdf.description':'Opis','pdf.amount':'Kwota','pdf.bizPct':'Firmowe %','pdf.claimable':'Do odliczenia','pdf.pa':'Personal Allowance','pdf.taxable':'Dochód do opodatkowania','pdf.incomeTax':'Income Tax','pdf.class4':'Class 4 NI','pdf.total':'Łącznie do zapłaty','pdf.disclaimer':'Tylko szacunek — nie porada podatkowa. Potwierdź z HMRC lub księgowym.','pdf.noEntries':'Brak wpisów w tym okresie.',
  'fd.title':'Folder','fd.add':'Nowy folder','fd.name':'Nazwa folderu','fd.none':'Bez folderu','fd.manage':'Foldery','fd.deleteM':'Wpisy zachowają dane — stracą tylko etykietę folderu.','fd.all':'Wszystkie foldery',
  'cc.add':'Nowa kategoria','cc.name':'Nazwa kategorii','cc.emoji':'Emoji (opcjonalnie)','cc.manage':'Moje kategorie','cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
  'pro.title':'TaxMate Pro','pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.','pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon','pro.f2':'Zdjęcia paragonów','pro.f3':'Inteligentne wskazówki AI','pro.soon':'wkrótce','pro.preview':'Wypróbuj Pro za darmo (podgląd)','pro.on':'Pro aktywne',
@@ -615,7 +620,8 @@ ro:{
  'cat.equip':'Echipamente și unelte','cat.office':'Birou și administrare','cat.stock':'Stoc și materiale','cat.insure':'Asigurare',
  'cat.fees':'Servicii profesionale','cat.market':'Marketing și abonamente','cat.repair':'Reparații','cat.other':'Altă cheltuială',
  'cat.sales':'Venit din muncă','cat.tips':'Bacșișuri și bonusuri','cat.royalty':'Drepturi de autor','cat.otherin':'Alt venit','cat.otherin':'Alt venit',
- 'rc.add':'Adaugă bon','rc.view':'Vezi bon','rc.delete':'Șterge bon','rc.uploading':'Se încarcă…','rc.uploadErr':'Eroare la încărcare — încearcă din nou','rc.deleteConfirm':'Ștergi această fotografie?','rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.',
+ 'rc.add':'Adaugă bon','rc.view':'Vezi bon','rc.delete':'Șterge bon','rc.uploading':'Se încarcă…','rc.uploadErr':'Eroare la încărcare — încearcă din nou','rc.deleteConfirm':'Ștergi această fotografie?','rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.','rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.',
+ 'pdf.download':'Descarcă raport PDF','pdf.title':'Sumar fiscal','pdf.generated':'Generat','pdf.business':'Afacere','pdf.structure':'Tip','pdf.period':'An fiscal','pdf.income':'Venituri totale','pdf.expenses':'Cheltuieli totale (deductibile)','pdf.profit':'Profit','pdf.estTax':'Taxă estimată','pdf.incomeDetail':'Detalii venituri','pdf.expenseDetail':'Detalii cheltuieli','pdf.taxCalc':'Calcul taxe','pdf.date':'Data','pdf.category':'Categorie','pdf.description':'Descriere','pdf.amount':'Sumă','pdf.bizPct':'Uz biz %','pdf.claimable':'Deductibil','pdf.pa':'Personal Allowance','pdf.taxable':'Venit impozabil','pdf.incomeTax':'Income Tax','pdf.class4':'Class 4 NI','pdf.total':'Total de plată','pdf.disclaimer':'Doar estimare — nu consultanță fiscală. Confirmă cu HMRC sau un contabil.','pdf.noEntries':'Nicio înregistrare în această perioadă.',
  'fd.title':'Folder','fd.add':'Folder nou','fd.name':'Numele folderului','fd.none':'Fără folder','fd.manage':'Foldere','fd.deleteM':'Înregistrările își păstrează datele — pierd doar eticheta de folder.','fd.all':'Toate folderele',
  'cc.add':'Categorie nouă','cc.name':'Numele categoriei','cc.emoji':'Emoji (opțional)','cc.manage':'Categoriile mele','cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
  'pro.title':'TaxMate Pro','pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.','pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon','pro.f2':'Poze cu bonuri','pro.f3':'Sfaturi AI inteligente','pro.soon':'în curând','pro.preview':'Încearcă Pro gratuit (preview)','pro.on':'Pro activ',
@@ -683,7 +689,8 @@ es:{
  'cat.equip':'Equipo y herramientas','cat.office':'Oficina y administración','cat.stock':'Stock y materiales','cat.insure':'Seguro',
  'cat.fees':'Servicios profesionales','cat.market':'Marketing y suscripciones','cat.repair':'Reparaciones','cat.other':'Otro gasto',
  'cat.sales':'Ingreso por trabajo','cat.tips':'Propinas y bonus','cat.royalty':'Regalías','cat.otherin':'Otro ingreso','cat.otherin':'Otro ingreso',
- 'rc.add':'Añadir recibo','rc.view':'Ver recibo','rc.delete':'Eliminar recibo','rc.uploading':'Subiendo…','rc.uploadErr':'Error al subir — inténtalo de nuevo','rc.deleteConfirm':'¿Eliminar esta foto del recibo?','rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.',
+ 'rc.add':'Añadir recibo','rc.view':'Ver recibo','rc.delete':'Eliminar recibo','rc.uploading':'Subiendo…','rc.uploadErr':'Error al subir — inténtalo de nuevo','rc.deleteConfirm':'¿Eliminar esta foto del recibo?','rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.','rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.',
+ 'pdf.download':'Descargar informe PDF','pdf.title':'Resumen fiscal','pdf.generated':'Generado','pdf.business':'Negocio','pdf.structure':'Tipo','pdf.period':'Año fiscal','pdf.income':'Ingresos totales','pdf.expenses':'Gastos totales (deducibles)','pdf.profit':'Beneficio','pdf.estTax':'Impuesto estimado','pdf.incomeDetail':'Detalle de ingresos','pdf.expenseDetail':'Detalle de gastos','pdf.taxCalc':'Cálculo de impuestos','pdf.date':'Fecha','pdf.category':'Categoría','pdf.description':'Descripción','pdf.amount':'Importe','pdf.bizPct':'Uso biz %','pdf.claimable':'Deducible','pdf.pa':'Personal Allowance','pdf.taxable':'Renta imponible','pdf.incomeTax':'Income Tax','pdf.class4':'Class 4 NI','pdf.total':'Total a pagar','pdf.disclaimer':'Solo estimación — no asesoría fiscal. Confirma con HMRC o un contable.','pdf.noEntries':'Sin entradas en este período.',
  'fd.title':'Carpeta','fd.add':'Nueva carpeta','fd.name':'Nombre de la carpeta','fd.none':'Sin carpeta','fd.manage':'Carpetas','fd.deleteM':'Las entradas conservan sus datos — solo pierden la etiqueta.','fd.all':'Todas las carpetas',
  'cc.add':'Nueva categoría','cc.name':'Nombre de la categoría','cc.emoji':'Emoji (opcional)','cc.manage':'Mis categorías','cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
  'pro.title':'TaxMate Pro','pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.','pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles','pro.f2':'Fotos de recibos','pro.f3':'Consejos inteligentes con IA','pro.soon':'próximamente','pro.preview':'Prueba Pro gratis (vista previa)','pro.on':'Pro activo',
@@ -751,7 +758,8 @@ ur:{
  'cat.equip':'سامان اور اوزار','cat.office':'دفتر اور انتظام','cat.stock':'اسٹاک اور مواد','cat.insure':'انشورنس',
  'cat.fees':'پیشہ ورانہ فیس','cat.market':'مارکیٹنگ اور سبسکرپشن','cat.repair':'مرمت','cat.other':'دیگر خرچ',
  'cat.sales':'کام کی آمدنی','cat.tips':'ٹپس اور بونس','cat.royalty':'رائلٹی','cat.otherin':'دیگر آمدنی','cat.otherin':'دیگر آمدنی',
- 'rc.add':'رسید شامل کریں','rc.view':'رسید دیکھیں','rc.delete':'رسید حذف کریں','rc.uploading':'اپلوڈ ہو رہا ہے…','rc.uploadErr':'اپلوڈ ناکام — دوبارہ کوشش کریں','rc.deleteConfirm':'یہ رسید کی تصویر حذف کریں؟','rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔',
+ 'rc.add':'رسید شامل کریں','rc.view':'رسید دیکھیں','rc.delete':'رسید حذف کریں','rc.uploading':'اپلوڈ ہو رہا ہے…','rc.uploadErr':'اپلوڈ ناکام — دوبارہ کوشش کریں','rc.deleteConfirm':'یہ رسید کی تصویر حذف کریں؟','rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔','rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔',
+ 'pdf.download':'PDF رپورٹ ڈاؤن لوڈ کریں','pdf.title':'ٹیکس خلاصہ','pdf.generated':'تاریخ تخلیق','pdf.business':'کاروبار','pdf.structure':'قسم','pdf.period':'ٹیکس سال','pdf.income':'کل آمدنی','pdf.expenses':'کل اخراجات (قابل دعویٰ)','pdf.profit':'منافع','pdf.estTax':'تخمینی ٹیکس','pdf.incomeDetail':'آمدنی کی تفصیل','pdf.expenseDetail':'اخراجات کی تفصیل','pdf.taxCalc':'ٹیکس حساب','pdf.date':'تاریخ','pdf.category':'زمرہ','pdf.description':'تفصیل','pdf.amount':'رقم','pdf.bizPct':'کاروباری %','pdf.claimable':'قابل دعویٰ','pdf.pa':'پرسنل الاؤنس','pdf.taxable':'قابل ٹیکس آمدنی','pdf.incomeTax':'انکم ٹیکس','pdf.class4':'Class 4 NI','pdf.total':'کل بل','pdf.disclaimer':'صرف تخمینہ — ٹیکس مشورہ نہیں۔ دائر کرنے سے پہلے HMRC یا اکاؤنٹنٹ سے تصدیق کریں۔','pdf.noEntries':'اس مدت میں کوئی اندراج نہیں۔',
  'fd.title':'فولڈر','fd.add':'نیا فولڈر','fd.name':'فولڈر کا نام','fd.none':'کوئی فولڈر نہیں','fd.manage':'فولڈرز','fd.deleteM':'اندراجات کا ڈیٹا محفوظ رہے گا — صرف فولڈر کا لیبل ہٹے گا۔','fd.all':'تمام فولڈرز',
  'cc.add':'نیا زمرہ','cc.name':'زمرے کا نام','cc.emoji':'ایموجی (اختیاری)','cc.manage':'میرے زمرے','cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
  'pro.title':'TaxMate Pro','pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔','pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر','pro.f2':'رسیدوں کی تصاویر','pro.f3':'AI ٹپس','pro.soon':'جلد آرہا ہے','pro.preview':'Pro مفت آزمائیں (پیش منظر)','pro.on':'Pro فعال',
@@ -1172,7 +1180,8 @@ function pageTax(){
   </div>
 
   <details class="help"><summary>${t('tax.accT')}</summary><div class="hb">${t('tax.accB',{y:S.year})}</div></details>
-  <p class="small">${t('tax.disc')}</p>`;
+  <button class="btn soft" style="margin-bottom:6px" onclick="generatePDF()">📄 \${t('pdf.download')}</button>
+  <p class="small">\${t('tax.disc')}</p>`;
 }
 function setTaMode(m){ yd().taMode=m; save(); render(); }
 
@@ -1896,6 +1905,170 @@ async function loadCloudRates(){
       }
     }
   }catch(e){ console.warn('rates fetch failed', e); }
+}
+
+/* ═══════════ PDF Report Engine ═══════════ */
+function generatePDF(){
+  if(typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined'){
+    alert('PDF library loading — try again in a moment.'); return;
+  }
+  const { jsPDF } = window.jspdf || jspdf;
+  const doc = new jsPDF({orientation:'portrait', unit:'mm', format:'a4'});
+  const yr = S.year;
+  const tx = calcTax(yr);
+  const cfg = tx.cfg;
+  const W = 210, M = 14, CW = W - M*2;
+
+  // ── colour palette ──
+  const GREEN  = [10, 169, 104];
+  const INK    = [22,  32,  43];
+  const MUTED  = [107,118,134];
+  const LINE   = [236,239,243];
+  const WHITE  = [255,255,255];
+  const AMBER  = [252,243,223];
+  const AMBERT = [107, 80, 20];
+
+  function setFont(size, weight, colour){
+    doc.setFontSize(size);
+    doc.setFont('helvetica', weight==='bold'?'bold':'normal');
+    doc.setTextColor(...(colour||INK));
+  }
+  function hline(y, colour){ doc.setDrawColor(...(colour||LINE)); doc.setLineWidth(.3); doc.line(M,y,W-M,y); }
+  function fillRect(x,y,w,h,colour){ doc.setFillColor(...colour); doc.rect(x,y,w,h,'F'); }
+
+  let y = 0;
+
+  // ── HEADER BAND ──
+  fillRect(0, 0, W, 28, GREEN);
+  setFont(18, 'bold', WHITE); doc.text('TaxMate UK', M, 12);
+  setFont(10, 'normal', [200,240,220]); doc.text(t('pdf.title') + ' · ' + yr, M, 19);
+  setFont(8, 'normal', [180,230,210]);
+  doc.text(t('pdf.generated') + ': ' + new Date().toLocaleDateString(locale()), W-M, 19, {align:'right'});
+  y = 34;
+
+  // ── BUSINESS SUMMARY PILLS ──
+  S.businesses.forEach(b=>{
+    const fig = bizFigures(b, yr);
+    const label = b.name + (b.structure==='partnership' ? ' ('+t('tag.part')+' '+b.share+'%)' : '');
+    setFont(8, 'bold', INK); doc.text(label, M, y);
+    setFont(8, 'normal', MUTED); doc.text((b.structure==='sole'?t('tag.sole'):t('tag.part')), M+70, y);
+    setFont(8, 'bold', fig.profit>=0?GREEN:([229,72,77]));
+    doc.text('£'+fig.profit.toFixed(2), W-M, y, {align:'right'});
+    y += 6;
+  });
+  y += 2; hline(y, LINE); y += 6;
+
+  // ── SUMMARY CARDS (2×2 grid) ──
+  const cards = [
+    {label:t('pdf.income'),  val:'£'+tx.soleIncome.toFixed(2),          bg:[230,247,240], fg:GREEN},
+    {label:t('pdf.expenses'),val:'£'+(tx.soleExpenses).toFixed(2),       bg:[253,237,238], fg:[200,50,55]},
+    {label:t('pdf.profit'),  val:'£'+tx.myProfit.toFixed(2),             bg:[234,241,254], fg:[30,90,200]},
+    {label:t('pdf.estTax'),  val:'£'+Math.max(tx.liability,0).toFixed(2),bg:AMBER,         fg:AMBERT},
+  ];
+  const cw = (CW-4)/2, ch = 16;
+  cards.forEach((c,i)=>{
+    const cx = M + (i%2)*(cw+4), cy = y + Math.floor(i/2)*(ch+3);
+    fillRect(cx, cy, cw, ch, c.bg);
+    doc.setFontSize(7); doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED);
+    doc.text(c.label, cx+4, cy+5);
+    doc.setFontSize(12); doc.setFont('helvetica','bold'); doc.setTextColor(...c.fg);
+    doc.text(c.val, cx+4, cy+12);
+  });
+  y += 2*ch + 3*3 + 8;
+  hline(y, LINE); y += 8;
+
+  // ── INCOME TABLE ──
+  const incEntries = entriesFor(yr, null, 'income').sort((a,b)=>a.date.localeCompare(b.date));
+  setFont(11, 'bold', INK); doc.text(t('pdf.incomeDetail'), M, y); y += 5;
+  if(incEntries.length){
+    doc.autoTable({
+      startY: y,
+      margin:{left:M, right:M},
+      headStyles:{fillColor:GREEN, textColor:WHITE, fontSize:8, fontStyle:'bold'},
+      bodyStyles:{fontSize:8, textColor:INK},
+      alternateRowStyles:{fillColor:[248,250,252]},
+      columnStyles:{3:{halign:'right'}},
+      head:[[t('pdf.date'), t('pdf.category'), t('pdf.description'), t('pdf.amount')]],
+      body: incEntries.map(e=>[
+        e.date,
+        catName(e.cat),
+        e.desc||'—',
+        '£'+e.amount.toFixed(2)
+      ]),
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  } else {
+    setFont(8,'normal',MUTED); doc.text(t('pdf.noEntries'), M, y); y += 8;
+  }
+
+  // ── EXPENSE TABLE ──
+  const expEntries = entriesFor(yr, null, 'expense').sort((a,b)=>a.date.localeCompare(b.date));
+  if(y > 240){ doc.addPage(); y = 14; }
+  setFont(11,'bold',INK); doc.text(t('pdf.expenseDetail'), M, y); y += 5;
+  if(expEntries.length){
+    doc.autoTable({
+      startY: y,
+      margin:{left:M, right:M},
+      headStyles:{fillColor:[22,32,43], textColor:WHITE, fontSize:8, fontStyle:'bold'},
+      bodyStyles:{fontSize:8, textColor:INK},
+      alternateRowStyles:{fillColor:[248,250,252]},
+      columnStyles:{3:{halign:'right'},4:{halign:'center'},5:{halign:'right'}},
+      head:[[t('pdf.date'), t('pdf.category'), t('pdf.description'), t('pdf.amount'), t('pdf.bizPct'), t('pdf.claimable')]],
+      body: expEntries.map(e=>[
+        e.date,
+        catName(e.cat),
+        e.desc||'—',
+        '£'+e.amount.toFixed(2),
+        (e.pct==null?100:e.pct)+'%',
+        '£'+effExact(e).toFixed(2)
+      ]),
+    });
+    y = doc.lastAutoTable.finalY + 8;
+  } else {
+    setFont(8,'normal',MUTED); doc.text(t('pdf.noEntries'), M, y); y += 8;
+  }
+
+  // ── TAX CALCULATION ──
+  if(y > 220){ doc.addPage(); y = 14; }
+  setFont(11,'bold',INK); doc.text(t('pdf.taxCalc'), M, y); y += 5;
+  const taxRows = [
+    [t('pdf.income'),   '£'+tx.soleIncome.toFixed(2)],
+    [t('pdf.expenses'), '−£'+tx.soleExpenses.toFixed(2)],
+    [t('pdf.profit'),   '£'+tx.myProfit.toFixed(2)],
+    [t('pdf.pa'),       '−£'+tx.pa.toFixed(2)],
+    [t('pdf.taxable'),  '£'+tx.taxable.toFixed(2)],
+    [t('pdf.incomeTax'),'£'+tx.incomeTax.toFixed(2)],
+    [t('pdf.class4'),   '£'+tx.class4.toFixed(2)],
+    [t('pdf.total'),    '£'+tx.liability.toFixed(2)],
+  ];
+  doc.autoTable({
+    startY: y,
+    margin:{left:M, right:M},
+    headStyles:{fillColor:[22,32,43], textColor:WHITE, fontSize:8, fontStyle:'bold'},
+    bodyStyles:{fontSize:8, textColor:INK},
+    alternateRowStyles:{fillColor:[248,250,252]},
+    columnStyles:{1:{halign:'right', fontStyle:'bold'}},
+    head:[[t('pdf.taxCalc'), yr]],
+    body: taxRows,
+    didParseCell(data){
+      if(data.row.index===taxRows.length-1 && data.section==='body'){
+        data.cell.styles.fillColor = [230,247,240];
+        data.cell.styles.fontStyle = 'bold';
+        data.cell.styles.textColor = [6,122,75];
+      }
+    }
+  });
+  y = doc.lastAutoTable.finalY + 8;
+
+  // ── FOOTER DISCLAIMER ──
+  if(y > 270){ doc.addPage(); y = 14; }
+  hline(y, LINE); y += 5;
+  setFont(7,'normal',MUTED);
+  doc.text(t('pdf.disclaimer'), M, y, {maxWidth:CW});
+
+  // ── SAVE ──
+  const fname = 'taxmate-'+yr+'-'+new Date().toISOString().slice(0,10)+'.pdf';
+  doc.save(fname);
 }
 
 /* ═══════════ Receipt photo engine ═══════════ */
