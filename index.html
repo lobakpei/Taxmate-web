@@ -27,6 +27,7 @@
   --blue-soft:#EAF1FE;
   --amber:#B47D12;
   --amber-soft:#FCF3DF;
+  --btn-dark:#16202B;
   --r-lg:24px; --r-md:18px; --r-sm:12px;
   --shadow:0 1px 2px rgba(22,32,43,.05),0 10px 30px rgba(22,32,43,.07);
   --shadow-sm:0 1px 2px rgba(22,32,43,.06);
@@ -55,8 +56,8 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .year-pill::after{content:'▾';position:absolute;inset-inline-end:12px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);pointer-events:none}
 
 main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
-.h1{font-size:24px;font-weight:800;letter-spacing:-.5px;margin:8px 0 14px}
-.h2{font-size:17px;font-weight:800;letter-spacing:-.3px;margin:22px 0 10px}
+.h1{font-size:24px;font-weight:800;letter-spacing:-.5px;margin:8px 0 14px;color:var(--ink)}
+.h2{font-size:17px;font-weight:800;letter-spacing:-.3px;margin:22px 0 10px;color:var(--ink)}
 .sub{font-size:14px;color:var(--muted)}
 
 /* ── hero (home) ── */
@@ -80,9 +81,9 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .row+.row{margin-top:14px;padding-top:14px;border-top:1px solid var(--line)}
 .ico{width:42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:19px;flex-shrink:0}
 .grow{flex:1;min-width:0}
-.t{font-size:15px;font-weight:700}
+.t{font-size:15px;font-weight:700;color:var(--ink)}
 .s{font-size:12.5px;color:var(--muted);margin-top:1px}
-.v{font-weight:800;font-size:15px;white-space:nowrap}
+.v{font-weight:800;font-size:15px;white-space:nowrap;color:var(--ink)}
 .chev{color:#C2C9D2;font-size:18px;font-weight:700}
 .pos{color:var(--brand-deep)} .neg{color:var(--coral)} .mut{color:var(--muted)}
 
@@ -92,7 +93,7 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .frow:first-child{padding-top:0}
 .frow .fl{color:var(--ink)}
 .frow .fl small{display:block;font-size:12px;color:var(--muted);font-weight:500}
-.frow .fv{font-weight:800;white-space:nowrap}
+.frow .fv{font-weight:800;white-space:nowrap;color:var(--ink)}
 .frow.total .fl,.frow.total .fv{font-weight:800;font-size:16px}
 .frow.total{border-top:2px solid var(--ink);border-bottom:0;margin-top:4px;padding-top:12px}
 
@@ -101,7 +102,7 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
   border-radius:999px;font-size:16px;font-weight:800;color:#fff;background:var(--brand);
   box-shadow:0 6px 16px rgba(10,169,104,.32);transition:transform .12s}
 .btn:active{transform:scale(.97)}
-.btn.ink{background:var(--ink);box-shadow:0 6px 16px rgba(22,32,43,.25)}
+.btn.ink{background:var(--btn-dark);color:#fff;box-shadow:0 6px 16px rgba(22,32,43,.25)}
 .btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
 .btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
 .btn.coral{background:var(--coral);box-shadow:0 6px 16px rgba(229,72,77,.3)}
@@ -158,7 +159,7 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
   cursor:pointer;display:flex;align-items:center;gap:8px;text-align:start;color:var(--ink)}
 .catbtn.on{border-color:var(--brand);background:var(--brand-soft);font-weight:800}
-.cdot{width:10px;height:10px;border-radius:50%;flex-shrink:0}
+.cdot{width:13px;height:13px;border-radius:50%;flex-shrink:0}
 
 /* ── sheets ── */
 .sb{display:none;position:fixed;inset:0;background:rgba(16,24,32,.45);z-index:200;align-items:flex-end;justify-content:center}
@@ -171,7 +172,7 @@ body.sheet-open{overflow:hidden}
 .sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
   border-radius:28px 28px 0 0;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
 .sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:6px auto 16px}
-.sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px}
+.sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px;color:var(--ink)}
 .sheet .sact{display:flex;gap:10px;margin-top:20px}
 .sheet .sact .btn{flex:1}
 
@@ -196,6 +197,77 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 .lightbox-bar{display:flex;gap:16px}
 .lightbox-bar button{background:rgba(255,255,255,.15);border:0;color:#fff;font-size:14px;font-weight:700;padding:10px 22px;border-radius:999px;cursor:pointer}
 .lightbox-bar button.danger{background:rgba(229,72,77,.35)}
+.fab{position:fixed;bottom:calc(78px + env(safe-area-inset-bottom));right:20px;width:56px;height:56px;
+  border-radius:50%;background:var(--brand);color:#fff;font-size:30px;line-height:1;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 8px 20px rgba(10,169,104,.4);border:0;cursor:pointer;z-index:99;
+  transition:transform .12s}
+.fab:active{transform:scale(.88)}
+
+/* ── Dark mode (manual toggle + system) ── */
+:root[data-theme="dark"]{
+  --bg:#0F1620; --card:#1A2533; --ink:#EDF2F7; --muted:#8493A5; --line:#293647;
+  --brand:#15D982; --brand-deep:#3DE89B; --brand-soft:rgba(21,217,130,.16);
+  --teal:#16CFC5; --coral:#FF6B73; --coral-soft:rgba(255,107,115,.16);
+  --blue:#6BA8FF; --blue-soft:rgba(107,168,255,.16);
+  --amber:#F5B43C; --amber-soft:rgba(245,180,60,.16);
+  --shadow:0 2px 6px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.45);
+  --shadow-sm:0 1px 3px rgba(0,0,0,.45);
+}
+:root[data-theme="dark"] input[type=text],
+:root[data-theme="dark"] input[type=number],
+:root[data-theme="dark"] input[type=date],
+:root[data-theme="dark"] select,
+:root[data-theme="dark"] textarea{background:#0A0F16;color:var(--ink);border-color:var(--line)}
+:root[data-theme="dark"] input:focus,
+:root[data-theme="dark"] select:focus{background:#0A0F16;border-color:var(--brand)}
+:root[data-theme="dark"] .seg{background:#0A0F16}
+:root[data-theme="dark"] .seg button.on{background:#293647;color:var(--ink)}
+:root[data-theme="dark"] .tagchip.grey{background:#293647;color:var(--muted)}
+:root[data-theme="dark"] .entry:active{background:#222F3E}
+:root[data-theme="dark"] .catbtn{background:#1A2533;color:var(--ink)}
+:root[data-theme="dark"] .chip{background:#1A2533;color:var(--muted)}
+:root[data-theme="dark"] .chip.on{background:var(--ink);color:#0F1620}
+:root[data-theme="dark"] .sb{background:rgba(0,0,0,.72)}
+:root[data-theme="dark"] .sheet{background:#0F1620}
+:root[data-theme="dark"] .receipt-add{background:#1A2533}
+:root[data-theme="dark"] .year-pill select{background:#1A2533;color:var(--ink)}
+:root[data-theme="dark"] nav{background:rgba(15,22,32,.95)}
+:root[data-theme="dark"] .hero::before{background:rgba(255,255,255,.06)}
+:root[data-theme="dark"] .toast{background:#EDF2F7;color:#0F1620}
+:root[data-theme="dark"] .btn.ghost{background:#1A2533;border-color:var(--line);color:var(--ink)}
+:root[data-theme="dark"] .btn.soft{background:var(--brand-soft);color:var(--brand-deep)}
+:root[data-theme="dark"]{--btn-dark:#2A3849}
+:root[data-theme="dark"] details.help{background:var(--card)}
+:root[data-theme="dark"] .sheet .grab{background:#3A4756}
+:root[data-theme="dark"] .chev{color:#4A5568}
+:root[data-theme="dark"] .grab{background:#3A4756}
+
+/* System dark mode — only when no manual override */
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]):not([data-theme="dark"]){
+    --bg:#0F1620; --card:#1A2533; --ink:#EDF2F7; --muted:#8493A5; --line:#293647;
+    --brand:#15D982; --brand-deep:#3DE89B; --brand-soft:rgba(21,217,130,.16);
+    --teal:#16CFC5; --coral:#FF6B73; --coral-soft:rgba(255,107,115,.16);
+    --blue:#6BA8FF; --blue-soft:rgba(107,168,255,.16);
+    --amber:#F5B43C; --amber-soft:rgba(245,180,60,.16);
+    --shadow:0 2px 6px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.45);
+    --shadow-sm:0 1px 3px rgba(0,0,0,.45);
+  }
+  :root:not([data-theme="light"]):not([data-theme="dark"]) input,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) select,
+  :root:not([data-theme="light"]):not([data-theme="dark"]) textarea{background:#0A0F16;color:#EDF2F7;border-color:#293647}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .seg{background:#0A0F16}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .catbtn{background:#1A2533;color:#EDF2F7}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .chip{background:#1A2533}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .sheet{background:#0F1620}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) nav{background:rgba(15,22,32,.95)}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .toast{background:#EDF2F7;color:#0F1620}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .btn.ghost{background:#1A2533;border-color:#293647;color:#EDF2F7}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .year-pill select{background:#1A2533;color:#EDF2F7}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .receipt-add{background:#1A2533}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .grab{background:#3A4756}
+}
 </style>
 </head>
 <body>
@@ -455,7 +527,11 @@ en:{
  'nb.jan':'Self Assessment due in {n} day{s} — 31 January','nb.jul':'Payment on account due in {n} day{s} — 31 July',
  'nb.today_jan':'Self Assessment due TODAY — 31 January','nb.today_jul':'Payment on account due TODAY — 31 July',
  'nb.days':'days','nb.day':'day','nb.days':'days','nb.day':'day',
- 'toast.saved':'Saved','toast.deleted':'Deleted','toast.restored':'Backup restored','toast.calAdded':'Calendar file downloaded',
+ 'toast.saved':'Saved','toast.deleted':'Deleted','toast.restored':'Backup restored','toast.calAdded':'Calendar file downloaded','toast.calAdded':'Calendar file downloaded',
+ 'm.theme':'Appearance','theme.auto':'Auto','theme.light':'Light','theme.dark':'Dark','sec.account':'Account','sec.biz':'Your businesses','sec.prefs':'Preferences','sec.data':'Backup & data','sec.report':'Reports','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.',
+ 'sec.legal':'About & legal','leg.privacy':'Privacy policy','leg.terms':'Terms of use','leg.disclaimer':'Tax disclaimer',
+ 'leg.disclaimerBody':'TaxMate gives estimates to help you plan. It is not tax advice and not a substitute for an accountant or HMRC. Always confirm figures before filing.',
+ 'leg.version':'Version','leg.madeIn':'Made in the UK for self-employed people.',
  'f.catErr':'Pick a category','f.dateOtherYear':'This date falls in tax year {y} — the entry will show there.',
  'tax.emptyT':'Add a business to see your tax estimate','tax.emptyS':'Your tax picture appears here once you add a business and start logging income.','tip.entries':'entries have',
  'fd.title':'Folder','fd.add':'New folder','fd.name':'Folder name','fd.none':'No folder','fd.manage':'Folders','fd.deleteM':'Entries keep their data — they just lose this folder label.','fd.all':'All folders',
@@ -562,7 +638,11 @@ zh:{
  'nb.jan':'{n}天後截止 Self Assessment — 1月31日','nb.jul':'{n}天後繳交 Payment on account — 7月31日',
  'nb.today_jan':'今日截止 Self Assessment — 1月31日','nb.today_jul':'今日截止 Payment on account — 7月31日',
  'nb.days':'天','nb.day':'天','nb.days':'天','nb.day':'天',
- 'toast.saved':'已儲存','toast.deleted':'已刪除','toast.restored':'備份已還原','toast.calAdded':'日曆檔案已下載',
+ 'toast.saved':'已儲存','toast.deleted':'已刪除','toast.restored':'備份已還原','toast.calAdded':'日曆檔案已下載','toast.calAdded':'日曆檔案已下載',
+ 'm.theme':'外觀','theme.auto':'自動','theme.light':'淺色','theme.dark':'深色','sec.account':'帳戶','sec.biz':'你的業務','sec.prefs':'偏好設定','sec.data':'備份與數據','sec.report':'報告','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。',
+ 'sec.legal':'關於與法律','leg.privacy':'私隱政策','leg.terms':'使用條款','leg.disclaimer':'稅務免責聲明',
+ 'leg.disclaimerBody':'TaxMate 提供估算以協助你規劃。並非稅務意見，亦不能取代會計師或 HMRC。申報前請務必核實數字。',
+ 'leg.version':'版本','leg.madeIn':'為英國自僱人士而設。',
  'f.catErr':'請選擇類別','f.dateOtherYear':'此日期屬於 {y} 稅務年度 — 記錄將顯示在該年度。',
  'tax.emptyT':'新增業務後即可查看稅款估算','tax.emptyS':'新增業務並開始記錄收入後，你的稅務概況將在此顯示。','tip.entries':'筆',
  'fd.title':'資料夾','fd.add':'新增資料夾','fd.name':'資料夾名稱','fd.none':'無資料夾','fd.manage':'資料夾','fd.deleteM':'資料夾內的記錄不會消失，只會移除資料夾標籤。','fd.all':'全部資料夾',
@@ -669,7 +749,11 @@ pl:{
  'nb.jan':'Self Assessment za {n} dzień/dni — 31 stycznia','nb.jul':'Payment on account za {n} dzień/dni — 31 lipca',
  'nb.today_jan':'Dziś termin Self Assessment — 31 stycznia','nb.today_jul':'Dziś termin Payment on account — 31 lipca',
  'nb.days':'dni','nb.day':'dzień','nb.days':'dni','nb.day':'dzień',
- 'toast.saved':'Zapisano','toast.deleted':'Usunięto','toast.restored':'Przywrócono kopię','toast.calAdded':'Pobrano plik kalendarza',
+ 'toast.saved':'Zapisano','toast.deleted':'Usunięto','toast.restored':'Przywrócono kopię','toast.calAdded':'Pobrano plik kalendarza','toast.calAdded':'Pobrano plik kalendarza',
+ 'm.theme':'Wygląd','theme.auto':'Auto','theme.light':'Jasny','theme.dark':'Ciemny','sec.account':'Konto','sec.biz':'Twoje firmy','sec.prefs':'Preferencje','sec.data':'Kopia i dane','sec.report':'Raporty','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.',
+ 'sec.legal':'O aplikacji i prawne','leg.privacy':'Polityka prywatności','leg.terms':'Warunki użytkowania','leg.disclaimer':'Zastrzeżenie podatkowe',
+ 'leg.disclaimerBody':'TaxMate podaje szacunki, by pomóc w planowaniu. To nie porada podatkowa ani zamiennik księgowego czy HMRC. Zawsze potwierdź dane przed złożeniem.',
+ 'leg.version':'Wersja','leg.madeIn':'Stworzone w UK dla osób samozatrudnionych.',
  'f.catErr':'Wybierz kategorię','f.dateOtherYear':'Ta data należy do roku podatkowego {y} — wpis pojawi się tam.',
  'tax.emptyT':'Dodaj firmę, aby zobaczyć podatek','tax.emptyS':'Twój obraz podatkowy pojawi się tutaj po dodaniu firmy i rozpoczęciu rejestrowania przychodów.','tip.entries':'ów',
  'fd.title':'Folder','fd.add':'Nowy folder','fd.name':'Nazwa folderu','fd.none':'Bez folderu','fd.manage':'Foldery','fd.deleteM':'Wpisy zachowają dane — stracą tylko etykietę folderu.','fd.all':'Wszystkie foldery',
@@ -776,7 +860,11 @@ ro:{
  'nb.jan':'Self Assessment în {n} zi/zile — 31 ianuarie','nb.jul':'Payment on account în {n} zi/zile — 31 iulie',
  'nb.today_jan':'Termen azi Self Assessment — 31 ianuarie','nb.today_jul':'Termen azi Payment on account — 31 iulie',
  'nb.days':'zile','nb.day':'zi','nb.days':'zile','nb.day':'zi',
- 'toast.saved':'Salvat','toast.deleted':'Șters','toast.restored':'Backup restaurat','toast.calAdded':'Fișier calendar descărcat',
+ 'toast.saved':'Salvat','toast.deleted':'Șters','toast.restored':'Backup restaurat','toast.calAdded':'Fișier calendar descărcat','toast.calAdded':'Fișier calendar descărcat',
+ 'm.theme':'Aspect','theme.auto':'Auto','theme.light':'Luminos','theme.dark':'Întunecat','sec.account':'Cont','sec.biz':'Afacerile tale','sec.prefs':'Preferințe','sec.data':'Backup și date','sec.report':'Rapoarte','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.',
+ 'sec.legal':'Despre și legal','leg.privacy':'Politica de confidențialitate','leg.terms':'Termeni de utilizare','leg.disclaimer':'Declinare fiscală',
+ 'leg.disclaimerBody':'TaxMate oferă estimări pentru a te ajuta să planifici. Nu este consultanță fiscală și nu înlocuiește un contabil sau HMRC. Confirmă întotdeauna cifrele înainte de depunere.',
+ 'leg.version':'Versiune','leg.madeIn':'Creat în UK pentru persoane independente.',
  'f.catErr':'Alege o categorie','f.dateOtherYear':'Această dată aparține anului fiscal {y} — intrarea va apărea acolo.',
  'tax.emptyT':'Adaugă o afacere pentru estimarea taxelor','tax.emptyS':'Situația ta fiscală apare aici după ce adaugi o afacere și începi să înregistrezi venituri.','tip.entries':'e',
  'fd.title':'Folder','fd.add':'Folder nou','fd.name':'Numele folderului','fd.none':'Fără folder','fd.manage':'Foldere','fd.deleteM':'Înregistrările își păstrează datele — pierd doar eticheta de folder.','fd.all':'Toate folderele',
@@ -883,7 +971,11 @@ es:{
  'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
- 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
+ 'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
+ 'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
  'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
  'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔','tip.entry':'','tip.entry':'',
  'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
@@ -896,7 +988,11 @@ es:{
  'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
- 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
+ 'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
+ 'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
  'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
  'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔',
  'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal',
@@ -909,7 +1005,11 @@ es:{
  'nb.jan':'Self Assessment en {n} día/días — 31 enero','nb.jul':'Payment on account en {n} día/días — 31 julio',
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
- 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado',
+ 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
+ 'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
+ 'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
  'f.catErr':'Elige una categoría','f.dateOtherYear':'Esta fecha pertenece al año fiscal {y} — la entrada aparecerá allí.',
  'tax.emptyT':'Añade un negocio para ver tu estimación','tax.emptyS':'Tu panorama fiscal aparece aquí cuando añadas un negocio y registres ingresos.','tip.entry':'','tip.entries':'s',
  'fd.title':'Carpeta','fd.add':'Nueva carpeta','fd.name':'Nombre de la carpeta','fd.none':'Sin carpeta','fd.manage':'Carpetas','fd.deleteM':'Las entradas conservan sus datos — solo pierden la etiqueta.','fd.all':'Todas las carpetas',
@@ -1016,7 +1116,11 @@ ur:{
  'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
- 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
+ 'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
+ 'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
  'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
  'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔','tip.entry':'','tip.entry':'',
  'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں','acc.prepared':'TaxMate UK سے تیار — صرف تخمینہ، ٹیکس مشورہ نہیں',
@@ -1029,7 +1133,11 @@ ur:{
  'nb.jan':'{n} دن میں Self Assessment — 31 جنوری','nb.jul':'{n} دن میں Payment on account — 31 جولائی',
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
- 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
+ 'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
+ 'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
  'f.catErr':'زمرہ منتخب کریں','f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
  'tax.emptyT':'ٹیکس تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس تصویر یہاں نظر آئے گی۔',
  'acc.export':'Descargar informe contable (CSV)','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal','acc.prepared':'Generado por TaxMate UK — solo estimación, no asesoría fiscal',
@@ -1042,7 +1150,11 @@ ur:{
  'nb.jan':'Self Assessment en {n} día/días — 31 enero','nb.jul':'Payment on account en {n} día/días — 31 julio',
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
- 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado',
+ 'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
+ 'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
+ 'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
  'f.catErr':'Elige una categoría','f.dateOtherYear':'Esta fecha pertenece al año fiscal {y} — la entrada aparecerá allí.',
  'tax.emptyT':'Añade un negocio para ver tu estimación','tax.emptyS':'Tu panorama fiscal aparece aquí cuando añadas un negocio y registres ingresos.','tip.entries':'',
  'fd.title':'فولڈر','fd.add':'نیا فولڈر','fd.name':'فولڈر کا نام','fd.none':'کوئی فولڈر نہیں','fd.manage':'فولڈرز','fd.deleteM':'اندراجات کا ڈیٹا محفوظ رہے گا — صرف فولڈر کا لیبل ہٹے گا۔','fd.all':'تمام فولڈرز',
@@ -1099,7 +1211,7 @@ function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 const STORE_KEY = 'taxmateuk_v1';
 const DEFAULT_STATE = {
   v:2, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
-  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', settings:{lang:'en', pro:false}
+  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', settings:{lang:'en', pro:false, theme:'auto'}
 };
 let S = load();
 function load(){
@@ -1297,6 +1409,15 @@ function pageHome(){
       <button class="pill" onclick="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
       <button class="pill" onclick="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
     </div>
+    ${(()=>{
+      const ci=currentQuarterIdx(S.year);
+      if(ci<0) return '';
+      const qr=quarterRange(ci,S.year);
+      const qP=S.entries.filter(e=>e.date>=qr.from&&e.date<=qr.to).reduce((a,e)=>e.kind==='income'?a+Math.max(0,e.amount):a-Math.max(0,effExact(e)),0);
+      return '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.2)">'
+        +'<span style="font-size:12px;font-weight:600;opacity:.85">'+qr.id+'</span>'
+        +'<span class="num" style="font-size:13px;font-weight:800">'+(qP>=0?'':'−')+'\xa3'+Math.abs(qP).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>';
+    })()}
   </div>
 
   ${deadlineBanner()}
@@ -1377,10 +1498,10 @@ function pageList(kind){
     <span>${t(isInc?'inc.title':'exp.title')}</span>
     <span class="num ${isInc?'pos':'neg'}" style="font-size:18px">${isInc?'+':'−'}${fmt(total).replace('−','')}</span>
   </div>
-  <button class="btn ${isInc?'':'ink'}" style="margin-bottom:14px" onclick="openEntry('${kind}')">+ ${t(isInc?'inc.add':'exp.add')}</button>
   ${chips}
   ${fchips}
-  ${body}`;
+  ${body}
+  <button class="fab" onclick="openEntry('${kind}')" aria-label="Add">+</button>`;
 }
 function setFilter(key,v){ S[key]=v; save(); render(); }
 
@@ -1431,13 +1552,8 @@ function pageTax(){
   </div>
 
   ${deadlineBanner()}
-  ${taBlock}
-
-  ${quarterlyCard()}
-  ${mtdCard()}
-  ${mileageCard()}
-
-  <div class="card">
+  ${tipsCard()}
+<div class="card">
     <div class="t" style="margin-bottom:10px">${t('tax.how')}</div>
     ${tx.perBiz.map(p=>`<div class="frow"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('tag.your',{n:p.biz.share||50})} = ${fmt(p.profit*(p.biz.share||50)/100)}</small>`:''}</span><span class="fv num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</span></div>`).join('')}
     <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num">${fmt(tx.myProfit)}</span></div>
@@ -1479,10 +1595,12 @@ function pageTax(){
   </div>
 
   <details class="help"><summary>${t('tax.accT')}</summary><div class="hb">${t('tax.accB',{y:S.year})}</div></details>
-  ${tipsCard()}
+  ${taBlock}
+  ${mileageCard()}
+  ${quarterlyCard()}
+  ${mtdCard()}
   ${sa103Card()}
   ${sa104Card()}
-  <button class="btn soft" style="margin-bottom:6px" onclick="generatePDF()">📄 ${t('pdf.download')}</button>
   <p class="small">${t('tax.disc')}</p>`;
 }
 function setTaMode(m){ yd().taMode=m; save(); render(); }
@@ -1490,7 +1608,7 @@ function setTaMode(m){ yd().taMode=m; save(); render(); }
 /* ═══════════ MORE ═══════════ */
 function pageMore(){
   const GOOGLE_SVG = `<svg width="17" height="17" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>`;
-  const secHead = lbl => `<div style="font-size:11px;font-weight:800;color:var(--muted);letter-spacing:.8px;text-transform:uppercase;padding:20px 4px 8px">${lbl}</div>`;
+  const secHead = key => `<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;padding:22px 4px 10px">${t(key)}</div>`;
 
   const accountCard = `<div class="card">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
@@ -1573,33 +1691,76 @@ function pageMore(){
 
   return `
   <div class="h1">${t('m.title')}</div>
-  ${secHead('You')}
+
+  ${secHead('sec.account')}
   ${accountCard}${proCard}
-  ${secHead('Businesses')}
+
+  ${secHead('sec.biz')}
   ${bizCard}${syncCard}
-  ${secHead('Organise')}
+
+  ${secHead('sec.prefs')}
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">🎨 ${t('m.theme')}</div>
+    <div class="seg">
+      <button class="${(S.settings.theme||'auto')==='auto'?'on':''}" onclick="setTheme('auto')">${t('theme.auto')}</button>
+      <button class="${S.settings.theme==='light'?'on':''}" onclick="setTheme('light')">☀️ ${t('theme.light')}</button>
+      <button class="${S.settings.theme==='dark'?'on':''}" onclick="setTheme('dark')">🌙 ${t('theme.dark')}</button>
+    </div>
+  </div>
+  <div class="card">
+    <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
+    <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
+  </div>
   ${organiseSection}
-  ${secHead('Data')}
+
+  ${secHead('sec.report')}
   <div class="card">
     <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}</div>
-    <div class="s" style="margin-bottom:12px">Full year summary for yourself, your accountant, or a mortgage application.</div>
-    <button class="btn soft" onclick="generatePDF()">📄 ${t('pdf.download')}</button>
+    <div class="s" style="margin-bottom:12px">${t('rep.desc')}</div>
+    <button class="btn soft" style="margin-bottom:10px" onclick="generatePDF()">📄 ${t('pdf.download')}</button>
+    <button class="btn ghost" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
+    <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
   </div>
+
+  ${secHead('sec.data')}
   <div class="card">
     <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
     <div class="s" style="margin-bottom:12px">${cloudUser()
       ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
       : ''}${t('m.backupHint')}</div>
-    <button class="btn ghost" style="margin-bottom:10px" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
-    <div class="s" style="margin-bottom:10px">${t('cal.desc')}</div>
     <button class="btn ghost" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
     <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
     <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
   </div>
-  <div class="card">
+  <div class="card" style="text-align:center">
     <button class="link danger" onclick="confirmAction(t('m.resetT'),t('m.resetM'),resetAll)">${t('m.reset')}</button>
   </div>
-  <p class="small">${t('m.foot')}</p>`;
+
+  ${secHead('sec.legal')}
+  <div class="card">
+    <div class="notice amber" style="margin-bottom:0">
+      <div style="font-weight:800;margin-bottom:4px">⚠️ ${t('leg.disclaimer')}</div>
+      ${t('leg.disclaimerBody')}
+    </div>
+  </div>
+  <div class="card" style="padding:6px 18px">
+    <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line)" onclick="openLegal('privacy')">${t('leg.privacy')} ›</button>
+    <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0" onclick="openLegal('terms')">${t('leg.terms')} ›</button>
+  </div>
+  <p class="small" style="text-align:center">${t('leg.madeIn')}<br>${t('leg.version')} 1.0</p>`;
+}
+function openLegal(which){
+  const titles = {privacy:t('leg.privacy'), terms:t('leg.terms')};
+  alert(titles[which] + '\n\n' + t('leg.disclaimerBody'));
+}
+
+function applyTheme(){
+  const th = (S.settings&&S.settings.theme)||'auto';
+  if(th==='auto') document.documentElement.removeAttribute('data-theme');
+  else document.documentElement.setAttribute('data-theme', th);
+}
+function setTheme(th){
+  S.settings.theme = th; save(); applyTheme(); render();
 }
 function setLang(l){ S.settings.lang=l; save(); render(); }
 
@@ -3033,6 +3194,7 @@ function confirmDeleteReceipt(){
 
 /* ═══════════ boot ═══════════ */
 applyCachedRates();
+applyTheme();
 render();
 if(fbConfigured()){
   ensureFB().then(db=>{ if(db) loadCloudRates(); });
