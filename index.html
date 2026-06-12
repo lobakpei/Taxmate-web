@@ -1552,7 +1552,8 @@ function pageTax(){
   </div>
 
   ${deadlineBanner()}
-  ${tipsCard()}
+  ${taBlock}
+  ${mileageCard()}
 <div class="card">
     <div class="t" style="margin-bottom:10px">${t('tax.how')}</div>
     ${tx.perBiz.map(p=>`<div class="frow"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('tag.your',{n:p.biz.share||50})} = ${fmt(p.profit*(p.biz.share||50)/100)}</small>`:''}</span><span class="fv num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</span></div>`).join('')}
@@ -1595,8 +1596,7 @@ function pageTax(){
   </div>
 
   <details class="help"><summary>${t('tax.accT')}</summary><div class="hb">${t('tax.accB',{y:S.year})}</div></details>
-  ${taBlock}
-  ${mileageCard()}
+  ${tipsCard()}
   ${quarterlyCard()}
   ${mtdCard()}
   ${sa103Card()}
