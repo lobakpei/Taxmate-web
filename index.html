@@ -171,7 +171,8 @@ body.sheet-open{overflow:hidden}
 .sb.open{display:flex}
 .sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
   border-radius:28px 28px 0 0;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
-.sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:6px auto 16px}
+.sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:6px auto 16px;cursor:grab;position:relative}
+.grab::after{content:"";position:absolute;top:-12px;bottom:-12px;left:-40px;right:-40px}
 .sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px;color:var(--ink)}
 .sheet .sact{display:flex;gap:10px;margin-top:20px}
 .sheet .sact .btn{flex:1}
@@ -283,7 +284,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- entry sheet -->
 <div class="sb" id="sb-entry"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" id="en-title"></div>
   <div class="fg">
     <label for="en-amount" data-i18n="f.amount"></label>
@@ -318,6 +319,14 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <label for="en-desc"><span data-i18n="f.note"></span> <span style="font-weight:500;color:var(--muted)" data-i18n="f.optional"></span></label>
     <input type="text" id="en-desc" maxlength="80">
   </div>
+  <div class="fg" id="en-repeat-group">
+    <label data-i18n="f.repeat"></label>
+    <div class="seg">
+      <button type="button" id="en-repeat-off" class="on" onclick="setRepeat(false)" data-i18n="f.repeatOff"></button>
+      <button type="button" id="en-repeat-on" onclick="setRepeat(true)" data-i18n="f.repeatOn"></button>
+    </div>
+    <div class="fhint" id="en-repeat-hint" style="display:none;margin-top:8px" data-i18n="f.repeatHint"></div>
+  </div>
   <div class="sact">
     <button class="btn ghost" onclick="closeSheet('entry')" data-i18n="c.cancel"></button>
     <button class="btn" id="en-save" onclick="saveEntry()" data-i18n="c.save"></button>
@@ -329,7 +338,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- business sheet -->
 <div class="sb" id="sb-biz"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" id="bz-title"></div>
   <div class="fg">
     <label for="bz-name" data-i18n="b.name"></label>
@@ -360,7 +369,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- HMRC position sheet -->
 <div class="sb" id="sb-adj"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" data-i18n="a.title"></div>
   <div class="sub" style="margin-bottom:18px" data-i18n="a.sub"></div>
   <div class="fg">
@@ -383,7 +392,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- custom category sheet -->
 <div class="sb" id="sb-cat"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" data-i18n="cc.add"></div>
   <div class="fg"><label for="cc-name" data-i18n="cc.name"></label><input type="text" id="cc-name" maxlength="24">
     <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
@@ -396,7 +405,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- folder sheet -->
 <div class="sb" id="sb-folder"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" data-i18n="fd.add"></div>
   <div class="fg"><label for="fd-name" data-i18n="fd.name"></label><input type="text" id="fd-name" maxlength="30">
     <div class="ferr" id="fd-name-err" data-i18n="b.nameErr"></div></div>
@@ -408,7 +417,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- confirm sheet -->
 <div class="sb" id="sb-confirm"><div class="sheet">
-  <div class="grab"></div>
+  <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" id="cf-title"></div>
   <div class="sub" id="cf-msg" style="margin-bottom:8px"></div>
   <div class="sact">
@@ -528,7 +537,7 @@ en:{
  'nb.today_jan':'Self Assessment due TODAY — 31 January','nb.today_jul':'Payment on account due TODAY — 31 July',
  'nb.days':'days','nb.day':'day','nb.days':'days','nb.day':'day',
  'toast.saved':'Saved','toast.deleted':'Deleted','toast.restored':'Backup restored','toast.calAdded':'Calendar file downloaded','toast.calAdded':'Calendar file downloaded',
- 'm.theme':'Appearance','theme.auto':'Auto','theme.light':'Light','theme.dark':'Dark','sec.account':'Account','sec.biz':'Your businesses','sec.prefs':'Preferences','sec.data':'Backup & data','sec.report':'Reports','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.',
+ 'm.theme':'Appearance','theme.auto':'Auto','theme.light':'Light','theme.dark':'Dark','cc.rename':'Rename categories','cc.renameHint':'Tap a category to give it your own name.','cc.editName':'Category name','cc.reset':'Reset to default','cc.renameDone':'Renamed','cc.renameDone':'Renamed','f.repeat':'Repeat monthly','f.repeatHint':'Fixed monthly cost? Add it for all 12 months of the tax year in one tap.','f.repeatAdded':'Added for {n} months','f.repeatOff':'One-off','f.repeatOn':'Every month','sec.account':'Account','sec.biz':'Your businesses','sec.prefs':'Preferences','sec.data':'Backup & data','sec.report':'Reports','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.',
  'sec.legal':'About & legal','leg.privacy':'Privacy policy','leg.terms':'Terms of use','leg.disclaimer':'Tax disclaimer',
  'leg.disclaimerBody':'TaxMate gives estimates to help you plan. It is not tax advice and not a substitute for an accountant or HMRC. Always confirm figures before filing.',
  'leg.version':'Version','leg.madeIn':'Made in the UK for self-employed people.',
@@ -639,7 +648,7 @@ zh:{
  'nb.today_jan':'今日截止 Self Assessment — 1月31日','nb.today_jul':'今日截止 Payment on account — 7月31日',
  'nb.days':'天','nb.day':'天','nb.days':'天','nb.day':'天',
  'toast.saved':'已儲存','toast.deleted':'已刪除','toast.restored':'備份已還原','toast.calAdded':'日曆檔案已下載','toast.calAdded':'日曆檔案已下載',
- 'm.theme':'外觀','theme.auto':'自動','theme.light':'淺色','theme.dark':'深色','sec.account':'帳戶','sec.biz':'你的業務','sec.prefs':'偏好設定','sec.data':'備份與數據','sec.report':'報告','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。',
+ 'm.theme':'外觀','theme.auto':'自動','theme.light':'淺色','theme.dark':'深色','cc.rename':'重新命名分類','cc.renameHint':'點按分類即可改成你自己的名稱。','cc.editName':'分類名稱','cc.reset':'還原預設','cc.renameDone':'已重新命名','cc.renameDone':'已重新命名','f.repeat':'每月重複','f.repeatHint':'固定每月開支？一按即可為整個稅務年度的12個月一次過新增。','f.repeatAdded':'已新增 {n} 個月','f.repeatOff':'單次','f.repeatOn':'每月','sec.account':'帳戶','sec.biz':'你的業務','sec.prefs':'偏好設定','sec.data':'備份與數據','sec.report':'報告','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。',
  'sec.legal':'關於與法律','leg.privacy':'私隱政策','leg.terms':'使用條款','leg.disclaimer':'稅務免責聲明',
  'leg.disclaimerBody':'TaxMate 提供估算以協助你規劃。並非稅務意見，亦不能取代會計師或 HMRC。申報前請務必核實數字。',
  'leg.version':'版本','leg.madeIn':'為英國自僱人士而設。',
@@ -750,7 +759,7 @@ pl:{
  'nb.today_jan':'Dziś termin Self Assessment — 31 stycznia','nb.today_jul':'Dziś termin Payment on account — 31 lipca',
  'nb.days':'dni','nb.day':'dzień','nb.days':'dni','nb.day':'dzień',
  'toast.saved':'Zapisano','toast.deleted':'Usunięto','toast.restored':'Przywrócono kopię','toast.calAdded':'Pobrano plik kalendarza','toast.calAdded':'Pobrano plik kalendarza',
- 'm.theme':'Wygląd','theme.auto':'Auto','theme.light':'Jasny','theme.dark':'Ciemny','sec.account':'Konto','sec.biz':'Twoje firmy','sec.prefs':'Preferencje','sec.data':'Kopia i dane','sec.report':'Raporty','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.',
+ 'm.theme':'Wygląd','theme.auto':'Auto','theme.light':'Jasny','theme.dark':'Ciemny','cc.rename':'Zmień nazwy kategorii','cc.renameHint':'Dotknij kategorię, aby nadać własną nazwę.','cc.editName':'Nazwa kategorii','cc.reset':'Przywróć domyślne','cc.renameDone':'Zmieniono nazwę','cc.renameDone':'Zmieniono nazwę','f.repeat':'Powtarzaj miesięcznie','f.repeatHint':'Stały koszt miesięczny? Dodaj go dla wszystkich 12 miesięcy jednym dotknięciem.','f.repeatAdded':'Dodano na {n} miesięcy','f.repeatOff':'Jednorazowo','f.repeatOn':'Co miesiąc','sec.account':'Konto','sec.biz':'Twoje firmy','sec.prefs':'Preferencje','sec.data':'Kopia i dane','sec.report':'Raporty','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.',
  'sec.legal':'O aplikacji i prawne','leg.privacy':'Polityka prywatności','leg.terms':'Warunki użytkowania','leg.disclaimer':'Zastrzeżenie podatkowe',
  'leg.disclaimerBody':'TaxMate podaje szacunki, by pomóc w planowaniu. To nie porada podatkowa ani zamiennik księgowego czy HMRC. Zawsze potwierdź dane przed złożeniem.',
  'leg.version':'Wersja','leg.madeIn':'Stworzone w UK dla osób samozatrudnionych.',
@@ -861,7 +870,7 @@ ro:{
  'nb.today_jan':'Termen azi Self Assessment — 31 ianuarie','nb.today_jul':'Termen azi Payment on account — 31 iulie',
  'nb.days':'zile','nb.day':'zi','nb.days':'zile','nb.day':'zi',
  'toast.saved':'Salvat','toast.deleted':'Șters','toast.restored':'Backup restaurat','toast.calAdded':'Fișier calendar descărcat','toast.calAdded':'Fișier calendar descărcat',
- 'm.theme':'Aspect','theme.auto':'Auto','theme.light':'Luminos','theme.dark':'Întunecat','sec.account':'Cont','sec.biz':'Afacerile tale','sec.prefs':'Preferințe','sec.data':'Backup și date','sec.report':'Rapoarte','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.',
+ 'm.theme':'Aspect','theme.auto':'Auto','theme.light':'Luminos','theme.dark':'Întunecat','cc.rename':'Redenumește categorii','cc.renameHint':'Atinge o categorie pentru a-i da propriul nume.','cc.editName':'Nume categorie','cc.reset':'Resetează','cc.renameDone':'Redenumit','cc.renameDone':'Redenumit','f.repeat':'Repetă lunar','f.repeatHint':'Cost lunar fix? Adaugă-l pentru toate cele 12 luni dintr-o atingere.','f.repeatAdded':'Adăugat pentru {n} luni','f.repeatOff':'O singură dată','f.repeatOn':'Lunar','sec.account':'Cont','sec.biz':'Afacerile tale','sec.prefs':'Preferințe','sec.data':'Backup și date','sec.report':'Rapoarte','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.',
  'sec.legal':'Despre și legal','leg.privacy':'Politica de confidențialitate','leg.terms':'Termeni de utilizare','leg.disclaimer':'Declinare fiscală',
  'leg.disclaimerBody':'TaxMate oferă estimări pentru a te ajuta să planifici. Nu este consultanță fiscală și nu înlocuiește un contabil sau HMRC. Confirmă întotdeauna cifrele înainte de depunere.',
  'leg.version':'Versiune','leg.madeIn':'Creat în UK pentru persoane independente.',
@@ -972,7 +981,7 @@ es:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -989,7 +998,7 @@ es:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1006,7 +1015,7 @@ es:{
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
  'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
- 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
  'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
  'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
  'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
@@ -1117,7 +1126,7 @@ ur:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1134,7 +1143,7 @@ ur:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1151,7 +1160,7 @@ ur:{
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
  'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
- 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
  'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
  'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
  'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
@@ -1197,7 +1206,7 @@ function catById(id){
   const all = CATS.expense.concat(CATS.income, cc.expense||[], cc.income||[]);
   return all.find(c=>c.id===id) || {id:'other',e:'🧾',dot:'#B1B4B6'};
 }
-function catName(id){ const c = catById(id); return c.custom ? c.name : t('cat.'+c.id); }
+function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
 function folderById(id){ return S.folders.find(f=>f.id===id); }
 
 const TAXCFG = {
@@ -1211,7 +1220,7 @@ function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 const STORE_KEY = 'taxmateuk_v1';
 const DEFAULT_STATE = {
   v:2, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
-  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', settings:{lang:'en', pro:false, theme:'auto'}
+  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', catRenames:{}, settings:{lang:'en', pro:false, theme:'auto'}
 };
 let S = load();
 function load(){
@@ -1485,7 +1494,15 @@ function pageList(kind){
   } else {
     const groups={};
     list.forEach(e=>{ const k=e.date.slice(0,7); (groups[k]=groups[k]||[]).push(e); });
-    body = Object.keys(groups).sort().reverse().map(k=>{
+    body = Object.keys(groups).sort((a,b)=>{
+      const cur = todayISO().slice(0,7);
+      const aFut = a>cur, bFut = b>cur;
+      // Past/current months first (newest→oldest), future months last (oldest→newest)
+      if(aFut && !bFut) return 1;
+      if(!aFut && bFut) return -1;
+      if(aFut && bFut) return a.localeCompare(b);
+      return b.localeCompare(a);
+    }).map(k=>{
       const lbl = new Date(k+'-15T12:00:00').toLocaleDateString(locale(),{month:'long',year:'numeric'});
       const sub = groups[k].reduce((s,e)=>s+(isInc?e.amount:effExact(e)),0);
       return `<div class="month"><span>${lbl}</span><span class="num ${isInc?'pos':'neg'}">${isInc?'+':'−'}${fmt(sub).replace('−','')}</span></div>
@@ -1711,6 +1728,11 @@ function pageMore(){
     <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
     <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
   </div>
+  <div class="card">
+    <div class="t" style="margin-bottom:6px">🏷️ ${t('cc.rename')}</div>
+    <div class="s" style="margin-bottom:12px">${t('cc.renameHint')}</div>
+    <div class="catgrid">${CATS.expense.concat(CATS.income).map(c=>`<button class="catbtn" onclick="renameCat('${c.id}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(c.id))}</button>`).join('')}</div>
+  </div>
   ${organiseSection}
 
   ${secHead('sec.report')}
@@ -1768,8 +1790,8 @@ function setLang(l){ S.settings.lang=l; save(); render(); }
 let EN = {id:null, kind:'expense', cat:null, pct:100};
 function openEntry(kind, id){
   const e = id ? S.entries.find(x=>x.id===id) : null;
-  EN = e ? {id:e.id, kind:e.kind, cat:e.cat, pct:(e.pct==null?100:e.pct), folderId:(e.folderId||null), receiptUrl:(e.receiptUrl||null), receiptPath:(e.receiptPath||null)}
-         : {id:null, kind:kind||'expense', cat:null, pct:100, folderId:(kind==='expense'&&S.expFolder!=='all')?S.expFolder:null, receiptUrl:null, receiptPath:null};
+  EN = e ? {id:e.id, kind:e.kind, cat:e.cat, pct:(e.pct==null?100:e.pct), folderId:(e.folderId||null), receiptUrl:(e.receiptUrl||null), receiptPath:(e.receiptPath||null), repeat:false}
+         : {id:null, kind:kind||'expense', cat:null, pct:100, repeat:false, folderId:(kind==='expense'&&S.expFolder!=='all')?S.expFolder:null, receiptUrl:null, receiptPath:null};
   const isInc = EN.kind==='income';
   document.getElementById('en-title').textContent = e ? t(isInc?'f.editIncome':'f.editExpense') : t(isInc?'f.addIncome':'f.addExpense');
   document.getElementById('en-amount').value = e?e.amount:'';
@@ -1790,7 +1812,7 @@ function paintEntry(){
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
   document.getElementById('en-cats').innerHTML = cats.map(c=>
-    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(c.id))}</button>`).join('')
+    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')" oncontextmenu="event.preventDefault();renameCat('${c.id}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(c.id))}</button>`).join('')
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
@@ -1808,6 +1830,11 @@ function paintEntry(){
   document.getElementById('en-receipt-status').textContent = '';
   const fg = document.getElementById('en-folder-group');
   fg.style.display = EN.kind==='expense' ? 'block' : 'none';
+  const rpg = document.getElementById('en-repeat-group');
+  if(rpg){
+    rpg.style.display = (EN.kind==='expense' && !EN.id) ? 'block' : 'none';
+    setRepeat(false);
+  }
   const fsel = document.getElementById('en-folder');
   fsel.innerHTML = `<option value="">${t('fd.none')}</option>` +
     S.folders.map(f=>`<option value="${f.id}">${esc(f.name)}</option>`).join('');
@@ -1819,6 +1846,22 @@ function openCatSheet(){
   document.getElementById('cc-name').classList.remove('err');
   document.getElementById('cc-name-err').classList.remove('show');
   openSheet('cat');
+}
+function renameCat(id){
+  const cur = catName(id);
+  const nv = prompt(t('cc.editName'), cur);
+  if(nv===null) return;
+  const trimmed = nv.trim();
+  if(!S.catRenames) S.catRenames = {};
+  if(!trimmed || trimmed===t('cat.'+id)){
+    delete S.catRenames[id];
+  } else {
+    S.catRenames[id] = trimmed;
+  }
+  save();
+  if(typeof paintEntry==='function' && document.getElementById('sb-entry').classList.contains('open')) paintEntry();
+  render();
+  toast(t('cc.renameDone'));
 }
 function saveCat(){
   const name = document.getElementById('cc-name').value.trim();
@@ -1883,6 +1926,12 @@ function checkEntryDate(dateStr){
   }
 }
 
+function setRepeat(on){
+  EN.repeat = on;
+  document.getElementById('en-repeat-off').classList.toggle('on', !on);
+  document.getElementById('en-repeat-on').classList.toggle('on', on);
+  document.getElementById('en-repeat-hint').style.display = on ? 'block' : 'none';
+}
 function saveEntry(){
   const amt = parseFloat(document.getElementById('en-amount').value);
   if(!(amt>0)){
@@ -1916,9 +1965,30 @@ function saveEntry(){
     receiptPath: EN.receiptPath||null,
     desc:document.getElementById('en-desc').value.trim()
   };
-  if(EN.id){ const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec; }
-  else S.entries.push(rec);
-  save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+  if(EN.id){
+    const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec;
+    save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+  } else if(EN.repeat && EN.kind==='expense'){
+    // Add for all 12 months of the current tax year
+    const baseDay = new Date(rec.date+'T12:00:00').getDate();
+    const yrStart = parseInt(S.year.slice(0,4));
+    const pad = n => String(n).padStart(2,'0');
+    let count=0;
+    // Tax year runs April (month index 3) of yrStart through March of yrStart+1
+    for(let m=0;m<12;m++){
+      const monthIdx = (3+m) % 12;
+      const realYear = (3+m) > 11 ? yrStart+1 : yrStart;
+      const daysInMonth = new Date(realYear, monthIdx+1, 0).getDate();
+      const day = Math.min(baseDay, daysInMonth);
+      const dateStr = realYear+'-'+pad(monthIdx+1)+'-'+pad(day);
+      const r = Object.assign({}, rec, {id:uid(), date:dateStr});
+      S.entries.push(r); pushEntryRemote(r); count++;
+    }
+    save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
+  } else {
+    S.entries.push(rec);
+    save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+  }
 }
 function deleteEntry(){
   confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
@@ -2068,7 +2138,29 @@ function resetAll(){
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
   render();
 }
-function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); document.body.classList.add('sheet-open'); }
+function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(initSheetDrag,50); history.pushState({tm:'sheet'}, ''); }
+function closeParentSheet(el){
+  const sb = el.closest('.sb');
+  if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); }
+}
+// Drag-to-dismiss on grab handles
+function initSheetDrag(){
+  document.querySelectorAll('.sheet').forEach(sheet=>{
+    const grab = sheet.querySelector('.grab');
+    if(!grab || grab.dataset.dragInit) return;
+    grab.dataset.dragInit='1';
+    let startY=0, curY=0, dragging=false;
+    const onStart=e=>{ dragging=true; startY=(e.touches?e.touches[0].clientY:e.clientY); sheet.style.transition='none'; };
+    const onMove=e=>{ if(!dragging)return; curY=(e.touches?e.touches[0].clientY:e.clientY); const dy=Math.max(0,curY-startY); sheet.style.transform='translateY('+dy+'px)'; };
+    const onEnd=()=>{ if(!dragging)return; dragging=false; sheet.style.transition=''; const dy=curY-startY; if(dy>100){ const sb=sheet.closest('.sb'); if(sb){sb.classList.remove('open');document.body.classList.remove('sheet-open');} } sheet.style.transform=''; };
+    grab.addEventListener('touchstart',onStart,{passive:true});
+    grab.addEventListener('touchmove',onMove,{passive:true});
+    grab.addEventListener('touchend',onEnd);
+    grab.addEventListener('mousedown',onStart);
+    document.addEventListener('mousemove',onMove);
+    document.addEventListener('mouseup',onEnd);
+  });
+}
 function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); }
 
 /* Toast feedback */
@@ -3192,10 +3284,41 @@ function confirmDeleteReceipt(){
 //   }
 // }
 
+/* ═══════════ Back button handling ═══════════ */
+function anySheetOpen(){
+  return Array.from(document.querySelectorAll('.sb')).some(o=>o.classList.contains('open'));
+}
+function closeAllSheets(){
+  document.querySelectorAll('.sb.open').forEach(o=>o.classList.remove('open'));
+  document.body.classList.remove('sheet-open');
+}
+function setupBackButton(){
+  // Seed two states: one base + one buffer the back button consumes first.
+  history.pushState({tm:'base'}, '');
+  history.pushState({tm:'buffer'}, '');
+  window.addEventListener('popstate', (e)=>{
+    // A sheet is open → close it, keep user in app
+    if(anySheetOpen()){
+      closeAllSheets();
+      history.pushState({tm:'buffer'}, '');
+      return;
+    }
+    // Not on Home → navigate Home, keep user in app
+    if(S.tab !== 'home'){
+      S.tab = 'home'; save(); render(); window.scrollTo(0,0);
+      history.pushState({tm:'buffer'}, '');
+      return;
+    }
+    // On Home, nothing open → let this back press fall through (exit/leave).
+    // Do not re-push, so the browser/OS handles it naturally.
+  });
+}
+
 /* ═══════════ boot ═══════════ */
 applyCachedRates();
 applyTheme();
 render();
+setupBackButton();
 if(fbConfigured()){
   ensureFB().then(db=>{ if(db) loadCloudRates(); });
 }
