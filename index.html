@@ -294,7 +294,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
   <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz"></select></div>
-  <div class="fg"><label data-i18n="f.category"></label><div class="catgrid" id="en-cats"></div></div>
+  <div class="fg"><label data-i18n="f.category"></label><div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.longPress"></div><div class="catgrid" id="en-cats"></div></div>
   <div class="fg" id="en-folder-group" style="display:none">
     <label for="en-folder" data-i18n="fd.title"></label>
     <div style="display:flex;gap:8px">
@@ -345,6 +345,11 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <input type="text" id="bz-name" maxlength="40">
     <div class="ferr" id="bz-name-err" data-i18n="b.nameErr"></div>
   </div>
+  <div class="fg" id="bz-trade-group">
+    <label data-i18n="b.trade"></label>
+    <div class="fhint" style="margin:-2px 0 8px" data-i18n="b.tradeHint"></div>
+    <div class="catgrid" id="bz-trades"></div>
+  </div>
   <div class="fg">
     <label data-i18n="b.setup"></label>
     <div class="seg">
@@ -368,6 +373,18 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 </div></div>
 
 <!-- HMRC position sheet -->
+<!-- suggested categories sheet -->
+<div class="sb" id="sb-suggest"><div class="sheet">
+  <div class="grab" onclick="closeParentSheet(this)"></div>
+  <div class="stitle" data-i18n="sug.title"></div>
+  <div class="fhint" style="margin:-8px 0 14px" data-i18n="sug.hint"></div>
+  <div class="catgrid" id="sug-cats"></div>
+  <div class="sact">
+    <button class="btn ghost" onclick="closeSheet('suggest')" data-i18n="sug.skip"></button>
+    <button class="btn" onclick="addSuggested()" data-i18n="sug.add"></button>
+  </div>
+</div></div>
+
 <div class="sb" id="sb-adj"><div class="sheet">
   <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" data-i18n="a.title"></div>
@@ -537,7 +554,19 @@ en:{
  'nb.today_jan':'Self Assessment due TODAY — 31 January','nb.today_jul':'Payment on account due TODAY — 31 July',
  'nb.days':'days','nb.day':'day','nb.days':'days','nb.day':'day',
  'toast.saved':'Saved','toast.deleted':'Deleted','toast.restored':'Backup restored','toast.calAdded':'Calendar file downloaded','toast.calAdded':'Calendar file downloaded',
- 'm.theme':'Appearance','theme.auto':'Auto','theme.light':'Light','theme.dark':'Dark','cc.rename':'Rename categories','cc.renameHint':'Tap a category to give it your own name.','cc.editName':'Category name','cc.reset':'Reset to default','cc.renameDone':'Renamed','cc.renameDone':'Renamed','f.repeat':'Repeat monthly','f.repeatHint':'Fixed monthly cost? Add it for all 12 months of the tax year in one tap.','f.repeatAdded':'Added for {n} months','f.repeatOff':'One-off','f.repeatOn':'Every month','sec.account':'Account','sec.biz':'Your businesses','sec.prefs':'Preferences','sec.data':'Backup & data','sec.report':'Reports','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.',
+ 'm.theme':'Appearance','theme.auto':'Auto','theme.light':'Light','theme.dark':'Dark','cc.rename':'Rename categories','cc.renameHint':'Tap a category to give it your own name.','cc.editName':'Category name','cc.reset':'Reset to default','cc.renameDone':'Renamed','cc.renameDone':'Renamed',
+ 'cc.longPress':'Long-press a category to rename it',
+ 'b.trade':'Type of work','b.tradeHint':'We\'ll suggest expense categories — you can change them anytime.',
+ 'trade.delivery':'Delivery / Driver','trade.construction':'Construction / Trades','trade.consultant':'Consultant / IT',
+ 'trade.creative':'Creative / Media','trade.cleaning':'Cleaning / Domestic','trade.beauty':'Beauty / Personal care',
+ 'trade.retail':'Retail / Online shop','trade.other':'Other',
+ 'sug.title':'Suggested categories','sug.hint':'Based on your type of work. Tap to add the ones you need — skip any you don\'t.','sug.add':'Add selected','sug.skip':'Skip','sug.added':'{n} categories added','cc.renameDone':'Renamed','cc.renameDone':'Renamed',
+ 'cc.longPress':'Long-press a category to rename it',
+ 'b.trade':'Type of work','b.tradeHint':'We\'ll suggest expense categories — you can change them anytime.',
+ 'trade.delivery':'Delivery / Driver','trade.construction':'Construction / Trades','trade.consultant':'Consultant / IT',
+ 'trade.creative':'Creative / Media','trade.cleaning':'Cleaning / Domestic','trade.beauty':'Beauty / Personal care',
+ 'trade.retail':'Retail / Online shop','trade.other':'Other',
+ 'sug.title':'Suggested categories','sug.hint':'Based on your type of work. Tap to add the ones you need — skip any you don\'t.','sug.add':'Add selected','sug.skip':'Skip','sug.added':'{n} categories added','f.repeat':'Repeat monthly','f.repeatHint':'Fixed monthly cost? Add it for all 12 months of the tax year in one tap.','f.repeatAdded':'Added for {n} months','f.repeatOff':'One-off','f.repeatOn':'Every month','sec.account':'Account','sec.biz':'Your businesses','sec.prefs':'Preferences','sec.data':'Backup & data','sec.report':'Reports','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.','rep.desc':'A full year summary — for yourself, your accountant, or a mortgage application.',
  'sec.legal':'About & legal','leg.privacy':'Privacy policy','leg.terms':'Terms of use','leg.disclaimer':'Tax disclaimer',
  'leg.disclaimerBody':'TaxMate gives estimates to help you plan. It is not tax advice and not a substitute for an accountant or HMRC. Always confirm figures before filing.',
  'leg.version':'Version','leg.madeIn':'Made in the UK for self-employed people.',
@@ -648,7 +677,19 @@ zh:{
  'nb.today_jan':'今日截止 Self Assessment — 1月31日','nb.today_jul':'今日截止 Payment on account — 7月31日',
  'nb.days':'天','nb.day':'天','nb.days':'天','nb.day':'天',
  'toast.saved':'已儲存','toast.deleted':'已刪除','toast.restored':'備份已還原','toast.calAdded':'日曆檔案已下載','toast.calAdded':'日曆檔案已下載',
- 'm.theme':'外觀','theme.auto':'自動','theme.light':'淺色','theme.dark':'深色','cc.rename':'重新命名分類','cc.renameHint':'點按分類即可改成你自己的名稱。','cc.editName':'分類名稱','cc.reset':'還原預設','cc.renameDone':'已重新命名','cc.renameDone':'已重新命名','f.repeat':'每月重複','f.repeatHint':'固定每月開支？一按即可為整個稅務年度的12個月一次過新增。','f.repeatAdded':'已新增 {n} 個月','f.repeatOff':'單次','f.repeatOn':'每月','sec.account':'帳戶','sec.biz':'你的業務','sec.prefs':'偏好設定','sec.data':'備份與數據','sec.report':'報告','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。',
+ 'm.theme':'外觀','theme.auto':'自動','theme.light':'淺色','theme.dark':'深色','cc.rename':'重新命名分類','cc.renameHint':'點按分類即可改成你自己的名稱。','cc.editName':'分類名稱','cc.reset':'還原預設','cc.renameDone':'已重新命名','cc.renameDone':'已重新命名',
+ 'cc.longPress':'長按分類即可重新命名',
+ 'b.trade':'工作類型','b.tradeHint':'我們會建議開支分類 — 你可隨時更改。',
+ 'trade.delivery':'送貨 / 司機','trade.construction':'建造 / 裝修','trade.consultant':'顧問 / IT',
+ 'trade.creative':'創作 / 媒體','trade.cleaning':'清潔 / 家居','trade.beauty':'美容 / 個人護理',
+ 'trade.retail':'零售 / 網店','trade.other':'其他',
+ 'sug.title':'建議分類','sug.hint':'根據你的工作類型。點選你需要的，不需要的可略過。','sug.add':'新增已選','sug.skip':'略過','sug.added':'已新增 {n} 個分類','cc.renameDone':'已重新命名','cc.renameDone':'已重新命名',
+ 'cc.longPress':'長按分類即可重新命名',
+ 'b.trade':'工作類型','b.tradeHint':'我們會建議開支分類 — 你可隨時更改。',
+ 'trade.delivery':'送貨 / 司機','trade.construction':'建造 / 裝修','trade.consultant':'顧問 / IT',
+ 'trade.creative':'創作 / 媒體','trade.cleaning':'清潔 / 家居','trade.beauty':'美容 / 個人護理',
+ 'trade.retail':'零售 / 網店','trade.other':'其他',
+ 'sug.title':'建議分類','sug.hint':'根據你的工作類型。點選你需要的，不需要的可略過。','sug.add':'新增已選','sug.skip':'略過','sug.added':'已新增 {n} 個分類','f.repeat':'每月重複','f.repeatHint':'固定每月開支？一按即可為整個稅務年度的12個月一次過新增。','f.repeatAdded':'已新增 {n} 個月','f.repeatOff':'單次','f.repeatOn':'每月','sec.account':'帳戶','sec.biz':'你的業務','sec.prefs':'偏好設定','sec.data':'備份與數據','sec.report':'報告','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。','rep.desc':'完整年度摘要 — 給自己、會計師或按揭申請使用。',
  'sec.legal':'關於與法律','leg.privacy':'私隱政策','leg.terms':'使用條款','leg.disclaimer':'稅務免責聲明',
  'leg.disclaimerBody':'TaxMate 提供估算以協助你規劃。並非稅務意見，亦不能取代會計師或 HMRC。申報前請務必核實數字。',
  'leg.version':'版本','leg.madeIn':'為英國自僱人士而設。',
@@ -759,7 +800,19 @@ pl:{
  'nb.today_jan':'Dziś termin Self Assessment — 31 stycznia','nb.today_jul':'Dziś termin Payment on account — 31 lipca',
  'nb.days':'dni','nb.day':'dzień','nb.days':'dni','nb.day':'dzień',
  'toast.saved':'Zapisano','toast.deleted':'Usunięto','toast.restored':'Przywrócono kopię','toast.calAdded':'Pobrano plik kalendarza','toast.calAdded':'Pobrano plik kalendarza',
- 'm.theme':'Wygląd','theme.auto':'Auto','theme.light':'Jasny','theme.dark':'Ciemny','cc.rename':'Zmień nazwy kategorii','cc.renameHint':'Dotknij kategorię, aby nadać własną nazwę.','cc.editName':'Nazwa kategorii','cc.reset':'Przywróć domyślne','cc.renameDone':'Zmieniono nazwę','cc.renameDone':'Zmieniono nazwę','f.repeat':'Powtarzaj miesięcznie','f.repeatHint':'Stały koszt miesięczny? Dodaj go dla wszystkich 12 miesięcy jednym dotknięciem.','f.repeatAdded':'Dodano na {n} miesięcy','f.repeatOff':'Jednorazowo','f.repeatOn':'Co miesiąc','sec.account':'Konto','sec.biz':'Twoje firmy','sec.prefs':'Preferencje','sec.data':'Kopia i dane','sec.report':'Raporty','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.',
+ 'm.theme':'Wygląd','theme.auto':'Auto','theme.light':'Jasny','theme.dark':'Ciemny','cc.rename':'Zmień nazwy kategorii','cc.renameHint':'Dotknij kategorię, aby nadać własną nazwę.','cc.editName':'Nazwa kategorii','cc.reset':'Przywróć domyślne','cc.renameDone':'Zmieniono nazwę','cc.renameDone':'Zmieniono nazwę',
+ 'cc.longPress':'Przytrzymaj kategorię, aby zmienić nazwę',
+ 'b.trade':'Rodzaj pracy','b.tradeHint':'Zasugerujemy kategorie wydatków — możesz je zmienić w każdej chwili.',
+ 'trade.delivery':'Dostawa / Kierowca','trade.construction':'Budownictwo / Rzemiosło','trade.consultant':'Konsultant / IT',
+ 'trade.creative':'Kreatywne / Media','trade.cleaning':'Sprzątanie / Dom','trade.beauty':'Uroda / Pielęgnacja',
+ 'trade.retail':'Handel / Sklep online','trade.other':'Inne',
+ 'sug.title':'Sugerowane kategorie','sug.hint':'Na podstawie rodzaju pracy. Dotknij, aby dodać potrzebne.','sug.add':'Dodaj wybrane','sug.skip':'Pomiń','sug.added':'Dodano {n} kategorii','cc.renameDone':'Zmieniono nazwę','cc.renameDone':'Zmieniono nazwę',
+ 'cc.longPress':'Przytrzymaj kategorię, aby zmienić nazwę',
+ 'b.trade':'Rodzaj pracy','b.tradeHint':'Zasugerujemy kategorie wydatków — możesz je zmienić w każdej chwili.',
+ 'trade.delivery':'Dostawa / Kierowca','trade.construction':'Budownictwo / Rzemiosło','trade.consultant':'Konsultant / IT',
+ 'trade.creative':'Kreatywne / Media','trade.cleaning':'Sprzątanie / Dom','trade.beauty':'Uroda / Pielęgnacja',
+ 'trade.retail':'Handel / Sklep online','trade.other':'Inne',
+ 'sug.title':'Sugerowane kategorie','sug.hint':'Na podstawie rodzaju pracy. Dotknij, aby dodać potrzebne.','sug.add':'Dodaj wybrane','sug.skip':'Pomiń','sug.added':'Dodano {n} kategorii','f.repeat':'Powtarzaj miesięcznie','f.repeatHint':'Stały koszt miesięczny? Dodaj go dla wszystkich 12 miesięcy jednym dotknięciem.','f.repeatAdded':'Dodano na {n} miesięcy','f.repeatOff':'Jednorazowo','f.repeatOn':'Co miesiąc','sec.account':'Konto','sec.biz':'Twoje firmy','sec.prefs':'Preferencje','sec.data':'Kopia i dane','sec.report':'Raporty','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.','rep.desc':'Pełne podsumowanie roku — dla Ciebie, księgowego lub wniosku kredytowego.',
  'sec.legal':'O aplikacji i prawne','leg.privacy':'Polityka prywatności','leg.terms':'Warunki użytkowania','leg.disclaimer':'Zastrzeżenie podatkowe',
  'leg.disclaimerBody':'TaxMate podaje szacunki, by pomóc w planowaniu. To nie porada podatkowa ani zamiennik księgowego czy HMRC. Zawsze potwierdź dane przed złożeniem.',
  'leg.version':'Wersja','leg.madeIn':'Stworzone w UK dla osób samozatrudnionych.',
@@ -870,7 +923,19 @@ ro:{
  'nb.today_jan':'Termen azi Self Assessment — 31 ianuarie','nb.today_jul':'Termen azi Payment on account — 31 iulie',
  'nb.days':'zile','nb.day':'zi','nb.days':'zile','nb.day':'zi',
  'toast.saved':'Salvat','toast.deleted':'Șters','toast.restored':'Backup restaurat','toast.calAdded':'Fișier calendar descărcat','toast.calAdded':'Fișier calendar descărcat',
- 'm.theme':'Aspect','theme.auto':'Auto','theme.light':'Luminos','theme.dark':'Întunecat','cc.rename':'Redenumește categorii','cc.renameHint':'Atinge o categorie pentru a-i da propriul nume.','cc.editName':'Nume categorie','cc.reset':'Resetează','cc.renameDone':'Redenumit','cc.renameDone':'Redenumit','f.repeat':'Repetă lunar','f.repeatHint':'Cost lunar fix? Adaugă-l pentru toate cele 12 luni dintr-o atingere.','f.repeatAdded':'Adăugat pentru {n} luni','f.repeatOff':'O singură dată','f.repeatOn':'Lunar','sec.account':'Cont','sec.biz':'Afacerile tale','sec.prefs':'Preferințe','sec.data':'Backup și date','sec.report':'Rapoarte','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.',
+ 'm.theme':'Aspect','theme.auto':'Auto','theme.light':'Luminos','theme.dark':'Întunecat','cc.rename':'Redenumește categorii','cc.renameHint':'Atinge o categorie pentru a-i da propriul nume.','cc.editName':'Nume categorie','cc.reset':'Resetează','cc.renameDone':'Redenumit','cc.renameDone':'Redenumit',
+ 'cc.longPress':'Apasă lung o categorie pentru a o redenumi',
+ 'b.trade':'Tip de muncă','b.tradeHint':'Vom sugera categorii de cheltuieli — le poți schimba oricând.',
+ 'trade.delivery':'Livrare / Șofer','trade.construction':'Construcții / Meserii','trade.consultant':'Consultant / IT',
+ 'trade.creative':'Creativ / Media','trade.cleaning':'Curățenie / Domestic','trade.beauty':'Frumusețe / Îngrijire',
+ 'trade.retail':'Retail / Magazin online','trade.other':'Altele',
+ 'sug.title':'Categorii sugerate','sug.hint':'Pe baza tipului tău de muncă. Atinge pentru a adăuga.','sug.add':'Adaugă selectate','sug.skip':'Sari peste','sug.added':'{n} categorii adăugate','cc.renameDone':'Redenumit','cc.renameDone':'Redenumit',
+ 'cc.longPress':'Apasă lung o categorie pentru a o redenumi',
+ 'b.trade':'Tip de muncă','b.tradeHint':'Vom sugera categorii de cheltuieli — le poți schimba oricând.',
+ 'trade.delivery':'Livrare / Șofer','trade.construction':'Construcții / Meserii','trade.consultant':'Consultant / IT',
+ 'trade.creative':'Creativ / Media','trade.cleaning':'Curățenie / Domestic','trade.beauty':'Frumusețe / Îngrijire',
+ 'trade.retail':'Retail / Magazin online','trade.other':'Altele',
+ 'sug.title':'Categorii sugerate','sug.hint':'Pe baza tipului tău de muncă. Atinge pentru a adăuga.','sug.add':'Adaugă selectate','sug.skip':'Sari peste','sug.added':'{n} categorii adăugate','f.repeat':'Repetă lunar','f.repeatHint':'Cost lunar fix? Adaugă-l pentru toate cele 12 luni dintr-o atingere.','f.repeatAdded':'Adăugat pentru {n} luni','f.repeatOff':'O singură dată','f.repeatOn':'Lunar','sec.account':'Cont','sec.biz':'Afacerile tale','sec.prefs':'Preferințe','sec.data':'Backup și date','sec.report':'Rapoarte','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.','rep.desc':'Un sumar complet al anului — pentru tine, contabil sau cerere de credit.',
  'sec.legal':'Despre și legal','leg.privacy':'Politica de confidențialitate','leg.terms':'Termeni de utilizare','leg.disclaimer':'Declinare fiscală',
  'leg.disclaimerBody':'TaxMate oferă estimări pentru a te ajuta să planifici. Nu este consultanță fiscală și nu înlocuiește un contabil sau HMRC. Confirmă întotdeauna cifrele înainte de depunere.',
  'leg.version':'Versiune','leg.madeIn':'Creat în UK pentru persoane independente.',
@@ -981,7 +1046,19 @@ es:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -998,7 +1075,19 @@ es:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1015,7 +1104,19 @@ es:{
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
  'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
- 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado',
+ 'cc.longPress':'Mantén pulsada una categoría para renombrarla',
+ 'b.trade':'Tipo de trabajo','b.tradeHint':'Sugeriremos categorías de gastos — puedes cambiarlas cuando quieras.',
+ 'trade.delivery':'Reparto / Conductor','trade.construction':'Construcción / Oficios','trade.consultant':'Consultor / TI',
+ 'trade.creative':'Creativo / Medios','trade.cleaning':'Limpieza / Doméstico','trade.beauty':'Belleza / Cuidado personal',
+ 'trade.retail':'Comercio / Tienda online','trade.other':'Otro',
+ 'sug.title':'Categorías sugeridas','sug.hint':'Según tu tipo de trabajo. Toca para añadir las que necesites.','sug.add':'Añadir seleccionadas','sug.skip':'Omitir','sug.added':'{n} categorías añadidas','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado',
+ 'cc.longPress':'Mantén pulsada una categoría para renombrarla',
+ 'b.trade':'Tipo de trabajo','b.tradeHint':'Sugeriremos categorías de gastos — puedes cambiarlas cuando quieras.',
+ 'trade.delivery':'Reparto / Conductor','trade.construction':'Construcción / Oficios','trade.consultant':'Consultor / TI',
+ 'trade.creative':'Creativo / Medios','trade.cleaning':'Limpieza / Doméstico','trade.beauty':'Belleza / Cuidado personal',
+ 'trade.retail':'Comercio / Tienda online','trade.other':'Otro',
+ 'sug.title':'Categorías sugeridas','sug.hint':'Según tu tipo de trabajo. Toca para añadir las que necesites.','sug.add':'Añadir seleccionadas','sug.skip':'Omitir','sug.added':'{n} categorías añadidas','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
  'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
  'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
  'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
@@ -1126,7 +1227,19 @@ ur:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1143,7 +1256,19 @@ ur:{
  'nb.today_jan':'آج Self Assessment کی آخری تاریخ — 31 جنوری','nb.today_jul':'آج Payment on account کی آخری تاریخ — 31 جولائی',
  'nb.days':'دن','nb.day':'دن','nb.days':'دن','nb.day':'دن',
  'toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
- 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
+ 'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','cc.rename':'زمرہ جات کا نام تبدیل کریں','cc.renameHint':'اپنا نام دینے کے لیے زمرہ پر ٹیپ کریں۔','cc.editName':'زمرہ کا نام','cc.reset':'ڈیفالٹ پر بحال کریں','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','cc.renameDone':'نام تبدیل ہو گیا','cc.renameDone':'نام تبدیل ہو گیا',
+ 'cc.longPress':'نام تبدیل کرنے کے لیے زمرہ کو دبائے رکھیں',
+ 'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔',
+ 'trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / دستکاری','trade.consultant':'کنسلٹنٹ / IT',
+ 'trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو','trade.beauty':'خوبصورتی / ذاتی نگہداشت',
+ 'trade.retail':'ریٹیل / آن لائن شاپ','trade.other':'دیگر',
+ 'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ ضرورت کے مطابق شامل کریں۔','sug.add':'منتخب شامل کریں','sug.skip':'چھوڑیں','sug.added':'{n} زمرے شامل ہو گئے','f.repeat':'ماہانہ دہرائیں','f.repeatHint':'مقررہ ماہانہ خرچ؟ ایک ٹیپ میں پورے سال کے 12 ماہ کے لیے شامل کریں۔','f.repeatAdded':'{n} ماہ کے لیے شامل','f.repeatOff':'ایک بار','f.repeatOn':'ہر ماہ','sec.account':'اکاؤنٹ','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔','rep.desc':'مکمل سالانہ خلاصہ — اپنے، اکاؤنٹنٹ یا مارگیج کے لیے۔',
  'sec.legal':'بارے میں اور قانونی','leg.privacy':'پرائیویسی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس ڈسکلیمر',
  'leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے دیتا ہے۔ یہ ٹیکس مشورہ نہیں اور اکاؤنٹنٹ یا HMRC کا متبادل نہیں۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
  'leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔',
@@ -1160,7 +1285,19 @@ ur:{
  'nb.today_jan':'Hoy vence Self Assessment — 31 enero','nb.today_jul':'Hoy vence Payment on account — 31 julio',
  'nb.days':'días','nb.day':'día','nb.days':'días','nb.day':'día',
  'toast.saved':'Guardado','toast.deleted':'Eliminado','toast.restored':'Copia restaurada','toast.calAdded':'Archivo de calendario descargado','toast.calAdded':'Archivo de calendario descargado',
- 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
+ 'm.theme':'Apariencia','theme.auto':'Auto','theme.light':'Claro','theme.dark':'Oscuro','cc.rename':'Renombrar categorías','cc.renameHint':'Toca una categoría para darle tu propio nombre.','cc.editName':'Nombre de categoría','cc.reset':'Restablecer','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado',
+ 'cc.longPress':'Mantén pulsada una categoría para renombrarla',
+ 'b.trade':'Tipo de trabajo','b.tradeHint':'Sugeriremos categorías de gastos — puedes cambiarlas cuando quieras.',
+ 'trade.delivery':'Reparto / Conductor','trade.construction':'Construcción / Oficios','trade.consultant':'Consultor / TI',
+ 'trade.creative':'Creativo / Medios','trade.cleaning':'Limpieza / Doméstico','trade.beauty':'Belleza / Cuidado personal',
+ 'trade.retail':'Comercio / Tienda online','trade.other':'Otro',
+ 'sug.title':'Categorías sugeridas','sug.hint':'Según tu tipo de trabajo. Toca para añadir las que necesites.','sug.add':'Añadir seleccionadas','sug.skip':'Omitir','sug.added':'{n} categorías añadidas','cc.renameDone':'Renombrado','cc.renameDone':'Renombrado',
+ 'cc.longPress':'Mantén pulsada una categoría para renombrarla',
+ 'b.trade':'Tipo de trabajo','b.tradeHint':'Sugeriremos categorías de gastos — puedes cambiarlas cuando quieras.',
+ 'trade.delivery':'Reparto / Conductor','trade.construction':'Construcción / Oficios','trade.consultant':'Consultor / TI',
+ 'trade.creative':'Creativo / Medios','trade.cleaning':'Limpieza / Doméstico','trade.beauty':'Belleza / Cuidado personal',
+ 'trade.retail':'Comercio / Tienda online','trade.other':'Otro',
+ 'sug.title':'Categorías sugeridas','sug.hint':'Según tu tipo de trabajo. Toca para añadir las que necesites.','sug.add':'Añadir seleccionadas','sug.skip':'Omitir','sug.added':'{n} categorías añadidas','f.repeat':'Repetir mensualmente','f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.','f.repeatAdded':'Añadido para {n} meses','f.repeatOff':'Una vez','f.repeatOn':'Cada mes','sec.account':'Cuenta','sec.biz':'Tus negocios','sec.prefs':'Preferencias','sec.data':'Copia y datos','sec.report':'Informes','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.','rep.desc':'Un resumen anual completo — para ti, tu contable o una hipoteca.',
  'sec.legal':'Acerca y legal','leg.privacy':'Política de privacidad','leg.terms':'Términos de uso','leg.disclaimer':'Aviso fiscal',
  'leg.disclaimerBody':'TaxMate ofrece estimaciones para ayudarte a planificar. No es asesoría fiscal ni sustituye a un contable o a HMRC. Confirma siempre las cifras antes de presentar.',
  'leg.version':'Versión','leg.madeIn':'Hecho en el Reino Unido para autónomos.',
@@ -1200,7 +1337,30 @@ const CATS = {
     {id:'royalty',e:'🎵',dot:'#9B59B6'},{id:'otherin',e:'➕',dot:'#6B7686'}
   ]
 };
-function allCats(kind){ return CATS[kind].concat((S.customCats&&S.customCats[kind])||[]); }
+
+// UK self-employed trade types (ONS data) → suggested expense categories (existing cat ids)
+const TRADES = [
+  {id:'delivery', e:'🚚', cats:['vehicle','travel','insure','repair','phone']},
+  {id:'construction', e:'🔨', cats:['stock','equip','vehicle','insure','repair']},
+  {id:'consultant', e:'💻', cats:['office','phone','home','travel','market']},
+  {id:'creative', e:'🎨', cats:['equip','office','market','travel','home']},
+  {id:'cleaning', e:'🧹', cats:['stock','travel','insure','equip','phone']},
+  {id:'beauty', e:'✂️', cats:['stock','equip','home','insure','market']},
+  {id:'retail', e:'🛍️', cats:['stock','office','fees','market','travel']},
+  {id:'other', e:'📦', cats:[]}
+];
+function allCats(kind){
+  const ac = (S.activeCats&&S.activeCats[kind])||[];
+  const cc = (S.customCats&&S.customCats[kind])||[];
+  // Built-in cats are shown only if the user activated them OR has entries using them
+  const usedIds = new Set(S.entries.filter(e=>e.kind===kind).map(e=>e.cat));
+  const builtin = CATS[kind].filter(c=> ac.includes(c.id) || usedIds.has(c.id));
+  // 'other' is always available as a fallback
+  const other = CATS[kind].find(c=>c.id==='other'||c.id==='otherin');
+  let result = builtin.concat(cc);
+  if(other && !result.find(c=>c.id===other.id)) result.push(other);
+  return result;
+}
 function catById(id){
   const cc = S.customCats||{income:[],expense:[]};
   const all = CATS.expense.concat(CATS.income, cc.expense||[], cc.income||[]);
@@ -1220,7 +1380,7 @@ function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 const STORE_KEY = 'taxmateuk_v1';
 const DEFAULT_STATE = {
   v:2, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
-  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', catRenames:{}, settings:{lang:'en', pro:false, theme:'auto'}
+  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', catRenames:{}, activeCats:{income:[],expense:[]}, settings:{lang:'en', pro:false, theme:'auto'}
 };
 let S = load();
 function load(){
@@ -1231,6 +1391,21 @@ function load(){
     const merged = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), s);
     merged.settings = Object.assign({lang:'en', pro:false}, s.settings||{});
     merged.customCats = Object.assign({income:[],expense:[]}, s.customCats||{});
+    merged.catRenames = s.catRenames || {};
+    // Migration: existing users (have entries) but no activeCats yet →
+    // activate all built-in categories so nothing disappears for them.
+    if(!s.activeCats){
+      if((s.entries||[]).length > 0){
+        merged.activeCats = {
+          income: CATS.income.map(c=>c.id),
+          expense: CATS.expense.map(c=>c.id)
+        };
+      } else {
+        merged.activeCats = {income:[], expense:[]};
+      }
+    } else {
+      merged.activeCats = Object.assign({income:[],expense:[]}, s.activeCats);
+    }
     if(!Array.isArray(merged.folders)) merged.folders = [];
     return merged;
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
@@ -1728,11 +1903,6 @@ function pageMore(){
     <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
     <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
   </div>
-  <div class="card">
-    <div class="t" style="margin-bottom:6px">🏷️ ${t('cc.rename')}</div>
-    <div class="s" style="margin-bottom:12px">${t('cc.renameHint')}</div>
-    <div class="catgrid">${CATS.expense.concat(CATS.income).map(c=>`<button class="catbtn" onclick="renameCat('${c.id}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(c.id))}</button>`).join('')}</div>
-  </div>
   ${organiseSection}
 
   ${secHead('sec.report')}
@@ -2001,16 +2171,59 @@ function deleteEntry(){
 
 /* ═══════════ business sheet ═══════════ */
 let BZ = {id:null, structure:'sole'};
+let SUGGEST = {bizId:null, picked:[]};
+function openSuggestSheet(){
+  const grid = document.getElementById('sug-cats');
+  const tr = TRADES.find(x=>x.id===(bizById(SUGGEST.bizId)||{}).trade);
+  if(!tr || !tr.cats.length){ return; }
+  grid.innerHTML = tr.cats.map(cid=>{
+    const c = catById(cid);
+    const on = SUGGEST.picked.includes(cid);
+    return `<button type="button" class="catbtn ${on?'on':''}" onclick="toggleSuggest('${cid}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(cid))}</button>`;
+  }).join('');
+  openSheet('suggest');
+}
+function toggleSuggest(cid){
+  const i = SUGGEST.picked.indexOf(cid);
+  if(i>-1) SUGGEST.picked.splice(i,1); else SUGGEST.picked.push(cid);
+  openSuggestSheet();
+}
+function addSuggested(){
+  if(!S.activeCats) S.activeCats = {income:[],expense:[]};
+  SUGGEST.picked.forEach(cid=>{
+    const c = catById(cid);
+    const kind = CATS.income.find(x=>x.id===cid) ? 'income' : 'expense';
+    if(!S.activeCats[kind].includes(cid)) S.activeCats[kind].push(cid);
+  });
+  const n = SUGGEST.picked.length;
+  save(); closeSheet('suggest'); render();
+  if(n>0) toast(t('sug.added',{n}));
+}
+function paintTrades(){
+  const grid = document.getElementById('bz-trades');
+  if(!grid) return;
+  // Only show trade selector for NEW businesses
+  const group = document.getElementById('bz-trade-group');
+  if(BZ.id){ if(group) group.style.display='none'; return; }
+  if(group) group.style.display='block';
+  grid.innerHTML = TRADES.map(tr=>
+    `<button type="button" class="catbtn ${BZ.trade===tr.id?'on':''}" onclick="setTrade('${tr.id}')">${tr.e} ${t('trade.'+tr.id)}</button>`
+  ).join('');
+}
+function setTrade(id){
+  BZ.trade = (BZ.trade===id?null:id);
+  paintTrades();
+}
 function openBiz(id){
   const b = id?bizById(id):null;
-  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null} : {id:null, structure:'sole', pendingCode:null};
+  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null, trade:b.trade||null} : {id:null, structure:'sole', pendingCode:null, trade:null};
   document.getElementById('bz-title').textContent = b?t('b.edit'):t('b.add');
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
   document.getElementById('bz-name-err').classList.remove('show');
   document.getElementById('bz-share').value = b?(b.share||50):50;
   document.getElementById('bz-delete').style.display = b?'inline':'none';
-  paintStruct(); paintSync(); openSheet('biz');
+  paintTrades(); paintStruct(); paintSync(); openSheet('biz');
 }
 function setStruct(s){ BZ.structure=s; paintStruct(); }
 function paintStruct(){
@@ -2072,7 +2285,7 @@ function saveBiz(){
     pushBizRemote(b);
   } else {
     newId = uid();
-    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100};
+    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100, trade:BZ.trade||null};
     // Partnership + Pro + Firebase: 一次過儲存並推上雲端
     if(BZ.structure==='partnership' && BZ.pendingCode && S.settings.pro && fbConfigured()){
       newBiz.syncCode = BZ.pendingCode;
@@ -2080,6 +2293,11 @@ function saveBiz(){
     S.businesses.push(newBiz);
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
+  // 新業務 + 揀咗有建議嘅 trade → 彈出建議分類
+  if(newId && BZ.trade){
+    const tr = TRADES.find(x=>x.id===BZ.trade);
+    if(tr && tr.cats.length){ SUGGEST = {bizId:newId, picked:tr.cats.slice()}; setTimeout(openSuggestSheet, 280); return; }
+  }
   // 有 pendingCode → 直接啟用 sync，唔使重開 sheet
   if(newId && BZ.pendingCode && S.businesses[S.businesses.length-1].syncCode){
     const code = BZ.pendingCode;
