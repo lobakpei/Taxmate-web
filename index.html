@@ -3,8 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<meta name="theme-color" content="#F5F7F9">
+<meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)">
 <title>TaxMate UK</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" type="image/png" href="icon-192.png">
+<link rel="apple-touch-icon" href="icon-192.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="TaxMate">
+<meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap" rel="stylesheet">
 <style>
@@ -134,6 +142,12 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .edot{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
 .emojibtn{aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:var(--bg);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;padding:0}
 .emojibtn.on{border-color:var(--brand);background:var(--brand-soft)}
+.planbadge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:6px;vertical-align:middle}
+.planbadge.pro{background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800}
+.planbadge.max{background:linear-gradient(135deg,#A78BFA,#7C5CE6);color:#fff}
+.feat-lock-badge{font-size:9px;font-weight:800;letter-spacing:.4px;padding:2px 6px;border-radius:5px;margin-inline-start:6px;vertical-align:middle}
+.feat-lock-badge.pro{background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800}
+.feat-lock-badge.max{background:linear-gradient(135deg,#A78BFA,#7C5CE6);color:#fff}
 .entry .grow .t{font-size:14.5px}
 .empty{padding:40px 22px;text-align:center;background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
 .empty .big-emoji{font-size:40px;margin-bottom:10px}
@@ -216,6 +230,12 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   --amber:#F5B43C; --amber-soft:rgba(245,180,60,.16);
   --shadow:0 2px 6px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.45);
   --shadow-sm:0 1px 3px rgba(0,0,0,.45);
+}
+:root[data-theme="dark"] .notice.amber{ color:#F5C45E; }
+:root[data-theme="dark"] .notice.green{ color:#5FE0A0; }
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme="light"]) .notice.amber{ color:#F5C45E; }
+  :root:not([data-theme="light"]) .notice.green{ color:#5FE0A0; }
 }
 :root[data-theme="dark"] input[type=text],
 :root[data-theme="dark"] input[type=number],
@@ -395,6 +415,19 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <button class="btn" style="margin-bottom:10px" onclick="catDoRename()" data-i18n="cc.doRename"></button>
   <button class="btn ghost" style="margin-bottom:10px;color:var(--coral)" onclick="catDoDelete()" data-i18n="cc.doDelete"></button>
   <button class="btn ghost" onclick="closeSheet('catact')" data-i18n="c.cancel"></button>
+</div></div>
+
+<!-- upgrade lock sheet -->
+<div class="sb" id="sb-lock"><div class="sheet">
+  <div class="grab" onclick="closeParentSheet(this)"></div>
+  <div style="text-align:center;padding:8px 0 4px">
+    <div style="font-size:40px;margin-bottom:8px">🔒</div>
+    <span id="lock-badge" class="planbadge pro">PRO</span>
+    <div class="stitle" id="lock-title" style="margin-top:12px;text-align:center"></div>
+    <div class="s" id="lock-body" style="margin:8px 16px 20px;text-align:center"></div>
+  </div>
+  <button class="btn ink" style="margin-bottom:10px" onclick="lockSeeplans()" data-i18n="lock.upgrade"></button>
+  <button class="btn ghost" onclick="closeSheet('lock')" data-i18n="c.cancel"></button>
 </div></div>
 
 <div class="sb" id="sb-adj"><div class="sheet">
@@ -812,7 +845,7 @@ en:{
  'feat.records':'Unlimited income & expenses','feat.taxcalc':'Tax calculation','feat.onebiz':'One business','feat.mileageBasic':'Mileage logging','feat.sa103view':'SA103 box mapping','feat.sync':'Cloud sync & login',
  'feat.mileageCompare':'45p vs actual auto-compare','feat.aiTips':'Smart saving tips','feat.multiBiz':'Multiple businesses','feat.receiptPhoto':'Receipt photos','feat.pdfReport':'PDF report export','feat.sa103Pdf':'SA103 PDF export',
  'feat.partnerSync':'Partner sync','feat.sa104':'SA104 partnership','feat.receiptPack':'Receipt Pack PDF (for HMRC checks)','feat.mtdReady':'MTD-ready quarterly export',
- 'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
+ 'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pwa.install':'Add to Home Screen','pwa.installSub':'Install TaxMate for quick access — works like an app.','pwa.iosTitle':'Add to Home Screen','pwa.iosBody':'Tap the Share button below, then \"Add to Home Screen\".','pdf.enHint':'PDF reports are generated in English. Names you type in other languages may not appear — use English for anything you want shown in the PDF.','lang.pdfHint':'Tip: PDF reports export in English only. Type business and category names in English if you need them in your PDF.','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
  'pro.sub':'Free is full-featured forever. Pro adds convenience on top.',
  'pro.f1':'Partner sync — one partnership, every phone',
  'pro.f2':'Receipt photos',
@@ -1189,7 +1222,7 @@ zh:{
  'feat.records':'無限收入與支出','feat.taxcalc':'稅務計算','feat.onebiz':'一個業務','feat.mileageBasic':'里程記錄','feat.sa103view':'SA103 欄位對應','feat.sync':'雲端同步與登入',
  'feat.mileageCompare':'45p 與實報自動比較','feat.aiTips':'智能慳稅提示','feat.multiBiz':'多個業務','feat.receiptPhoto':'收據相片','feat.pdfReport':'PDF 報告匯出','feat.sa103Pdf':'SA103 PDF 匯出',
  'feat.partnerSync':'拍檔同步','feat.sa104':'SA104 合夥','feat.receiptPack':'收據包 PDF（供稅局審查）','feat.mtdReady':'MTD 季度匯出',
- 'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','pwa.install':'加到主畫面','pwa.installSub':'安裝 TaxMate 快速開啟 — 用起上嚟好似 app 一樣。','pwa.iosTitle':'加到主畫面','pwa.iosBody':'撳下面嘅分享按鈕，然後揀「加至主畫面」。','pdf.enHint':'PDF 報告以英文生成。你用中文輸入的名稱可能無法顯示 — 想在 PDF 中顯示的內容請用英文輸入。','lang.pdfHint':'提示：PDF 報告只以英文匯出。若需在 PDF 顯示業務或類別名稱，請用英文輸入。','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。',
  'pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到',
  'pro.f2':'收據相簿',
@@ -1566,7 +1599,7 @@ pl:{
  'feat.records':'Nielimitowane przychody i wydatki','feat.taxcalc':'Obliczanie podatku','feat.onebiz':'Jedna firma','feat.mileageBasic':'Rejestr przebiegu','feat.sa103view':'Mapowanie SA103','feat.sync':'Synchronizacja i logowanie',
  'feat.mileageCompare':'45p vs rzeczywiste','feat.aiTips':'Inteligentne porady','feat.multiBiz':'Wiele firm','feat.receiptPhoto':'Zdjęcia paragonów','feat.pdfReport':'Eksport PDF','feat.sa103Pdf':'Eksport SA103 PDF',
  'feat.partnerSync':'Synchronizacja partnera','feat.sa104':'SA104 spółka','feat.receiptPack':'Pakiet paragonów PDF','feat.mtdReady':'Eksport kwartalny MTD',
- 'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','pwa.install':'Dodaj do ekranu','pwa.installSub':'Zainstaluj TaxMate dla szybkiego dostępu.','pwa.iosTitle':'Dodaj do ekranu głównego','pwa.iosBody':'Dotknij przycisku Udostępnij, a następnie „Dodaj do ekranu głównego”.','pdf.enHint':'Raporty PDF są generowane po angielsku. Nazwy wpisane w innych językach mogą się nie pojawić.','lang.pdfHint':'Wskazówka: raporty PDF eksportują się tylko po angielsku.','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.',
  'pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon',
  'pro.f2':'Zdjęcia paragonów',
@@ -1943,7 +1976,7 @@ ro:{
  'feat.records':'Venituri și cheltuieli nelimitate','feat.taxcalc':'Calcul fiscal','feat.onebiz':'O afacere','feat.mileageBasic':'Înregistrare kilometraj','feat.sa103view':'Mapare SA103','feat.sync':'Sincronizare și autentificare',
  'feat.mileageCompare':'45p vs real','feat.aiTips':'Sfaturi inteligente','feat.multiBiz':'Mai multe afaceri','feat.receiptPhoto':'Foto bonuri','feat.pdfReport':'Export PDF','feat.sa103Pdf':'Export SA103 PDF',
  'feat.partnerSync':'Sincronizare partener','feat.sa104':'SA104 parteneriat','feat.receiptPack':'Pachet bonuri PDF','feat.mtdReady':'Export trimestrial MTD',
- 'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','pwa.install':'Adaugă pe ecran','pwa.installSub':'Instalează TaxMate pentru acces rapid.','pwa.iosTitle':'Adaugă pe ecranul principal','pwa.iosBody':'Atinge butonul Partajare, apoi „Adaugă pe ecranul principal”.','pdf.enHint':'Rapoartele PDF sunt generate în engleză. Numele scrise în alte limbi pot să nu apară.','lang.pdfHint':'Sfat: rapoartele PDF se exportă doar în engleză.','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.',
  'pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon',
  'pro.f2':'Poze cu bonuri',
@@ -2320,7 +2353,7 @@ es:{
  'feat.records':'Ingresos y gastos ilimitados','feat.taxcalc':'Cálculo de impuestos','feat.onebiz':'Un negocio','feat.mileageBasic':'Registro de kilometraje','feat.sa103view':'Mapeo SA103','feat.sync':'Sincronización e inicio de sesión',
  'feat.mileageCompare':'45p vs real','feat.aiTips':'Consejos inteligentes','feat.multiBiz':'Múltiples negocios','feat.receiptPhoto':'Fotos de recibos','feat.pdfReport':'Exportar PDF','feat.sa103Pdf':'Exportar SA103 PDF',
  'feat.partnerSync':'Sincronización de socio','feat.sa104':'SA104 sociedad','feat.receiptPack':'Pack de recibos PDF','feat.mtdReady':'Exportación trimestral MTD',
- 'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','pwa.install':'Añadir a inicio','pwa.installSub':'Instala TaxMate para acceso rápido.','pwa.iosTitle':'Añadir a pantalla de inicio','pwa.iosBody':'Toca el botón Compartir y luego „Añadir a pantalla de inicio”.','pdf.enHint':'Los informes PDF se generan en inglés. Los nombres en otros idiomas pueden no aparecer.','lang.pdfHint':'Consejo: los informes PDF se exportan solo en inglés.','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.',
  'pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles',
  'pro.f2':'Fotos de recibos',
@@ -2695,7 +2728,7 @@ ur:{
  'feat.records':'لامحدود آمدنی و اخراجات','feat.taxcalc':'ٹیکس کیلکولیشن','feat.onebiz':'ایک کاروبار','feat.mileageBasic':'مائلیج ریکارڈنگ','feat.sa103view':'SA103 میپنگ','feat.sync':'کلاؤڈ سنک اور لاگ ان',
  'feat.mileageCompare':'45p بمقابلہ اصل','feat.aiTips':'سمارٹ تجاویز','feat.multiBiz':'متعدد کاروبار','feat.receiptPhoto':'رسید کی تصاویر','feat.pdfReport':'PDF رپورٹ','feat.sa103Pdf':'SA103 PDF',
  'feat.partnerSync':'پارٹنر سنک','feat.sa104':'SA104 شراکت','feat.receiptPack':'رسید پیک PDF','feat.mtdReady':'MTD سہ ماہی ایکسپورٹ',
- 'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','pwa.install':'ہوم اسکرین پر شامل کریں','pwa.installSub':'فوری رسائی کے لیے TaxMate انسٹال کریں۔','pwa.iosTitle':'ہوم اسکرین پر شامل کریں','pwa.iosBody':'نیچے شیئر بٹن دبائیں، پھر „ہوم اسکرین پر شامل کریں”۔','pdf.enHint':'PDF رپورٹس انگریزی میں بنتی ہیں۔ دیگر زبانوں میں ٹائپ کیے نام ظاہر نہیں ہو سکتے۔','lang.pdfHint':'تجویز: PDF رپورٹس صرف انگریزی میں ایکسپورٹ ہوتی ہیں۔','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔',
  'pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر',
  'pro.f2':'رسیدوں کی تصاویر',
@@ -2736,6 +2769,17 @@ function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
   if(vars) for(const k in vars) s = s.split('{'+k+'}').join(vars[k]);
   return s;
+}
+// English-only lookup for PDF output (jsPDF core fonts can't render CJK/Arabic)
+function tEN(key, vars){
+  let s = I18N.en[key] || key;
+  if(vars) for(const k in vars) s = s.split('{'+k+'}').join(vars[k]);
+  return s;
+}
+// Strip characters jsPDF's core fonts can't render (CJK/Arabic/etc) → keep Latin
+function pdfSafe(str){
+  if(str==null) return '';
+  return String(str).replace(/[^\x00-\x7F£€]/g, '').trim() || '(non-Latin text)';
 }
 function applyStaticI18n(){
   document.querySelectorAll('[data-i18n]').forEach(el=>{ el.textContent = t(el.getAttribute('data-i18n')); });
@@ -2858,15 +2902,30 @@ function tierEmoji(tier){ return tier==='free'?'🟢':(tier==='plus'?'⭐':'👑
 function tierTick(tier){ return '✓'; }
 function featureNeedsTier(key){ return FEATURE_TIER[key]; }
 function lockGuard(key){
-  // returns true if BLOCKED (and shows a prompt); false if allowed
+  // returns true if BLOCKED (and shows the upgrade sheet); false if allowed
   if(hasFeature(key)) return false;
   const need = FEATURE_TIER[key];
   const pname = t('tier.'+need);
-  if(confirm(t('lock.body',{p:pname}) + '\n\n' + t('lock.upgrade') + '?')){
-    S.tab='more'; render();
-    setTimeout(()=>{ const el=document.getElementById('plans-anchor'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 100);
-  }
+  const badge = need==='pro' ? 'MAX' : 'PRO';
+  const badgeCls = need==='pro' ? 'max' : 'pro';
+  document.getElementById('lock-badge').textContent = badge;
+  document.getElementById('lock-badge').className = 'planbadge '+badgeCls;
+  document.getElementById('lock-title').textContent = t('lock.title',{p:pname});
+  document.getElementById('lock-body').textContent = t('lock.body',{p:pname});
+  openSheet('lock');
   return true;
+}
+function featBadge(key){
+  if(hasFeature(key)) return '';
+  const need = FEATURE_TIER[key];
+  const label = need==='pro' ? 'MAX' : 'PRO';
+  const cls = need==='pro' ? 'max' : 'pro';
+  return `<span class="feat-lock-badge ${cls}">${label}</span>`;
+}
+function lockSeeplans(){
+  closeSheet('lock');
+  S.tab='more'; render();
+  setTimeout(()=>{ const el=document.getElementById('plans-anchor'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 150);
 }
 function setTier(tier){
   S.settings.tier = tier;
@@ -3421,19 +3480,21 @@ function pageMore(){
   <div class="card">
     <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
     <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
+    ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px">ℹ️ ${t('lang.pdfHint')}</div>`:''}
   </div>
   ${organiseSection}
 
   ${secHead('sec.report')}
   <div class="card">
-    <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}</div>
+    <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}${featBadge('pdfReport')}</div>
     <div class="s" style="margin-bottom:12px">${t('rep.desc')}</div>
+    ${S.settings.lang!=='en'?`<div class="fhint" style="margin-bottom:12px">ℹ️ ${t('pdf.enHint')}</div>`:''}
     <button class="btn soft" style="margin-bottom:10px" onclick="${hasFeature('pdfReport')?'generatePDF()':`lockGuard('pdfReport')`}">📄 ${t('pdf.download')}${hasFeature('pdfReport')?'':' 🔒'}</button>
     <button class="btn ghost" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
     <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
   </div>
   <div class="card">
-    <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}</div>
+    <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}${featBadge('receiptPack')}</div>
     <div class="s" style="margin-bottom:12px">${t('rp.desc')}</div>
     <button class="btn soft" onclick="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">🧾 ${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
   </div>
@@ -3829,7 +3890,7 @@ function paintSync(){
   if(BZ.structure!=='partnership') return;
   if(!BZ.id){ el.innerHTML = `<div class="s" style="margin-bottom:10px">💡 ${t('sy.saveFirst')}</div>`; return; }
   const b = bizById(BZ.id); if(!b) return;
-  if(!S.settings.pro){ el.innerHTML = `<div class="notice amber">🔒 ${t('sy.needPro')}</div>`; return; }
+  if(!hasFeature('partnerSync')){ el.innerHTML = `<div class="notice amber">🔒 ${t('sy.needPro')}</div>`; return; }
   if(!fbConfigured()){ el.innerHTML = `<div class="notice amber">⚙️ ${t('sy.setup')}</div>`; return; }
   // 新生意:顯示 pendingCode，儲存時自動啟用
   if(!BZ.id && BZ.pendingCode){
@@ -3871,7 +3932,7 @@ function saveBiz(){
     newId = uid();
     const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100, trade:BZ.trade||null};
     // Partnership + Pro + Firebase: 一次過儲存並推上雲端
-    if(BZ.structure==='partnership' && BZ.pendingCode && S.settings.pro && fbConfigured()){
+    if(BZ.structure==='partnership' && BZ.pendingCode && hasFeature('partnerSync') && fbConfigured()){
       newBiz.syncCode = BZ.pendingCode;
     }
     S.businesses.push(newBiz);
@@ -4210,7 +4271,7 @@ async function joinPartnership(){
   const msg = document.getElementById('join-msg');
   const code = (input && input.value || '').trim().toUpperCase();
   if(code.length !== 6){ if(msg) msg.textContent = t('sy.enterCode'); return; }
-  if(!S.settings.pro){ if(msg) msg.textContent = t('sy.needPro'); return; }
+  if(!hasFeature('partnerSync')){ if(msg) msg.textContent = t('sy.needPro'); return; }
   const db = await ensureFB();
   if(!db){ if(msg) msg.textContent = t(fbConfigured()?'sy.needNet':'sy.setup'); return; }
   const u = await ensureAuth();
@@ -4486,7 +4547,7 @@ function tipsCard(){
   }
 
   // TIP 6: Missing receipt photos (Pro only)
-  if(!dismissed.includes('receipt_missing') && S.settings.pro){
+  if(!dismissed.includes('receipt_missing') && hasFeature('receiptPhoto')){
     const noReceipt = entriesFor(yr,null,'expense').filter(e=>!e.receiptUrl);
     if(noReceipt.length>=3){
       const n = noReceipt.length;
@@ -4498,7 +4559,7 @@ function tipsCard(){
   if(!tips.length) return '';
 
   return '<div class="card"><div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">'
-    +'<div style="font-size:18px">💡</div><div class="t">'+t('tip.title')+'</div>'
+    +'<div style="font-size:18px">💡</div><div class="t">'+t('tip.title')+featBadge('aiTips')+'</div>'
     +'<span class="tagchip blue" style="margin-inline-start:auto">'+tips.length+'</span></div>'
     +tips.map(tip=>'<div style="background:var(--amber-soft);border-radius:14px;padding:13px 14px;margin-bottom:10px">'
       +'<div style="display:flex;align-items:flex-start;gap:10px">'
@@ -4776,7 +4837,7 @@ function mileageCard(){
     : '<div class="s" style="color:var(--muted)">'+(mi.vehicleExp>0?t('mi.enterMiles'):t('mi.noVehicle'))+'</div>';
   return '<div class="card">'
     +'<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
-    +'<div class="t">🚗 '+t('mi.title')+'</div>'
+    +'<div class="t">🚗 '+t('mi.title')+featBadge('mileageCompare')+'</div>'
     +'<span class="tagchip" style="background:var(--blue-soft);color:'+badgeCol+';font-size:11px">'+badge+'</span></div>'
     +'<div class="s" style="margin-bottom:12px">'+t('mi.sub')+'</div>'
     +'<div class="fg" style="margin-bottom:12px">'
@@ -4799,7 +4860,6 @@ async function exportReceiptPack(){
   if(typeof window.jspdf === 'undefined' && typeof jspdf === 'undefined'){
     alert('PDF library loading — try again in a moment.'); return;
   }
-  // Gather entries in the current tax year that have a receipt photo
   const yr = S.year;
   const items = S.entries
     .filter(e=>e.receiptUrl && inYear(e.date, yr))
@@ -4812,56 +4872,71 @@ async function exportReceiptPack(){
   const W=210, H=297, M=14;
   const GREEN=[10,169,104], INK=[22,32,43], MUTED=[107,118,134], LINE=[236,239,243];
 
-  function loadImg(url){
+  // Load an image URL → {dataURL, w, h} via canvas (handles CORS + format)
+  function loadImgData(url){
     return new Promise((resolve)=>{
       const img = new Image();
       img.crossOrigin = 'anonymous';
-      img.onload = ()=>resolve(img);
+      img.onload = ()=>{
+        try{
+          const c = document.createElement('canvas');
+          c.width = img.naturalWidth || img.width;
+          c.height = img.naturalHeight || img.height;
+          const ctx = c.getContext('2d');
+          ctx.fillStyle = '#fff'; ctx.fillRect(0,0,c.width,c.height);
+          ctx.drawImage(img, 0, 0);
+          resolve({ dataURL: c.toDataURL('image/jpeg', 0.85), w:c.width, h:c.height });
+        }catch(err){ resolve(null); }
+      };
       img.onerror = ()=>resolve(null);
       img.src = url;
     });
   }
-  function fmtMoney(n){ return '£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function money(n){ return 'GBP '+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2}); }
+  function catLabelAscii(id){
+    // Use the user's own name if custom; otherwise the English built-in label
+    const c = catById(id);
+    if(c && c.custom) return c.name;
+    const rn = (S.catRenames||{})[id];
+    return rn || (I18N.en['cat.'+id] || id);
+  }
 
   for(let i=0;i<items.length;i++){
     const e = items[i];
     if(i>0) doc.addPage();
-    // Header band
+    // Header band — English only (jsPDF core fonts can't render CJK/Arabic)
     doc.setFillColor(...GREEN); doc.rect(0,0,W,4,'F');
-    // Title
     doc.setTextColor(...INK); doc.setFont('helvetica','bold'); doc.setFontSize(15);
-    doc.text(t('rp.title'), M, 18);
+    doc.text('Receipt Pack', M, 18);
     doc.setFont('helvetica','normal'); doc.setFontSize(9); doc.setTextColor(...MUTED);
-    doc.text(t('rp.page',{i:i+1,n:items.length}), W-M, 18, {align:'right'});
+    doc.text('Receipt '+(i+1)+' of '+items.length, W-M, 18, {align:'right'});
 
-    // Entry details box
     const b = bizById(e.bizId);
     const dd = new Date(e.date+'T12:00:00').toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
     let y=28;
     doc.setDrawColor(...LINE); doc.setLineWidth(0.3);
     doc.roundedRect(M, y, W-M*2, 26, 2, 2, 'S');
     doc.setFontSize(10); doc.setTextColor(...INK); doc.setFont('helvetica','bold');
-    doc.text(catName(e.cat), M+5, y+8);
+    doc.text(pdfSafe(catLabelAscii(e.cat)), M+5, y+8);
     doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED); doc.setFontSize(9);
-    doc.text(dd + (b?'  ·  '+b.name:''), M+5, y+15);
+    doc.text(dd + (b?'  -  '+pdfSafe(b.name):''), M+5, y+15);
     doc.setFont('helvetica','bold'); doc.setTextColor(...INK); doc.setFontSize(12);
-    doc.text(fmtMoney(e.amount), W-M-5, y+11, {align:'right'});
-    if(e.desc){ doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED); doc.setFontSize(8.5); doc.text(String(e.desc).slice(0,60), M+5, y+22); }
+    doc.text(money(e.amount), W-M-5, y+11, {align:'right'});
+    if(e.desc){ doc.setFont('helvetica','normal'); doc.setTextColor(...MUTED); doc.setFontSize(8.5); doc.text(pdfSafe(String(e.desc).slice(0,60)), M+5, y+22); }
 
-    // Receipt image
-    const img = await loadImg(e.receiptUrl);
-    if(img){
+    const im = await loadImgData(e.receiptUrl);
+    if(im && im.dataURL){
       const availW = W-M*2, availH = H-(y+26+8)-M;
-      let iw=img.naturalWidth||img.width, ih=img.naturalHeight||img.height;
-      const ratio = Math.min(availW/iw, availH/ih);
-      const dw=iw*ratio, dh=ih*ratio;
+      const ratio = Math.min(availW/im.w, availH/im.h);
+      const dw=im.w*ratio, dh=im.h*ratio;
       const dx=(W-dw)/2, dyy=(y+26+8);
-      try{ doc.addImage(img, 'JPEG', dx, dyy, dw, dh); }
-      catch(err){ try{ doc.addImage(img,'PNG',dx,dyy,dw,dh); }catch(e2){} }
+      try{ doc.addImage(im.dataURL, 'JPEG', dx, dyy, dw, dh); }catch(err){}
+    } else {
+      doc.setFont('helvetica','italic'); doc.setTextColor(...MUTED); doc.setFontSize(9);
+      doc.text('(Receipt image could not be loaded)', W/2, 80, {align:'center'});
     }
   }
-  const fname = 'TaxMate-ReceiptPack-'+yr+'.pdf';
-  doc.save(fname);
+  doc.save('TaxMate-ReceiptPack-'+yr+'.pdf');
 }
 
 /* ═══════════ PDF Report Engine ═══════════ */
@@ -4898,8 +4973,8 @@ function generatePDF(){
 
   // ══ COVER PAGE ══
   const user = cloudUser();
-  const userName = user ? (user.displayName || user.email || '') : '';
-  const bizNames = S.businesses.map(b=>b.name).join(', ');
+  const userName = user ? pdfSafe(user.displayName || user.email || '') : '';
+  const bizNames = pdfSafe(S.businesses.map(b=>b.name).join(', '));
   const periodFrom = '6 Apr ' + yr.slice(0,4);
   const periodTo   = '5 Apr ' + yr.slice(5,7).replace(/^0/,'20');
 
@@ -4913,17 +4988,17 @@ function generatePDF(){
   setFont(12,'normal',[200,240,220]); doc.text('UK', M+72, 46);
 
   // card content
-  setFont(9,'normal',[107,118,134]); doc.text(t('pdf.title').toUpperCase(), M+10, 78);
+  setFont(9,'normal',[107,118,134]); doc.text(tEN('pdf.title').toUpperCase(), M+10, 78);
   setFont(20,'bold',INK); doc.text(yr, M+10, 92);
   if(userName){ setFont(11,'normal',INK); doc.text(userName, M+10, 104); }
   setFont(10,'normal',MUTED); doc.text(bizNames, M+10, userName?114:104);
   setFont(9,'normal',MUTED);
   doc.text(periodFrom + '  –  ' + periodTo, M+10, userName?126:116);
-  doc.text(t('pdf.generated') + ': ' + new Date().toLocaleDateString(locale()), M+10, userName?134:124);
+  doc.text(tEN('pdf.generated') + ': ' + new Date().toLocaleDateString(locale()), M+10, userName?134:124);
 
   // disclaimer at bottom of cover
   setFont(7,'normal',[200,240,220]);
-  doc.text(t('pdf.disclaimer'), M+8, 268, {maxWidth:CW-16});
+  doc.text(tEN('pdf.disclaimer'), M+8, 268, {maxWidth:CW-16});
 
   // new page for content
   doc.addPage();
@@ -4940,10 +5015,10 @@ function generatePDF(){
 
   // ── SUMMARY CARDS (2×2 grid) ──
   const cards = [
-    {label:t('pdf.income'),  val:pdfFmt(tx.soleIncome),             bg:[230,247,240], fg:GREEN},
-    {label:t('pdf.expenses'),val:pdfFmt(tx.soleExpenses),           bg:[253,237,238], fg:[200,50,55]},
-    {label:t('pdf.profit'),  val:pdfFmt(tx.myProfit),               bg:[234,241,254], fg:[30,90,200]},
-    {label:t('pdf.estTax'),  val:pdfFmt(Math.max(tx.liability,0)),  bg:AMBER,         fg:AMBERT},
+    {label:tEN('pdf.income'),  val:pdfFmt(tx.soleIncome),             bg:[230,247,240], fg:GREEN},
+    {label:tEN('pdf.expenses'),val:pdfFmt(tx.soleExpenses),           bg:[253,237,238], fg:[200,50,55]},
+    {label:tEN('pdf.profit'),  val:pdfFmt(tx.myProfit),               bg:[234,241,254], fg:[30,90,200]},
+    {label:tEN('pdf.estTax'),  val:pdfFmt(Math.max(tx.liability,0)),  bg:AMBER,         fg:AMBERT},
   ];
   const cw = (CW-4)/2, ch = 16;
   cards.forEach((c,i)=>{
@@ -4959,7 +5034,7 @@ function generatePDF(){
 
   // ── INCOME TABLE ──
   const incEntries = entriesFor(yr, null, 'income').sort((a,b)=>a.date.localeCompare(b.date));
-  setFont(11, 'bold', INK); doc.text(t('pdf.incomeDetail'), M, y); y += 5;
+  setFont(11, 'bold', INK); doc.text(tEN('pdf.incomeDetail'), M, y); y += 5;
   if(incEntries.length){
     doc.autoTable({
       startY: y,
@@ -4968,23 +5043,23 @@ function generatePDF(){
       bodyStyles:{fontSize:8, textColor:INK},
       alternateRowStyles:{fillColor:[248,250,252]},
       columnStyles:{3:{halign:'right'}},
-      head:[[t('pdf.date'), t('pdf.category'), t('pdf.description'), t('pdf.amount')]],
+      head:[[tEN('pdf.date'), tEN('pdf.category'), tEN('pdf.description'), tEN('pdf.amount')]],
       body: incEntries.map(e=>[
         e.date,
-        catName(e.cat),
-        e.desc||'—',
+        pdfSafe(catName(e.cat)),
+        pdfSafe(e.desc||'-'),
         pdfFmt(e.amount)
       ]),
     });
     y = doc.lastAutoTable.finalY + 8;
   } else {
-    setFont(8,'normal',MUTED); doc.text(t('pdf.noEntries'), M, y); y += 8;
+    setFont(8,'normal',MUTED); doc.text(tEN('pdf.noEntries'), M, y); y += 8;
   }
 
   // ── EXPENSE TABLE ──
   const expEntries = entriesFor(yr, null, 'expense').sort((a,b)=>a.date.localeCompare(b.date));
   if(y > 240){ doc.addPage(); y = 14; }
-  setFont(11,'bold',INK); doc.text(t('pdf.expenseDetail'), M, y); y += 5;
+  setFont(11,'bold',INK); doc.text(tEN('pdf.expenseDetail'), M, y); y += 5;
   if(expEntries.length){
     doc.autoTable({
       startY: y,
@@ -4993,11 +5068,11 @@ function generatePDF(){
       bodyStyles:{fontSize:8, textColor:INK},
       alternateRowStyles:{fillColor:[248,250,252]},
       columnStyles:{3:{halign:'right'},4:{halign:'center'},5:{halign:'right'}},
-      head:[[t('pdf.date'), t('pdf.category'), t('pdf.description'), t('pdf.amount'), t('pdf.bizPct'), t('pdf.claimable')]],
+      head:[[tEN('pdf.date'), tEN('pdf.category'), tEN('pdf.description'), tEN('pdf.amount'), tEN('pdf.bizPct'), tEN('pdf.claimable')]],
       body: expEntries.map(e=>[
         e.date,
-        catName(e.cat),
-        e.desc||'—',
+        pdfSafe(catName(e.cat)),
+        pdfSafe(e.desc||'-'),
         pdfFmt(e.amount),
         (e.pct==null?100:e.pct)+'%',
         pdfFmt(effExact(e))
@@ -5005,21 +5080,21 @@ function generatePDF(){
     });
     y = doc.lastAutoTable.finalY + 8;
   } else {
-    setFont(8,'normal',MUTED); doc.text(t('pdf.noEntries'), M, y); y += 8;
+    setFont(8,'normal',MUTED); doc.text(tEN('pdf.noEntries'), M, y); y += 8;
   }
 
   // ── TAX CALCULATION ──
   if(y > 220){ doc.addPage(); y = 14; }
-  setFont(11,'bold',INK); doc.text(t('pdf.taxCalc'), M, y); y += 5;
+  setFont(11,'bold',INK); doc.text(tEN('pdf.taxCalc'), M, y); y += 5;
   const taxRows = [
-    [t('pdf.income'),   pdfFmt(tx.soleIncome)],
-    [t('pdf.expenses'), '-'+pdfFmt(tx.soleExpenses).replace('-','')],
-    [t('pdf.profit'),   pdfFmt(tx.myProfit)],
-    [t('pdf.pa'),       '-'+pdfFmt(tx.pa).replace('-','')],
-    [t('pdf.taxable'),  pdfFmt(tx.taxable)],
-    [t('pdf.incomeTax'),pdfFmt(tx.incomeTax)],
-    [t('pdf.class4'),   pdfFmt(tx.class4)],
-    [t('pdf.total'),    pdfFmt(tx.liability)],
+    [tEN('pdf.income'),   pdfFmt(tx.soleIncome)],
+    [tEN('pdf.expenses'), '-'+pdfFmt(tx.soleExpenses).replace('-','')],
+    [tEN('pdf.profit'),   pdfFmt(tx.myProfit)],
+    [tEN('pdf.pa'),       '-'+pdfFmt(tx.pa).replace('-','')],
+    [tEN('pdf.taxable'),  pdfFmt(tx.taxable)],
+    [tEN('pdf.incomeTax'),pdfFmt(tx.incomeTax)],
+    [tEN('pdf.class4'),   pdfFmt(tx.class4)],
+    [tEN('pdf.total'),    pdfFmt(tx.liability)],
   ];
   doc.autoTable({
     startY: y,
@@ -5028,7 +5103,7 @@ function generatePDF(){
     bodyStyles:{fontSize:8, textColor:INK},
     alternateRowStyles:{fillColor:[248,250,252]},
     columnStyles:{1:{halign:'right', fontStyle:'bold'}},
-    head:[[t('pdf.taxCalc'), yr]],
+    head:[[tEN('pdf.taxCalc'), yr]],
     body: taxRows,
     didParseCell(data){
       if(data.row.index===taxRows.length-1 && data.section==='body'){
@@ -5044,7 +5119,7 @@ function generatePDF(){
   if(y > 270){ doc.addPage(); y = 14; }
   hline(y, LINE); y += 5;
   setFont(7,'normal',MUTED);
-  doc.text(t('pdf.disclaimer'), M, y, {maxWidth:CW});
+  doc.text(tEN('pdf.disclaimer'), M, y, {maxWidth:CW});
 
   // ── SAVE ──
   const fname = 'taxmate-'+yr+'-'+new Date().toISOString().slice(0,10)+'.pdf';
@@ -5060,7 +5135,7 @@ function receiptPath(entryId){ return `receipts/${firebase.auth().currentUser.ui
 async function onReceiptFile(ev){
   const file = ev.target.files[0]; if(!file) return;
   ev.target.value='';
-  if(!S.settings.pro){ alert(t('rc.proOnly')); return; }
+  if(!hasFeature('receiptPhoto')){ lockGuard('receiptPhoto'); return; }
   const st = document.getElementById('en-receipt-status');
   st.textContent = t('rc.uploading');
   try{
@@ -5198,6 +5273,13 @@ if(fbConfigured()){
 }
 // 重啟時自動重新訂閱所有已同步嘅合夥生意
 S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+
+// ── PWA: register service worker for offline + add-to-home ──
+if('serviceWorker' in navigator){
+  window.addEventListener('load', ()=>{
+    navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW reg failed', err));
+  });
+}
 </script>
 </body>
 </html>
