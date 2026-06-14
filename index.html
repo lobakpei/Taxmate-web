@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)">
 <title>TaxMate UK</title>
@@ -19,6 +19,7 @@
 /* ════════════════════════════════════════════════════
    TAXMATE UK v2 — warm, modern, close to people
    ════════════════════════════════════════════════════ */
+html{ touch-action:pan-x pan-y; }
 :root{
   --bg:#F5F7F9;
   --card:#FFFFFF;
@@ -428,6 +429,17 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <button class="btn ink" style="margin-bottom:10px" onclick="lockSeeplans()" data-i18n="lock.upgrade"></button>
   <button class="btn ghost" onclick="closeSheet('lock')" data-i18n="c.cancel"></button>
+</div></div>
+
+<!-- iOS / manual install instructions sheet -->
+<div class="sb" id="sb-iosinstall"><div class="sheet">
+  <div class="grab" onclick="closeParentSheet(this)"></div>
+  <div style="text-align:center;padding:8px 0 4px">
+    <div style="font-size:40px;margin-bottom:8px">📲</div>
+    <div class="stitle" style="text-align:center" data-i18n="pwa.iosTitle"></div>
+    <div class="s" style="margin:8px 16px 20px;text-align:center" data-i18n="pwa.iosBody"></div>
+  </div>
+  <button class="btn ghost" onclick="closeSheet('iosinstall')" data-i18n="c.cancel"></button>
 </div></div>
 
 <div class="sb" id="sb-adj"><div class="sheet">
@@ -845,7 +857,7 @@ en:{
  'feat.records':'Unlimited income & expenses','feat.taxcalc':'Tax calculation','feat.onebiz':'One business','feat.mileageBasic':'Mileage logging','feat.sa103view':'SA103 box mapping','feat.sync':'Cloud sync & login',
  'feat.mileageCompare':'45p vs actual auto-compare','feat.aiTips':'Smart saving tips','feat.multiBiz':'Multiple businesses','feat.receiptPhoto':'Receipt photos','feat.pdfReport':'PDF report export','feat.sa103Pdf':'SA103 PDF export',
  'feat.partnerSync':'Partner sync','feat.sa104':'SA104 partnership','feat.receiptPack':'Receipt Pack PDF (for HMRC checks)','feat.mtdReady':'MTD-ready quarterly export',
- 'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pwa.install':'Add to Home Screen','pwa.installSub':'Install TaxMate for quick access — works like an app.','pwa.iosTitle':'Add to Home Screen','pwa.iosBody':'Tap the Share button below, then \"Add to Home Screen\".','pdf.enHint':'PDF reports are generated in English. Names you type in other languages may not appear — use English for anything you want shown in the PDF.','lang.pdfHint':'Tip: PDF reports export in English only. Type business and category names in English if you need them in your PDF.','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
+ 'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pwa.install':'Download','pwa.installSub':'Get the app on your phone.','pwa.iosTitle':'Add to Home Screen','pwa.iosBody':'Tap the Share button below, then \"Add to Home Screen\".','pdf.enHint':'PDF reports are generated in English. Names you type in other languages may not appear — use English for anything you want shown in the PDF.','lang.pdfHint':'Tip: PDF reports export in English only. Type business and category names in English if you need them in your PDF.','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
  'pro.sub':'Free is full-featured forever. Pro adds convenience on top.',
  'pro.f1':'Partner sync — one partnership, every phone',
  'pro.f2':'Receipt photos',
@@ -1222,7 +1234,7 @@ zh:{
  'feat.records':'無限收入與支出','feat.taxcalc':'稅務計算','feat.onebiz':'一個業務','feat.mileageBasic':'里程記錄','feat.sa103view':'SA103 欄位對應','feat.sync':'雲端同步與登入',
  'feat.mileageCompare':'45p 與實報自動比較','feat.aiTips':'智能慳稅提示','feat.multiBiz':'多個業務','feat.receiptPhoto':'收據相片','feat.pdfReport':'PDF 報告匯出','feat.sa103Pdf':'SA103 PDF 匯出',
  'feat.partnerSync':'拍檔同步','feat.sa104':'SA104 合夥','feat.receiptPack':'收據包 PDF（供稅局審查）','feat.mtdReady':'MTD 季度匯出',
- 'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','pwa.install':'加到主畫面','pwa.installSub':'安裝 TaxMate 快速開啟 — 用起上嚟好似 app 一樣。','pwa.iosTitle':'加到主畫面','pwa.iosBody':'撳下面嘅分享按鈕，然後揀「加至主畫面」。','pdf.enHint':'PDF 報告以英文生成。你用中文輸入的名稱可能無法顯示 — 想在 PDF 中顯示的內容請用英文輸入。','lang.pdfHint':'提示：PDF 報告只以英文匯出。若需在 PDF 顯示業務或類別名稱，請用英文輸入。','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','pwa.install':'下載','pwa.installSub':'將 app 安裝到手機。','pwa.iosTitle':'加到主畫面','pwa.iosBody':'撳下面嘅分享按鈕，然後揀「加至主畫面」。','pdf.enHint':'PDF 報告以英文生成。你用中文輸入的名稱可能無法顯示 — 想在 PDF 中顯示的內容請用英文輸入。','lang.pdfHint':'提示：PDF 報告只以英文匯出。若需在 PDF 顯示業務或類別名稱，請用英文輸入。','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。',
  'pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到',
  'pro.f2':'收據相簿',
@@ -1599,7 +1611,7 @@ pl:{
  'feat.records':'Nielimitowane przychody i wydatki','feat.taxcalc':'Obliczanie podatku','feat.onebiz':'Jedna firma','feat.mileageBasic':'Rejestr przebiegu','feat.sa103view':'Mapowanie SA103','feat.sync':'Synchronizacja i logowanie',
  'feat.mileageCompare':'45p vs rzeczywiste','feat.aiTips':'Inteligentne porady','feat.multiBiz':'Wiele firm','feat.receiptPhoto':'Zdjęcia paragonów','feat.pdfReport':'Eksport PDF','feat.sa103Pdf':'Eksport SA103 PDF',
  'feat.partnerSync':'Synchronizacja partnera','feat.sa104':'SA104 spółka','feat.receiptPack':'Pakiet paragonów PDF','feat.mtdReady':'Eksport kwartalny MTD',
- 'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','pwa.install':'Dodaj do ekranu','pwa.installSub':'Zainstaluj TaxMate dla szybkiego dostępu.','pwa.iosTitle':'Dodaj do ekranu głównego','pwa.iosBody':'Dotknij przycisku Udostępnij, a następnie „Dodaj do ekranu głównego”.','pdf.enHint':'Raporty PDF są generowane po angielsku. Nazwy wpisane w innych językach mogą się nie pojawić.','lang.pdfHint':'Wskazówka: raporty PDF eksportują się tylko po angielsku.','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','pwa.install':'Pobierz','pwa.installSub':'Zainstaluj aplikację na telefonie.','pwa.iosTitle':'Dodaj do ekranu głównego','pwa.iosBody':'Dotknij przycisku Udostępnij, a następnie „Dodaj do ekranu głównego”.','pdf.enHint':'Raporty PDF są generowane po angielsku. Nazwy wpisane w innych językach mogą się nie pojawić.','lang.pdfHint':'Wskazówka: raporty PDF eksportują się tylko po angielsku.','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.',
  'pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon',
  'pro.f2':'Zdjęcia paragonów',
@@ -1976,7 +1988,7 @@ ro:{
  'feat.records':'Venituri și cheltuieli nelimitate','feat.taxcalc':'Calcul fiscal','feat.onebiz':'O afacere','feat.mileageBasic':'Înregistrare kilometraj','feat.sa103view':'Mapare SA103','feat.sync':'Sincronizare și autentificare',
  'feat.mileageCompare':'45p vs real','feat.aiTips':'Sfaturi inteligente','feat.multiBiz':'Mai multe afaceri','feat.receiptPhoto':'Foto bonuri','feat.pdfReport':'Export PDF','feat.sa103Pdf':'Export SA103 PDF',
  'feat.partnerSync':'Sincronizare partener','feat.sa104':'SA104 parteneriat','feat.receiptPack':'Pachet bonuri PDF','feat.mtdReady':'Export trimestrial MTD',
- 'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','pwa.install':'Adaugă pe ecran','pwa.installSub':'Instalează TaxMate pentru acces rapid.','pwa.iosTitle':'Adaugă pe ecranul principal','pwa.iosBody':'Atinge butonul Partajare, apoi „Adaugă pe ecranul principal”.','pdf.enHint':'Rapoartele PDF sunt generate în engleză. Numele scrise în alte limbi pot să nu apară.','lang.pdfHint':'Sfat: rapoartele PDF se exportă doar în engleză.','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','pwa.install':'Descarcă','pwa.installSub':'Instalează aplicația pe telefon.','pwa.iosTitle':'Adaugă pe ecranul principal','pwa.iosBody':'Atinge butonul Partajare, apoi „Adaugă pe ecranul principal”.','pdf.enHint':'Rapoartele PDF sunt generate în engleză. Numele scrise în alte limbi pot să nu apară.','lang.pdfHint':'Sfat: rapoartele PDF se exportă doar în engleză.','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.',
  'pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon',
  'pro.f2':'Poze cu bonuri',
@@ -2353,7 +2365,7 @@ es:{
  'feat.records':'Ingresos y gastos ilimitados','feat.taxcalc':'Cálculo de impuestos','feat.onebiz':'Un negocio','feat.mileageBasic':'Registro de kilometraje','feat.sa103view':'Mapeo SA103','feat.sync':'Sincronización e inicio de sesión',
  'feat.mileageCompare':'45p vs real','feat.aiTips':'Consejos inteligentes','feat.multiBiz':'Múltiples negocios','feat.receiptPhoto':'Fotos de recibos','feat.pdfReport':'Exportar PDF','feat.sa103Pdf':'Exportar SA103 PDF',
  'feat.partnerSync':'Sincronización de socio','feat.sa104':'SA104 sociedad','feat.receiptPack':'Pack de recibos PDF','feat.mtdReady':'Exportación trimestral MTD',
- 'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','pwa.install':'Añadir a inicio','pwa.installSub':'Instala TaxMate para acceso rápido.','pwa.iosTitle':'Añadir a pantalla de inicio','pwa.iosBody':'Toca el botón Compartir y luego „Añadir a pantalla de inicio”.','pdf.enHint':'Los informes PDF se generan en inglés. Los nombres en otros idiomas pueden no aparecer.','lang.pdfHint':'Consejo: los informes PDF se exportan solo en inglés.','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','pwa.install':'Descargar','pwa.installSub':'Instala la app en tu teléfono.','pwa.iosTitle':'Añadir a pantalla de inicio','pwa.iosBody':'Toca el botón Compartir y luego „Añadir a pantalla de inicio”.','pdf.enHint':'Los informes PDF se generan en inglés. Los nombres en otros idiomas pueden no aparecer.','lang.pdfHint':'Consejo: los informes PDF se exportan solo en inglés.','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.',
  'pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles',
  'pro.f2':'Fotos de recibos',
@@ -2728,7 +2740,7 @@ ur:{
  'feat.records':'لامحدود آمدنی و اخراجات','feat.taxcalc':'ٹیکس کیلکولیشن','feat.onebiz':'ایک کاروبار','feat.mileageBasic':'مائلیج ریکارڈنگ','feat.sa103view':'SA103 میپنگ','feat.sync':'کلاؤڈ سنک اور لاگ ان',
  'feat.mileageCompare':'45p بمقابلہ اصل','feat.aiTips':'سمارٹ تجاویز','feat.multiBiz':'متعدد کاروبار','feat.receiptPhoto':'رسید کی تصاویر','feat.pdfReport':'PDF رپورٹ','feat.sa103Pdf':'SA103 PDF',
  'feat.partnerSync':'پارٹنر سنک','feat.sa104':'SA104 شراکت','feat.receiptPack':'رسید پیک PDF','feat.mtdReady':'MTD سہ ماہی ایکسپورٹ',
- 'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','pwa.install':'ہوم اسکرین پر شامل کریں','pwa.installSub':'فوری رسائی کے لیے TaxMate انسٹال کریں۔','pwa.iosTitle':'ہوم اسکرین پر شامل کریں','pwa.iosBody':'نیچے شیئر بٹن دبائیں، پھر „ہوم اسکرین پر شامل کریں”۔','pdf.enHint':'PDF رپورٹس انگریزی میں بنتی ہیں۔ دیگر زبانوں میں ٹائپ کیے نام ظاہر نہیں ہو سکتے۔','lang.pdfHint':'تجویز: PDF رپورٹس صرف انگریزی میں ایکسپورٹ ہوتی ہیں۔','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
+ 'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','pwa.install':'ڈاؤن لوڈ','pwa.installSub':'ایپ کو اپنے فون پر انسٹال کریں۔','pwa.iosTitle':'ہوم اسکرین پر شامل کریں','pwa.iosBody':'نیچے شیئر بٹن دبائیں، پھر „ہوم اسکرین پر شامل کریں”۔','pdf.enHint':'PDF رپورٹس انگریزی میں بنتی ہیں۔ دیگر زبانوں میں ٹائپ کیے نام ظاہر نہیں ہو سکتے۔','lang.pdfHint':'تجویز: PDF رپورٹس صرف انگریزی میں ایکسپورٹ ہوتی ہیں۔','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔',
  'pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر',
  'pro.f2':'رسیدوں کی تصاویر',
@@ -2932,6 +2944,18 @@ function setTier(tier){
   S.settings.pro = (tier==='pro'); // keep legacy flag roughly in sync
   save(); render();
   toast(t('tier.active')+' · '+t('tier.'+tier));
+}
+function installCard(){
+  // Hide entirely if already running as an installed app
+  if(typeof isStandalone==='function' && isStandalone()) return '';
+  return `<div class="card">
+    <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
+      <span style="font-size:20px">📲</span>
+      <span class="t" style="font-size:15px">${t('pwa.install')}</span>
+    </div>
+    <div class="s" style="margin-bottom:14px">${t('pwa.installSub')}</div>
+    <button class="btn ink" onclick="doInstall()">${t('pwa.install')}</button>
+  </div>`;
 }
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
@@ -3464,6 +3488,7 @@ function pageMore(){
 
   ${secHead('sec.account')}
   ${accountCard}<div id="plans-anchor"></div>${proCard}
+  ${installCard()}
 
   ${secHead('sec.biz')}
   ${bizCard}${syncCard}
@@ -5273,6 +5298,47 @@ if(fbConfigured()){
 }
 // 重啟時自動重新訂閱所有已同步嘅合夥生意
 S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+
+// ── PWA install prompt capture ──
+let deferredInstall = null;
+window.addEventListener('beforeinstallprompt', e=>{
+  e.preventDefault();
+  deferredInstall = e;
+  if(typeof render==='function' && S.tab==='more') render();
+});
+window.addEventListener('appinstalled', ()=>{
+  deferredInstall = null;
+  if(typeof render==='function' && S.tab==='more') render();
+});
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
+}
+function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+function doInstall(){
+  if(deferredInstall){
+    deferredInstall.prompt();
+    deferredInstall.userChoice.finally(()=>{ deferredInstall=null; render(); });
+  } else if(isIOS()){
+    openSheet('iosinstall');
+  } else {
+    openSheet('iosinstall'); // generic fallback w/ manual instructions
+  }
+}
+
+// ── Disable pinch-zoom (iOS Safari ignores user-scalable=no) ──
+document.addEventListener('gesturestart', e=>e.preventDefault());
+document.addEventListener('gesturechange', e=>e.preventDefault());
+document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
+// Block double-tap zoom (only when the two taps are at nearly the same spot,
+// so genuine quick taps on different buttons still work)
+let lastTap=0, lastX=0, lastY=0;
+document.addEventListener('touchend', e=>{
+  if(e.changedTouches.length!==1) return;
+  const t=e.changedTouches[0], now=Date.now();
+  const near = Math.abs(t.clientX-lastX)<30 && Math.abs(t.clientY-lastY)<30;
+  if(now-lastTap<=300 && near){ e.preventDefault(); }
+  lastTap=now; lastX=t.clientX; lastY=t.clientY;
+}, {passive:false});
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
