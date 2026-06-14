@@ -5421,14 +5421,19 @@ function isStandalone(){
   return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
 }
 function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
+let installing = false;
 function doInstall(){
-  if(deferredInstall){
-    deferredInstall.prompt();
-    deferredInstall.userChoice.finally(()=>{ deferredInstall=null; render(); });
-  } else if(isIOS()){
-    openSheet('iosinstall');
+  if(isIOS()){ openSheet('iosinstall'); return; }
+  if(deferredInstall && !installing){
+    installing = true;
+    const dp = deferredInstall;
+    deferredInstall = null;            // consume immediately so it can't fire twice
+    dp.prompt();
+    dp.userChoice.finally(()=>{ installing = false; render(); });
   } else {
-    openSheet('andinstall'); // Android but prompt unavailable → manual Chrome-menu guide
+    // No native prompt available → guide user to Chrome menu (avoids the
+    // shortcut-style "Add to Home screen" double-popup some devices show)
+    openSheet('andinstall');
   }
 }
 
