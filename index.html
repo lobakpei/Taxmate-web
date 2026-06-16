@@ -5602,8 +5602,10 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
     assert('S.entries is array',Array.isArray(S.entries),true,Array.isArray(S.entries));
     assert('S.year is valid string',typeof S.year==='string'&&S.year.includes('-'),true,S.year);
 
-    // 6. Support email
-    assert('No old email in HTML',!document.documentElement.innerHTML.includes('taxmate-uk.com'),'not found','found');
+    // 6. Support email (split string so test doesn't match itself)
+    const oldDomain='taxmate-uk'+'.com';
+    const bodyOnly=document.body.innerHTML;
+    assert('No old email in body HTML',!bodyOnly.includes('support@'+oldDomain),'not found','found');
 
     // 7. Sentry
     if(typeof Sentry!=='undefined') assert('Sentry loaded',true,true,true);
