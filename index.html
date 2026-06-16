@@ -1,6 +1,25 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  // Cookieless mode — no cookies, no personal data sent to Google
+  gtag('consent', 'default', {
+    analytics_storage: 'denied',
+    ad_storage: 'denied',
+    wait_for_update: 0
+  });
+  gtag('js', new Date());
+  gtag('config', 'G-W1WWK7EVTR', {
+    anonymize_ip: true,
+    allow_google_signals: false,
+    allow_ad_personalization_signals: false,
+    cookie_flags: 'SameSite=None;Secure',
+    client_storage: 'none'
+  });
+</script>
 <script
   src="https://js-de.sentry-cdn.com/95145fe82ff528333c69e34ee61f6d86.min.js"
   crossorigin="anonymous"
@@ -2919,7 +2938,53 @@ function isSignedIn(){
     return !!(u && !u.isAnonymous);
   }catch(e){ return false; }
 }
+/* ═══════════ Trial Logic ═══════════ */
+const TRIAL_LAUNCH_END   = '2027-01-05'; // Fixed end for launch users
+const TRIAL_LAUNCH_CUT   = '2026-08-01'; // Sign-up before this → fixed end date
+const TRIAL_MONTHS       = 6;
+const TRIAL_KEY          = 'tmTrialStart';
+
+function trialStatus(){
+  const start = localStorage.getItem(TRIAL_KEY);
+  if(!start) return {active:false, daysLeft:0, phase:'none'};
+  const today   = new Date();
+  const endDate = start < TRIAL_LAUNCH_CUT
+    ? new Date(TRIAL_LAUNCH_END)
+    : (()=>{ const d=new Date(start); d.setMonth(d.getMonth()+TRIAL_MONTHS); return d; })();
+  const daysLeft = Math.ceil((endDate - today)/(1000*60*60*24));
+  const active   = daysLeft > 0;
+  const phase    = !active ? 'expired' : daysLeft<=30 ? 'warn2' : daysLeft<=90 ? 'warn1' : 'active';
+  return {active, daysLeft, endDate, phase, start};
+}
+
+function initTrial(){
+  if(localStorage.getItem(TRIAL_KEY)) return; // already set
+  const start = new Date().toISOString().slice(0,10);
+  localStorage.setItem(TRIAL_KEY, start);
+  // persist to Firestore so other devices pick it up
+  const u = cloudUser();
+  if(u && FB.db){
+    try{ userRoot(u.uid).collection('app').doc('trial').set({trialStart:start},{merge:true}); }catch(e){}
+  }
+}
+
+async function loadTrialFromCloud(uid){
+  if(localStorage.getItem(TRIAL_KEY)) return;
+  try{
+    const doc = await userRoot(uid).collection('app').doc('trial').get();
+    if(doc.exists && doc.data().trialStart){
+      localStorage.setItem(TRIAL_KEY, doc.data().trialStart);
+    } else {
+      initTrial();
+    }
+  }catch(e){ initTrial(); }
+}
+
 function currentTier(){
+  // During active trial → full Pro access
+  const trial = trialStatus();
+  if(trial.active) return 'pro';
+  // After trial → use stored tier
   const ti = (S.settings && S.settings.tier) || 'free';
   // legacy: old pro flag maps to 'pro'
   if((!S.settings.tier || S.settings.tier==='free') && S.settings.pro) return 'pro';
@@ -3272,6 +3337,7 @@ function pageHome(){
   </div>
 
   ${deadlineBanner()}
+  ${trialBanner()}
   <div class="card" style="cursor:pointer" onclick="go('tax')">
     <div class="row">
       <div class="ico" style="background:var(--brand-soft)">🐷</div>
@@ -3482,6 +3548,9 @@ function pageMore(){
           <div class="s pos" style="font-weight:700;margin-top:2px">${t('ac.cloudOn')} ✓</div>
         </div>
       </div>
+      <div class="notice amber" style="margin-top:12px;font-size:12.5px">
+        ⚠️ <strong>One device at a time</strong> — editing on two devices simultaneously may overwrite data. Always close TaxMate on other devices before making changes.
+      </div>
       <button class="link danger" style="margin-top:14px;display:block" onclick="confirmAction(t('ac.signout'),t('ac.signoutM'),doSignOut)">${t('ac.signout')}</button>
     ` : `
       <div class="s" style="margin-bottom:14px">${t('ac.why')}</div>
@@ -3572,7 +3641,12 @@ function pageMore(){
     <button class="btn ghost" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
     <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
   </div>
-  <!-- Receipt Pack temporarily hidden — Storage CORS pending -->
+  <!-- TODO: Fix Storage CORS before launch — exportReceiptPack() uses Firebase Storage -->
+  <div class="card">
+    <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}${featBadge('receiptPack')}</div>
+    <div class="s" style="margin-bottom:12px">${t('rp.desc')}</div>
+    <button class="btn soft" onclick="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">🧾 ${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
+  </div>
 
   ${secHead('sec.data')}
   <div class="card">
@@ -3592,6 +3666,25 @@ function pageMore(){
   </div>` : ''}
 
   ${secHead('sec.legal')}
+  <div class="card">
+    <div class="t" style="margin-bottom:4px">✉️ Contact us</div>
+    <div class="s" style="margin-bottom:12px">We aim to reply within 2–3 working days.</div>
+    <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">✉️ support@taxmate.uk</a>
+  </div>
+  <div class="card">
+    <div class="t" style="margin-bottom:12px">❓ FAQ</div>
+    ${[
+      ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
+      ['Can I use TaxMate on multiple devices?', 'Yes, but edit on one device at a time. TaxMate uses last-write-wins sync — editing simultaneously on two devices may overwrite changes.'],
+      ['What happens when my trial ends?', 'You move to the Free plan automatically. Your data is never deleted — only paid features are locked.'],
+      ['Is TaxMate HMRC-approved?', 'TaxMate is MTD-ready for planning purposes. It is not yet a HMRC-recognised submission tool. Always confirm figures with HMRC or an accountant before filing.'],
+      ['How do I contact support?', 'Email support@taxmate.uk — we aim to reply within 2–3 working days.'],
+    ].map(([q,a])=>`
+      <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+        <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px">${q}</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.5">${a}</div>
+      </div>`).join('')}
+  </div>
   <div class="card">
     <div class="notice amber" style="margin-bottom:0">
       <div style="font-weight:800;margin-bottom:4px">⚠️ ${t('leg.disclaimer')}</div>
@@ -3617,7 +3710,7 @@ function openLegal(which){
 <div style="font-size:14px;line-height:1.7;color:var(--ink)">
 
 <p><strong>Who we are</strong><br>
-TaxMate UK is operated by Robert Ho, a sole trader based in Droitwich, Worcestershire, United Kingdom.<br>
+TaxMate UK is operated by Robert Ho, a sole trader based in the United Kingdom.<br>
 ICO Registration Number: <strong>ZC174150</strong><br>
 Contact: support@taxmate.uk</p>
 
@@ -3637,7 +3730,7 @@ Under UK GDPR, you have the right to: access your data (use the Export function 
 We retain your data for as long as you use the service. When you delete your data via the app, it is permanently removed from our systems.</p>
 
 <p><strong>Cookies and analytics</strong><br>
-TaxMate UK does not use cookies. We use Google Analytics to understand general app usage (page views, session duration). No personally identifiable information is shared with Google Analytics.</p>
+TaxMate UK does not use cookies. We use Google Analytics 4 in cookieless mode to understand general app usage (page views, session duration, country). No personally identifiable information is collected or shared. Analytics storage is denied by default — only anonymised, aggregated data is processed.</p>
 
 <p><strong>Children</strong><br>
 TaxMate UK is intended for adults (18+). We do not knowingly collect data from children.</p>
@@ -4588,6 +4681,7 @@ function userRoot(uid){ return FB.db.collection('users').doc(uid); }
 async function startUserSync(u){
   if(CLOUD.metaUnsub) return;
   const uid = u.uid;
+  await loadTrialFromCloud(uid); // ← trial logic
   try{
     /* 1 ── 初次合併:雲端有嘅補入本地(以 id 去重) */
     const metaDoc = await userRoot(uid).collection('app').doc('meta').get();
@@ -4989,6 +5083,36 @@ function mtdCard(){
 }
 
 // Deadline banner (shown on Home + Tax pages if within 7 days)
+// ── Trial reminder banner ──────────────────────────────────
+function trialBanner(){
+  const tr = trialStatus();
+  if(tr.phase==='active' || tr.phase==='none') return '';
+  const end = tr.endDate ? tr.endDate.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+  if(tr.phase==='warn1'){
+    // ~90 days left — gentle nudge
+    return `<div class="notice amber" style="margin-bottom:14px">
+      ⭐ <strong>Your free Pro trial ends ${end}</strong> — ${tr.daysLeft} days left.
+      <span style="opacity:.8">Upgrade anytime in Settings to keep full access.</span>
+    </div>`;
+  }
+  if(tr.phase==='warn2'){
+    // ~30 days left — urgent, SA deadline context
+    return `<div class="notice" style="background:#FDEDEE;color:var(--coral);margin-bottom:14px">
+      ⚠️ <strong>Trial ends ${end} — ${tr.daysLeft} days left.</strong>
+      Self Assessment deadline is 31 Jan — upgrade Pro to keep your records and reports.
+      <button class="link" style="color:var(--coral);font-weight:800;margin-top:6px;display:block" onclick="go('more')">Upgrade now →</button>
+    </div>`;
+  }
+  if(tr.phase==='expired'){
+    return `<div class="notice" style="background:#FDEDEE;color:var(--coral);margin-bottom:14px">
+      🔒 <strong>Your free trial has ended.</strong>
+      You're now on the Free plan. Your data is safe — upgrade to restore Pro features.
+      <button class="link" style="color:var(--coral);font-weight:800;margin-top:6px;display:block" onclick="go('more')">See plans →</button>
+    </div>`;
+  }
+  return '';
+}
+
 function deadlineBanner(){
   const today = new Date();
   const yr = S.year;
@@ -5486,6 +5610,7 @@ function setupBackButton(){
 /* ═══════════ boot ═══════════ */
 applyCachedRates();
 applyTheme();
+initTrial(); // start trial on first load (cloud users update via loadTrialFromCloud)
 render();
 setupBackButton();
 if(fbConfigured()){
