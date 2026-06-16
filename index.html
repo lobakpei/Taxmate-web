@@ -485,6 +485,13 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <button class="btn ghost" onclick="closeSheet('andinstall')" data-i18n="c.cancel"></button>
 </div></div>
 
+<!-- Legal sheet: privacy policy + terms -->
+<div class="sb" id="sb-legal"><div class="sheet" style="max-height:90vh;overflow-y:auto">
+  <div class="grab" onclick="closeParentSheet(this)"></div>
+  <div id="legal-content" style="padding:0 4px 20px"></div>
+  <button class="btn ghost" onclick="closeSheet('legal')" data-i18n="c.cancel"></button>
+</div></div>
+
 <div class="sb" id="sb-adj"><div class="sheet">
   <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" data-i18n="a.title"></div>
@@ -3598,8 +3605,87 @@ function pageMore(){
   <p class="small" style="text-align:center">${t('leg.madeIn')}<br>${t('leg.version')} 1.0</p>`;
 }
 function openLegal(which){
-  const titles = {privacy:t('leg.privacy'), terms:t('leg.terms')};
-  alert(titles[which] + '\n\n' + t('leg.disclaimerBody'));
+  const el = document.getElementById('legal-content');
+  if(!el) return;
+  const today = new Date();
+  const updated = 'June 2026';
+  if(which==='privacy'){
+    el.innerHTML = `
+<div class="stitle" style="margin-bottom:16px">Privacy Policy</div>
+<div class="s" style="margin-bottom:20px;color:var(--muted)">Last updated: ${updated}</div>
+
+<div style="font-size:14px;line-height:1.7;color:var(--ink)">
+
+<p><strong>Who we are</strong><br>
+TaxMate UK is operated by Robert Ho, a sole trader based in Droitwich, Worcestershire, United Kingdom.<br>
+ICO Registration Number: <strong>ZC174150</strong><br>
+Contact: support@taxmate.uk</p>
+
+<p><strong>What data we collect</strong><br>
+When you use TaxMate UK, you may provide: income and expense records, business details, mileage records, receipt photos, and account information (name and email via Google or Apple sign-in). We do not collect payment card details.</p>
+
+<p><strong>How we use your data</strong><br>
+Your data is used solely to provide the TaxMate UK service — to calculate your tax estimate, generate reports, and sync your records across devices. We do not sell, share, or use your data for advertising.</p>
+
+<p><strong>Where your data is stored</strong><br>
+If you use cloud sync (sign in with Google or Apple), your data is stored securely in Google Firebase (Firestore and Storage), hosted in the United States and subject to Google's data protection standards. Firebase is GDPR-compliant and processes data under a Data Processing Agreement with Google.</p>
+
+<p><strong>Your rights</strong><br>
+Under UK GDPR, you have the right to: access your data (use the Export function in Settings), correct inaccurate data, delete your data (use "Delete all my data" in Settings — this removes all data from your device and our cloud), and withdraw consent at any time by deleting your account and data.</p>
+
+<p><strong>Data retention</strong><br>
+We retain your data for as long as you use the service. When you delete your data via the app, it is permanently removed from our systems.</p>
+
+<p><strong>Cookies and analytics</strong><br>
+TaxMate UK does not use cookies. We use Google Analytics to understand general app usage (page views, session duration). No personally identifiable information is shared with Google Analytics.</p>
+
+<p><strong>Children</strong><br>
+TaxMate UK is intended for adults (18+). We do not knowingly collect data from children.</p>
+
+<p><strong>Changes to this policy</strong><br>
+We may update this policy from time to time. Changes will be reflected in the "last updated" date above.</p>
+
+<p><strong>Contact and complaints</strong><br>
+For any data protection queries, contact support@taxmate.uk. You also have the right to lodge a complaint with the ICO at ico.org.uk.</p>
+
+</div>`;
+  } else {
+    el.innerHTML = `
+<div class="stitle" style="margin-bottom:16px">Terms of Use</div>
+<div class="s" style="margin-bottom:20px;color:var(--muted)">Last updated: ${updated}</div>
+
+<div style="font-size:14px;line-height:1.7;color:var(--ink)">
+
+<p><strong>Acceptance</strong><br>
+By using TaxMate UK, you agree to these terms. If you do not agree, please do not use the app.</p>
+
+<p><strong>What TaxMate UK does</strong><br>
+TaxMate UK is a tax-tracking tool for UK self-employed individuals. It provides estimates to help you organise your finances and prepare for Self Assessment. It is not a substitute for professional tax advice.</p>
+
+<p><strong>Tax disclaimer</strong><br>
+TaxMate UK provides estimates only. Figures are based on the information you enter and standard HMRC rates. Always verify figures with HMRC or a qualified accountant before filing. TaxMate UK accepts no liability for errors in your tax return.</p>
+
+<p><strong>Your responsibilities</strong><br>
+You are responsible for the accuracy of data you enter. You are responsible for filing your own tax return correctly and on time. TaxMate UK is a tool to assist you — final responsibility remains with you.</p>
+
+<p><strong>Service availability</strong><br>
+We aim to keep TaxMate UK available at all times but cannot guarantee uninterrupted service. We are not liable for any losses caused by downtime or data loss.</p>
+
+<p><strong>Intellectual property</strong><br>
+TaxMate UK and its content are owned by Robert Ho. You may not copy, distribute, or create derivative works without permission.</p>
+
+<p><strong>Changes to the service</strong><br>
+We may update or change features of TaxMate UK at any time. We will endeavour to give notice of significant changes.</p>
+
+<p><strong>Governing law</strong><br>
+These terms are governed by the laws of England and Wales.</p>
+
+<p><strong>Contact</strong><br>
+support@taxmate.uk</p>
+
+</div>`;
+  }
+  openSheet('legal');
 }
 
 function applyTheme(){
