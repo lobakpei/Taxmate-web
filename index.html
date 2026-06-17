@@ -3288,6 +3288,7 @@ function render(){
 function welcome(){
   const steps = t('w.steps').split('\n').map(s=>`<div style="margin-bottom:8px;font-size:14.5px">${esc(s)}</div>`).join('');
   return `
+  ${betaBanner()}
   <div class="hero">
     <div class="hi" style="font-size:22px;font-weight:800">${t('w.title')}</div>
     <div style="margin-top:8px;font-size:14.5px;opacity:.95;line-height:1.55">${t('w.sub')}</div>
