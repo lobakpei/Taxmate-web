@@ -565,6 +565,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-storage-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
 <script>
@@ -4520,6 +4521,14 @@ async function ensureFB(){
   if(FB.ready) return FB.db;
   try{
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
+    // App Check — reCAPTCHA v3 (Monitoring mode; switch to Enforce before launch)
+    try{
+      const appCheck = firebase.appCheck();
+      appCheck.activate(
+        new firebase.appCheck.ReCaptchaV3Provider('6LcojSQtAAAAAHfHmTPGuuM6HgrCI05lNiAckm2E'),
+        true // auto-refresh token
+      );
+    }catch(e){ console.warn('AppCheck init', e); }
     // Keep the user signed in across sessions / browser restarts
     try{ await firebase.auth().setPersistence(firebase.auth.Auth.Persistence.LOCAL); }catch(e){ console.warn('persistence', e); }
     FB.db = firebase.firestore();
