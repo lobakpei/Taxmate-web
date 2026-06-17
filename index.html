@@ -5097,7 +5097,8 @@ function mtdCard(){
 // Deadline banner (shown on Home + Tax pages if within 7 days)
 // ── Trial reminder banner ──────────────────────────────────
 function betaBanner(){
-  try{ if(localStorage.getItem('tmBetaSeen')==='1') return ''; }catch(e){}
+  // Show on every new session (sessionStorage, not localStorage)
+  try{ if(sessionStorage.getItem('tmBetaSeen')==='1') return ''; }catch(e){}
   return `<div class="notice amber" id="beta-banner" style="margin-bottom:14px;position:relative">
     <strong>🧪 Beta — for estimation only.</strong>
     TaxMate does not provide legal or financial advice. Always verify your figures with HMRC or a qualified accountant before filing.
@@ -5105,7 +5106,7 @@ function betaBanner(){
   </div>`;
 }
 function dismissBeta(){
-  try{ localStorage.setItem('tmBetaSeen','1'); }catch(e){}
+  try{ sessionStorage.setItem('tmBetaSeen','1'); }catch(e){}
   const el=document.getElementById('beta-banner'); if(el) el.remove();
 }
 
