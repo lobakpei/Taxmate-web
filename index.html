@@ -307,6 +307,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   :root:not([data-theme="light"]):not([data-theme="dark"]) select,
   :root:not([data-theme="light"]):not([data-theme="dark"]) textarea{background:#0A0F16;color:#EDF2F7;border-color:#293647}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .seg{background:#0A0F16}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .seg button.on{background:#293647;color:#EDF2F7}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .catbtn{background:#1A2533;color:#EDF2F7}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .chip{background:#1A2533}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .sheet{background:#0F1620}
@@ -341,7 +342,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
   </div>
   <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
-  <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz"></select></div>
+  <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz" onchange="paintEntry()"></select></div>
   <div class="fg"><label data-i18n="f.category"></label><div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.longPress"></div><div class="catgrid" id="en-cats"></div></div>
   <div class="fg" id="en-folder-group" style="display:none">
     <label for="en-folder" data-i18n="fd.title"></label>
@@ -393,11 +394,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <input type="text" id="bz-name" maxlength="40">
     <div class="ferr" id="bz-name-err" data-i18n="b.nameErr"></div>
   </div>
-  <div class="fg" id="bz-trade-group">
-    <label data-i18n="b.trade"></label>
-    <div class="fhint" style="margin:-2px 0 8px" data-i18n="b.tradeHint"></div>
-    <div class="catgrid" id="bz-trades"></div>
-  </div>
   <div class="fg">
     <label data-i18n="b.setup"></label>
     <div class="seg">
@@ -421,17 +417,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 </div></div>
 
 <!-- HMRC position sheet -->
-<!-- suggested categories sheet -->
-<div class="sb" id="sb-suggest"><div class="sheet">
-  <div class="grab" onclick="closeParentSheet(this)"></div>
-  <div class="stitle" data-i18n="sug.title"></div>
-  <div class="fhint" style="margin:-8px 0 14px" data-i18n="sug.hint"></div>
-  <div class="catgrid" id="sug-cats"></div>
-  <div class="sact">
-    <button class="btn ghost" onclick="closeSheet('suggest')" data-i18n="sug.skip"></button>
-    <button class="btn" onclick="addSuggested()" data-i18n="sug.add"></button>
-  </div>
-</div></div>
 
 <!-- category action sheet (rename/delete) -->
 <div class="sb" id="sb-catact"><div class="sheet">
@@ -545,7 +530,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
   <div class="fg"><label data-i18n="cc.emoji"></label>
     <div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.emojiHint"></div>
-    <input type="text" id="cc-emoji-input" maxlength="2" placeholder="😀 🚗 🛒 ..." style="text-align:center;font-size:32px;padding:14px" oninput="onEmojiInput(this.value)">
+    <input type="text" id="cc-emoji-input" maxlength="2" placeholder="🏷️" style="text-align:center;font-size:32px;padding:14px" oninput="onEmojiInput(this.value)">
     <div class="ferr" id="cc-emoji-err" data-i18n="cc.emojiErr"></div></div>
   <div class="sact">
     <button class="btn ghost" onclick="closeSheet('cat')" data-i18n="c.cancel"></button>
@@ -614,7 +599,7 @@ en:{
  'tag.your':'your {n}%',
  'w.title':'Welcome to TaxMate 👋',
  'w.sub':'Track your self-employed money and see your real tax bill — free, private, no sign-up.',
- 'w.priv':'🔒 Private by design. Your figures never leave this phone.',
+ 'w.priv':'🔒 Private by design. Your data is yours alone — on your device, and synced securely only when you sign in.',
  'w.steps':'1 · Add your business\n2 · Log income and expenses as you go\n3 · The Tax tab keeps a live bill, so 31 January never surprises you',
  'w.start':'Add your first business',
  'inc.title':'Income',
@@ -868,7 +853,7 @@ en:{
  'cc.doRename':'Rename',
  'cc.doDelete':'Remove from list',
  'cc.deleted':'Removed',
- 'cc.emojiHint':'Tap below and use your keyboard to pick any emoji.','cc.emojiErr':'Please choose an emoji',
+ 'cc.emojiHint':'Tap below and pick any emoji from your keyboard to use as the icon.','cc.emojiErr':'Please choose an icon',
  'cc.delDataT':'Remove this category?',
  'cc.delDataM':'This category has {n} entr{s}. Removing it won\'t delete those entries — they\'ll keep their category. You can re-add it later.',
  'cc.cantDeleteUsed':'This category has entries — it will stay visible until those are removed.',
@@ -920,7 +905,7 @@ en:{
  'cc.add':'New category',
  'cc.name':'Category name',
  'cc.colour':'Colour',
- 'cc.emoji':'Emoji',
+ 'cc.emoji':'Icon',
  'cc.manage':'My categories',
  'cc.deleteM':'Entries using it will show as "Other".',
  'pro.title':'TaxMate plans','pro.sub':'Free does the basics forever. Upgrade for smarter, fuller features.',
@@ -944,7 +929,7 @@ en:{
  'sy.invite':'Invite my partner',
  'sy.inviteMsg':'Join my business "{n}" on TaxMate UK — enter code {c}',
  'sy.join':'Got a code from your partner? Enter it and everything syncs automatically.',
- 'sy.enterCode':'Enter the 6-character code',
+ 'sy.enterCode':'Enter the code',
  'sy.synced':'Synced',
  'sy.badCode':'Code not found — check it and try again.',
  'sy.needPro':'Partner sync is a Pro feature — unlock it in More.',
@@ -991,7 +976,7 @@ zh:{
  'tag.your':'你佔 {n}%',
  'w.title':'歡迎使用 TaxMate 👋',
  'w.sub':'記錄自僱收支，即時查看真實稅款估算 — 免費、私密、無需註冊。',
- 'w.priv':'🔒 私隱至上。您的數據僅儲存於本裝置。',
+ 'w.priv':'🔒 私隱至上。數據只屬於你 — 留喺裝置,登入先會安全同步上雲。',
  'w.steps':'1 · 新增你的業務\n2 · 隨時記錄收入與開支\n3 · 「稅務」頁面即時計算稅款，令1月31日不再令你措手不及',
  'w.start':'新增第一個業務',
  'inc.title':'收入',
@@ -1245,7 +1230,7 @@ zh:{
  'cc.doRename':'重新命名',
  'cc.doDelete':'從列表移除',
  'cc.deleted':'已移除',
- 'cc.emojiHint':'點下方輸入框，用手機鍵盤揀任何 emoji。','cc.emojiErr':'請揀一個 emoji',
+ 'cc.emojiHint':'點下方輸入框，用鍵盤揀一個 emoji 做圖示。','cc.emojiErr':'請揀一個圖示',
  'cc.delDataT':'移除此分類？',
  'cc.delDataM':'此分類有 {n} 筆記錄。移除不會刪除這些記錄，它們會保留原分類。你可稍後再加回。',
  'cc.cantDeleteUsed':'此分類有記錄使用中 — 會繼續顯示直至相關記錄移除。',
@@ -1297,7 +1282,7 @@ zh:{
  'cc.add':'新增類別',
  'cc.name':'類別名稱',
  'cc.colour':'顏色',
- 'cc.emoji':'圖示 Emoji',
+ 'cc.emoji':'圖示',
  'cc.manage':'我的類別',
  'cc.deleteM':'使用中的記錄將顯示為「其他」。',
  'pro.title':'TaxMate 方案','pro.sub':'免費版永遠夠用。升級可享更智能、更全面的功能。',
@@ -1321,7 +1306,7 @@ zh:{
  'sy.invite':'邀請合夥人',
  'sy.inviteMsg':'請在 TaxMate UK 加入我的業務「{n}」— 輸入代碼 {c}',
  'sy.join':'收到合夥人的代碼？輸入後所有數據將自動同步。',
- 'sy.enterCode':'輸入六位代碼',
+ 'sy.enterCode':'輸入代碼',
  'sy.synced':'已同步',
  'sy.badCode':'找不到此代碼，請確認後重試。',
  'sy.needPro':'合夥人同步為 Pro 功能，請在「設定」中解鎖。',
@@ -1368,7 +1353,7 @@ pl:{
  'tag.your':'twoje {n}%',
  'w.title':'Witaj w TaxMate 👋',
  'w.sub':'Zapisuj przychody i wydatki z samozatrudnienia i widź swój prawdziwy rachunek podatkowy — za darmo, prywatnie, bez rejestracji.',
- 'w.priv':'🔒 Prywatność przede wszystkim. Twoje dane nigdy nie opuszczają tego telefonu.',
+ 'w.priv':'🔒 Prywatność przede wszystkim. Twoje dane należą tylko do Ciebie — na urządzeniu, synchronizowane bezpiecznie tylko po zalogowaniu.',
  'w.steps':'1 · Dodaj swoją firmę\n2 · Zapisuj przychody i wydatki na bieżąco\n3 · Zakładka Podatek liczy rachunek na żywo — 31 stycznia już Cię nie zaskoczy',
  'w.start':'Dodaj pierwszą firmę',
  'inc.title':'Przychody',
@@ -1674,7 +1659,7 @@ pl:{
  'cc.add':'Nowa kategoria',
  'cc.name':'Nazwa kategorii',
  'cc.colour':'Kolor',
- 'cc.emoji':'Emoji',
+ 'cc.emoji':'Ikona',
  'cc.manage':'Moje kategorie',
  'cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
  'pro.title':'Plany TaxMate','pro.sub':'Wersja darmowa wystarcza na zawsze. Ulepsz, by uzyskać więcej.',
@@ -1698,7 +1683,7 @@ pl:{
  'sy.invite':'Zaproś partnera',
  'sy.inviteMsg':'Dołącz do mojej firmy „{n}" w TaxMate UK — wpisz kod {c}',
  'sy.join':'Masz kod od partnera? Wpisz go, a wszystko zsynchronizuje się automatycznie.',
- 'sy.enterCode':'Wpisz 6-znakowy kod',
+ 'sy.enterCode':'Wpisz kod',
  'sy.synced':'Zsynchronizowano',
  'sy.badCode':'Nie znaleziono kodu — sprawdź i spróbuj ponownie.',
  'sy.needPro':'Synchronizacja to funkcja Pro — odblokuj w Więcej.',
@@ -1745,7 +1730,7 @@ ro:{
  'tag.your':'partea ta {n}%',
  'w.title':'Bun venit la TaxMate 👋',
  'w.sub':'Urmărește banii din activitatea independentă și vezi factura reală de taxe — gratuit, privat, fără cont.',
- 'w.priv':'🔒 Privat prin design. Cifrele tale nu părăsesc niciodată acest telefon.',
+ 'w.priv':'🔒 Privat prin design. Datele tale îți aparțin — pe dispozitiv, sincronizate securizat doar dacă te autentifici.',
  'w.steps':'1 · Adaugă afacerea ta\n2 · Notează veniturile și cheltuielile pe parcurs\n3 · Fila Taxe ține factura la zi — 31 ianuarie nu te mai ia prin surprindere',
  'w.start':'Adaugă prima afacere',
  'inc.title':'Venituri',
@@ -2051,7 +2036,7 @@ ro:{
  'cc.add':'Categorie nouă',
  'cc.name':'Numele categoriei',
  'cc.colour':'Culoare',
- 'cc.emoji':'Emoji',
+ 'cc.emoji':'Pictogramă',
  'cc.manage':'Categoriile mele',
  'cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
  'pro.title':'Planuri TaxMate','pro.sub':'Versiunea gratuită face elementele de bază pentru totdeauna.',
@@ -2075,7 +2060,7 @@ ro:{
  'sy.invite':'Invită partenerul',
  'sy.inviteMsg':'Alătură-te afacerii mele „{n}" pe TaxMate UK — introdu codul {c}',
  'sy.join':'Ai un cod de la partener? Introdu-l și totul se sincronizează automat.',
- 'sy.enterCode':'Introdu codul de 6 caractere',
+ 'sy.enterCode':'Introdu codul',
  'sy.synced':'Sincronizat',
  'sy.badCode':'Codul nu a fost găsit — verifică și încearcă din nou.',
  'sy.needPro':'Sincronizarea este o funcție Pro — deblocheaz-o în Altele.',
@@ -2122,7 +2107,7 @@ es:{
  'tag.your':'tu {n}%',
  'w.title':'Bienvenido a TaxMate 👋',
  'w.sub':'Registra tu dinero como autónomo y ve tu factura fiscal real — gratis, privado, sin registro.',
- 'w.priv':'🔒 Privado por diseño. Tus cifras nunca salen de este teléfono.',
+ 'w.priv':'🔒 Privado por diseño. Tus datos son solo tuyos — en tu dispositivo, sincronizados de forma segura solo si inicias sesión.',
  'w.steps':'1 · Añade tu negocio\n2 · Apunta ingresos y gastos sobre la marcha\n3 · La pestaña Impuestos mantiene la factura al día — el 31 de enero ya no te sorprenderá',
  'w.start':'Añade tu primer negocio',
  'inc.title':'Ingresos',
@@ -2428,7 +2413,7 @@ es:{
  'cc.add':'Nueva categoría',
  'cc.name':'Nombre de la categoría',
  'cc.colour':'Color',
- 'cc.emoji':'Emoji',
+ 'cc.emoji':'Icono',
  'cc.manage':'Mis categorías',
  'cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
  'pro.title':'Planes TaxMate','pro.sub':'La versión gratuita hace lo básico para siempre.',
@@ -2452,7 +2437,7 @@ es:{
  'sy.invite':'Invitar a mi socio',
  'sy.inviteMsg':'Únete a mi negocio «{n}» en TaxMate UK — introduce el código {c}',
  'sy.join':'¿Tienes un código de tu socio? Introdúcelo y todo se sincroniza automáticamente.',
- 'sy.enterCode':'Introduce el código de 6 caracteres',
+ 'sy.enterCode':'Introduce el código',
  'sy.synced':'Sincronizado',
  'sy.badCode':'Código no encontrado — revísalo e inténtalo de nuevo.',
  'sy.needPro':'La sincronización es una función Pro — desbloquéala en Más.',
@@ -2499,7 +2484,7 @@ ur:{
  'tag.your':'آپ کا {n}%',
  'w.title':'TaxMate میں خوش آمدید 👋',
  'w.sub':'اپنی سیلف ایمپلائڈ آمدنی و اخراجات لکھیں اور اصل ٹیکس بل دیکھیں — مفت، نجی، بغیر اکاؤنٹ۔',
- 'w.priv':'🔒 آپ کا ڈیٹا صرف اسی فون پر رہتا ہے، کہیں اپلوڈ نہیں ہوتا۔',
+ 'w.priv':'🔒 آپ کا ڈیٹا آپ کا اپنا ہے — آپ کے آلے پر، اور سائن اِن کرنے پر محفوظ طریقے سے سنک ہوتا ہے۔',
  'w.steps':'1 · اپنا کاروبار شامل کریں\n2 · آمدنی اور اخراجات ساتھ ساتھ لکھتے رہیں\n3 · ٹیکس ٹیب آپ کا بل ہر وقت تازہ رکھتا ہے — 31 جنوری اب حیران نہیں کرے گی',
  'w.start':'پہلا کاروبار شامل کریں',
  'inc.title':'آمدنی',
@@ -2803,7 +2788,7 @@ ur:{
  'cc.add':'نیا زمرہ',
  'cc.name':'زمرے کا نام',
  'cc.colour':'رنگ',
- 'cc.emoji':'ایموجی',
+ 'cc.emoji':'آئیکن',
  'cc.manage':'میرے زمرے',
  'cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
  'pro.title':'TaxMate پلانز','pro.sub':'مفت ورژن ہمیشہ بنیادی کام کرتا ہے۔ مزید کے لیے اپ گریڈ کریں۔',
@@ -2827,7 +2812,7 @@ ur:{
  'sy.invite':'پارٹنر کو دعوت دیں',
  'sy.inviteMsg':'TaxMate UK پر میرے کاروبار «{n}» میں شامل ہوں — کوڈ {c} درج کریں',
  'sy.join':'پارٹنر سے کوڈ ملا؟ درج کریں اور سب کچھ خودبخود سنک ہو جائے گا۔',
- 'sy.enterCode':'6 حرفی کوڈ درج کریں',
+ 'sy.enterCode':'کوڈ درج کریں',
  'sy.synced':'سنک ہو گیا',
  'sy.badCode':'کوڈ نہیں ملا — چیک کر کے دوبارہ کوشش کریں۔',
  'sy.needPro':'پارٹنر سنک Pro فیچر ہے — «مزید» میں کھولیں۔',
@@ -2899,11 +2884,23 @@ const TRADES = [
   {id:'retail', e:'🛍️', cats:['stock','office','fees','market','travel']},
   {id:'other', e:'📦', cats:[]}
 ];
-function allCats(kind){
-  const ac = (S.activeCats&&S.activeCats[kind])||[];
-  const cc = (S.customCats&&S.customCats[kind])||[];
-  // Built-in cats are shown only if the user activated them OR has entries using them
-  const usedIds = new Set(S.entries.filter(e=>e.kind===kind).map(e=>e.cat));
+// ── Per-business category helpers ──
+function bizCustom(bizId, kind){
+  if(!S.customCats[bizId]) S.customCats[bizId] = {income:[],expense:[]};
+  if(!S.customCats[bizId][kind]) S.customCats[bizId][kind] = [];
+  return S.customCats[bizId][kind];
+}
+function bizActive(bizId, kind){
+  if(!S.activeCats[bizId]) S.activeCats[bizId] = {income:[],expense:[]};
+  if(!S.activeCats[bizId][kind]) S.activeCats[bizId][kind] = [];
+  return S.activeCats[bizId][kind];
+}
+function allCats(kind, bizId){
+  // categories for ONE business only
+  const ac = bizId ? bizActive(bizId, kind) : [];
+  const cc = bizId ? bizCustom(bizId, kind) : [];
+  // Built-in cats shown only if activated for this biz OR has entries (this biz) using them
+  const usedIds = new Set(S.entries.filter(e=>e.kind===kind && (!bizId||e.bizId===bizId)).map(e=>e.cat));
   const builtin = CATS[kind].filter(c=> ac.includes(c.id) || usedIds.has(c.id));
   // 'other' is always available as a fallback
   const other = CATS[kind].find(c=>c.id==='other'||c.id==='otherin');
@@ -2912,8 +2909,13 @@ function allCats(kind){
   return result;
 }
 function catById(id){
-  const cc = S.customCats||{income:[],expense:[]};
-  const all = CATS.expense.concat(CATS.income, cc.expense||[], cc.income||[]);
+  // search built-ins + every business's custom cats
+  let custom = [];
+  Object.keys(S.customCats||{}).forEach(bid=>{
+    const bc = S.customCats[bid]||{};
+    custom = custom.concat(bc.income||[], bc.expense||[]);
+  });
+  const all = CATS.expense.concat(CATS.income, custom);
   return all.find(c=>c.id===id) || {id:'other',e:'🧾',dot:'#B1B4B6'};
 }
 // ─────────── Pro tier system ───────────
@@ -3101,8 +3103,8 @@ function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 /* ═══════════ state ═══════════ */
 const STORE_KEY = 'taxmateuk_v1';
 const DEFAULT_STATE = {
-  v:2, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
-  businesses:[], entries:[], yearData:{}, customCats:{income:[],expense:[]}, folders:[], expFolder:'all', catRenames:{}, activeCats:{income:[],expense:[]}, settings:{lang:'en', pro:false, tier:'free', theme:'auto'}
+  v:3, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
+  businesses:[], entries:[], yearData:{}, customCats:{}, folders:[], expFolder:'all', catRenames:{}, activeCats:{}, settings:{lang:'en', pro:false, tier:'free', theme:'auto'}
 };
 let S = load();
 function load(){
@@ -3112,23 +3114,38 @@ function load(){
     const s = JSON.parse(raw);
     const merged = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), s);
     merged.settings = Object.assign({lang:'en', pro:false}, s.settings||{});
-    merged.customCats = Object.assign({income:[],expense:[]}, s.customCats||{});
     merged.catRenames = s.catRenames || {};
-    // Migration: existing users (have entries) but no activeCats yet →
-    // activate all built-in categories so nothing disappears for them.
-    if(!s.activeCats){
-      if((s.entries||[]).length > 0){
-        merged.activeCats = {
-          income: CATS.income.map(c=>c.id),
-          expense: CATS.expense.map(c=>c.id)
-        };
-      } else {
-        merged.activeCats = {income:[], expense:[]};
-      }
-    } else {
-      merged.activeCats = Object.assign({income:[],expense:[]}, s.activeCats);
-    }
+    merged.customCats = s.customCats || {};
+    merged.activeCats = s.activeCats || {};
     if(!Array.isArray(merged.folders)) merged.folders = [];
+
+    // ── Migration v2 → v3: global categories → per-business ──
+    // Old shape: customCats/activeCats = {income:[], expense:[]} (global)
+    // New shape: customCats/activeCats = { [bizId]: {income:[], expense:[]} }
+    const isOldShape = obj => obj && (Array.isArray(obj.income) || Array.isArray(obj.expense));
+    if(isOldShape(merged.customCats) || isOldShape(merged.activeCats)){
+      const oldCustom = isOldShape(merged.customCats) ? merged.customCats : {income:[],expense:[]};
+      const oldActive = isOldShape(merged.activeCats) ? merged.activeCats : {income:[],expense:[]};
+      // For existing users with entries but no activeCats, activate all built-ins (legacy behaviour)
+      const legacyActive = (!s.activeCats && (s.entries||[]).length>0)
+        ? {income:CATS.income.map(c=>c.id), expense:CATS.expense.map(c=>c.id)}
+        : oldActive;
+      const newCustom = {}, newActive = {};
+      (merged.businesses||[]).forEach(b=>{
+        // give every existing business a COPY of the old global cats (so nothing disappears)
+        newCustom[b.id] = {
+          income:  JSON.parse(JSON.stringify(oldCustom.income||[])),
+          expense: JSON.parse(JSON.stringify(oldCustom.expense||[]))
+        };
+        newActive[b.id] = {
+          income:  (legacyActive.income||[]).slice(),
+          expense: (legacyActive.expense||[]).slice()
+        };
+      });
+      merged.customCats = newCustom;
+      merged.activeCats = newActive;
+    }
+    merged.v = 3; // mark migrated
     return merged;
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
 }
@@ -3336,6 +3353,7 @@ function pageHome(){
     })()}
   </div>
 
+  ${betaBanner()}
   ${deadlineBanner()}
   ${trialBanner()}
   <div class="card" style="cursor:pointer" onclick="go('tax')">
@@ -3581,7 +3599,7 @@ function pageMore(){
     </div>
     <div class="s" style="margin-bottom:12px">${t('sy.join')}</div>
     <div style="display:flex;gap:8px">
-      <input type="text" id="join-code" maxlength="6" placeholder="ABC123" autocapitalize="characters"
+      <input type="text" id="join-code" maxlength="8" placeholder="ABCD2345" autocapitalize="characters"
         style="flex:1;text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px;padding:12px">
       <button class="btn" style="width:auto;padding:0 22px;font-size:20px" onclick="joinPartnership()">→</button>
     </div>
@@ -3589,12 +3607,23 @@ function pageMore(){
   </div>`;
 
   const organiseSection = [
-    (S.customCats.expense.length||S.customCats.income.length)?`<div class="card">
-      <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>
-      ${S.customCats.expense.concat(S.customCats.income).map(c=>`
-        <div class="frow"><span class="fl">${c.e||'🏷️'} ${esc(c.name)}</span>
-        <button class="link danger" onclick="confirmAction('${esc(c.name).replace(/'/g,"\\'")}',t('cc.deleteM'),()=>deleteCustomCat('${c.id}'))">✕</button></div>`).join('')}
-    </div>`:'',
+    (()=>{
+      // gather all custom cats across businesses, grouped by business
+      const rows = [];
+      S.businesses.forEach(b=>{
+        const bc = S.customCats[b.id]||{};
+        const cats = (bc.expense||[]).concat(bc.income||[]);
+        if(!cats.length) return;
+        rows.push(`<div style="font-size:12px;font-weight:700;color:var(--muted);padding:8px 0 4px">${esc(b.name)}</div>`);
+        cats.forEach(c=>{
+          rows.push(`<div class="frow"><span class="fl">${c.e||'🏷️'} ${esc(c.name)}</span>
+            <button class="link danger" onclick="confirmAction('${esc(c.name).replace(/'/g,"\\'")}',t('cc.deleteM'),()=>deleteCustomCat('${c.id}'))">✕</button></div>`);
+        });
+      });
+      return rows.length ? `<div class="card">
+        <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>${rows.join('')}
+      </div>` : '';
+    })(),
     S.folders.length?`<div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div class="t">📁 ${t('fd.manage')}</div>
@@ -3813,7 +3842,8 @@ function openEntry(kind, id){
   paintEntry(); openSheet('entry');
 }
 function paintEntry(){
-  const cats = allCats(EN.kind);
+  const bizId = (document.getElementById('en-biz')||{}).value || (S.businesses[0]&&S.businesses[0].id);
+  const cats = allCats(EN.kind, bizId);
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
   document.getElementById('en-cats').innerHTML = cats.map(c=>
@@ -3907,12 +3937,18 @@ function catDoDelete(){
 }
 function doCatDelete(id){
   const c = catById(id);
-  const kind = (CATS.income.find(x=>x.id===id) || (S.customCats.income||[]).find(x=>x.id===id)) ? 'income' : 'expense';
+  const bizId = entryBizId();
+  const kind = CATS.income.find(x=>x.id===id) || bizCustom(bizId,'income').find(x=>x.id===id) ? 'income' : 'expense';
   if(c.custom){
-    S.customCats[kind] = (S.customCats[kind]||[]).filter(x=>x.id!==id);
+    // remove from the owning business
+    const owner = c.bizId || bizId;
+    if(S.customCats[owner] && S.customCats[owner][kind]){
+      S.customCats[owner][kind] = S.customCats[owner][kind].filter(x=>x.id!==id);
+    }
   } else {
-    if(S.activeCats && S.activeCats[kind]){
-      S.activeCats[kind] = S.activeCats[kind].filter(x=>x!==id);
+    // deactivate built-in for this business only
+    if(S.activeCats[bizId] && S.activeCats[bizId][kind]){
+      S.activeCats[bizId][kind] = S.activeCats[bizId][kind].filter(x=>x!==id);
     }
   }
   save();
@@ -3922,6 +3958,10 @@ function doCatDelete(id){
 }
 // keep renameCat name for backward-compat (entry sheet long-press calls it)
 function renameCat(id){ catLongPress(id); }
+// current business id in the entry sheet
+function entryBizId(){
+  return (document.getElementById('en-biz')||{}).value || (S.businesses[0]&&S.businesses[0].id);
+}
 function saveCat(){
   const name = document.getElementById('cc-name').value.trim();
   if(!name){
@@ -3934,14 +3974,19 @@ function saveCat(){
     document.getElementById('cc-emoji-err').classList.add('show');
     return;
   }
-  const c = {id:'c_'+uid(), name, e:CC_EMOJI, dot:CAT_COLOURS[(S.customCats[EN.kind].length)%CAT_COLOURS.length], custom:true};
-  S.customCats[EN.kind].push(c);
+  const bizId = entryBizId();
+  const list = bizCustom(bizId, EN.kind);
+  const c = {id:'c_'+uid(), name, e:CC_EMOJI, dot:CAT_COLOURS[list.length%CAT_COLOURS.length], custom:true, bizId};
+  list.push(c);
   EN.cat = c.id;
   save(); closeSheet('cat'); paintEntry();
 }
 function deleteCustomCat(id){
-  S.customCats.expense = S.customCats.expense.filter(c=>c.id!==id);
-  S.customCats.income = S.customCats.income.filter(c=>c.id!==id);
+  Object.keys(S.customCats||{}).forEach(bid=>{
+    const bc = S.customCats[bid]; if(!bc) return;
+    if(bc.expense) bc.expense = bc.expense.filter(c=>c.id!==id);
+    if(bc.income)  bc.income  = bc.income.filter(c=>c.id!==id);
+  });
   save(); render();
 }
 function openFolderSheet(){
@@ -4064,49 +4109,9 @@ function deleteEntry(){
 
 /* ═══════════ business sheet ═══════════ */
 let BZ = {id:null, structure:'sole'};
-let SUGGEST = {bizId:null, picked:[]};
-function openSuggestSheet(){
-  const grid = document.getElementById('sug-cats');
-  const tr = TRADES.find(x=>x.id===(bizById(SUGGEST.bizId)||{}).trade);
-  if(!tr || !tr.cats.length){ return; }
-  grid.innerHTML = tr.cats.map(cid=>{
-    const c = catById(cid);
-    const on = SUGGEST.picked.includes(cid);
-    return `<button type="button" class="catbtn ${on?'on':''}" onclick="toggleSuggest('${cid}')"><span class="cdot" style="background:${c.dot}"></span>${esc(catName(cid))}</button>`;
-  }).join('');
-  openSheet('suggest');
-}
-function toggleSuggest(cid){
-  const i = SUGGEST.picked.indexOf(cid);
-  if(i>-1) SUGGEST.picked.splice(i,1); else SUGGEST.picked.push(cid);
-  openSuggestSheet();
-}
-function addSuggested(){
-  if(!S.activeCats) S.activeCats = {income:[],expense:[]};
-  SUGGEST.picked.forEach(cid=>{
-    const c = catById(cid);
-    const kind = CATS.income.find(x=>x.id===cid) ? 'income' : 'expense';
-    if(!S.activeCats[kind].includes(cid)) S.activeCats[kind].push(cid);
-  });
-  const n = SUGGEST.picked.length;
-  save(); closeSheet('suggest'); render();
-  if(n>0) toast(t('sug.added',{n}));
-}
-function paintTrades(){
-  const grid = document.getElementById('bz-trades');
-  if(!grid) return;
-  // Only show trade selector for NEW businesses
-  const group = document.getElementById('bz-trade-group');
-  if(BZ.id){ if(group) group.style.display='none'; return; }
-  if(group) group.style.display='block';
-  grid.innerHTML = TRADES.map(tr=>
-    `<button type="button" class="catbtn ${BZ.trade===tr.id?'on':''}" onclick="setTrade('${tr.id}')">${tr.e} ${t('trade.'+tr.id)}</button>`
-  ).join('');
-}
-function setTrade(id){
-  BZ.trade = (BZ.trade===id?null:id);
-  paintTrades();
-}
+// suggested-categories feature removed — businesses start empty, users add their own
+function paintTrades(){ /* trade selector removed */ }
+function setTrade(id){ /* removed */ }
 function openBiz(id){
   // Gate: more than one business needs Plus
   if(!id && S.businesses.length>=1 && lockGuard('multiBiz')) return;
@@ -4180,19 +4185,17 @@ function saveBiz(){
     pushBizRemote(b);
   } else {
     newId = uid();
-    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100, trade:BZ.trade||null};
+    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100};
     // Partnership + Pro + Firebase: 一次過儲存並推上雲端
     if(BZ.structure==='partnership' && BZ.pendingCode && hasFeature('partnerSync') && fbConfigured()){
       newBiz.syncCode = BZ.pendingCode;
     }
+    // new business starts with NO categories — user creates their own per-business
+    S.customCats[newId] = {income:[],expense:[]};
+    S.activeCats[newId] = {income:[],expense:[]};
     S.businesses.push(newBiz);
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
-  // 新業務 + 揀咗有建議嘅 trade → 彈出建議分類
-  if(newId && BZ.trade){
-    const tr = TRADES.find(x=>x.id===BZ.trade);
-    if(tr && tr.cats.length){ SUGGEST = {bizId:newId, picked:tr.cats.slice()}; setTimeout(openSuggestSheet, 280); return; }
-  }
   // 有 pendingCode → 直接啟用 sync，唔使重開 sheet
   if(newId && BZ.pendingCode && S.businesses[S.businesses.length-1].syncCode){
     const code = BZ.pendingCode;
@@ -4219,6 +4222,8 @@ function deleteBiz(){
   confirmAction(t('d.bizT'), t('d.bizM'), ()=>{
     S.entries = S.entries.filter(e=>e.bizId!==BZ.id);
     S.businesses = S.businesses.filter(b=>b.id!==BZ.id);
+    delete S.customCats[BZ.id];
+    delete S.activeCats[BZ.id];
     if(S.incFilter===BZ.id) S.incFilter='all';
     if(S.expFilter===BZ.id) S.expFilter='all';
     save(); closeSheet('biz'); render();
@@ -4533,7 +4538,7 @@ async function ensureAuth(){
 function genCode(){
   const A = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
   let c = '';
-  for(let i=0;i<6;i++) c += A[Math.floor(Math.random()*A.length)];
+  for(let i=0;i<8;i++) c += A[Math.floor(Math.random()*A.length)];
   return c;
 }
 async function enableSync(bizId){
@@ -4690,11 +4695,17 @@ async function startUserSync(u){
       const m = metaDoc.data();
       (m.businesses||[]).forEach(rb=>{ if(!bizById(rb.id)) S.businesses.push(rb); });
       (m.folders||[]).forEach(rf=>{ if(!folderById(rf.id)) S.folders.push(rf); });
-      ['income','expense'].forEach(k=>{
-        ((m.customCats&&m.customCats[k])||[]).forEach(rc=>{
-          if(!S.customCats[k].find(c=>c.id===rc.id)) S.customCats[k].push(rc);
+      // per-business custom + active categories (merge by business id)
+      if(m.customCats && typeof m.customCats==='object'){
+        Object.keys(m.customCats).forEach(bid=>{
+          if(!S.customCats[bid]) S.customCats[bid] = m.customCats[bid];
         });
-      });
+      }
+      if(m.activeCats && typeof m.activeCats==='object'){
+        Object.keys(m.activeCats).forEach(bid=>{
+          if(!S.activeCats[bid]) S.activeCats[bid] = m.activeCats[bid];
+        });
+      }
       Object.keys(m.yearData||{}).forEach(y=>{ S.yearData[y] = Object.assign({}, S.yearData[y]||{}, m.yearData[y]); });
       if(m.settings && m.settings.pro) S.settings.pro = true;
     }
@@ -4711,7 +4722,8 @@ async function startUserSync(u){
       CLOUD.applying = true;
       if(Array.isArray(m.businesses)) S.businesses = m.businesses;
       if(Array.isArray(m.folders)) S.folders = m.folders;
-      if(m.customCats) S.customCats = Object.assign({income:[],expense:[]}, m.customCats);
+      if(m.customCats && typeof m.customCats==='object' && !Array.isArray(m.customCats.income)) S.customCats = m.customCats;
+      if(m.activeCats && typeof m.activeCats==='object' && !Array.isArray(m.activeCats.income)) S.activeCats = m.activeCats;
       if(m.yearData) S.yearData = m.yearData;
       if(m.settings && typeof m.settings.pro==='boolean') S.settings.pro = m.settings.pro;
       try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
@@ -4744,10 +4756,10 @@ async function pushUserState(uid, force){
   if(!FB.ready) return;
   if(!uid){ const cu = cloudUser(); if(!cu) return; uid = cu.uid; }
   const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
-  const meta = { businesses:S.businesses, folders:S.folders, customCats:S.customCats,
+  const meta = { businesses:S.businesses, folders:S.folders, customCats:S.customCats, activeCats:S.activeCats,
                  yearData:S.yearData, settings:{pro:!!S.settings.pro}, updatedAt:Date.now() };
   const mine = S.entries.filter(e=>!partnerBiz.has(e.bizId));
-  const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
+  const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.activeCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
   if(!force && payload === CLOUD.lastPushed) return;
   CLOUD.lastPushed = payload;
   try{
@@ -5084,6 +5096,19 @@ function mtdCard(){
 
 // Deadline banner (shown on Home + Tax pages if within 7 days)
 // ── Trial reminder banner ──────────────────────────────────
+function betaBanner(){
+  try{ if(localStorage.getItem('tmBetaSeen')==='1') return ''; }catch(e){}
+  return `<div class="notice amber" id="beta-banner" style="margin-bottom:14px;position:relative">
+    <strong>🧪 Beta — for estimation only.</strong>
+    TaxMate does not provide legal or financial advice. Always verify your figures with HMRC or a qualified accountant before filing.
+    <button class="link" style="font-weight:800;margin-top:6px;display:block" onclick="dismissBeta()">Got it ✓</button>
+  </div>`;
+}
+function dismissBeta(){
+  try{ localStorage.setItem('tmBetaSeen','1'); }catch(e){}
+  const el=document.getElementById('beta-banner'); if(el) el.remove();
+}
+
 function trialBanner(){
   const tr = trialStatus();
   if(tr.phase==='active' || tr.phase==='none') return '';
