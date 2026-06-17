@@ -3328,14 +3328,6 @@ function pageHome(){
     <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
 
   return `
-  ${(fbConfigured() && !isSignedIn()) ? `<div class="card" style="display:flex;align-items:center;gap:12px;border:1px solid var(--brand);background:var(--brand-soft)">
-    <div style="font-size:22px">☁️</div>
-    <div class="grow" style="flex:1">
-      <div class="t" style="font-size:15px">${t('home.signinTitle')}</div>
-      <div class="s" style="font-size:13px">${t('home.signinSub')}</div>
-    </div>
-    <button class="btn ink" style="width:auto;padding:8px 16px;flex-shrink:0" onclick="signIn('google')">${t('home.signinBtn')}</button>
-  </div>` : ''}
   <div class="hero">
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.profit',{y:S.year})}</div>
