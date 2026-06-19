@@ -82,6 +82,7 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
   display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px;flex-shrink:0;
   box-shadow:0 4px 12px rgba(10,169,104,.3)}
 .top .name{font-weight:800;font-size:19px;letter-spacing:-.4px}
+.beta-badge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
 .top .name span{color:var(--brand)}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
@@ -324,7 +325,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <div class="top">
   <div class="logo">£</div>
-  <div class="name">Tax<span>Mate</span></div>
+  <div class="name">Tax<span>Mate</span><sup class="beta-badge">BETA</sup></div>
   <div class="year-pill"><select id="yearSel" onchange="setYear(this.value)"></select></div>
 </div>
 
@@ -338,7 +339,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="fg">
     <label for="en-amount" data-i18n="f.amount"></label>
     <div class="amt"><span class="cur">£</span>
-      <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
+      <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" max="10000000" placeholder="0.00"></div>
     <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
   </div>
   <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
@@ -353,8 +354,14 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <div class="fg" id="en-pct-group">
     <label data-i18n="f.bizUse"></label>
-    <div class="fhint" data-i18n="f.bizUseHint"></div>
-    <div class="pctrow" id="en-pcts"></div>
+    <div id="en-pct-collapsed">
+      <button type="button" class="chip on" style="pointer-events:none">100%</button>
+      <button type="button" class="link" style="margin-inline-start:10px;font-weight:700" onclick="expandPct()" data-i18n="f.bizUsePartial"></button>
+    </div>
+    <div id="en-pct-expanded" style="display:none">
+      <div class="fhint" data-i18n="f.bizUseHint"></div>
+      <div class="pctrow" id="en-pcts"></div>
+    </div>
   </div>
   <div class="fg" id="en-receipt-group">
     <label data-i18n="rc.add"></label>
@@ -599,9 +606,9 @@ en:{
  'tag.part':'Partnership',
  'tag.your':'your {n}%',
  'w.title':'Welcome to TaxMate 👋',
- 'w.sub':'Track your self-employed money and see your real tax bill — free, private, no sign-up.',
+ 'w.sub':'Know how much tax to set aside — so 31 January never catches you out. Free, private, no sign-up.',
  'w.priv':'🔒 Private by design. Your data is yours alone — on your device, and synced securely only when you sign in.',
- 'w.steps':'1 · Add your business\n2 · Log income and expenses as you go\n3 · The Tax tab keeps a live bill, so 31 January never surprises you',
+ 'w.steps':'1 · Add what you do (driver, cleaner, etc.)\n2 · Tap ＋ to log money in and money out\n3 · See your tax estimate update instantly — no maths, no stress',
  'w.start':'Add your first business',
  'inc.title':'Income',
  'inc.add':'Add income',
@@ -619,7 +626,7 @@ en:{
  'f.note':'Note',
  'f.optional':'(optional)',
  'f.amountErr':'Enter an amount greater than 0',
- 'f.bizUse':'Business use',
+ 'f.bizUse':'Business use','f.bizUsePartial':'Partly personal?',
  'f.bizUseHint':'Partly personal (like your phone)? Claim only the business share — HMRC expects a fair split.',
  'f.addIncome':'Add income',
  'f.editIncome':'Edit income',
@@ -686,7 +693,7 @@ en:{
  'tax.noPoa':'your full bill — no payments on account needed (under £1,000)',
  'tax.accT':'How accurate is this?',
  'tax.accB':'Uses {y} rates for England, Wales and Northern Ireland (Scotland has different Income Tax bands). Assumes self-employment is your only income — PAYE jobs, savings interest, dividends and student loans aren’t included yet. A planning estimate, not tax advice: always confirm with HMRC or an accountant before filing.',
- 'tax.disc':'Estimate only — not tax advice.',
+ 'tax.disc':'Estimate only — not tax advice.','tax.estimateWarn':'This is an estimate, not your final tax. You must still file with HMRC by 31 Jan. Not affiliated with HMRC.',
  'a.title':'Your HMRC position',
  'a.sub':'Two numbers from your last Self Assessment that change what you actually pay this year.',
  'a.poaLabel':'Payments on account already made for this year',
@@ -794,7 +801,7 @@ en:{
  'sa.lossNote':'You made a loss this year — enter in Box 11, leave Box 10 blank.',
  'sa.partNote':'Complete one SA104 page per partnership.',
  'sa.govLink':'File your Self Assessment at gov.uk',
- 'tip.title':'Tax-saving tips',
+ 'tip.title':'Helper',
  'tip.dismiss':'Dismiss',
  'tip.addNow':'Add now',
  'tip.home_t':'Claim home working allowance',
@@ -849,7 +856,7 @@ en:{
  'cc.editName':'Category name',
  'cc.reset':'Reset to default',
  'cc.renameDone':'Renamed',
- 'cc.longPress':'Long-press a category to rename or remove it',
+ 'cc.longPress':'Tap ＋ to add your own. Long-press any category to rename or remove.',
  'cc.action':'What would you like to do?',
  'cc.doRename':'Rename',
  'cc.doDelete':'Remove from list',
@@ -912,15 +919,15 @@ en:{
  'pro.title':'TaxMate plans','pro.sub':'Free does the basics forever. Upgrade for smarter, fuller features.',
  'tier.free':'Free','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Everything to track and file it yourself','tier.plusSub':'Save more, work smarter','tier.proSub':'For partnerships & serious traders',
- 'tier.current':'Current plan','tier.choose':'Switch to {p}','tier.active':'Active',
+ 'tier.current':'Current plan','tier.choose':'Switch to {p}','tier.active':'Active','tier.freeNow':'Free for a limited time','tier.activateFree':'Start free — limited time','trial.activateTitle':'Start your free Pro access','trial.activateBody':'You\'ll get all Pro features free until {d}. After that you\'ll move back to the Free plan automatically — your data is always kept. Continue?','trial.activated':'Pro unlocked — enjoy!','trial.endingTitle':'Your free Pro ends {d}.','trial.endingDays':'{n} days left.','trial.endingBody':'To keep Pro features, add your payment details before it ends. If you do nothing, you\'ll move to the Free plan on the end date — your data stays safe.','trial.endedTitle':'Your free Pro has ended.','trial.endedBody':'You\'re now on the Free plan. Your data is safe.',
  'feat.records':'Unlimited income & expenses','feat.taxcalc':'Tax calculation','feat.onebiz':'One business','feat.mileageBasic':'Mileage logging','feat.sa103view':'SA103 box mapping','feat.sync':'Cloud sync & login',
- 'feat.mileageCompare':'45p vs actual auto-compare','feat.aiTips':'Smart saving tips','feat.multiBiz':'Multiple businesses','feat.receiptPhoto':'Receipt photos','feat.pdfReport':'PDF report export','feat.sa103Pdf':'SA103 PDF export',
+ 'feat.mileageCompare':'45p vs actual auto-compare','feat.aiTips':'Helper (tips & reminders)','feat.multiBiz':'Multiple businesses','feat.receiptPhoto':'Receipt photos','feat.pdfReport':'PDF report export','feat.sa103Pdf':'SA103 PDF export',
  'feat.partnerSync':'Partner sync','feat.sa104':'SA104 partnership','feat.receiptPack':'Receipt Pack PDF (for HMRC checks)','feat.mtdReady':'MTD-ready quarterly export',
  'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pwa.install':'Download','pwa.installSub':'Get the app on your phone.','pwa.iosTitle':'Add to Home Screen','pwa.iosBody':'To install on iPhone, do it from Safari:','pwa.iosStep1':'Tap the Share button (the square with an arrow) at the bottom of Safari','pwa.iosStep2':'Scroll down and tap \"Add to Home Screen\"','pwa.iosStep3':'Tap \"Add\" — done! The TaxMate icon appears on your home screen','pwa.iosNote':'Note: this only works in Safari, not Chrome or other browsers on iPhone.','pwa.andTitle':'Install the app','pwa.andBody':'Your browser did not show the install button automatically. You can still install it:','pwa.andStep1':'Tap the menu (⋮) at the top-right of Chrome','pwa.andStep2':'Tap \"Install app\" or \"Add to Home screen\"','pwa.andStep3':'Confirm — the TaxMate icon appears on your home screen','pwa.andTip':'Tip: if you only see \"Add to Home screen\" (a shortcut), close this site, clear the browser cache for it, reopen and wait a few seconds — then \"Install app\" should appear for a cleaner app.','pdf.enHint':'PDF reports are generated in English. Names you type in other languages may not appear — use English for anything you want shown in the PDF.','lang.pdfHint':'Tip: PDF reports export in English only. Type business and category names in English if you need them in your PDF.','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
  'pro.sub':'Free is full-featured forever. Pro adds convenience on top.',
  'pro.f1':'Partner sync — one partnership, every phone',
  'pro.f2':'Receipt photos',
- 'pro.f3':'Smart AI tips',
+ 'pro.f3':'Helper',
  'pro.soon':'coming soon',
  'pro.preview':'Try Pro free (preview)',
  'pro.on':'Pro active',
@@ -976,9 +983,9 @@ zh:{
  'tag.part':'合夥',
  'tag.your':'你佔 {n}%',
  'w.title':'歡迎使用 TaxMate 👋',
- 'w.sub':'記錄自僱收支，即時查看真實稅款估算 — 免費、私密、無需註冊。',
+ 'w.sub':'知道自己要留幾多稅 — 唔使等到 1 月 31 日先驚。免費、私密、無需註冊。',
  'w.priv':'🔒 私隱至上。數據只屬於你 — 留喺裝置,登入先會安全同步上雲。',
- 'w.steps':'1 · 新增你的業務\n2 · 隨時記錄收入與開支\n3 · 「稅務」頁面即時計算稅款，令1月31日不再令你措手不及',
+ 'w.steps':'1 · 揀你做咩(司機、清潔等)\n2 · 撳 ＋ 記低收入同支出\n3 · 即時睇到稅款估算 — 唔使計數，唔使煩',
  'w.start':'新增第一個業務',
  'inc.title':'收入',
  'inc.add':'新增收入',
@@ -996,7 +1003,7 @@ zh:{
  'f.note':'備註',
  'f.optional':'(可不填)',
  'f.amountErr':'請輸入大於 0 的金額',
- 'f.bizUse':'業務用途比例',
+ 'f.bizUse':'業務用途比例','f.bizUsePartial':'部分私人使用?',
  'f.bizUseHint':'部分私人使用(例如電話)?只申報業務部分 — HMRC 要求合理分攤。',
  'f.addIncome':'新增收入',
  'f.editIncome':'編輯收入',
@@ -1063,7 +1070,7 @@ zh:{
  'tax.noPoa':'全數繳付 — 稅款不足 £1,000,毋須預繳',
  'tax.accT':'呢個估算有幾準?',
  'tax.accB':'採用 {y} 年度英格蘭、威爾斯及北愛爾蘭稅率(蘇格蘭入息稅階不同)。假設自僱係你唯一收入 — 受僱 (PAYE)、利息、股息及學生貸款未計算在內。只屬規劃估算,並非稅務意見:報稅前請向 HMRC 或會計師核實。',
- 'tax.disc':'只屬估算 — 並非稅務意見。',
+ 'tax.disc':'只屬估算 — 並非稅務意見。','tax.estimateWarn':'呢個係估算,唔係你最終稅額。你仍然要喺 1 月 31 日前向 HMRC 報稅。與 HMRC 無關。',
  'a.title':'你的 HMRC 狀況',
  'a.sub':'來自上次 Self Assessment 的兩個數字，將影響你今年的實際應繳金額。',
  'a.poaLabel':'今年度已繳的 Payments on Account',
@@ -1171,7 +1178,7 @@ zh:{
  'sa.lossNote':'今年錄得虧損 — 填入第11格，第10格留空。',
  'sa.partNote':'每個合夥填寫一頁 SA104。',
  'sa.govLink':'在 gov.uk 提交 Self Assessment',
- 'tip.title':'慳稅貼士',
+ 'tip.title':'小幫手',
  'tip.dismiss':'略過',
  'tip.addNow':'立即新增',
  'tip.home_t':'申報在家工作津貼',
@@ -1226,7 +1233,7 @@ zh:{
  'cc.editName':'分類名稱',
  'cc.reset':'還原預設',
  'cc.renameDone':'已重新命名',
- 'cc.longPress':'長按分類即可重新命名或移除',
+ 'cc.longPress':'撳 ＋ 加自己嘅分類。長按任何分類可改名或移除。',
  'cc.action':'你想做什麼？',
  'cc.doRename':'重新命名',
  'cc.doDelete':'從列表移除',
@@ -1289,15 +1296,15 @@ zh:{
  'pro.title':'TaxMate 方案','pro.sub':'免費版永遠夠用。升級可享更智能、更全面的功能。',
  'tier.free':'免費版','tier.plus':'進階版','tier.pro':'完整版',
  'tier.freeSub':'自己報稅所需的一切','tier.plusSub':'慳更多、做得更精明','tier.proSub':'為合夥與認真經營者而設',
- 'tier.current':'目前方案','tier.choose':'切換至{p}','tier.active':'使用中',
+ 'tier.current':'目前方案','tier.choose':'切換至{p}','tier.active':'使用中','tier.freeNow':'限時免費','tier.activateFree':'限時免費開啟','trial.activateTitle':'開啟你的免費 Pro','trial.activateBody':'你會免費使用所有 Pro 功能,直到 {d}。之後會自動變返免費版 —— 你嘅資料一直會保留。繼續?','trial.activated':'Pro 已開啟,盡情用!','trial.endingTitle':'你嘅免費 Pro 將於 {d} 完結。','trial.endingDays':'仲有 {n} 日。','trial.endingBody':'想繼續用 Pro 功能,請喺完結前加入付費資料。如果唔加,完結日會自動變返免費版 —— 你嘅資料會保留。','trial.endedTitle':'你嘅免費 Pro 已完結。','trial.endedBody':'你而家係免費版。你嘅資料安全保留。',
  'feat.records':'無限收入與支出','feat.taxcalc':'稅務計算','feat.onebiz':'一個業務','feat.mileageBasic':'里程記錄','feat.sa103view':'SA103 欄位對應','feat.sync':'雲端同步與登入',
- 'feat.mileageCompare':'45p 與實報自動比較','feat.aiTips':'智能慳稅提示','feat.multiBiz':'多個業務','feat.receiptPhoto':'收據相片','feat.pdfReport':'PDF 報告匯出','feat.sa103Pdf':'SA103 PDF 匯出',
+ 'feat.mileageCompare':'45p 與實報自動比較','feat.aiTips':'小幫手(提示)','feat.multiBiz':'多個業務','feat.receiptPhoto':'收據相片','feat.pdfReport':'PDF 報告匯出','feat.sa103Pdf':'SA103 PDF 匯出',
  'feat.partnerSync':'拍檔同步','feat.sa104':'SA104 合夥','feat.receiptPack':'收據包 PDF（供稅局審查）','feat.mtdReady':'MTD 季度匯出',
  'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','pwa.install':'下載','pwa.installSub':'將 app 安裝到手機。','pwa.iosTitle':'加到主畫面','pwa.iosBody':'喺 iPhone 安裝，要用 Safari 做：','pwa.iosStep1':'撳 Safari 底部嘅「分享」按鈕（一個方框加向上箭嘴 ⬆️）','pwa.iosStep2':'向下捲，撳「加入主畫面」','pwa.iosStep3':'撳「加入」— 搞掂！TaxMate 圖示會出現喺主畫面','pwa.iosNote':'注意：只可以喺 Safari 做，iPhone 上嘅 Chrome 或其他瀏覽器唔得。','pwa.andTitle':'安裝 app','pwa.andBody':'你個瀏覽器冇自動彈安裝掣。你仍然可以咁安裝：','pwa.andStep1':'撳 Chrome 右上角嘅選單（⋮）','pwa.andStep2':'撳「安裝應用程式」或「加到主畫面」','pwa.andStep3':'確認 — TaxMate 圖示會出現喺主畫面','pwa.andTip':'貼士：如果只見到「加到主畫面」（即係捷徑，icon 會有 Chrome 細圖），請關閉呢個網站、清除佢嘅瀏覽器快取、重新開啟並等幾秒 — 之後應該會出現「安裝應用程式」，裝出嚟先似真 app。','pdf.enHint':'PDF 報告以英文生成。你用中文輸入的名稱可能無法顯示 — 想在 PDF 中顯示的內容請用英文輸入。','lang.pdfHint':'提示：PDF 報告只以英文匯出。若需在 PDF 顯示業務或類別名稱，請用英文輸入。','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。',
  'pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到',
  'pro.f2':'收據相簿',
- 'pro.f3':'AI 智能貼士',
+ 'pro.f3':'小幫手',
  'pro.soon':'即將推出',
  'pro.preview':'免費試用 Pro(預覽)',
  'pro.on':'Pro 使用中',
@@ -1373,7 +1380,7 @@ pl:{
  'f.note':'Notatka',
  'f.optional':'(opcjonalnie)',
  'f.amountErr':'Wpisz kwotę większą niż 0',
- 'f.bizUse':'Użytek firmowy',
+ 'f.bizUse':'Użytek firmowy','f.bizUsePartial':'Częściowo prywatny?',
  'f.bizUseHint':'Częściowo prywatne (np. telefon)? Odlicz tylko część firmową — HMRC oczekuje uczciwego podziału.',
  'f.addIncome':'Dodaj przychód',
  'f.editIncome':'Edytuj przychód',
@@ -1440,7 +1447,7 @@ pl:{
  'tax.noPoa':'cały rachunek — zaliczki niepotrzebne (poniżej £1,000)',
  'tax.accT':'Jak dokładny jest ten szacunek?',
  'tax.accB':'Stawki {y} dla Anglii, Walii i Irlandii Płn. (Szkocja ma inne progi). Zakłada, że samozatrudnienie to Twój jedyny dochód — etat (PAYE), odsetki, dywidendy i kredyt studencki nie są jeszcze uwzględnione. To szacunek do planowania, nie porada podatkowa — przed złożeniem potwierdź z HMRC lub księgowym.',
- 'tax.disc':'Tylko szacunek — to nie porada podatkowa.',
+ 'tax.disc':'Tylko szacunek — to nie porada podatkowa.','tax.estimateWarn':'To szacunek, nie ostateczny podatek. Nadal musisz złożyć zeznanie do HMRC do 31 stycznia. Niezwiązane z HMRC.',
  'a.title':'Twoja sytuacja z HMRC',
  'a.sub':'Dwie liczby z ostatniego Self Assessment, które zmieniają to, ile faktycznie zapłacisz.',
  'a.poaLabel':'Wpłacone już zaliczki na ten rok',
@@ -1548,7 +1555,7 @@ pl:{
  'sa.lossNote':'W tym roku poniosłeś stratę — wpisz w Poz. 11, zostaw Poz. 10 puste.',
  'sa.partNote':'Wypełnij jeden formularz SA104 dla każdej spółki.',
  'sa.govLink':'Złóż Self Assessment na gov.uk',
- 'tip.title':'Wskazówki oszczędnościowe',
+ 'tip.title':'Pomocnik',
  'tip.dismiss':'Odrzuć',
  'tip.addNow':'Dodaj teraz',
  'tip.home_t':'Odlicz pracę z domu',
@@ -1603,7 +1610,7 @@ pl:{
  'cc.editName':'Nazwa kategorii',
  'cc.reset':'Przywróć domyślne',
  'cc.renameDone':'Zmieniono nazwę',
- 'cc.longPress':'Przytrzymaj kategorię, aby zmienić nazwę lub usunąć',
+ 'cc.longPress':'Dotknij ＋, aby dodać własną. Przytrzymaj kategorię, aby zmienić nazwę lub usunąć.',
  'cc.action':'Co chcesz zrobić?',
  'cc.doRename':'Zmień nazwę',
  'cc.doDelete':'Usuń z listy',
@@ -1666,15 +1673,15 @@ pl:{
  'pro.title':'Plany TaxMate','pro.sub':'Wersja darmowa wystarcza na zawsze. Ulepsz, by uzyskać więcej.',
  'tier.free':'Darmowy','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Wszystko, by rozliczyć się samodzielnie','tier.plusSub':'Oszczędzaj więcej, pracuj sprytniej','tier.proSub':'Dla spółek i poważnych przedsiębiorców',
- 'tier.current':'Obecny plan','tier.choose':'Przełącz na {p}','tier.active':'Aktywny',
+ 'tier.current':'Obecny plan','tier.choose':'Przełącz na {p}','tier.active':'Aktywny','tier.freeNow':'Za darmo przez ograniczony czas','tier.activateFree':'Zacznij za darmo','trial.activateTitle':'Rozpocznij darmowy dostęp Pro','trial.activateBody':'Otrzymasz wszystkie funkcje Pro za darmo do {d}. Potem automatycznie wrócisz do planu Darmowego — Twoje dane są zawsze zachowane. Kontynuować?','trial.activated':'Pro odblokowane!','trial.endingTitle':'Twój darmowy Pro kończy się {d}.','trial.endingDays':'Pozostało {n} dni.','trial.endingBody':'Aby zachować funkcje Pro, dodaj dane płatności przed końcem. Jeśli nic nie zrobisz, wrócisz do planu Darmowego w dniu zakończenia — dane pozostaną.','trial.endedTitle':'Twój darmowy Pro zakończył się.','trial.endedBody':'Jesteś teraz na planie Darmowym. Twoje dane są bezpieczne.',
  'feat.records':'Nielimitowane przychody i wydatki','feat.taxcalc':'Obliczanie podatku','feat.onebiz':'Jedna firma','feat.mileageBasic':'Rejestr przebiegu','feat.sa103view':'Mapowanie SA103','feat.sync':'Synchronizacja i logowanie',
- 'feat.mileageCompare':'45p vs rzeczywiste','feat.aiTips':'Inteligentne porady','feat.multiBiz':'Wiele firm','feat.receiptPhoto':'Zdjęcia paragonów','feat.pdfReport':'Eksport PDF','feat.sa103Pdf':'Eksport SA103 PDF',
+ 'feat.mileageCompare':'45p vs rzeczywiste','feat.aiTips':'Pomocnik','feat.multiBiz':'Wiele firm','feat.receiptPhoto':'Zdjęcia paragonów','feat.pdfReport':'Eksport PDF','feat.sa103Pdf':'Eksport SA103 PDF',
  'feat.partnerSync':'Synchronizacja partnera','feat.sa104':'SA104 spółka','feat.receiptPack':'Pakiet paragonów PDF','feat.mtdReady':'Eksport kwartalny MTD',
  'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','pwa.install':'Pobierz','pwa.installSub':'Zainstaluj aplikację na telefonie.','pwa.iosTitle':'Dodaj do ekranu głównego','pwa.iosBody':'Na iPhonie zainstaluj z Safari:','pwa.iosStep1':'Dotknij przycisku Udostępnij (kwadrat ze strzałką) na dole Safari','pwa.iosStep2':'Przewiń w dół i dotknij „Do ekranu głównego”','pwa.iosStep3':'Dotknij „Dodaj” — gotowe! Ikona TaxMate pojawi się na ekranie','pwa.iosNote':'Uwaga: działa tylko w Safari, nie w Chrome.','pwa.andTitle':'Zainstaluj aplikację','pwa.andBody':'Przeglądarka nie pokazała przycisku instalacji. Nadal możesz zainstalować:','pwa.andStep1':'Dotknij menu (⋮) w prawym górnym rogu Chrome','pwa.andStep2':'Dotknij „Zainstaluj aplikację” lub „Dodaj do ekranu”','pwa.andStep3':'Potwierdź — ikona TaxMate pojawi się na ekranie','pwa.andTip':'Wskazówka: jeśli widzisz tylko „Dodaj do ekranu” (skrót), zamknij stronę, wyczyść pamięć podręczną, otwórz ponownie i poczekaj.','pdf.enHint':'Raporty PDF są generowane po angielsku. Nazwy wpisane w innych językach mogą się nie pojawić.','lang.pdfHint':'Wskazówka: raporty PDF eksportują się tylko po angielsku.','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.',
  'pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon',
  'pro.f2':'Zdjęcia paragonów',
- 'pro.f3':'Inteligentne wskazówki AI',
+ 'pro.f3':'Pomocnik',
  'pro.soon':'wkrótce',
  'pro.preview':'Wypróbuj Pro za darmo (podgląd)',
  'pro.on':'Pro aktywne',
@@ -1750,7 +1757,7 @@ ro:{
  'f.note':'Notă',
  'f.optional':'(opțional)',
  'f.amountErr':'Introdu o sumă mai mare de 0',
- 'f.bizUse':'Utilizare pentru afacere',
+ 'f.bizUse':'Utilizare pentru afacere','f.bizUsePartial':'Parțial personal?',
  'f.bizUseHint':'Parțial personal (de ex. telefonul)? Deduce doar partea de afacere — HMRC așteaptă o împărțire corectă.',
  'f.addIncome':'Adaugă venit',
  'f.editIncome':'Editează venit',
@@ -1817,7 +1824,7 @@ ro:{
  'tax.noPoa':'toată factura — fără plăți în avans (sub £1,000)',
  'tax.accT':'Cât de exactă este estimarea?',
  'tax.accB':'Folosește cotele {y} pentru Anglia, Țara Galilor și Irlanda de Nord (Scoția are alte praguri). Presupune că activitatea independentă e singurul tău venit — joburile PAYE, dobânzile, dividendele și împrumutul de student nu sunt încă incluse. E o estimare de planificare, nu consultanță fiscală — confirmă cu HMRC sau un contabil înainte de depunere.',
- 'tax.disc':'Doar estimare — nu este consultanță fiscală.',
+ 'tax.disc':'Doar estimare — nu este consultanță fiscală.','tax.estimateWarn':'Aceasta este o estimare, nu impozitul final. Trebuie totuși să declari la HMRC până la 31 ianuarie. Fără legătură cu HMRC.',
  'a.title':'Situația ta cu HMRC',
  'a.sub':'Două cifre din ultimul Self Assessment care schimbă cât plătești de fapt anul acesta.',
  'a.poaLabel':'Plăți în avans deja făcute pentru acest an',
@@ -1925,7 +1932,7 @@ ro:{
  'sa.lossNote':'Ai înregistrat o pierdere — introdu la Câmpul 11, lasă Câmpul 10 gol.',
  'sa.partNote':'Completează un formular SA104 pentru fiecare parteneriat.',
  'sa.govLink':'Depune Self Assessment pe gov.uk',
- 'tip.title':'Sfaturi de economii fiscale',
+ 'tip.title':'Asistent',
  'tip.dismiss':'Respinge',
  'tip.addNow':'Adaugă acum',
  'tip.home_t':'Deduce lucrul de acasă',
@@ -1980,7 +1987,7 @@ ro:{
  'cc.editName':'Nume categorie',
  'cc.reset':'Resetează',
  'cc.renameDone':'Redenumit',
- 'cc.longPress':'Apasă lung o categorie pentru a o redenumi sau elimina',
+ 'cc.longPress':'Apasă ＋ pentru a adăuga. Apasă lung o categorie pentru a redenumi sau elimina.',
  'cc.action':'Ce vrei să faci?',
  'cc.doRename':'Redenumește',
  'cc.doDelete':'Elimină din listă',
@@ -2043,15 +2050,15 @@ ro:{
  'pro.title':'Planuri TaxMate','pro.sub':'Versiunea gratuită face elementele de bază pentru totdeauna.',
  'tier.free':'Gratuit','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Tot ce trebuie pentru a declara singur','tier.plusSub':'Economisește mai mult, lucrează mai inteligent','tier.proSub':'Pentru parteneriate și comercianți serioși',
- 'tier.current':'Plan curent','tier.choose':'Schimbă la {p}','tier.active':'Activ',
+ 'tier.current':'Plan curent','tier.choose':'Schimbă la {p}','tier.active':'Activ','tier.freeNow':'Gratuit pe timp limitat','tier.activateFree':'Începe gratuit','trial.activateTitle':'Începe accesul Pro gratuit','trial.activateBody':'Vei primi toate funcțiile Pro gratuit până la {d}. După aceea vei reveni automat la planul Gratuit — datele tale sunt mereu păstrate. Continui?','trial.activated':'Pro deblocat!','trial.endingTitle':'Pro-ul gratuit se termină {d}.','trial.endingDays':'{n} zile rămase.','trial.endingBody':'Pentru a păstra funcțiile Pro, adaugă datele de plată înainte de final. Dacă nu faci nimic, vei reveni la planul Gratuit la data de încheiere — datele rămân.','trial.endedTitle':'Pro-ul gratuit s-a încheiat.','trial.endedBody':'Ești acum pe planul Gratuit. Datele tale sunt în siguranță.',
  'feat.records':'Venituri și cheltuieli nelimitate','feat.taxcalc':'Calcul fiscal','feat.onebiz':'O afacere','feat.mileageBasic':'Înregistrare kilometraj','feat.sa103view':'Mapare SA103','feat.sync':'Sincronizare și autentificare',
- 'feat.mileageCompare':'45p vs real','feat.aiTips':'Sfaturi inteligente','feat.multiBiz':'Mai multe afaceri','feat.receiptPhoto':'Foto bonuri','feat.pdfReport':'Export PDF','feat.sa103Pdf':'Export SA103 PDF',
+ 'feat.mileageCompare':'45p vs real','feat.aiTips':'Asistent','feat.multiBiz':'Mai multe afaceri','feat.receiptPhoto':'Foto bonuri','feat.pdfReport':'Export PDF','feat.sa103Pdf':'Export SA103 PDF',
  'feat.partnerSync':'Sincronizare partener','feat.sa104':'SA104 parteneriat','feat.receiptPack':'Pachet bonuri PDF','feat.mtdReady':'Export trimestrial MTD',
  'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','pwa.install':'Descarcă','pwa.installSub':'Instalează aplicația pe telefon.','pwa.iosTitle':'Adaugă pe ecranul principal','pwa.iosBody':'Pe iPhone, instalează din Safari:','pwa.iosStep1':'Atinge butonul Partajare (pătrat cu săgeată) jos în Safari','pwa.iosStep2':'Derulează și atinge „Adaugă la ecran principal”','pwa.iosStep3':'Atinge „Adaugă” — gata! Iconița TaxMate apare pe ecran','pwa.iosNote':'Notă: funcționează doar în Safari, nu în Chrome.','pwa.andTitle':'Instalează aplicația','pwa.andBody':'Browserul nu a afișat butonul de instalare. Poți instala totuși:','pwa.andStep1':'Atinge meniul (⋮) din dreapta sus în Chrome','pwa.andStep2':'Atinge „Instalează aplicația” sau „Adaugă la ecran”','pwa.andStep3':'Confirmă — iconița TaxMate apare pe ecran','pwa.andTip':'Sfat: dacă vezi doar „Adaugă la ecran” (scurtătură), închide site-ul, șterge cache-ul, redeschide și așteaptă.','pdf.enHint':'Rapoartele PDF sunt generate în engleză. Numele scrise în alte limbi pot să nu apară.','lang.pdfHint':'Sfat: rapoartele PDF se exportă doar în engleză.','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.',
  'pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon',
  'pro.f2':'Poze cu bonuri',
- 'pro.f3':'Sfaturi AI inteligente',
+ 'pro.f3':'Asistent',
  'pro.soon':'în curând',
  'pro.preview':'Încearcă Pro gratuit (preview)',
  'pro.on':'Pro activ',
@@ -2127,7 +2134,7 @@ es:{
  'f.note':'Nota',
  'f.optional':'(opcional)',
  'f.amountErr':'Introduce un importe mayor que 0',
- 'f.bizUse':'Uso para el negocio',
+ 'f.bizUse':'Uso para el negocio','f.bizUsePartial':'¿Parcialmente personal?',
  'f.bizUseHint':'¿Parcialmente personal (como tu móvil)? Deduce solo la parte del negocio — HMRC espera un reparto justo.',
  'f.addIncome':'Añadir ingreso',
  'f.editIncome':'Editar ingreso',
@@ -2194,7 +2201,7 @@ es:{
  'tax.noPoa':'toda tu factura — sin pagos a cuenta (menos de £1,000)',
  'tax.accT':'¿Qué tan precisa es esta estimación?',
  'tax.accB':'Usa los tipos de {y} para Inglaterra, Gales e Irlanda del Norte (Escocia tiene tramos distintos). Asume que el trabajo autónomo es tu único ingreso — empleos PAYE, intereses, dividendos y préstamo estudiantil aún no se incluyen. Es una estimación de planificación, no asesoría fiscal — confirma con HMRC o un contable antes de presentar.',
- 'tax.disc':'Solo estimación — no es asesoría fiscal.',
+ 'tax.disc':'Solo estimación — no es asesoría fiscal.','tax.estimateWarn':'Esto es una estimación, no tu impuesto final. Aún debes declarar a HMRC antes del 31 de enero. No afiliado a HMRC.',
  'a.title':'Tu situación con HMRC',
  'a.sub':'Dos cifras de tu último Self Assessment que cambian lo que pagas realmente este año.',
  'a.poaLabel':'Pagos a cuenta ya hechos para este año',
@@ -2302,7 +2309,7 @@ es:{
  'sa.lossNote':'Has tenido pérdidas — ponlo en la Caja 11, deja la Caja 10 en blanco.',
  'sa.partNote':'Completa un formulario SA104 por cada sociedad.',
  'sa.govLink':'Presenta tu Self Assessment en gov.uk',
- 'tip.title':'Consejos para ahorrar impuestos',
+ 'tip.title':'Asistente',
  'tip.dismiss':'Descartar',
  'tip.addNow':'Añadir ahora',
  'tip.home_t':'Deduce trabajo desde casa',
@@ -2357,7 +2364,7 @@ es:{
  'cc.editName':'Nombre de categoría',
  'cc.reset':'Restablecer',
  'cc.renameDone':'Renombrado',
- 'cc.longPress':'Mantén pulsada una categoría para renombrar o quitar',
+ 'cc.longPress':'Toca ＋ para añadir la tuya. Mantén pulsada una categoría para renombrar o quitar.',
  'cc.action':'¿Qué quieres hacer?',
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
@@ -2420,15 +2427,15 @@ es:{
  'pro.title':'Planes TaxMate','pro.sub':'La versión gratuita hace lo básico para siempre.',
  'tier.free':'Gratis','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Todo para declarar tú mismo','tier.plusSub':'Ahorra más, trabaja mejor','tier.proSub':'Para sociedades y autónomos serios',
- 'tier.current':'Plan actual','tier.choose':'Cambiar a {p}','tier.active':'Activo',
+ 'tier.current':'Plan actual','tier.choose':'Cambiar a {p}','tier.active':'Activo','tier.freeNow':'Gratis por tiempo limitado','tier.activateFree':'Empieza gratis','trial.activateTitle':'Empieza tu acceso Pro gratis','trial.activateBody':'Tendrás todas las funciones Pro gratis hasta el {d}. Después volverás automáticamente al plan Gratis — tus datos siempre se conservan. ¿Continuar?','trial.activated':'¡Pro activado!','trial.endingTitle':'Tu Pro gratis termina el {d}.','trial.endingDays':'Quedan {n} días.','trial.endingBody':'Para mantener las funciones Pro, añade tus datos de pago antes de que termine. Si no haces nada, volverás al plan Gratis en la fecha de fin — tus datos se conservan.','trial.endedTitle':'Tu Pro gratis ha terminado.','trial.endedBody':'Ahora estás en el plan Gratis. Tus datos están seguros.',
  'feat.records':'Ingresos y gastos ilimitados','feat.taxcalc':'Cálculo de impuestos','feat.onebiz':'Un negocio','feat.mileageBasic':'Registro de kilometraje','feat.sa103view':'Mapeo SA103','feat.sync':'Sincronización e inicio de sesión',
- 'feat.mileageCompare':'45p vs real','feat.aiTips':'Consejos inteligentes','feat.multiBiz':'Múltiples negocios','feat.receiptPhoto':'Fotos de recibos','feat.pdfReport':'Exportar PDF','feat.sa103Pdf':'Exportar SA103 PDF',
+ 'feat.mileageCompare':'45p vs real','feat.aiTips':'Asistente','feat.multiBiz':'Múltiples negocios','feat.receiptPhoto':'Fotos de recibos','feat.pdfReport':'Exportar PDF','feat.sa103Pdf':'Exportar SA103 PDF',
  'feat.partnerSync':'Sincronización de socio','feat.sa104':'SA104 sociedad','feat.receiptPack':'Pack de recibos PDF','feat.mtdReady':'Exportación trimestral MTD',
  'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','pwa.install':'Descargar','pwa.installSub':'Instala la app en tu teléfono.','pwa.iosTitle':'Añadir a pantalla de inicio','pwa.iosBody':'En iPhone, instala desde Safari:','pwa.iosStep1':'Toca el botón Compartir (cuadrado con flecha) abajo en Safari','pwa.iosStep2':'Desplázate y toca „Añadir a pantalla de inicio”','pwa.iosStep3':'Toca „Añadir” — ¡listo! El icono de TaxMate aparece en tu pantalla','pwa.iosNote':'Nota: solo funciona en Safari, no en Chrome.','pwa.andTitle':'Instala la app','pwa.andBody':'Tu navegador no mostró el botón de instalación. Aún puedes instalarla:','pwa.andStep1':'Toca el menú (⋮) arriba a la derecha en Chrome','pwa.andStep2':'Toca „Instalar aplicación” o „Añadir a pantalla”','pwa.andStep3':'Confirma — el icono de TaxMate aparece en tu pantalla','pwa.andTip':'Consejo: si solo ves „Añadir a pantalla” (acceso directo), cierra el sitio, borra la caché, vuelve a abrir y espera.','pdf.enHint':'Los informes PDF se generan en inglés. Los nombres en otros idiomas pueden no aparecer.','lang.pdfHint':'Consejo: los informes PDF se exportan solo en inglés.','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.',
  'pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles',
  'pro.f2':'Fotos de recibos',
- 'pro.f3':'Consejos inteligentes con IA',
+ 'pro.f3':'Asistente',
  'pro.soon':'próximamente',
  'pro.preview':'Prueba Pro gratis (vista previa)',
  'pro.on':'Pro activo',
@@ -2504,7 +2511,7 @@ ur:{
  'f.note':'نوٹ',
  'f.optional':'(اختیاری)',
  'f.amountErr':'0 سے زیادہ رقم درج کریں',
- 'f.bizUse':'کاروباری استعمال',
+ 'f.bizUse':'کاروباری استعمال','f.bizUsePartial':'جزوی طور پر ذاتی؟',
  'f.bizUseHint':'کچھ ذاتی استعمال بھی ہے (جیسے فون)؟ صرف کاروباری حصہ کلیم کریں — HMRC منصفانہ تقسیم چاہتا ہے۔',
  'f.addIncome':'آمدنی شامل کریں',
  'f.editIncome':'آمدنی میں ترمیم',
@@ -2571,7 +2578,7 @@ ur:{
  'tax.noPoa':'پورا بل — پیشگی ادائیگی کی ضرورت نہیں (£1,000 سے کم)',
  'tax.accT':'یہ تخمینہ کتنا درست ہے؟',
  'tax.accB':'{y} کی شرحیں انگلینڈ، ویلز اور شمالی آئرلینڈ کے لیے (اسکاٹ لینڈ کے سلیب مختلف ہیں)۔ فرض ہے کہ سیلف ایمپلائمنٹ ہی آپ کی واحد آمدنی ہے — PAYE ملازمت، سود، ڈیویڈنڈ اور اسٹوڈنٹ لون ابھی شامل نہیں۔ یہ منصوبہ بندی کا تخمینہ ہے، ٹیکس مشورہ نہیں — فائل کرنے سے پہلے HMRC یا اکاؤنٹنٹ سے تصدیق کریں۔',
- 'tax.disc':'صرف تخمینہ — ٹیکس مشورہ نہیں۔',
+ 'tax.disc':'صرف تخمینہ — ٹیکس مشورہ نہیں۔','tax.estimateWarn':'یہ ایک تخمینہ ہے، آپ کا حتمی ٹیکس نہیں۔ آپ کو پھر بھی 31 جنوری تک HMRC کو فائل کرنا ہوگا۔ HMRC سے وابستہ نہیں۔',
  'a.title':'HMRC کے ساتھ آپ کی پوزیشن',
  'a.sub':'پچھلے Self Assessment کے دو ہندسے جو بدلتے ہیں کہ اس سال آپ اصل میں کتنا دیں گے۔',
  'a.poaLabel':'اس سال کے لیے پہلے سے ادا شدہ پیشگی ادائیگیاں',
@@ -2679,7 +2686,7 @@ ur:{
  'sa.lossNote':'اس سال نقصان ہوا — باکس 11 میں درج کریں، باکس 10 خالی چھوڑیں۔',
  'sa.partNote':'ہر پارٹنرشپ کے لیے ایک SA104 فارم پُر کریں۔',
  'sa.govLink':'gov.uk پر Self Assessment جمع کریں',
- 'tip.title':'ٹیکس بچانے کے مشورے',
+ 'tip.title':'مددگار',
  'tip.dismiss':'نظرانداز',
  'tip.addNow':'ابھی شامل کریں',
  'tip.home_t':'گھر سے کام کا الاؤنس لیں',
@@ -2734,7 +2741,7 @@ ur:{
  'cc.editName':'Nombre de categoría',
  'cc.reset':'Restablecer',
  'cc.renameDone':'Renombrado',
- 'cc.longPress':'Mantén pulsada una categoría para renombrar o quitar',
+  'cc.longPress':'اپنی شامل کرنے کے لیے ＋ دبائیں۔ نام بدلنے یا ہٹانے کے لیے کسی زمرے کو دبائے رکھیں۔',
  'cc.action':'¿Qué quieres hacer?',
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
@@ -2795,15 +2802,15 @@ ur:{
  'pro.title':'TaxMate پلانز','pro.sub':'مفت ورژن ہمیشہ بنیادی کام کرتا ہے۔ مزید کے لیے اپ گریڈ کریں۔',
  'tier.free':'مفت','tier.plus':'پلس','tier.pro':'پرو',
  'tier.freeSub':'خود فائل کرنے کے لیے سب کچھ','tier.plusSub':'زیادہ بچائیں، سمجھداری سے کام کریں','tier.proSub':'شراکت اور سنجیدہ تاجروں کے لیے',
- 'tier.current':'موجودہ پلان','tier.choose':'{p} پر سوئچ کریں','tier.active':'فعال',
+ 'tier.current':'موجودہ پلان','tier.choose':'{p} پر سوئچ کریں','tier.active':'فعال','tier.freeNow':'محدود وقت کے لیے مفت','tier.activateFree':'مفت شروع کریں','trial.activateTitle':'اپنی مفت Pro رسائی شروع کریں','trial.activateBody':'آپ کو {d} تک تمام Pro خصوصیات مفت ملیں گی۔ اس کے بعد آپ خود بخود مفت پلان پر واپس آ جائیں گے — آپ کا ڈیٹا ہمیشہ محفوظ رہتا ہے۔ جاری رکھیں؟','trial.activated':'Pro کھل گیا!','trial.endingTitle':'آپ کا مفت Pro {d} کو ختم ہو رہا ہے۔','trial.endingDays':'{n} دن باقی۔','trial.endingBody':'Pro خصوصیات برقرار رکھنے کے لیے، ختم ہونے سے پہلے ادائیگی کی تفصیلات شامل کریں۔ اگر آپ کچھ نہیں کرتے، تو اختتامی تاریخ پر آپ مفت پلان پر آ جائیں گے — ڈیٹا محفوظ رہے گا۔','trial.endedTitle':'آپ کا مفت Pro ختم ہو گیا۔','trial.endedBody':'اب آپ مفت پلان پر ہیں۔ آپ کا ڈیٹا محفوظ ہے۔',
  'feat.records':'لامحدود آمدنی و اخراجات','feat.taxcalc':'ٹیکس کیلکولیشن','feat.onebiz':'ایک کاروبار','feat.mileageBasic':'مائلیج ریکارڈنگ','feat.sa103view':'SA103 میپنگ','feat.sync':'کلاؤڈ سنک اور لاگ ان',
- 'feat.mileageCompare':'45p بمقابلہ اصل','feat.aiTips':'سمارٹ تجاویز','feat.multiBiz':'متعدد کاروبار','feat.receiptPhoto':'رسید کی تصاویر','feat.pdfReport':'PDF رپورٹ','feat.sa103Pdf':'SA103 PDF',
+ 'feat.mileageCompare':'45p بمقابلہ اصل','feat.aiTips':'مددگار','feat.multiBiz':'متعدد کاروبار','feat.receiptPhoto':'رسید کی تصاویر','feat.pdfReport':'PDF رپورٹ','feat.sa103Pdf':'SA103 PDF',
  'feat.partnerSync':'پارٹنر سنک','feat.sa104':'SA104 شراکت','feat.receiptPack':'رسید پیک PDF','feat.mtdReady':'MTD سہ ماہی ایکسپورٹ',
  'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','pwa.install':'ڈاؤن لوڈ','pwa.installSub':'ایپ کو اپنے فون پر انسٹال کریں۔','pwa.iosTitle':'ہوم اسکرین پر شامل کریں','pwa.iosBody':'iPhone پر، Safari سے انسٹال کریں:','pwa.iosStep1':'Safari کے نیچے شیئر بٹن (تیر والا مربع) دبائیں','pwa.iosStep2':'نیچے سکرول کریں اور „ہوم اسکرین پر شامل کریں” دبائیں','pwa.iosStep3':'„شامل کریں” دبائیں — ہو گیا! TaxMate آئیکن آپ کی اسکرین پر آ جائے گا','pwa.iosNote':'نوٹ: یہ صرف Safari میں کام کرتا ہے، Chrome میں نہیں۔','pwa.andTitle':'ایپ انسٹال کریں','pwa.andBody':'آپ کے براؤزر نے انسٹال بٹن خود نہیں دکھایا۔ آپ پھر بھی انسٹال کر سکتے ہیں:','pwa.andStep1':'Chrome کے اوپر دائیں مینو (⋮) دبائیں','pwa.andStep2':'„ایپ انسٹال کریں” یا „ہوم اسکرین پر شامل کریں” دبائیں','pwa.andStep3':'تصدیق کریں — TaxMate آئیکن آپ کی اسکرین پر آ جائے گا','pwa.andTip':'تجویز: اگر صرف „ہوم اسکرین پر شامل کریں” (شارٹ کٹ) نظر آئے تو سائٹ بند کریں، کیش صاف کریں، دوبارہ کھولیں اور انتظار کریں۔','pdf.enHint':'PDF رپورٹس انگریزی میں بنتی ہیں۔ دیگر زبانوں میں ٹائپ کیے نام ظاہر نہیں ہو سکتے۔','lang.pdfHint':'تجویز: PDF رپورٹس صرف انگریزی میں ایکسپورٹ ہوتی ہیں۔','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔',
  'pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر',
  'pro.f2':'رسیدوں کی تصاویر',
- 'pro.f3':'AI ٹپس',
+ 'pro.f3':'مددگار',
  'pro.soon':'جلد آرہا ہے',
  'pro.preview':'Pro مفت آزمائیں (پیش منظر)',
  'pro.on':'Pro فعال',
@@ -2925,7 +2932,7 @@ const TIER_RANK = { free:0, plus:1, pro:2 };
 // Which tier each gated feature needs
 const FEATURE_TIER = {
   mileageCompare:'plus',   // 45p vs actual auto-compare
-  aiTips:'plus',           // Smart AI saving tips
+  // Helper (formerly "aiTips") is FREE for everyone — intentionally not gated
   multiBiz:'plus',         // more than one business
   receiptPhoto:'plus',     // receipt photos
   pdfReport:'plus',        // PDF report export
@@ -2972,22 +2979,24 @@ function initTrial(){
 }
 
 async function loadTrialFromCloud(uid){
-  if(localStorage.getItem(TRIAL_KEY)) return;
   try{
     const doc = await userRoot(uid).collection('app').doc('trial').get();
-    if(doc.exists && doc.data().trialStart){
-      localStorage.setItem(TRIAL_KEY, doc.data().trialStart);
-    } else {
-      initTrial();
+    if(doc.exists){
+      const d = doc.data()||{};
+      if(d.trialStart && !localStorage.getItem(TRIAL_KEY)) localStorage.setItem(TRIAL_KEY, d.trialStart);
+      if(d.trialActivated && !(S.settings && S.settings.trialActivated)){
+        S.settings.trialActivated = true; S.settings.pro = true; save();
+      }
     }
-  }catch(e){ initTrial(); }
+    if(!localStorage.getItem(TRIAL_KEY)) initTrial();
+  }catch(e){ if(!localStorage.getItem(TRIAL_KEY)) initTrial(); }
 }
 
 function currentTier(){
-  // During active trial → full Pro access
+  // Opt-in trial: user must activate the limited-time free Pro themselves
   const trial = trialStatus();
-  if(trial.active) return 'pro';
-  // After trial → use stored tier
+  if(S.settings && S.settings.trialActivated && trial.active) return 'pro';
+  // Otherwise → use stored tier (everyone starts Free)
   const ti = (S.settings && S.settings.tier) || 'free';
   // legacy: old pro flag maps to 'pro'
   if((!S.settings.tier || S.settings.tier==='free') && S.settings.pro) return 'pro';
@@ -3000,8 +3009,8 @@ function hasFeature(key){
 }
 function tierFeatureList(tier){
   // returns array of {label, on} for that tier's column
-  const free = ['feat.records','feat.taxcalc','feat.onebiz','feat.mileageBasic','feat.sa103view','feat.sync'];
-  const plus = ['feat.mileageCompare','feat.aiTips','feat.multiBiz','feat.receiptPhoto','feat.pdfReport','feat.sa103Pdf'];
+  const free = ['feat.records','feat.taxcalc','feat.onebiz','feat.mileageBasic','feat.aiTips','feat.sa103view','feat.sync'];
+  const plus = ['feat.mileageCompare','feat.multiBiz','feat.receiptPhoto','feat.pdfReport','feat.sa103Pdf'];
   const pro  = ['feat.partnerSync','feat.sa104','feat.receiptPack','feat.mtdReady'];
   if(tier==='free') return free;
   if(tier==='plus') return plus;
@@ -3013,14 +3022,29 @@ function planBlock(tier){
   const rank = TIER_RANK[tier];
   const name = t('tier.'+tier);
   const sub = t('tier.'+tier+'Sub');
+  const trial = trialStatus();
+  const activated = !!(S.settings && S.settings.trialActivated);
   const feats = tierFeatureList(tier).map(k=>
     `<div class="frow" style="padding:5px 0"><span class="fl" style="font-size:13.5px">${tierTick(tier)} ${t(k)}</span></div>`
   ).join('');
+  // "Limited-time free" badge on paid tiers while trial window is open and not yet activated
+  const freeBadge = (tier!=='free' && trial.active && !activated)
+    ? `<span class="tagchip amber" style="margin-inline-start:auto">${t('tier.freeNow')}</span>` : '';
   const badge = isCurrent
     ? `<span class="tagchip green" style="margin-inline-start:auto">${t('tier.current')}</span>`
-    : '';
-  const btn = isCurrent ? '' :
-    `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${tier==='free'?t('tier.choose',{p:name}):t('tier.choose',{p:name})}</button>`;
+    : freeBadge;
+  let btn = '';
+  if(!isCurrent){
+    if(tier!=='free' && trial.active && !activated){
+      // activate the limited-time free Pro
+      btn = `<button class="btn ink" style="margin-top:12px;width:100%" onclick="activateTrial()">${t('tier.activateFree')}</button>`;
+    } else if(tier!=='free' && !trial.active){
+      // trial window closed → paid (placeholder until Stripe in 2027)
+      btn = `<button class="btn ink" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+    } else {
+      btn = `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+    }
+  }
   const ring = isCurrent ? 'border:2px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<div class="card" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3066,6 +3090,24 @@ function setTier(tier){
   S.settings.pro = (tier==='pro'); // keep legacy flag roughly in sync
   save(); render();
   toast(t('tier.active')+' · '+t('tier.'+tier));
+}
+function activateTrial(){
+  const tr = trialStatus();
+  const endStr = tr.endDate ? tr.endDate.toLocaleDateString(LOCALES[S.settings.lang]||'en-GB', {year:'numeric',month:'long',day:'numeric'}) : '';
+  confirmAction(
+    t('trial.activateTitle'),
+    t('trial.activateBody',{d:endStr}),
+    ()=>{
+      S.settings.trialActivated = true;
+      S.settings.pro = true;
+      save();
+      // persist to cloud so other devices see it
+      const u = (typeof cloudUser==='function') ? cloudUser() : null;
+      if(u && FB.db){ try{ userRoot(u.uid).collection('app').doc('trial').set({trialActivated:true},{merge:true}); }catch(e){} }
+      render();
+      toast(t('trial.activated'));
+    }
+  );
 }
 function installCard(){
   // Hide entirely if already running as an installed app
@@ -3289,7 +3331,6 @@ function render(){
 function welcome(){
   const steps = t('w.steps').split('\n').map(s=>`<div style="margin-bottom:8px;font-size:14.5px">${esc(s)}</div>`).join('');
   return `
-  ${betaBanner()}
   <div class="hero">
     <div class="hi" style="font-size:22px;font-weight:800">${t('w.title')}</div>
     <div style="margin-top:8px;font-size:14.5px;opacity:.95;line-height:1.55">${t('w.sub')}</div>
@@ -3298,6 +3339,42 @@ function welcome(){
   <div class="card">${steps}
     <button class="btn" style="margin-top:14px" onclick="openBiz()">${t('w.start')}</button>
   </div>`;
+}
+
+/* Home cards from onboarding: review reminder + catch-up re-entry */
+function obReviewCard(){
+  const ids = (S.obReview||[]).filter(id=>S.entries.find(e=>e.id===id && e._review));
+  if(!ids.length){ if(S.obReview&&S.obReview.length){ S.obReview=[]; } return ''; }
+  return `<div class="card" style="border:1px solid var(--amber);background:var(--amber-soft);cursor:pointer" onclick="go('expenses')">
+    <div class="row" style="align-items:flex-start">
+      <div class="ico" style="background:rgba(180,125,18,.18)">🔔</div>
+      <div class="grow">
+        <div class="t" style="color:var(--amber)">${ids.length} item${ids.length>1?'s':''} to review</div>
+        <div class="s">Add dates or categories when you have a moment — it keeps your tax estimate accurate.</div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+  </div>`;
+}
+function obCatchupCard(){
+  // show only to people who skipped onboarding (explore) — gentle re-entry
+  let done=null; try{ done=localStorage.getItem('tmOnboardDone'); }catch(e){}
+  if(done!=='explore') return '';
+  return `<div class="card" style="cursor:pointer" onclick="obReopenCatchup()">
+    <div class="row">
+      <div class="ico" style="background:var(--brand-soft)">🧹</div>
+      <div class="grow">
+        <div class="t">Catch up on earlier months</div>
+        <div class="s">Add income &amp; expenses from before you started here</div>
+      </div>
+      <div class="chev">›</div>
+    </div>
+  </div>`;
+}
+function obReopenCatchup(){
+  // re-run the flow; if a business already exists, skip the business step is complex —
+  // simplest: launch flow fresh (user can add a second business or re-confirm)
+  startOnboarding();
 }
 
 /* ═══════════ HOME (dashboard only) ═══════════ */
@@ -3347,7 +3424,6 @@ function pageHome(){
     })()}
   </div>
 
-  ${betaBanner()}
   ${deadlineBanner()}
   ${trialBanner()}
   <div class="card" style="cursor:pointer" onclick="go('tax')">
@@ -3361,6 +3437,14 @@ function pageHome(){
       <div class="chev">›</div>
     </div>
   </div>
+
+  <div style="display:flex;gap:10px;margin:14px 0">
+    <button class="btn" style="flex:1" onclick="openEntry('income')">＋ ${t('f.addIncome')}</button>
+    <button class="btn soft" style="flex:1" onclick="openEntry('expense')">＋ ${t('f.addExpense')}</button>
+  </div>
+
+  ${obReviewCard()}
+  ${obCatchupCard()}
 
   <div class="h2">${t('home.biz')}</div>
   <div class="card">${bizCards}</div>
@@ -3486,6 +3570,7 @@ function pageTax(){
     <div class="label">${t('tax.bill',{y:S.year})}</div>
     <div class="big num">${fmt(Math.max(tx.liability,0))}</div>
     <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
+    <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,.12);border-radius:10px;font-size:12.5px;font-weight:600;opacity:.95">⚠️ ${t('tax.estimateWarn')}</div>
   </div>
 
   ${deadlineBanner()}
@@ -3845,6 +3930,14 @@ function paintEntry(){
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
+  // 商業用途 %：預設 100% 摺埋,只在非 100% 時展開
+  const pctCol = document.getElementById('en-pct-collapsed');
+  const pctExp = document.getElementById('en-pct-expanded');
+  if(pctCol && pctExp){
+    const show = EN.pct!==100;
+    pctCol.style.display = show ? 'none' : 'block';
+    pctExp.style.display = show ? 'block' : 'none';
+  }
   // 收據相簿
   const rg = document.getElementById('en-receipt-group');
   rg.style.display = EN.kind==='expense' ? 'block' : 'none';
@@ -4009,6 +4102,10 @@ function deleteFolder(id){
 }
 function setCat(c){ EN.cat=c; paintEntry(); }
 function setPct(p){ EN.pct=p; paintEntry(); }
+function expandPct(){
+  // 撳「部分私人使用」→ 展開 %,預設揀 75%(最常見部分使用)
+  EN.pct = 75; paintEntry();
+}
 function dateToTaxYear(dateStr){
   const d = new Date(dateStr+'T12:00:00');
   const y = d.getFullYear();
@@ -4036,7 +4133,7 @@ function setRepeat(on){
 }
 function saveEntry(){
   const amt = parseFloat(document.getElementById('en-amount').value);
-  if(!(amt>0)){
+  if(!(amt>0) || amt>10000000){
     document.getElementById('en-amount').classList.add('err');
     document.getElementById('en-amount-err').classList.add('show');
     document.getElementById('en-amount').focus();
@@ -4184,9 +4281,10 @@ function saveBiz(){
     if(BZ.structure==='partnership' && BZ.pendingCode && hasFeature('partnerSync') && fbConfigured()){
       newBiz.syncCode = BZ.pendingCode;
     }
-    // new business starts with NO categories — user creates their own per-business
+    // New business: seed a few universal defaults so the entry screen isn't blank.
+    // These are built-in categories (not custom) — user can remove or add freely.
     S.customCats[newId] = {income:[],expense:[]};
-    S.activeCats[newId] = {income:[],expense:[]};
+    S.activeCats[newId] = {income:['sales'], expense:['vehicle','phone','home','other']};
     S.businesses.push(newBiz);
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
@@ -5098,44 +5196,21 @@ function mtdCard(){
 
 // Deadline banner (shown on Home + Tax pages if within 7 days)
 // ── Trial reminder banner ──────────────────────────────────
-function betaBanner(){
-  // Show on every new session (sessionStorage, not localStorage)
-  try{ if(sessionStorage.getItem('tmBetaSeen')==='1') return ''; }catch(e){}
-  return `<div class="notice amber" id="beta-banner" style="margin-bottom:14px;position:relative">
-    <strong>🧪 Beta — for estimation only.</strong>
-    TaxMate does not provide legal or financial advice. Always verify your figures with HMRC or a qualified accountant before filing.
-    <button class="link" style="font-weight:800;margin-top:6px;display:block" onclick="dismissBeta()">Got it ✓</button>
-  </div>`;
-}
-function dismissBeta(){
-  try{ sessionStorage.setItem('tmBetaSeen','1'); }catch(e){}
-  const el=document.getElementById('beta-banner'); if(el) el.remove();
-}
-
 function trialBanner(){
+  // Only relevant if the user activated the limited-time free Pro
+  if(!(S.settings && S.settings.trialActivated)) return '';
   const tr = trialStatus();
-  if(tr.phase==='active' || tr.phase==='none') return '';
-  const end = tr.endDate ? tr.endDate.toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
-  if(tr.phase==='warn1'){
-    // ~90 days left — gentle nudge
-    return `<div class="notice amber" style="margin-bottom:14px">
-      ⭐ <strong>Your free Pro trial ends ${end}</strong> — ${tr.daysLeft} days left.
-      <span style="opacity:.8">Upgrade anytime in Settings to keep full access.</span>
-    </div>`;
-  }
+  const end = tr.endDate ? tr.endDate.toLocaleDateString(LOCALES[S.settings.lang]||'en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+  // Reminder appears ~1 month before expiry (warn2 = ≤30 days)
   if(tr.phase==='warn2'){
-    // ~30 days left — urgent, SA deadline context
-    return `<div class="notice" style="background:#FDEDEE;color:var(--coral);margin-bottom:14px">
-      ⚠️ <strong>Trial ends ${end} — ${tr.daysLeft} days left.</strong>
-      Self Assessment deadline is 31 Jan — upgrade Pro to keep your records and reports.
-      <button class="link" style="color:var(--coral);font-weight:800;margin-top:6px;display:block" onclick="go('more')">Upgrade now →</button>
+    return `<div class="notice amber" style="margin-bottom:14px">
+      ⏳ <strong>${t('trial.endingTitle',{d:end})}</strong> ${t('trial.endingDays',{n:tr.daysLeft})}<br>
+      <span style="opacity:.85">${t('trial.endingBody')}</span>
     </div>`;
   }
   if(tr.phase==='expired'){
     return `<div class="notice" style="background:#FDEDEE;color:var(--coral);margin-bottom:14px">
-      🔒 <strong>Your free trial has ended.</strong>
-      You're now on the Free plan. Your data is safe — upgrade to restore Pro features.
-      <button class="link" style="color:var(--coral);font-weight:800;margin-top:6px;display:block" onclick="go('more')">See plans →</button>
+      🔒 <strong>${t('trial.endedTitle')}</strong> ${t('trial.endedBody')}
     </div>`;
   }
   return '';
@@ -5635,12 +5710,479 @@ function setupBackButton(){
   });
 }
 
+/* ═══════════════════════════════════════════════════════════
+   ONBOARDING — catch-up flow (writes into real S on finish)
+   ═══════════════════════════════════════════════════════════ */
+const OB_MONTHS_FULL = {1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'};
+const OB_MON_SHORT = {1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'};
+const OB_MILEAGE_RATE = 0.45;
+// suggestion chips for expense categories (id maps to built-in CATS where possible)
+const OB_SUGGEST = [
+  {id:'vehicle',label:'Vehicle',e:'⛽'},{id:'travel',label:'Parking/Travel',e:'🅿️'},
+  {id:'phone',label:'Phone',e:'📱'},{id:'home',label:'Home office',e:'🏠'},
+  {id:'equip',label:'Equipment',e:'🧰'},{id:'stock',label:'Stock',e:'📦'},
+  {id:'insure',label:'Insurance',e:'🛡️'},{id:'fees',label:'Fees',e:'💼'},
+  {id:'market',label:'Advertising',e:'📣'},{id:'repair',label:'Repairs',e:'🔧'}
+];
+
+let OB = null; // active onboarding state
+
+function obStartMonthList(){
+  // months from the start of the CURRENT UK tax year up to this month
+  const now = new Date();
+  const y = now.getFullYear(), mo = now.getMonth()+1; // 1-12
+  // tax year start = 6 April of (this year if we're past April, else last year)
+  const tyStartYear = (mo>=4) ? y : y-1;
+  const list=[]; // each: {m: 1-12, year, label}
+  let cy=tyStartYear, cm=4;
+  while(true){
+    list.push({m:cm, year:cy});
+    if(cy===now.getFullYear() && cm===mo) break;
+    cm++; if(cm>12){cm=1;cy++;}
+    if(list.length>13) break; // safety
+  }
+  return list;
+}
+
+function obDefaultState(loggedIn){
+  return {
+    screen:'login', loggedIn:!!loggedIn,
+    bizName:'', structure:'sole', partnerCode:'',
+    cats:[],                 // (no longer chosen in onboarding; kept for compat)
+    monthsAll: obStartMonthList(),
+    startIdx:0,
+    cursor:0,
+    data:{}
+  };
+}
+function obKey(mObj){ return mObj.year+'-'+mObj.m; }
+function obMonthData(mObj){
+  const k=obKey(mObj);
+  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''}};
+  return OB.data[k];
+}
+function obActiveMonths(){ return OB.monthsAll.slice(OB.startIdx); }
+function obMonthTotal(mObj,kind){
+  const d=obMonthData(mObj);
+  if(kind==='in'){
+    if(d.inGrouped) return d.inGroups.reduce((s,g)=>s+g.rows.reduce((t,r)=>t+(parseFloat(r.v)||0),0),0);
+    return d.inRows.reduce((t,r)=>t+(parseFloat(r.v)||0),0);
+  }
+  return d.outGroups.reduce((s,g)=>s+g.rows.reduce((t,r)=>t+(parseFloat(r.v)||0),0),0);
+}
+function obGrand(kind){ return obActiveMonths().reduce((s,m)=>s+obMonthTotal(m,kind),0); }
+function obGrandMiles(){ return obActiveMonths().reduce((s,m)=>s+(parseFloat(obMonthData(m).miles)||0),0); }
+
+// ---- entry points ----
+function obEnsureRoot(){
+  let r = document.getElementById('ob-root');
+  if(!r){
+    r = document.createElement('div');
+    r.id = 'ob-root';
+    document.body.appendChild(r);
+  }
+  return r;
+}
+function startOnboarding(){
+  OB = obDefaultState(false);
+  const r = obEnsureRoot();
+  r.classList.add('active');
+  document.body.style.overflow='hidden';
+  obRender();
+}
+function obClose(){
+  const r=document.getElementById('ob-root'); if(r){ r.classList.remove('active'); r.innerHTML=''; }
+  document.body.style.overflow='';
+  OB=null;
+}
+function obRender(){
+  const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
+  const r=obEnsureRoot();
+  r.innerHTML = fns[OB.screen]();
+  r.scrollTop=0;
+}
+function obGo(s){ OB.screen=s; obRender(); }
+function obProgress(pct,label,back){
+  return `<div class="ob-progtop"><div class="ob-wrap">
+    <div class="ob-prow">${back?`<button class="ob-back" onclick="${back}">‹</button>`:''}<div class="ob-plabel">${label}</div></div>
+    <div class="ob-ptrack"><div class="ob-pfill" style="width:${pct}%"></div></div>
+  </div></div>`;
+}
+// wrap scrollable body + sticky-in-flow footer for the flex app-shell layout
+function obShell(progHTML, bodyHTML, footHTML){
+  return progHTML
+    + `<div class="ob-scroll"><div class="ob-wrap ob-step">${bodyHTML}</div></div>`
+    + (footHTML ? `<div class="ob-foot"><div class="ob-wrap">${footHTML}</div></div>` : '');
+}
+
+/* LOGIN */
+function obScrLogin(){
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
+    <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
+    <h1>Know your tax<br>in seconds</h1>
+    <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
+    <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
+    <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">Start without an account</span><span class="ob-ts">Stays on this phone — sign in anytime</span></span></button>
+  </div></div>`;
+}
+async function obSignIn(){
+  // Use the app's real Google sign-in (popup). On success, continue onboarding.
+  if(typeof signIn==='function' && fbConfigured()){
+    try{
+      await signIn('google');
+      const u = (typeof cloudUser==='function') ? cloudUser() : null;
+      OB.loggedIn = !!u;
+    }catch(e){ OB.loggedIn=false; }
+  } else {
+    OB.loggedIn = true; // no Firebase configured (shouldn't happen in prod)
+  }
+  obGo('entry');
+}
+function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
+
+/* ENTRY */
+function obScrEntry(){
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
+    <div style="font-size:40px;margin-bottom:10px">👋</div>
+    <h1>Let's set you up</h1>
+    <p class="ob-lede">Started partway through the year? Add your past months once — then you're done.</p>
+    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🧹</span><span><span class="ob-tt">Catch me up</span><span class="ob-ts">Add the months I've missed</span></span></button>
+    <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">👀</span><span><span class="ob-tt">Look around first</span><span class="ob-ts">Jump in — catch up later</span></span></button>
+  </div></div>`;
+}
+function obExplore(){
+  // mark onboarding as skipped (explore), close, land on app welcome/home
+  try{ localStorage.setItem('tmOnboardDone','explore'); }catch(e){}
+  obClose();
+  render();
+}
+
+/* STEP 1 — business name (+ structure only when signed in) */
+function obScrBiz(){
+  const isSole = (OB.structure||'sole')==='sole';
+  // Structure choice only matters when signed in (partnership needs cloud sync)
+  const structureCard = OB.loggedIn ? `
+    <div class="ob-card">
+      <label>How do you run it?</label>
+      <div class="ob-seg">
+        <button class="${isSole?'on':''}" onclick="obSetStruct('sole')">Just me</button>
+        <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">With a partner<sup class="ob-probadge">Pro</sup></button>
+      </div>
+      <p class="ob-hint" style="margin-top:10px">${isSole
+        ? 'You work for yourself and keep all the profit.'
+        : 'You run it with someone and split the profit — only your share is taxed. Both phones stay in sync.'}</p>
+    </div>
+    ${!isSole ? `
+    <div class="ob-card flat" style="margin-top:4px">
+      <div class="ob-seclabel"><span class="ob-dot in"></span> Link with your partner</div>
+      <p class="ob-hint" style="margin:0 0 10px">If they already use TaxMate, enter their share code now — or skip and do it later.</p>
+      ${OB.partnerCode
+        ? `<div class="ob-totalpill"><span class="ob-tpl">Joining code</span><span class="ob-tpv">${esc(OB.partnerCode)}</span></div><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="OB.partnerCode='';obRender()">Remove</button></div>`
+        : `<button class="ob-btn ghost" onclick="obEnterPartner()">Enter partner's code</button><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obGo('start')">I'll do this later</button></div>`}
+    </div>` : ''}` : '';
+  return obShell(
+    obProgress(25,'Step 1 of 3 · Your work',"obGo('entry')"),
+    `<h1>What do you do?</h1>
+    <p class="ob-lede">Your business name — most people just put their job.</p>
+    <div class="ob-card">
+      <label>Business name</label>
+      <input type="text" id="ob-bizname" placeholder="e.g. Evri driver" value="${esc(OB.bizName)}" oninput="OB.bizName=this.value;document.getElementById('ob-s1next').disabled=!this.value.trim()">
+      <div class="ob-hint">Uber driver · Cleaner · Handyman · Deliveroo</div>
+    </div>
+    ${structureCard}`,
+    `<button class="ob-btn" id="ob-s1next" ${OB.bizName.trim()?'':'disabled'} onclick="obGo('start')">Continue</button>`
+  );
+}
+function obSetStruct(s){ OB.structure=s; if(s==='sole') OB.partnerCode=''; obRender(); }
+function obEnterPartner(){
+  const c=prompt("Enter your partner's 8-character share code:");
+  if(c && c.trim()){ OB.partnerCode=c.trim().toUpperCase().slice(0,8); obRender(); }
+}
+
+/* STEP 2 — start month */
+function obScrStart(){
+  const opts = OB.monthsAll.map((mo,i)=>
+    `<button class="ob-tile" onclick="obPickStart(${i})" style="${OB.startIdx===i?'border-color:var(--brand);background:var(--brand-soft)':''}">
+      <span class="ob-emoji">📅</span><span><span class="ob-tt">${OB_MONTHS_FULL[mo.m]} ${mo.year}</span><span class="ob-ts">Add my figures from ${OB_MONTHS_FULL[mo.m]}</span></span>
+    </button>`).join('');
+  return obShell(
+    obProgress(40,'Step 2 of 3 · Start month',"obGo('biz')"),
+    `<h1>Where shall we start?</h1>
+    <p class="ob-lede">Pick the first month you want to add figures for. We'll go month by month from there.</p>
+    ${opts}
+    <p class="ob-hint ob-center ob-mt8">The UK tax year runs April → April.</p>`,
+    `<button class="ob-btn" onclick="OB.cursor=0;obGo('month')">Continue</button>`
+  );
+}
+function obPickStart(i){ OB.startIdx=i; OB.cursor=0; obRender(); }
+
+/* day picker */
+function obDayPicker(mObj,val,setExpr){
+  const sh=OB_MON_SHORT[mObj.m];
+  let opts=`<option value="" ${val===''?'selected':''}>To be confirmed</option>`;
+  for(let d=1;d<=31;d++) opts+=`<option value="${d}" ${String(val)===String(d)?'selected':''}>${d} ${sh}</option>`;
+  const label = val==='' ? 'Date' : `${val} ${sh}`;
+  return `<span class="ob-daywrap"><span class="ob-daylabel ${val===''?'empty':''}">${label}</span><select class="ob-daysel" onchange="${setExpr}">${opts}</select></span>`;
+}
+
+/* STEP 3 — per month */
+function obScrMonth(){
+  const months=obActiveMonths(), total=months.length, idx=OB.cursor, mObj=months[idx], m=mObj.m;
+  const d=obMonthData(mObj);
+  const pct=40+Math.round((idx/total)*50);
+  const isLast=idx===total-1;
+  const full=OB_MONTHS_FULL[m];
+
+  // a single editable row: [Date] [What for?] [£] [×]
+  const rowHTML = (kind,gi,ri,r,setExpr,delExpr) => `
+    <div class="ob-frow"><div class="ob-fline">
+      ${obDayPicker(mObj, r.day, setExpr('day'))}
+      <input type="text" class="ob-fdesc" placeholder="What for?" value="${esc(r.d||'')}" oninput="${setExpr('d')}">
+      <div class="ob-famt"><span class="ob-cur">£</span><input type="number" inputmode="decimal" placeholder="0.00" value="${r.v}" oninput="${setExpr('v')}"></div>
+      <button class="ob-del" onclick="${delExpr}">×</button>
+    </div></div>`;
+
+  // category-folder block (used by expenses always, and income when grouped)
+  const folderHTML = (kind,g,gi) => {
+    const sum = g.rows.reduce((s,r)=>s+(parseFloat(r.v)||0),0);
+    const rows = g.rows.map((r,ri)=>rowHTML(kind,gi,ri,r,
+      (f)=>`obSetRow('${kind}',${gi},${ri},'${f}',this.value)`,
+      `obDelRow('${kind}',${gi},${ri})`)).join('');
+    return `<div class="ob-folder">
+      <div class="ob-fhead" onclick="obToggleGroup('${kind}',${gi})">
+        <span class="ob-fcaret">${g.open?'▼':'▶'}</span>
+        <span class="ob-fname">📁 ${esc(g.name)}</span>
+        <span class="ob-fsum">£${sum.toFixed(2)}</span>
+        <button class="ob-fdel" onclick="event.stopPropagation();obDelGroup('${kind}',${gi})">🗑️</button>
+      </div>
+      ${g.open?`<div class="ob-fbody">${rows}<button class="ob-additem" onclick="obAddRow('${kind}',${gi})">＋ Add another</button></div>`:''}
+    </div>`;
+  };
+
+  // inline "add category" input (no popup)
+  const addCatHTML = (kind) => d.addCat[kind]
+    ? `<div class="ob-newcat">
+         <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
+         <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
+         <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
+       </div>`
+    : `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
+
+  // MONEY IN
+  let inHTML;
+  if(d.inGrouped){
+    inHTML = d.inGroups.map((g,gi)=>folderHTML('in',g,gi)).join('') + addCatHTML('in');
+  } else {
+    const simple = d.inRows.map((r,ri)=>rowHTML('in',0,ri,r,
+      (f)=>`obSetSimpleRow(${ri},'${f}',this.value)`,
+      `obDelSimpleRow(${ri})`)).join('');
+    inHTML = `<div class="ob-fbody open">${simple}<button class="ob-additem" onclick="obAddSimpleRow()">＋ Add another</button></div>
+      <button class="ob-groupbtn" onclick="obGroupIncome()">⊕ Split into categories</button>`;
+  }
+  // MONEY OUT (always categories)
+  const outHTML = d.outGroups.map((g,gi)=>folderHTML('out',g,gi)).join('')
+    + (d.outGroups.length?'':`<p class="ob-hint" style="margin:2px 0 10px">Add a category for each kind of cost — fuel, phone, insurance…</p>`)
+    + addCatHTML('out');
+
+  const renderIn = () => inHTML;
+  const renderOut = () => outHTML;
+
+  return obShell(
+    obProgress(pct,`Step 3 of 3 · ${idx+1} of ${total} months`, idx===0?"obGo('start')":'obPrevMonth()'),
+    `<div class="ob-mhead"><div class="ob-mname">${full} ${mObj.year}</div><div class="ob-mtag">${esc(OB.bizName||'Your work')}</div></div>
+    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot in"></span> Money in</div>${renderIn()}</div>
+    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot out"></span> Money out</div>${renderOut()}</div>
+    <div class="ob-card flat">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <span style="font-size:14px;font-weight:700;color:var(--muted)">🚗 Did you drive for work?</span>
+        ${d.milesOpen?'':`<button class="ob-btn soft sm" onclick="obOpenMiles()">Add mileage</button>`}
+      </div>
+      ${d.milesOpen?`<label style="margin-top:12px">Business miles in ${full}</label><input type="number" inputmode="numeric" placeholder="e.g. 850" value="${d.miles}" oninput="obMiles(this.value)"><div class="ob-hint">Claimed at 45p per mile${d.miles?` · ≈ £${(parseFloat(d.miles)*OB_MILEAGE_RATE).toFixed(2)} deduction`:''}. Only if you haven't already added fuel as an expense.</div><div class="ob-mt8"><button class="ob-link muted" onclick="obCloseMiles()">No driving this month</button></div>`:''}
+    </div>
+    <div class="ob-totalpill"><span class="ob-tpl">${full} so far</span><span class="ob-tpv">£${(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2)}</span></div>`,
+    `<button class="ob-btn" onclick="obNextMonth()">${isLast?'Finish &amp; see my tax':'Next month →'}</button>
+    <div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obNextMonth()">Nothing for ${full} — skip</button></div>`
+  );
+}
+function obCurMonth(){ return obActiveMonths()[OB.cursor]; }
+function obGroups(kind){ const d=obMonthData(obCurMonth()); return kind==='in'?d.inGroups:d.outGroups; }
+/* simple (ungrouped) income rows */
+function obAddSimpleRow(){ const d=obMonthData(obCurMonth()); d.inRows.push({d:'',v:'',day:''}); obRender(); }
+function obDelSimpleRow(ri){ const d=obMonthData(obCurMonth()); d.inRows.splice(ri,1); if(!d.inRows.length) d.inRows.push({d:'',v:'',day:''}); obRender(); }
+function obSetSimpleRow(ri,field,val){ const d=obMonthData(obCurMonth()); if(!d.inRows[ri])return; d.inRows[ri][field]=val; if(field==='day') obRender(); else obRefreshPill(); }
+/* switch income into category mode — immediately show the name input (no auto folder) */
+function obGroupIncome(){
+  const d=obMonthData(obCurMonth());
+  d.inGrouped=true;
+  d.addCat.in=true; d.newCat.in='';
+  obRender();
+  setTimeout(()=>{const el=document.getElementById('ob-newcat-in'); if(el)el.focus();},30);
+}
+/* inline "Add category" — reveals a text input in the page (no popup) */
+function obStartAddCat(kind){ const d=obMonthData(obCurMonth()); d.addCat[kind]=true; d.newCat[kind]=''; obRender(); setTimeout(()=>{const el=document.getElementById('ob-newcat-'+kind); if(el)el.focus();},30); }
+function obCancelAddCat(kind){
+  const d=obMonthData(obCurMonth());
+  d.addCat[kind]=false; d.newCat[kind]='';
+  if(kind==='in' && !d.inGroups.length) d.inGrouped=false; // nothing added → back to simple rows
+  obRender();
+}
+function obTypeNewCat(kind,val){ const d=obMonthData(obCurMonth()); d.newCat[kind]=val; }
+function obConfirmAddCat(kind){
+  const d=obMonthData(obCurMonth());
+  const name=(d.newCat[kind]||'').trim();
+  if(!name){ obCancelAddCat(kind); return; }
+  if(kind==='in') d.inGrouped=true;
+  obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), open:true, rows:[{d:'',v:'',day:''}]});
+  d.addCat[kind]=false; d.newCat[kind]='';
+  obRender();
+}
+function obRenameGroup(kind,gi){ /* rename via inline not needed in onboarding; keep simple */ }
+function obDelGroup(kind,gi){
+  const d=obMonthData(obCurMonth());
+  obGroups(kind).splice(gi,1);
+  if(kind==='in' && !d.inGroups.length){ d.inGrouped=false; } // back to simple rows
+  obRender();
+}
+function obToggleGroup(kind,gi){ const g=obGroups(kind)[gi]; if(g){ g.open=!g.open; obRender(); } }
+function obAddRow(kind,gi){ const g=obGroups(kind)[gi]; if(g){ g.rows.push({d:'',v:'',day:''}); obRender(); } }
+function obDelRow(kind,gi,ri){ const g=obGroups(kind)[gi]; if(g){ g.rows.splice(ri,1); if(!g.rows.length) g.rows.push({d:'',v:'',day:''}); obRender(); } }
+function obSetRow(kind,gi,ri,field,val){
+  const g=obGroups(kind)[gi]; if(!g||!g.rows[ri]) return;
+  g.rows[ri][field]=val;
+  if(field==='day') obRender(); else obRefreshPill();
+}
+function obMiles(v){ obMonthData(obCurMonth()).miles=v; }
+function obOpenMiles(){ obMonthData(obCurMonth()).milesOpen=true; obRender(); }
+function obCloseMiles(){ const d=obMonthData(obCurMonth()); d.milesOpen=false; d.miles=''; obRender(); }
+function obRefreshPill(){ const mObj=obCurMonth(); const p=document.querySelector('#ob-root .ob-tpv'); if(p) p.textContent='£'+(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2); }
+function obPrevMonth(){ if(OB.cursor>0){OB.cursor--;obRender();} else obGo('start'); }
+function obNextMonth(){ const total=obActiveMonths().length; if(OB.cursor<total-1){OB.cursor++;obRender();} else obGo('done'); }
+
+/* count items needing later review */
+function obCountReview(){
+  let n=0;
+  obActiveMonths().forEach(mObj=>{
+    const d=obMonthData(mObj);
+    const inRows = d.inGrouped ? d.inGroups.flatMap(g=>g.rows) : d.inRows;
+    const outRows = d.outGroups.flatMap(g=>g.rows);
+    [...inRows,...outRows].forEach(r=>{ if((parseFloat(r.v)||0)>0 && r.day==='') n++; });
+  });
+  return n;
+}
+
+/* DONE */
+function obScrDone(){
+  const inc=obGrand('in'), exp=obGrand('out'), miles=obGrandMiles(), mileDed=miles*OB_MILEAGE_RATE;
+  const profit=inc-exp-mileDed;
+  const taxable=Math.max(0,profit-12570);
+  const est=taxable*0.2+taxable*0.06;
+  const months=obActiveMonths();
+  const first=months[0], last=months[months.length-1];
+  const rev=obCountReview();
+  const revLine = rev>0
+    ? `<p class="ob-lede ob-center" style="margin-top:4px">You're all caught up. ${rev} item${rev>1?'s':''} can be tidied up later — you'll find ${rev>1?'them':'it'} flagged on your dashboard. From here, just tap ＋ whenever money comes in or goes out.</p>`
+    : `<p class="ob-lede ob-center" style="margin-top:4px">You're all caught up. From here, just tap ＋ whenever money comes in or goes out — TaxMate keeps the rest up to date.</p>`;
+  return obShell(
+    obProgress(100,'All caught up',''),
+    `<div class="ob-confetti">🎉</div>
+    <div class="ob-donehero"><div class="ob-dl">Estimated tax set aside</div><div class="ob-big">£${Math.max(0,est).toFixed(0)}</div><div style="font-size:13px;opacity:.9">based on ${months.length} month${months.length>1?'s':''} so far</div></div>
+    <div class="ob-card">
+      <div class="ob-srow"><span class="ob-sl">Months added</span><span class="ob-sv">${OB_MON_SHORT[first.m]} – ${OB_MON_SHORT[last.m]} ${last.year}</span></div>
+      <div class="ob-srow"><span class="ob-sl">Total income</span><span class="ob-sv" style="color:var(--brand-deep)">£${inc.toFixed(2)}</span></div>
+      <div class="ob-srow"><span class="ob-sl">Total expenses</span><span class="ob-sv" style="color:var(--coral)">−£${exp.toFixed(2)}</span></div>
+      ${miles?`<div class="ob-srow"><span class="ob-sl">Mileage (${miles} mi)</span><span class="ob-sv" style="color:var(--coral)">−£${mileDed.toFixed(2)}</span></div>`:''}
+      <div class="ob-srow"><span class="ob-sl">Profit so far</span><span class="ob-sv">£${profit.toFixed(2)}</span></div>
+      ${OB.partnerCode?`<div class="ob-srow"><span class="ob-sl">Partner sync</span><span class="ob-sv" style="color:var(--brand-deep)">${esc(OB.partnerCode)}</span></div>`:''}
+    </div>
+    ${revLine}`,
+    `<button class="ob-btn" onclick="obFinish()">Go to my dashboard</button>
+    <p class="ob-hint ob-center ob-mt8">⚠️ Estimate only — not your final tax. You still file with HMRC by 31 Jan.</p>`
+  );
+}
+
+/* ═══ COMMIT to real S ═══ */
+function obFinish(){
+  const newId = uid();
+  const pad = n => String(n).padStart(2,'0');
+  // 1) create business (sole or partnership, from Step 1)
+  const isPart = OB.structure==='partnership';
+  const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:isPart?50:100};
+  if(isPart && OB.partnerCode && OB.loggedIn) newBiz.syncCode = OB.partnerCode;
+  // 2) seed category containers (income uses 'sales'; expense categories come from the user's folders)
+  if(!S.customCats[newId]) S.customCats[newId]={income:[],expense:[]};
+  if(!S.activeCats[newId]) S.activeCats[newId]={income:['sales'],expense:[]};
+  // make sure any category actually used in entries is active for this biz
+  S.businesses.push(newBiz);
+
+  // 3) write all month entries
+  const mkDate=(mObj,day)=>{ const dd=day?Math.min(parseInt(day),28):15; return mObj.year+'-'+pad(mObj.m)+'-'+pad(dd); };
+  const needsRev=[]; // ids needing later review
+  let yearsTouched=new Set();
+  const CAT_COLOURS=['#E5484D','#F47738','#3478F6','#9B59B6','#0AA968','#6B7686','#85994B','#0D8C86','#1F4E9C','#B47D12'];
+  const expCatByName={}; // group name -> category id (so same-named folders across months share one category)
+  const ensureExpCat=(name)=>{
+    const key=name.trim().toLowerCase();
+    if(expCatByName[key]) return expCatByName[key];
+    const cid='c_'+uid();
+    const idx=Object.keys(expCatByName).length;
+    S.customCats[newId].expense.push({id:cid,name:name.trim().slice(0,28),e:'📁',dot:CAT_COLOURS[idx%CAT_COLOURS.length],custom:true,bizId:newId});
+    if(!S.activeCats[newId].expense.includes(cid)) S.activeCats[newId].expense.push(cid);
+    expCatByName[key]=cid;
+    return cid;
+  };
+  obActiveMonths().forEach(mObj=>{
+    const d=obMonthData(mObj);
+    // income — simple ungrouped rows (no category) OR grouped by income type
+    const pushIncome=(it,groupName)=>{ const v=parseFloat(it.v)||0; if(v>0){
+      const rev=it.day==='';
+      const desc=[(groupName||'').trim(),(it.d||'').trim()].filter(Boolean).join(' · ');
+      const r={id:uid(),bizId:newId,kind:'income',date:mkDate(mObj,it.day),amount:Math.round(v*100)/100,cat:'sales',pct:null,folderId:null,receiptUrl:null,receiptPath:null,desc,_review:rev};
+      S.entries.push(r); if(rev)needsRev.push(r.id); yearsTouched.add(dateToTaxYear(r.date));
+    } };
+    if(d.inGrouped){ d.inGroups.forEach(g=>g.rows.forEach(it=>pushIncome(it,g.name))); }
+    else { d.inRows.forEach(it=>pushIncome(it,'')); }
+    // expense — each group name becomes a category
+    d.outGroups.forEach(g=>{
+      const cid=ensureExpCat(g.name);
+      g.rows.forEach(it=>{ const v=parseFloat(it.v)||0; if(v>0){
+        const rev=it.day==='';
+        const r={id:uid(),bizId:newId,kind:'expense',date:mkDate(mObj,it.day),amount:Math.round(v*100)/100,cat:cid,pct:100,folderId:null,receiptUrl:null,receiptPath:null,desc:(it.d||'').trim(),_review:rev};
+        S.entries.push(r); if(rev)needsRev.push(r.id); yearsTouched.add(dateToTaxYear(r.date));
+      } });
+    });
+    // mileage → store on the tax year's yearData
+    const mi=parseFloat(d.miles)||0;
+    if(mi>0){ const ty=dateToTaxYear(mObj.year+'-'+pad(mObj.m)+'-15'); if(!S.yearData[ty])S.yearData[ty]={poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[]}; S.yearData[ty].mileage=(S.yearData[ty].mileage||0)+mi; yearsTouched.add(ty); }
+  });
+
+  // 4) set current year to the most recent touched (so dashboard shows data)
+  if(yearsTouched.size){ const arr=[...yearsTouched].sort(); S.year=arr[arr.length-1]; }
+  // 5) store review list for the dashboard reminder
+  S.obReview = needsRev;
+  try{ localStorage.setItem('tmOnboardDone','1'); }catch(e){}
+  save();
+
+  // 6) push to cloud if signed in
+  if(OB.loggedIn && typeof scheduleCloudPush==='function'){ try{ scheduleCloudPush(); }catch(e){} }
+  // 7) if partnership with a code, start syncing
+  if(newBiz.syncCode && typeof subscribeSync==='function'){ try{ subscribeSync(newBiz.syncCode, newId); }catch(e){} }
+
+  obClose();
+  S.tab='home'; render(); window.scrollTo(0,0);
+  if(typeof toast==='function') toast('All caught up — welcome to TaxMate!');
+}
+
 /* ═══════════ boot ═══════════ */
 applyCachedRates();
 applyTheme();
 initTrial(); // start trial on first load (cloud users update via loadTrialFromCloud)
 render();
 setupBackButton();
+// First run: no businesses and never onboarded → launch catch-up flow
+(function(){
+  let done=null; try{ done=localStorage.getItem('tmOnboardDone'); }catch(e){}
+  if(!S.businesses.length && !done){ startOnboarding(); }
+})();
 if(fbConfigured()){
   ensureFB().then(db=>{ if(db) loadCloudRates(); });
 }
@@ -5776,5 +6318,115 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   });
 }
 </script>
+<!-- ═══════════ ONBOARDING OVERLAY (catch-up flow) ═══════════ -->
+<div id="ob-root" style="display:none"></div>
+<style>
+  #ob-root{display:none}
+  #ob-root.active{display:block;position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  #ob-root .ob-wrap{max-width:480px;margin:0 auto;width:100%;padding:0 18px}
+  .ob-progtop{background:var(--bg);padding:16px 18px 12px}
+  .ob-progtop .ob-wrap{padding:0}
+  .ob-scroll{padding-bottom:130px}
+  .ob-scroll .ob-wrap{padding:0 18px}
+  .ob-prow{display:flex;align-items:center;gap:12px;margin-bottom:11px}
+  .ob-back{font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;line-height:1;padding:2px 4px}
+  .ob-plabel{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
+  .ob-ptrack{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
+  .ob-pfill{height:100%;background:linear-gradient(90deg,var(--brand),var(--teal));border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
+  .ob-step{animation:obfade .3s ease}
+  @keyframes obfade{from{opacity:0}to{opacity:1}}
+  #ob-root h1{font-size:25px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px;color:var(--ink)}
+  #ob-root .ob-lede{font-size:15px;color:var(--muted);margin-bottom:22px;line-height:1.55}
+  .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
+  .ob-logo .lo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
+  .ob-logo .lo-name{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
+  .ob-logo .lo-name span{color:var(--brand)}
+  .ob-tile{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;cursor:pointer;margin-bottom:12px;transition:border-color .15s,transform .12s;font-family:inherit}
+  .ob-tile:active{transform:scale(.985)}
+  .ob-tile.solid{border-color:var(--brand);background:var(--brand-soft)}
+  .ob-tile .ob-emoji{font-size:26px;flex-shrink:0;line-height:1}
+  .ob-tile .ob-tt{display:block;font-size:16px;font-weight:800;color:var(--ink);line-height:1.25}
+  .ob-tile .ob-ts{display:block;font-size:13px;color:var(--muted);line-height:1.35;margin-top:3px}
+  #ob-root .ob-card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
+  #ob-root .ob-card.flat{box-shadow:none;border:1px solid var(--line)}
+  #ob-root label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--ink)}
+  #ob-root input[type=text],#ob-root input[type=number]{width:100%;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none}
+  #ob-root input:focus{border-color:var(--brand)}
+  .ob-amt{position:relative}
+  .ob-amt .ob-cur{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:var(--muted)}
+  .ob-amt input{padding-left:34px}
+  .ob-hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
+  #ob-root .ob-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px 20px;border:0;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;border-radius:14px;background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(10,169,104,.28);transition:transform .12s}
+  #ob-root .ob-btn:active{transform:scale(.97)}
+  #ob-root .ob-btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1.5px solid var(--line)}
+  #ob-root .ob-btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
+  #ob-root .ob-btn:disabled{opacity:.4;pointer-events:none}
+  #ob-root .ob-btn.sm{width:auto;padding:10px 18px;font-size:14px}
+  .ob-link{background:none;border:0;color:var(--brand-deep);font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:2px}
+  .ob-link.muted{color:var(--muted)}
+  .ob-seclabel{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin:0 0 8px;color:var(--ink)}
+  .ob-dot{width:9px;height:9px;border-radius:50%}
+  .ob-dot.in{background:var(--brand)}.ob-dot.out{background:var(--coral)}
+  .ob-mhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:12px}
+  .ob-mhead .ob-mname{font-size:21px;font-weight:800;letter-spacing:-.3px;color:var(--ink)}
+  .ob-mhead .ob-mtag{font-size:12px;font-weight:700;color:var(--muted)}
+  .ob-item{display:flex;gap:8px;align-items:center}
+  .ob-item .ob-desc{flex:1.4}
+  .ob-item .ob-del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:0 6px;flex-shrink:0}
+  .ob-entryrow{padding:10px;border:1px solid var(--line);border-radius:14px;margin-bottom:10px;background:var(--bg)}
+  .ob-rowmeta{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-top:10px}
+  .ob-daywrap{position:relative;display:inline-flex}
+  .ob-daylabel{font-family:inherit;font-size:13px;font-weight:700;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:10px;padding:9px 22px 9px 10px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%236B7686' stroke-width='1.6' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 8px center;white-space:nowrap}
+  .ob-daylabel.empty{color:var(--muted)}
+  .ob-daysel{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:16px}
+  .ob-catchips{display:flex;flex-wrap:wrap;gap:6px}
+  .ob-catchip{font-size:12.5px;font-weight:700;padding:7px 11px;border-radius:999px;cursor:pointer;font-family:inherit;background:var(--card);border:1.5px solid var(--line);color:var(--muted)}
+  .ob-catchip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
+  .ob-catchip.add{border-style:dashed;color:var(--brand-deep)}
+  .ob-probadge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
+  .ob-additem{font-size:13.5px;color:var(--brand-deep);font-weight:700;cursor:pointer;background:none;border:0;padding:6px 2px;font-family:inherit}
+  /* category folders */
+  .ob-folder{border:1.5px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
+  .ob-fhead{display:flex;align-items:center;gap:8px;padding:12px 14px;cursor:pointer;background:var(--card)}
+  .ob-fcaret{font-size:10px;color:var(--muted);flex-shrink:0}
+  .ob-fname{font-size:14.5px;font-weight:800;color:var(--ink);flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+  .ob-fsum{font-size:13.5px;font-weight:800;color:var(--muted);font-variant-numeric:tabular-nums}
+  .ob-fdel{background:none;border:0;font-size:15px;cursor:pointer;padding:2px 4px;opacity:.6;flex-shrink:0}
+  .ob-fbody{padding:10px 12px 12px;border-top:1px solid var(--line)}
+  .ob-frow{margin-bottom:8px}
+  .ob-fline{display:flex;align-items:center;gap:5px}
+  .ob-fline .ob-daywrap{flex-shrink:0}
+  .ob-fdesc{flex:1;min-width:0;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink)}
+  .ob-famt{position:relative;width:82px;flex-shrink:0}
+  .ob-famt .ob-cur{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--muted)}
+  .ob-famt input{width:100%;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 6px 9px 21px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .ob-fline .ob-del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:0 1px;flex-shrink:0}
+  .ob-addcat{display:block;width:100%;font-size:14px;color:var(--brand-deep);font-weight:800;cursor:pointer;background:var(--brand-soft);border:1.5px dashed var(--brand);border-radius:12px;padding:12px;font-family:inherit;margin-top:4px}
+  /* simple (ungrouped) income body: no folder border */
+  .ob-fbody.open{padding:0 0 4px;border:0}
+  .ob-groupbtn{display:block;width:100%;font-size:13px;color:var(--muted);font-weight:700;cursor:pointer;background:none;border:1.5px dashed var(--line);border-radius:12px;padding:11px;font-family:inherit;margin-top:8px}
+  /* inline add-category input */
+  .ob-newcat{display:flex;align-items:center;gap:7px;margin-top:4px}
+  .ob-newcat .ob-fdesc{flex:1;background:var(--card);border-color:var(--brand)}
+  .ob-ncok{flex-shrink:0;width:42px;height:42px;border-radius:11px;border:0;background:var(--brand);color:#fff;font-size:18px;font-weight:800;cursor:pointer}
+  .ob-nccancel{flex-shrink:0;width:42px;height:42px;border-radius:11px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font-size:20px;cursor:pointer}
+  .ob-reminder{display:flex;gap:8px;background:var(--amber-soft);color:var(--amber);border-radius:14px;padding:11px 13px;font-size:12.5px;font-weight:600;line-height:1.5;margin-top:8px}
+  .ob-totalpill{display:flex;justify-content:space-between;align-items:center;background:var(--brand-soft);border-radius:14px;padding:12px 15px;margin-top:6px}
+  .ob-totalpill .ob-tpl{font-size:13px;font-weight:700;color:var(--brand-deep)}
+  .ob-totalpill .ob-tpv{font-size:16px;font-weight:800;color:var(--brand-deep)}
+  .ob-foot{position:fixed;left:0;right:0;bottom:0;background:var(--bg);box-shadow:0 -8px 20px -6px rgba(0,0,0,.3);padding:14px 18px calc(16px + env(safe-area-inset-bottom));z-index:10000}
+  .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0}
+  .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0 0}
+  .ob-center{text-align:center}.ob-mt8{margin-top:8px}
+  .ob-donehero{background:linear-gradient(135deg,var(--brand),var(--teal));color:#fff;border-radius:24px;padding:30px 24px;text-align:center;margin-bottom:18px;box-shadow:0 12px 30px rgba(10,169,104,.3)}
+  .ob-donehero .ob-big{font-size:42px;font-weight:800;letter-spacing:-1px;margin:6px 0}
+  .ob-donehero .ob-dl{font-size:13px;font-weight:700;opacity:.9;text-transform:uppercase;letter-spacing:.5px}
+  .ob-srow{display:flex;justify-content:space-between;padding:13px 0;border-bottom:1px solid var(--line);font-size:15px}
+  .ob-srow:last-child{border-bottom:0}
+  .ob-srow .ob-sl{color:var(--muted);font-weight:600}
+  .ob-srow .ob-sv{font-weight:800;color:var(--ink)}
+  .ob-confetti{font-size:40px;text-align:center;margin-bottom:4px;animation:obpop .5s cubic-bezier(.2,.7,.2,1)}
+  @keyframes obpop{from{transform:scale(0)}60%{transform:scale(1.2)}to{transform:scale(1)}}
+</style>
 </body>
 </html>
