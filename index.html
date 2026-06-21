@@ -4737,7 +4737,7 @@ function pushBizRemote(b){
 }
 
 /* ═══════════ Account & personal cloud sync ═══════════ */
-let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, lastPushed:'' };
+let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, lastPushed:'', localEditAt:0 };
 function cloudUser(){
   try{
     if(typeof firebase==='undefined' || !firebase.apps || !firebase.apps.length) return null;
@@ -4819,6 +4819,7 @@ async function startUserSync(u){
     /* 3 ── 實時訂閱(其他裝置改嘢即時反映) */
     CLOUD.metaUnsub = userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
       const m = doc.data(); if(!m || CLOUD.applying) return;
+      if(Date.now() - CLOUD.localEditAt < 6000) return;  // 本機啱啱改過 → 唔好俾雲端覆蓋
       CLOUD.applying = true;
       if(Array.isArray(m.businesses)) S.businesses = m.businesses;
       if(Array.isArray(m.folders)) S.folders = m.folders;
@@ -4833,6 +4834,8 @@ async function startUserSync(u){
     }, ()=>{});
     CLOUD.entUnsub = userRoot(uid).collection('entries').onSnapshot(snap=>{
       if(CLOUD.applying) return;
+      // 本機 6 秒內啱啱改過嘢 → 唔好俾雲端快照覆蓋（佢可能仲未收到本機最新改動）
+      if(Date.now() - CLOUD.localEditAt < 6000) return;
       CLOUD.applying = true;
       const remote = []; snap.forEach(d=>remote.push(d.data()));
       const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
@@ -4861,7 +4864,6 @@ async function pushUserState(uid, force){
   const mine = S.entries.filter(e=>!partnerBiz.has(e.bizId));
   const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.activeCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
   if(!force && payload === CLOUD.lastPushed) return;
-  CLOUD.lastPushed = payload;
   try{
     await userRoot(uid).collection('app').doc('meta').set(meta);
     const entSnap = await userRoot(uid).collection('entries').get();
@@ -4871,10 +4873,18 @@ async function pushUserState(uid, force){
     mine.forEach(e=>batch.set(userRoot(uid).collection('entries').doc(e.id), e));
     remoteIds.forEach(id=>{ if(!localIds.has(id)) batch.delete(userRoot(uid).collection('entries').doc(id)); });
     await batch.commit();
-  }catch(e){ console.warn('cloud push failed', e); }
+    CLOUD.lastPushed = payload;   // 只喺成功後先記低，失敗會重試
+  }catch(e){
+    console.warn('cloud push failed', e);
+    try{ toast('Sync error: ' + (e && (e.code || e.message) || 'unknown')); }catch(_){}
+    CLOUD.lastPushed = '';        // 清空，確保下次一定會再試
+    clearTimeout(CLOUD.pushTimer);
+    CLOUD.pushTimer = setTimeout(()=>pushUserState(uid, true), 3000); // 3秒後自動重試
+  }
 }
 function scheduleCloudPush(){
   if(!cloudUser() || CLOUD.applying) return;
+  CLOUD.localEditAt = Date.now();   // 記錄本機啱啱改咗嘢
   clearTimeout(CLOUD.pushTimer);
   CLOUD.pushTimer = setTimeout(()=>pushUserState(), 1200);
 }
@@ -5603,7 +5613,7 @@ async function onReceiptFile(ev){
     EN.receiptPath = path;
     st.textContent = '';
     paintEntry();
-  }catch(e){ console.warn(e); st.textContent = t('rc.uploadErr'); }
+  }catch(e){ console.warn(e); st.textContent = 'Upload failed: ' + (e && (e.code || e.message) || 'unknown'); }
 }
 
 function compressImage(file, maxW, quality){
@@ -6122,12 +6132,13 @@ function obFinish(){
   let yearsTouched=new Set();
   const CAT_COLOURS=['#E5484D','#F47738','#3478F6','#9B59B6','#0AA968','#6B7686','#85994B','#0D8C86','#1F4E9C','#B47D12'];
   const expCatByName={}; // group name -> category id (so same-named folders across months share one category)
-  const ensureExpCat=(name)=>{
-    const key=name.trim().toLowerCase();
+  const ensureExpCat=(rawName)=>{
+    const safe=(rawName==null?'':String(rawName)).trim() || 'Other';
+    const key=safe.toLowerCase();
     if(expCatByName[key]) return expCatByName[key];
     const cid='c_'+uid();
     const idx=Object.keys(expCatByName).length;
-    S.customCats[newId].expense.push({id:cid,name:name.trim().slice(0,28),e:'📁',dot:CAT_COLOURS[idx%CAT_COLOURS.length],custom:true,bizId:newId});
+    S.customCats[newId].expense.push({id:cid,name:safe.slice(0,28),e:'📁',dot:CAT_COLOURS[idx%CAT_COLOURS.length],custom:true,bizId:newId});
     if(!S.activeCats[newId].expense.includes(cid)) S.activeCats[newId].expense.push(cid);
     expCatByName[key]=cid;
     return cid;
