@@ -739,7 +739,7 @@ en:{
  'rc.add':'Add receipt',
  'rc.view':'View receipt',
  'rc.delete':'Delete receipt',
- 'rc.uploading':'Uploading…',
+ 'rc.uploading':'Uploading…','rc.signinNeeded':'Please sign in again to save to the cloud',
  'rc.uploadErr':'Upload failed — try again',
  'rc.deleteConfirm':'Delete this receipt photo?',
  'rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.',
@@ -1116,7 +1116,7 @@ zh:{
  'rc.add':'新增收據',
  'rc.view':'查看收據',
  'rc.delete':'刪除收據',
- 'rc.uploading':'上傳中…',
+ 'rc.uploading':'上傳中…','rc.signinNeeded':'請重新登入以儲存到雲端',
  'rc.uploadErr':'上傳失敗，請再試',
  'rc.deleteConfirm':'刪除此收據相片？',
  'rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。',
@@ -1493,7 +1493,7 @@ pl:{
  'rc.add':'Dodaj paragon',
  'rc.view':'Zobacz paragon',
  'rc.delete':'Usuń paragon',
- 'rc.uploading':'Przesyłanie…',
+ 'rc.uploading':'Przesyłanie…','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
  'rc.uploadErr':'Błąd przesyłania — spróbuj ponownie',
  'rc.deleteConfirm':'Usunąć to zdjęcie paragonu?',
  'rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.',
@@ -1870,7 +1870,7 @@ ro:{
  'rc.add':'Adaugă bon',
  'rc.view':'Vezi bon',
  'rc.delete':'Șterge bon',
- 'rc.uploading':'Se încarcă…',
+ 'rc.uploading':'Se încarcă…','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
  'rc.uploadErr':'Eroare la încărcare — încearcă din nou',
  'rc.deleteConfirm':'Ștergi această fotografie?',
  'rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.',
@@ -2247,7 +2247,7 @@ es:{
  'rc.add':'Añadir recibo',
  'rc.view':'Ver recibo',
  'rc.delete':'Eliminar recibo',
- 'rc.uploading':'Subiendo…',
+ 'rc.uploading':'Subiendo…','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
  'rc.uploadErr':'Error al subir — inténtalo de nuevo',
  'rc.deleteConfirm':'¿Eliminar esta foto del recibo?',
  'rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.',
@@ -2624,7 +2624,7 @@ ur:{
  'rc.add':'رسید شامل کریں',
  'rc.view':'رسید دیکھیں',
  'rc.delete':'رسید حذف کریں',
- 'rc.uploading':'اپلوڈ ہو رہا ہے…',
+ 'rc.uploading':'اپلوڈ ہو رہا ہے…','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
  'rc.uploadErr':'اپلوڈ ناکام — دوبارہ کوشش کریں',
  'rc.deleteConfirm':'یہ رسید کی تصویر حذف کریں؟',
  'rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔',
@@ -4876,10 +4876,19 @@ async function pushUserState(uid, force){
     CLOUD.lastPushed = payload;   // 只喺成功後先記低，失敗會重試
   }catch(e){
     console.warn('cloud push failed', e);
-    try{ toast('Sync error: ' + (e && (e.code || e.message) || 'unknown')); }catch(_){}
-    CLOUD.lastPushed = '';        // 清空，確保下次一定會再試
+    const code = (e && e.code) || '';
+    // 權限/未登入錯誤 → retry 都係死，唔好狂試狂彈。淨係彈一次。
+    if(code==='permission-denied' || code==='unauthenticated' || /unauth/i.test(code)){
+      if(CLOUD.lastPushed!=='__AUTH_ERR__'){
+        CLOUD.lastPushed='__AUTH_ERR__';
+        try{ toast(t('rc.signinNeeded')||'Please sign in again to save to the cloud'); }catch(_){}
+      }
+      return;
+    }
+    // 其他（網絡等暫時性）錯誤 → 清空並 3 秒後重試一次
+    CLOUD.lastPushed = '';
     clearTimeout(CLOUD.pushTimer);
-    CLOUD.pushTimer = setTimeout(()=>pushUserState(uid, true), 3000); // 3秒後自動重試
+    CLOUD.pushTimer = setTimeout(()=>pushUserState(uid, true), 5000);
   }
 }
 function scheduleCloudPush(){
@@ -5601,7 +5610,9 @@ async function onReceiptFile(ev){
     // 壓縮到 ~200KB
     const compressed = await compressImage(file, 1200, 0.82);
     const db = await ensureFB(); if(!db){ st.textContent = t('rc.uploadErr'); return; }
-    const u = firebase.auth().currentUser; if(!u){ st.textContent = t('rc.uploadErr'); return; }
+    const u = await ensureAuth(); if(!u){ st.textContent = t('rc.signinNeeded')||t('rc.uploadErr'); return; }
+    // 等 auth token 真正 ready（匿名登入後 token 可能要一刻先 propagate）
+    try{ await u.getIdToken(); }catch(_){}
     const entId = EN.id || uid();
     if(!EN.id) EN.id = entId;
     const path = `receipts/${u.uid}/${entId}.jpg`;
