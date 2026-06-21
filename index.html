@@ -4756,23 +4756,38 @@ function watchAuth(){
 async function signIn(kind){
   const db = await ensureFB();
   if(!db){ alert(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
-  const provider = (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
-                                    : new firebase.auth.GoogleAuthProvider();
+  const makeProvider = () => (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
+                                              : new firebase.auth.GoogleAuthProvider();
+  const userCancelled = (e) => e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request');
   try{
     const cur = firebase.auth().currentUser;
     if(cur && cur.isAnonymous){
-      // 升級匿名帳戶 → 保留 uid,partnership membership 唔會斷
-      try{ await cur.linkWithPopup(provider); }
-      catch(e){
+      // Try to upgrade the anonymous account (keeps uid + partnership membership).
+      try{
+        await cur.linkWithPopup(makeProvider());
+        return;
+      }catch(e){
+        if(userCancelled(e)) return;
+        // If that Google account already exists, sign in with its credential directly.
         if(e && e.code==='auth/credential-already-in-use' && e.credential){
-          await firebase.auth().signInWithCredential(e.credential);
-        } else throw e;
+          try{ await firebase.auth().signInWithCredential(e.credential); return; }catch(_){}
+        }
+        // ANY other link failure (e.g. UNKNOWN_ERROR): fall back to a clean direct sign-in.
+        // Sign out the anonymous session first so the next popup is a plain Google login, never a "link".
+        try{ await firebase.auth().signOut(); }catch(_){}
+        try{
+          await firebase.auth().signInWithPopup(makeProvider());
+          return;
+        }catch(e2){
+          if(userCancelled(e2)) return;
+          console.warn('signIn fallback failed', e2); alert(t('ac.err')); return;
+        }
       }
-    } else {
-      await firebase.auth().signInWithPopup(provider);
     }
+    // Not anonymous → normal direct sign-in.
+    await firebase.auth().signInWithPopup(makeProvider());
   }catch(e){
-    if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')) return;
+    if(userCancelled(e)) return;
     console.warn(e); alert(t('ac.err'));
   }
 }
