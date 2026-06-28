@@ -4185,8 +4185,12 @@ function saveEntry(){
     }
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
   } else {
+    const beforeCount = S.entries.length;
     S.entries.push(rec);
-    save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    const afterCount = S.entries.length;
+    save();
+    alert('DEBUG: before='+beforeCount+' after='+afterCount+' receiptUrl='+(rec.receiptUrl||'null')+' id='+rec.id);
+    pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
   }
 }
 function deleteEntry(){
