@@ -430,9 +430,20 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" id="cat-action-name"></div>
   <div class="fhint" style="margin:-8px 0 16px" data-i18n="cc.action"></div>
-  <button class="btn" style="margin-bottom:10px" onclick="catDoRename()" data-i18n="cc.doRename"></button>
-  <button class="btn ghost" style="margin-bottom:10px;color:var(--coral)" onclick="catDoDelete()" data-i18n="cc.doDelete"></button>
-  <button class="btn ghost" onclick="closeSheet('catact')" data-i18n="c.cancel"></button>
+  <!-- inline rename (hidden by default) -->
+  <div id="cat-rename-row" style="display:none;margin-bottom:14px">
+    <input type="text" id="cat-rename-input" class="finput" style="font-size:16px;padding:12px 14px;border-radius:12px;width:100%;box-sizing:border-box" placeholder="Category name" oninput="" onkeydown="if(event.key==='Enter')catConfirmRename()">
+    <div style="display:flex;gap:10px;margin-top:10px">
+      <button class="btn ghost" style="flex:1" onclick="catCancelRename()" data-i18n="c.cancel"></button>
+      <button class="btn" style="flex:1" onclick="catConfirmRename()" data-i18n="c.save"></button>
+    </div>
+  </div>
+  <!-- action buttons (hidden when renaming) -->
+  <div id="cat-action-btns">
+    <button class="btn" style="margin-bottom:10px" onclick="catStartRename()" data-i18n="cc.doRename"></button>
+    <button class="btn ghost" style="margin-bottom:10px;color:var(--coral)" onclick="catDoDelete()" data-i18n="cc.doDelete"></button>
+    <button class="btn ghost" onclick="closeSheet('catact')" data-i18n="c.cancel"></button>
+  </div>
 </div></div>
 
 <!-- upgrade lock sheet -->
@@ -856,7 +867,7 @@ en:{
  'cc.editName':'Category name',
  'cc.reset':'Reset to default',
  'cc.renameDone':'Renamed',
- 'cc.longPress':'Tap ＋ to add your own. Long-press any category to rename or remove.',
+ 'cc.longPress':'Tap ＋ to add. Long-press (or tap ✎) any category to edit or remove.',
  'cc.action':'What would you like to do?',
  'cc.doRename':'Rename',
  'cc.doDelete':'Remove from list',
@@ -1233,7 +1244,7 @@ zh:{
  'cc.editName':'分類名稱',
  'cc.reset':'還原預設',
  'cc.renameDone':'已重新命名',
- 'cc.longPress':'撳 ＋ 加自己嘅分類。長按任何分類可改名或移除。',
+ 'cc.longPress':'撳 ＋ 新增。長按（或撳 ✎）任何分類可改名或移除。',
  'cc.action':'你想做什麼？',
  'cc.doRename':'重新命名',
  'cc.doDelete':'從列表移除',
@@ -1610,7 +1621,7 @@ pl:{
  'cc.editName':'Nazwa kategorii',
  'cc.reset':'Przywróć domyślne',
  'cc.renameDone':'Zmieniono nazwę',
- 'cc.longPress':'Dotknij ＋, aby dodać własną. Przytrzymaj kategorię, aby zmienić nazwę lub usunąć.',
+ 'cc.longPress':'Dotknij ＋, aby dodać. Przytrzymaj (lub dotknij ✎) kategorię, aby edytować.',
  'cc.action':'Co chcesz zrobić?',
  'cc.doRename':'Zmień nazwę',
  'cc.doDelete':'Usuń z listy',
@@ -1987,7 +1998,7 @@ ro:{
  'cc.editName':'Nume categorie',
  'cc.reset':'Resetează',
  'cc.renameDone':'Redenumit',
- 'cc.longPress':'Apasă ＋ pentru a adăuga. Apasă lung o categorie pentru a redenumi sau elimina.',
+ 'cc.longPress':'Apasă ＋ pentru a adăuga. Apasă lung (sau atinge ✎) o categorie pentru a edita.',
  'cc.action':'Ce vrei să faci?',
  'cc.doRename':'Redenumește',
  'cc.doDelete':'Elimină din listă',
@@ -2364,7 +2375,7 @@ es:{
  'cc.editName':'Nombre de categoría',
  'cc.reset':'Restablecer',
  'cc.renameDone':'Renombrado',
- 'cc.longPress':'Toca ＋ para añadir la tuya. Mantén pulsada una categoría para renombrar o quitar.',
+ 'cc.longPress':'Toca ＋ para añadir. Mantén pulsada (o toca ✎) una categoría para editar.',
  'cc.action':'¿Qué quieres hacer?',
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
@@ -2741,7 +2752,7 @@ ur:{
  'cc.editName':'Nombre de categoría',
  'cc.reset':'Restablecer',
  'cc.renameDone':'Renombrado',
-  'cc.longPress':'اپنی شامل کرنے کے لیے ＋ دبائیں۔ نام بدلنے یا ہٹانے کے لیے کسی زمرے کو دبائے رکھیں۔',
+  'cc.longPress':'شامل کرنے کے لیے ＋ دبائیں۔ تدوین کے لیے زمرے کو دبائے رکھیں (یا ✎ چھوئیں)۔',
  'cc.action':'¿Qué quieres hacer?',
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
@@ -3926,7 +3937,7 @@ function paintEntry(){
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
   document.getElementById('en-cats').innerHTML = cats.map(c=>
-    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')" oncontextmenu="event.preventDefault();renameCat('${c.id}')"><span style="font-size:17px;margin-inline-end:2px">${c.e||'🏷️'}</span>${esc(catName(c.id))}</button>`).join('')
+    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')" oncontextmenu="event.preventDefault();renameCat('${c.id}')"><span style="font-size:17px;margin-inline-end:2px">${c.e||'🏷️'}</span>${esc(catName(c.id))}${c.custom?`<span style="font-size:10px;opacity:0.45;margin-left:3px">✎</span>`:''}</button>`).join('')
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
@@ -3965,8 +3976,20 @@ function paintEntry(){
 let CC_EMOJI = CAT_EMOJIS[0];
 function setCatEmoji(em){ CC_EMOJI=em; const inp=document.getElementById('cc-emoji-input'); if(inp) inp.value=em; }
 function onEmojiInput(v){
-  const arr = Array.from(v.trim());
-  CC_EMOJI = arr.length ? arr[arr.length-1] : '';
+  const trimmed = v.trim();
+  // 用 Intl.Segmenter 正確分割 emoji（包括 variation selector、ZWJ sequences 等）
+  if(trimmed){
+    try{
+      const segs = [...new Intl.Segmenter('en',{granularity:'grapheme'}).segment(trimmed)];
+      CC_EMOJI = segs.length ? segs[segs.length-1].segment : trimmed[0];
+    }catch(e){
+      // fallback：用 Array.from 但取第一個 grapheme cluster
+      const arr = [...trimmed];
+      CC_EMOJI = arr[0] || '';
+    }
+  } else {
+    CC_EMOJI = '';
+  }
   const ei=document.getElementById('cc-emoji-input'); if(ei) ei.classList.remove('err');
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
 }
@@ -3983,18 +4006,31 @@ let CAT_ACTION_ID = null;
 function catLongPress(id){
   CAT_ACTION_ID = id;
   document.getElementById('cat-action-name').textContent = catName(id);
+  // reset rename state
+  const rr = document.getElementById('cat-rename-row');
+  const ab = document.getElementById('cat-action-btns');
+  if(rr) rr.style.display='none';
+  if(ab) ab.style.display='block';
   openSheet('catact');
 }
-function catDoRename(){
+function catStartRename(){
+  const cur = catName(CAT_ACTION_ID);
+  document.getElementById('cat-rename-row').style.display='block';
+  document.getElementById('cat-action-btns').style.display='none';
+  const inp = document.getElementById('cat-rename-input');
+  inp.value = cur;
+  setTimeout(()=>inp.focus(),80);
+}
+function catCancelRename(){
+  document.getElementById('cat-rename-row').style.display='none';
+  document.getElementById('cat-action-btns').style.display='block';
+}
+function catConfirmRename(){
   const id = CAT_ACTION_ID;
-  closeSheet('catact');
-  const cur = catName(id);
-  const nv = prompt(t('cc.editName'), cur);
-  if(nv===null) return;
-  const trimmed = nv.trim();
+  const trimmed = (document.getElementById('cat-rename-input').value||'').trim();
   if(!trimmed) return;
   const c = catById(id);
-  if(c.custom){
+  if(c && c.custom){
     c.name = trimmed;
   } else {
     if(!S.catRenames) S.catRenames = {};
@@ -4002,10 +4038,13 @@ function catDoRename(){
     else S.catRenames[id] = trimmed;
   }
   save();
+  closeSheet('catact');
+  catCancelRename(); // reset state
   if(document.getElementById('sb-entry').classList.contains('open')) paintEntry();
   render();
   toast(t('cc.renameDone'));
 }
+function catDoRename(){ catStartRename(); } // backward compat
 function catDoDelete(){
   const id = CAT_ACTION_ID;
   const n = S.entries.filter(e=>e.cat===id).length;
