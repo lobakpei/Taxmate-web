@@ -4165,8 +4165,15 @@ function saveEntry(){
     desc:document.getElementById('en-desc').value.trim()
   };
   if(EN.id){
-    const i=S.entries.findIndex(x=>x.id===EN.id); if(i>-1) S.entries[i]=rec;
-    save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    const i=S.entries.findIndex(x=>x.id===EN.id);
+    if(i>-1){
+      S.entries[i]=rec;
+      save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    } else {
+      // EN.id 係由 onReceiptFile 生成嘅，唔係 existing entry → 當新 entry 處理
+      S.entries.push(rec);
+      save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    }
   } else if(EN.repeat && EN.kind==='expense'){
     // Add for all 12 months of the current tax year
     const baseDay = new Date(rec.date+'T12:00:00').getDate();
@@ -4185,12 +4192,8 @@ function saveEntry(){
     }
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
   } else {
-    const beforeCount = S.entries.length;
     S.entries.push(rec);
-    const afterCount = S.entries.length;
-    save();
-    alert('DEBUG: before='+beforeCount+' after='+afterCount+' receiptUrl='+(rec.receiptUrl||'null')+' id='+rec.id);
-    pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
   }
 }
 function deleteEntry(){
