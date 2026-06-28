@@ -3192,7 +3192,7 @@ function load(){
     return merged;
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
 }
-function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} CLOUD.localEditAt = Date.now(); if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
 function yd(){
   if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[]};
   return S.yearData[S.year];
@@ -4756,38 +4756,17 @@ function watchAuth(){
 async function signIn(kind){
   const db = await ensureFB();
   if(!db){ alert(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
-  const makeProvider = () => (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
-                                              : new firebase.auth.GoogleAuthProvider();
-  const userCancelled = (e) => e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request');
+  const provider = (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
+                                    : new firebase.auth.GoogleAuthProvider();
   try{
     const cur = firebase.auth().currentUser;
+    // 如果係匿名 session，先記低佢嘅本機資料，登入後合併（唔再用 linkWithPopup —— 嗰個會喺 OAuth handler 爆白畫面）
     if(cur && cur.isAnonymous){
-      // Try to upgrade the anonymous account (keeps uid + partnership membership).
-      try{
-        await cur.linkWithPopup(makeProvider());
-        return;
-      }catch(e){
-        if(userCancelled(e)) return;
-        // If that Google account already exists, sign in with its credential directly.
-        if(e && e.code==='auth/credential-already-in-use' && e.credential){
-          try{ await firebase.auth().signInWithCredential(e.credential); return; }catch(_){}
-        }
-        // ANY other link failure (e.g. UNKNOWN_ERROR): fall back to a clean direct sign-in.
-        // Sign out the anonymous session first so the next popup is a plain Google login, never a "link".
-        try{ await firebase.auth().signOut(); }catch(_){}
-        try{
-          await firebase.auth().signInWithPopup(makeProvider());
-          return;
-        }catch(e2){
-          if(userCancelled(e2)) return;
-          console.warn('signIn fallback failed', e2); alert(t('ac.err')); return;
-        }
-      }
+      try{ await firebase.auth().signOut(); }catch(_){}
     }
-    // Not anonymous → normal direct sign-in.
-    await firebase.auth().signInWithPopup(makeProvider());
+    await firebase.auth().signInWithPopup(provider);
   }catch(e){
-    if(userCancelled(e)) return;
+    if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')) return;
     console.warn(e); alert(t('ac.err'));
   }
 }
@@ -4834,7 +4813,7 @@ async function startUserSync(u){
     /* 3 ── 實時訂閱(其他裝置改嘢即時反映) */
     CLOUD.metaUnsub = userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
       const m = doc.data(); if(!m || CLOUD.applying) return;
-      if(Date.now() - CLOUD.localEditAt < 6000) return;  // 本機啱啱改過 → 唔好俾雲端覆蓋
+      if(Date.now() - CLOUD.localEditAt < 15000) return;  // 本機啱啱改過 → 唔好俾雲端覆蓋
       CLOUD.applying = true;
       if(Array.isArray(m.businesses)) S.businesses = m.businesses;
       if(Array.isArray(m.folders)) S.folders = m.folders;
@@ -4849,8 +4828,8 @@ async function startUserSync(u){
     }, ()=>{});
     CLOUD.entUnsub = userRoot(uid).collection('entries').onSnapshot(snap=>{
       if(CLOUD.applying) return;
-      // 本機 6 秒內啱啱改過嘢 → 唔好俾雲端快照覆蓋（佢可能仲未收到本機最新改動）
-      if(Date.now() - CLOUD.localEditAt < 6000) return;
+      // 本機 15 秒內啱啱改過嘢 → 唔好俾雲端快照覆蓋
+      if(Date.now() - CLOUD.localEditAt < 15000) return;
       CLOUD.applying = true;
       const remote = []; snap.forEach(d=>remote.push(d.data()));
       const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
@@ -4892,12 +4871,9 @@ async function pushUserState(uid, force){
   }catch(e){
     console.warn('cloud push failed', e);
     const code = (e && e.code) || '';
-    // 權限/未登入錯誤 → retry 都係死，唔好狂試狂彈。淨係彈一次。
+    // 權限錯誤（多數係舊 partnership / syncCode 殘留）→ 靜靜哋停，唔好叫用戶登出
     if(code==='permission-denied' || code==='unauthenticated' || /unauth/i.test(code)){
-      if(CLOUD.lastPushed!=='__AUTH_ERR__'){
-        CLOUD.lastPushed='__AUTH_ERR__';
-        try{ toast(t('rc.signinNeeded')||'Please sign in again to save to the cloud'); }catch(_){}
-      }
+      CLOUD.lastPushed='__AUTH_ERR__';
       return;
     }
     // 其他（網絡等暫時性）錯誤 → 清空並 3 秒後重試一次
