@@ -432,8 +432,11 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="fhint" style="margin:-8px 0 16px" data-i18n="cc.action"></div>
   <!-- inline rename (hidden by default) -->
   <div id="cat-rename-row" style="display:none;margin-bottom:14px">
-    <input type="text" id="cat-rename-input" class="finput" style="font-size:16px;padding:12px 14px;border-radius:12px;width:100%;box-sizing:border-box" placeholder="Category name" oninput="" onkeydown="if(event.key==='Enter')catConfirmRename()">
-    <div style="display:flex;gap:10px;margin-top:10px">
+    <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
+      <input type="text" id="cat-rename-emoji" maxlength="4" placeholder="🏷️" style="text-align:center;font-size:28px;padding:10px;border-radius:12px;width:64px;flex-shrink:0;background:var(--card);border:1.5px solid var(--border);color:var(--text)" oninput="onCatRenameEmoji(this.value)">
+      <input type="text" id="cat-rename-input" class="finput" style="font-size:16px;padding:12px 14px;border-radius:12px;flex:1;box-sizing:border-box" placeholder="Category name" onkeydown="if(event.key==='Enter')catConfirmRename()">
+    </div>
+    <div style="display:flex;gap:10px">
       <button class="btn ghost" style="flex:1" onclick="catCancelRename()" data-i18n="c.cancel"></button>
       <button class="btn" style="flex:1" onclick="catConfirmRename()" data-i18n="c.save"></button>
     </div>
@@ -3937,7 +3940,7 @@ function paintEntry(){
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
   document.getElementById('en-cats').innerHTML = cats.map(c=>
-    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')" oncontextmenu="event.preventDefault();renameCat('${c.id}')"><span style="font-size:17px;margin-inline-end:2px">${c.e||'🏷️'}</span>${esc(catName(c.id))}${c.custom?`<span style="font-size:10px;opacity:0.45;margin-left:3px">✎</span>`:''}</button>`).join('')
+    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" onclick="setCat('${c.id}')" oncontextmenu="event.preventDefault();renameCat('${c.id}')"><span style="font-size:17px;margin-inline-end:2px">${c.e||'🏷️'}</span>${esc(catName(c.id))}</button>`).join('')
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" onclick="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" onclick="setPct(${p})">${p}%</button>`).join('');
@@ -4013,17 +4016,33 @@ function catLongPress(id){
   if(ab) ab.style.display='block';
   openSheet('catact');
 }
+let CAT_RENAME_EMOJI = '';
+function onCatRenameEmoji(v){
+  const trimmed = v.trim();
+  if(trimmed){
+    try{
+      const segs = [...new Intl.Segmenter('en',{granularity:'grapheme'}).segment(trimmed)];
+      CAT_RENAME_EMOJI = segs.length ? segs[0].segment : trimmed[0];
+    }catch(e){ CAT_RENAME_EMOJI = [...trimmed][0]||''; }
+  } else { CAT_RENAME_EMOJI = ''; }
+}
 function catStartRename(){
-  const cur = catName(CAT_ACTION_ID);
+  const id = CAT_ACTION_ID;
+  const c = catById(id);
+  const cur = catName(id);
+  CAT_RENAME_EMOJI = (c && c.e) || '';
   document.getElementById('cat-rename-row').style.display='block';
   document.getElementById('cat-action-btns').style.display='none';
   const inp = document.getElementById('cat-rename-input');
+  const eInp = document.getElementById('cat-rename-emoji');
   inp.value = cur;
+  if(eInp) eInp.value = CAT_RENAME_EMOJI;
   setTimeout(()=>inp.focus(),80);
 }
 function catCancelRename(){
   document.getElementById('cat-rename-row').style.display='none';
   document.getElementById('cat-action-btns').style.display='block';
+  CAT_RENAME_EMOJI = '';
 }
 function catConfirmRename(){
   const id = CAT_ACTION_ID;
@@ -4032,6 +4051,7 @@ function catConfirmRename(){
   const c = catById(id);
   if(c && c.custom){
     c.name = trimmed;
+    if(CAT_RENAME_EMOJI) c.e = CAT_RENAME_EMOJI;
   } else {
     if(!S.catRenames) S.catRenames = {};
     if(trimmed===t('cat.'+id)) delete S.catRenames[id];
@@ -4039,12 +4059,12 @@ function catConfirmRename(){
   }
   save();
   closeSheet('catact');
-  catCancelRename(); // reset state
+  catCancelRename();
   if(document.getElementById('sb-entry').classList.contains('open')) paintEntry();
   render();
   toast(t('cc.renameDone'));
 }
-function catDoRename(){ catStartRename(); } // backward compat
+function catDoRename(){ catStartRename(); }
 function catDoDelete(){
   const id = CAT_ACTION_ID;
   const n = S.entries.filter(e=>e.cat===id).length;
