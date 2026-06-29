@@ -5911,12 +5911,12 @@ async function obSignIn(){
     try{
       await signIn('google');
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
-      OB.loggedIn = !!u;
-    }catch(e){ OB.loggedIn=false; }
+      if(OB) OB.loggedIn = !!u;
+    }catch(e){ if(OB) OB.loggedIn=false; }
   } else {
-    OB.loggedIn = true; // no Firebase configured (shouldn't happen in prod)
+    if(OB) OB.loggedIn = true;
   }
-  obGo('entry');
+  if(OB) obGo('entry');
 }
 function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
 
