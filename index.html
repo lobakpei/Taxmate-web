@@ -394,7 +394,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <!-- business sheet -->
 <div class="sb" id="sb-biz"><div class="sheet">
-  <div class="grab" onclick="closeParentSheet(this)"></div>
+  <div class="grab" onclick="if(document.activeElement&&document.activeElement.closest&&document.activeElement.closest('#sb-biz'))return;closeParentSheet(this)"></div>
   <div class="stitle" id="bz-title"></div>
   <div class="fg">
     <label for="bz-name" data-i18n="b.name"></label>
@@ -411,7 +411,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <div class="fg" id="bz-share-group" style="display:none">
     <label for="bz-share" data-i18n="b.share"></label>
-    <input type="number" id="bz-share" inputmode="numeric" min="1" max="100" value="50">
+    <input type="number" id="bz-share" inputmode="numeric" min="1" max="100" value="50" onclick="event.stopPropagation()" onfocus="event.stopPropagation()">
   </div>
   <div id="bz-sync" style="margin-bottom:4px"></div>
   <div class="sact">
@@ -602,7 +602,7 @@ en:{
  'nav.tax':'Tax',
  'nav.more':'Settings',
  'c.save':'Save',
- 'c.cancel':'Cancel',
+ 'c.cancel':'Cancel','c.discardConfirm':'Discard changes?','c.discardConfirmM':'Your unsaved changes will be lost.',
  'c.edit':'Edit',
  'c.yes':'Yes, do it',
  'c.active':'Active',
@@ -979,7 +979,7 @@ zh:{
  'nav.tax':'稅務',
  'nav.more':'設定',
  'c.save':'儲存',
- 'c.cancel':'取消',
+ 'c.cancel':'取消','c.discardConfirm':'放棄更改？','c.discardConfirmM':'你未儲存嘅資料將會消失。',
  'c.edit':'編輯',
  'c.yes':'確定',
  'c.active':'使用中',
@@ -1356,7 +1356,7 @@ pl:{
  'nav.tax':'Podatek',
  'nav.more':'Ustawienia',
  'c.save':'Zapisz',
- 'c.cancel':'Anuluj',
+ 'c.cancel':'Anuluj','c.discardConfirm':'Odrzucić zmiany?','c.discardConfirmM':'Niezapisane dane zostaną utracone.',
  'c.edit':'Edytuj',
  'c.yes':'Tak, zrób to',
  'c.active':'Aktywny',
@@ -1733,7 +1733,7 @@ ro:{
  'nav.tax':'Taxe',
  'nav.more':'Setări',
  'c.save':'Salvează',
- 'c.cancel':'Anulează',
+ 'c.cancel':'Anulează','c.discardConfirm':'Renunțați la modificări?','c.discardConfirmM':'Datele nesalvate se vor pierde.',
  'c.edit':'Editează',
  'c.yes':'Da, continuă',
  'c.active':'Activ',
@@ -2110,7 +2110,7 @@ es:{
  'nav.tax':'Impuestos',
  'nav.more':'Ajustes',
  'c.save':'Guardar',
- 'c.cancel':'Cancelar',
+ 'c.cancel':'Cancelar','c.discardConfirm':'¿Descartar cambios?','c.discardConfirmM':'Los datos no guardados se perderán.',
  'c.edit':'Editar',
  'c.yes':'Sí, hazlo',
  'c.active':'Activo',
@@ -2487,7 +2487,7 @@ ur:{
  'nav.tax':'ٹیکس',
  'nav.more':'ترتیبات',
  'c.save':'محفوظ کریں',
- 'c.cancel':'منسوخ',
+ 'c.cancel':'منسوخ','c.discardConfirm':'تبدیلیاں ختم کریں؟','c.discardConfirmM':'محفوظ نہ کردہ ڈیٹا ضائع ہو جائے گا۔',
  'c.edit':'ترمیم',
  'c.yes':'جی ہاں',
  'c.active':'فعال',
@@ -5773,8 +5773,28 @@ function setupBackButton(){
   history.pushState({tm:'base'}, '');
   history.pushState({tm:'buffer'}, '');
   window.addEventListener('popstate', (e)=>{
-    // A sheet is open → close it, keep user in app
+    // A sheet is open → check for dirty data before closing
     if(anySheetOpen()){
+      // Check if any input/textarea in open sheets has content
+      const openSheet = document.querySelector('.sb.open');
+      let hasDirty = false;
+      if(openSheet){
+        const inputs = openSheet.querySelectorAll('input[type="text"],input[type="number"],textarea');
+        inputs.forEach(inp=>{
+          const def = inp.defaultValue !== undefined ? inp.defaultValue : '';
+          if((inp.value||'').trim() && (inp.value||'').trim() !== (def||'').trim()) hasDirty = true;
+        });
+      }
+      if(hasDirty){
+        // Re-push so we stay in app, then show confirm
+        history.pushState({tm:'buffer'}, '');
+        confirmAction(
+          t('c.discardConfirm')||'Discard changes?',
+          t('c.discardConfirmM')||'Your unsaved changes will be lost.',
+          ()=>{ closeAllSheets(); history.pushState({tm:'buffer'}, ''); }
+        );
+        return;
+      }
       closeAllSheets();
       history.pushState({tm:'buffer'}, '');
       return;
@@ -5786,7 +5806,6 @@ function setupBackButton(){
       return;
     }
     // On Home, nothing open → let this back press fall through (exit/leave).
-    // Do not re-push, so the browser/OS handles it naturally.
   });
 }
 
