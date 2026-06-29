@@ -206,6 +206,17 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 
 /* ── sheets ── */
 .sb{display:none;position:fixed;inset:0;background:rgba(16,24,32,.45);z-index:200;align-items:flex-end;justify-content:center}
+/* 電腦版：sheet 靠右，全高，唔係底部彈出 */
+@media(min-width:600px){
+  .sb{align-items:stretch;justify-content:flex-end}
+  .sheet{max-width:480px;max-height:100vh;height:100%;border-radius:0;overflow-y:auto}
+  .sheet .grab{display:none}
+}
+/* 美化 scrollbar */
+.sheet::-webkit-scrollbar{width:4px}
+.sheet::-webkit-scrollbar-track{background:transparent}
+.sheet::-webkit-scrollbar-thumb{background:var(--border,#2d4a3a);border-radius:4px}
+.sheet{scrollbar-width:thin;scrollbar-color:var(--border,#2d4a3a) transparent}
 body.sheet-open{overflow:hidden}
 .toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%) translateY(-80px);
   background:var(--ink);color:#fff;font-size:14px;font-weight:700;padding:11px 22px;border-radius:999px;
