@@ -4498,7 +4498,24 @@ function toast(msg){
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(()=>el.classList.remove('show'), 2000);
 }
-document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{ if(e.target===o){ o.classList.remove('open'); document.body.classList.remove('sheet-open'); } }));
+document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{
+  if(e.target!==o) return; // 只有直接 click overlay 先處理
+  // dirty check：有冇未儲存嘅 input 內容
+  let hasDirty = false;
+  o.querySelectorAll('input[type="text"],input[type="number"],textarea').forEach(inp=>{
+    const def = inp.defaultValue !== undefined ? inp.defaultValue : '';
+    if((inp.value||'').trim() && (inp.value||'').trim() !== (def||'').trim()) hasDirty = true;
+  });
+  if(hasDirty){
+    confirmAction(
+      t('c.discardConfirm')||'Discard changes?',
+      t('c.discardConfirmM')||'Your unsaved changes will be lost.',
+      ()=>{ o.classList.remove('open'); document.body.classList.remove('sheet-open'); }
+    );
+    return;
+  }
+  o.classList.remove('open'); document.body.classList.remove('sheet-open');
+}));
 
 /* ═══════════ export / import ═══════════ */
 function exportJSON(){
