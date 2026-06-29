@@ -4499,7 +4499,9 @@ function toast(msg){
   _toastTimer = setTimeout(()=>el.classList.remove('show'), 2000);
 }
 document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{
-  if(e.target!==o) return; // 只有直接 click overlay 先處理
+  // 只有 click 係喺 .sheet 外面先處理（真正嘅 overlay click）
+  if(e.target.closest && e.target.closest('.sheet')) return;
+  if(!o.classList.contains('open')) return;
   // dirty check：有冇未儲存嘅 input 內容
   let hasDirty = false;
   o.querySelectorAll('input[type="text"],input[type="number"],textarea').forEach(inp=>{
