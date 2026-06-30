@@ -4464,7 +4464,15 @@ function resetAll(){
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
   render();
 }
-function openSheet(id){ document.getElementById('sb-'+id).classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(initSheetDrag,50); history.pushState({tm:'sheet'}, ''); }
+function sheetSnapshot(sheetEl){
+  if(!sheetEl) return '';
+  return Array.from(sheetEl.querySelectorAll('input,select,textarea')).map(f=>{
+    if(f.type==='file') return '';
+    if(f.type==='checkbox'||f.type==='radio') return f.checked?'1':'0';
+    return f.value||'';
+  }).join('\u0001');
+}
+function openSheet(id){ const el=document.getElementById('sb-'+id); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(initSheetDrag,50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); }
@@ -5780,15 +5788,11 @@ function setupBackButton(){
   window.addEventListener('popstate', (e)=>{
     // A sheet is open → check for dirty data before closing
     if(anySheetOpen()){
-      // Check if any input/textarea in open sheets has content
-      const openSheet = document.querySelector('.sb.open');
+      // 對比快照：開 sheet 時 vs 而家，有任何欄位變咗就當 dirty
+      const openSheetEl = document.querySelector('.sb.open .sheet');
       let hasDirty = false;
-      if(openSheet){
-        const inputs = openSheet.querySelectorAll('input[type="text"],input[type="number"],textarea');
-        inputs.forEach(inp=>{
-          const def = inp.defaultValue !== undefined ? inp.defaultValue : '';
-          if((inp.value||'').trim() && (inp.value||'').trim() !== (def||'').trim()) hasDirty = true;
-        });
+      if(openSheetEl && openSheetEl.dataset.snap !== undefined){
+        hasDirty = sheetSnapshot(openSheetEl) !== openSheetEl.dataset.snap;
       }
       if(hasDirty){
         // Re-push so we stay in app, then show confirm
