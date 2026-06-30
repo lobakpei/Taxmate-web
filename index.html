@@ -4690,11 +4690,11 @@ async function ensureFB(){
   if(FB.ready) return FB.db;
   try{
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    // App Check — reCAPTCHA v3 (Monitoring mode; switch to Enforce before launch)
+    // App Check — reCAPTCHA Enterprise (Monitoring mode; switch to Enforce after metrics show verified)
     try{
       const appCheck = firebase.appCheck();
       appCheck.activate(
-        new firebase.appCheck.ReCaptchaV3Provider('6LcojSQtAAAAAHfHmTPGuuM6HgrCI05lNiAckm2E'),
+        new firebase.appCheck.ReCaptchaEnterpriseProvider('6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH'),
         true // auto-refresh token
       );
     }catch(e){ console.warn('AppCheck init', e); }
