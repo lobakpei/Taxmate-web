@@ -206,12 +206,6 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 
 /* ── sheets ── */
 .sb{display:none;position:fixed;inset:0;background:rgba(16,24,32,.45);z-index:200;align-items:flex-end;justify-content:center}
-/* 電腦版：sheet 靠右，全高，唔係底部彈出 */
-@media(min-width:600px){
-  .sb{align-items:stretch;justify-content:flex-end}
-  .sheet{max-width:480px;max-height:100vh;height:100%;border-radius:0;overflow-y:auto}
-  .sheet .grab{display:none}
-}
 /* 美化 scrollbar */
 .sheet::-webkit-scrollbar{width:4px}
 .sheet::-webkit-scrollbar-track{background:transparent}
@@ -4509,26 +4503,7 @@ function toast(msg){
   clearTimeout(_toastTimer);
   _toastTimer = setTimeout(()=>el.classList.remove('show'), 2000);
 }
-document.querySelectorAll('.sb').forEach(o=>o.addEventListener('click',e=>{
-  // 只有 click 係喺 .sheet 外面先處理（真正嘅 overlay click）
-  if(e.target.closest && e.target.closest('.sheet')) return;
-  if(!o.classList.contains('open')) return;
-  // dirty check：有冇未儲存嘅 input 內容
-  let hasDirty = false;
-  o.querySelectorAll('input[type="text"],input[type="number"],textarea').forEach(inp=>{
-    const def = inp.defaultValue !== undefined ? inp.defaultValue : '';
-    if((inp.value||'').trim() && (inp.value||'').trim() !== (def||'').trim()) hasDirty = true;
-  });
-  if(hasDirty){
-    confirmAction(
-      t('c.discardConfirm')||'Discard changes?',
-      t('c.discardConfirmM')||'Your unsaved changes will be lost.',
-      ()=>{ o.classList.remove('open'); document.body.classList.remove('sheet-open'); }
-    );
-    return;
-  }
-  o.classList.remove('open'); document.body.classList.remove('sheet-open');
-}));
+/* Sheet 只可以用 Cancel 掣或 back 關閉，撳 overlay 唔會關 */
 
 /* ═══════════ export / import ═══════════ */
 function exportJSON(){
