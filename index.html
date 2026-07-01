@@ -4834,8 +4834,16 @@ function cloudUser(){
 function watchAuth(){
   if(watchAuth.done) return; watchAuth.done = true;
   firebase.auth().onAuthStateChanged(u=>{
-    if(u && !u.isAnonymous) startUserSync(u);
-    else stopUserSync();
+    if(u && !u.isAnonymous){
+      try{ localStorage.setItem('tmWasSignedIn','1'); }catch(e){}
+      // 已登入用戶唔應該見到新手流程；若之前 race 彈咗出嚟，即刻關閉。
+      // 但如果用戶係喺新手流程內主動撳「Sign in」（全新用戶），就唔好關，要繼續行落去。
+      if(OB && !OB._signingInFlow){ try{ obClose(); }catch(e){} }
+      startUserSync(u);
+    } else {
+      try{ localStorage.removeItem('tmWasSignedIn'); }catch(e){}
+      stopUserSync();
+    }
     render();
   });
 }
@@ -5956,6 +5964,7 @@ function obScrLogin(){
 }
 async function obSignIn(){
   // Use the app's real Google sign-in (popup). On success, continue onboarding.
+  OB && (OB._signingInFlow = true); // 標記：用戶喺新手流程內主動登入，唔好被 watchAuth 關閉
   if(typeof signIn==='function' && fbConfigured()){
     try{
       await signIn('google');
@@ -5965,7 +5974,7 @@ async function obSignIn(){
   } else {
     if(OB) OB.loggedIn = true;
   }
-  if(OB) obGo('entry');
+  if(OB){ OB._signingInFlow = false; obGo('entry'); }
 }
 function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
 
@@ -6309,9 +6318,14 @@ initTrial(); // start trial on first load (cloud users update via loadTrialFromC
 render();
 setupBackButton();
 // First run: no businesses and never onboarded → launch catch-up flow
+// ⚠️ 已登入（或正在還原登入）嘅用戶係「返嚟嘅用戶」，資料喺雲端，唔可以即刻彈新手流程，
+//    否則雲端 sync 未完會嚇親人。交俾 startUserSync 完成後先判斷。
 (function(){
   let done=null; try{ done=localStorage.getItem('tmOnboardDone'); }catch(e){}
-  if(!S.businesses.length && !done){ startOnboarding(); }
+  const signedInOrRestoring = (fbConfigured() && (function(){
+    try{ const au=firebase.auth(); return !!(au.currentUser && !au.currentUser.isAnonymous); }catch(e){ return false; }
+  })()) || (fbConfigured() && localStorage.getItem('tmWasSignedIn')==='1');
+  if(!S.businesses.length && !done && !signedInOrRestoring){ startOnboarding(); }
 })();
 if(fbConfigured()){
   ensureFB().then(db=>{ if(db) loadCloudRates(); });
