@@ -3397,6 +3397,21 @@ function obReopenCatchup(){
 }
 
 /* ═══════════ HOME (dashboard only) ═══════════ */
+function proBanner(){
+  // 已開 Pro（trial 或付費）→ 唔出
+  if(currentTier()!=='free') return '';
+  // 今次 session 撳咗 ✕ → 唔出（下次開 app 又會出）
+  try{ if(sessionStorage.getItem('tmProBannerHidden')==='1') return ''; }catch(e){}
+  return `<div id="pro-banner" style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800;padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:700;font-size:14px;cursor:pointer" onclick="lockSeeplans()">
+    <span style="font-size:18px">🎁</span>
+    <span style="flex:1;line-height:1.35">Free Pro access — limited time. Activate now →</span>
+    <button onclick="event.stopPropagation();hideProBanner()" style="background:rgba(0,0,0,.12);border:none;color:#3D2800;width:26px;height:26px;border-radius:50%;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
+  </div>`;
+}
+function hideProBanner(){
+  try{ sessionStorage.setItem('tmProBannerHidden','1'); }catch(e){}
+  const el=document.getElementById('pro-banner'); if(el) el.remove();
+}
 function pageHome(){
   const tx = calcTax(S.year);
   const totalIn = entriesFor(S.year,null,'income').reduce((s,e)=>s+e.amount,0);
@@ -3424,6 +3439,7 @@ function pageHome(){
     <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
 
   return `
+  ${proBanner()}
   <div class="hero">
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.profit',{y:S.year})}</div>
@@ -3665,7 +3681,7 @@ function pageMore(){
         </div>
       </div>
       <div class="notice amber" style="margin-top:12px;font-size:12.5px">
-        ⚠️ <strong>One device at a time</strong> — editing on two devices simultaneously may overwrite data. Always close TaxMate on other devices before making changes.
+        ⚠️ <strong>Edit on one device at a time</strong> to avoid overwriting data.
       </div>
       <button class="link danger" style="margin-top:14px;display:block" onclick="confirmAction(t('ac.signout'),t('ac.signoutM'),doSignOut)">${t('ac.signout')}</button>
     ` : `
@@ -3738,10 +3754,11 @@ function pageMore(){
 
   ${secHead('sec.account')}
   ${accountCard}<div id="plans-anchor"></div>${proCard}
+  ${syncCard}
   ${installCard()}
 
   ${secHead('sec.biz')}
-  ${bizCard}${syncCard}
+  ${bizCard}
 
   ${secHead('sec.prefs')}
   <div class="card">
@@ -5961,6 +5978,7 @@ function obScrLogin(){
     <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
     <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
     <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">Start without an account</span><span class="ob-ts">Stays on this phone — sign in anytime</span></span></button>
+    <div style="margin-top:18px;padding:12px 14px;background:var(--brand-soft,#e8f5ee);border-radius:12px;font-size:13.5px;color:var(--brand-deep,#0a5c3a);text-align:center;font-weight:600">🤝 Got a partner code? Sign in first.</div>
   </div></div>`;
 }
 async function obSignIn(){
@@ -5985,8 +6003,9 @@ function obScrEntry(){
     <div style="font-size:40px;margin-bottom:10px">👋</div>
     <h1>Let's set you up</h1>
     <p class="ob-lede">Started partway through the year? Add your past months once — then you're done.</p>
-    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🧹</span><span><span class="ob-tt">Catch me up</span><span class="ob-ts">Add the months I've missed</span></span></button>
+    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🧹</span><span><span class="ob-tt">Quick setup</span><span class="ob-ts">Add the months you've missed</span></span></button>
     <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">👀</span><span><span class="ob-tt">Look around first</span><span class="ob-ts">Jump in — catch up later</span></span></button>
+    <div style="margin-top:18px;padding:12px 14px;background:var(--brand-soft,#e8f5ee);border-radius:12px;font-size:13.5px;color:var(--brand-deep,#0a5c3a);text-align:center;font-weight:600">🤝 Got a partner code? Tap "Look around first", then add it in Settings.</div>
   </div></div>`;
 }
 function obExplore(){
