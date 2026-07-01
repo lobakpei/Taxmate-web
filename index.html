@@ -4774,7 +4774,8 @@ async function joinPartnership(){
   const input = document.getElementById('join-code');
   const msg = document.getElementById('join-msg');
   const code = (input && input.value || '').trim().toUpperCase();
-  if(code.length !== 6){ if(msg) msg.textContent = t('sy.enterCode'); return; }
+  // Code 由 6 位升級到 8 位；接受兩者（8=新，6=舊兼容）
+  if(code.length !== 6 && code.length !== 8){ if(msg) msg.textContent = t('sy.enterCode'); return; }
   if(!hasFeature('partnerSync')){ if(msg) msg.textContent = t('sy.needPro'); return; }
   const db = await ensureFB();
   if(!db){ if(msg) msg.textContent = t(fbConfigured()?'sy.needNet':'sy.setup'); return; }
