@@ -4196,6 +4196,13 @@ function setRepeat(on){
   document.getElementById('en-repeat-hint').style.display = on ? 'block' : 'none';
 }
 function saveEntry(){
+  // 收據仲上載緊 → 唔好即刻儲存，等上載完會自動幫你 save
+  if(EN.uploading){
+    EN._pendingSave = true;
+    const st = document.getElementById('en-receipt-status');
+    if(st){ st.textContent = '⏳ ' + t('rc.uploading'); st.style.color='var(--coral)'; st.style.fontWeight='700'; }
+    return;
+  }
   const amt = parseFloat(document.getElementById('en-amount').value);
   if(!(amt>0) || amt>10000000){
     document.getElementById('en-amount').classList.add('err');
@@ -4837,6 +4844,8 @@ async function signIn(kind){
   if(!db){ alert(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
   const provider = (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
                                     : new firebase.auth.GoogleAuthProvider();
+  // 每次登入都畀用戶揀 Google 戶口（唔會自動入返上次嗰個）
+  if(kind!=='apple'){ provider.setCustomParameters({ prompt: 'select_account' }); }
   try{
     const cur = firebase.auth().currentUser;
     // 如果係匿名 session，先記低佢嘅本機資料，登入後合併（唔再用 linkWithPopup —— 嗰個會喺 OAuth handler 爆白畫面）
@@ -5675,7 +5684,13 @@ async function onReceiptFile(ev){
   ev.target.value='';
   if(!hasFeature('receiptPhoto')){ lockGuard('receiptPhoto'); return; }
   const st = document.getElementById('en-receipt-status');
-  st.textContent = t('rc.uploading');
+  const saveBtn = document.getElementById('en-save');
+  st.textContent = '⏳ ' + t('rc.uploading');
+  st.style.color = 'var(--coral)';
+  st.style.fontWeight = '700';
+  EN.uploading = true;
+  // 上載期間禁用 Save 掣，避免收據未上完就儲存
+  if(saveBtn){ saveBtn.disabled = true; saveBtn.style.opacity = '0.5'; saveBtn.textContent = '⏳ ' + t('rc.uploading'); }
   try{
     // 壓縮到 ~200KB
     const compressed = await compressImage(file, 1200, 0.82);
@@ -5695,6 +5710,12 @@ async function onReceiptFile(ev){
     st.textContent = '';
     paintEntry();
   }catch(e){ console.warn(e); st.textContent = 'Upload failed: ' + (e && (e.code || e.message) || 'unknown'); }
+  finally{
+    EN.uploading = false;
+    if(saveBtn){ saveBtn.disabled = false; saveBtn.style.opacity = ''; saveBtn.textContent = t('c.save'); }
+    // 如果用戶喺上載期間撳過 Save，上載完自動幫佢儲存
+    if(EN._pendingSave){ EN._pendingSave = false; saveEntry(); }
+  }
 }
 
 function compressImage(file, maxW, quality){
