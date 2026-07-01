@@ -330,7 +330,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 
 <div class="top">
   <div class="logo">£</div>
-  <div class="name">Tax<span>Mate</span><sup class="beta-badge">BETA</sup></div>
+  <div class="name">Tax<span>Mate</span></div>
   <div class="year-pill"><select id="yearSel" onchange="setYear(this.value)"></select></div>
 </div>
 
@@ -3350,6 +3350,7 @@ function render(){
 function welcome(){
   const steps = t('w.steps').split('\n').map(s=>`<div style="margin-bottom:8px;font-size:14.5px">${esc(s)}</div>`).join('');
   return `
+  ${proBanner()}
   <div class="hero">
     <div class="hi" style="font-size:22px;font-weight:800">${t('w.title')}</div>
     <div style="margin-top:8px;font-size:14.5px;opacity:.95;line-height:1.55">${t('w.sub')}</div>
@@ -5978,7 +5979,7 @@ function obScrLogin(){
     <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
     <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
     <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">Start without an account</span><span class="ob-ts">Stays on this phone — sign in anytime</span></span></button>
-    <div style="margin-top:18px;padding:12px 14px;background:var(--brand-soft,#e8f5ee);border-radius:12px;font-size:13.5px;color:var(--brand-deep,#0a5c3a);text-align:center;font-weight:600">🤝 Got a partner code? Sign in first.</div>
+    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9;);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner code? Sign in first, then add it in Settings.</div>
   </div></div>`;
 }
 async function obSignIn(){
@@ -6005,7 +6006,7 @@ function obScrEntry(){
     <p class="ob-lede">Started partway through the year? Add your past months once — then you're done.</p>
     <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🧹</span><span><span class="ob-tt">Quick setup</span><span class="ob-ts">Add the months you've missed</span></span></button>
     <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">👀</span><span><span class="ob-tt">Look around first</span><span class="ob-ts">Jump in — catch up later</span></span></button>
-    <div style="margin-top:18px;padding:12px 14px;background:var(--brand-soft,#e8f5ee);border-radius:12px;font-size:13.5px;color:var(--brand-deep,#0a5c3a);text-align:center;font-weight:600">🤝 Got a partner code? Tap "Look around first", then add it in Settings.</div>
+    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner code? Tap "Look around first", then add it in Settings.</div>
   </div></div>`;
 }
 function obExplore(){
