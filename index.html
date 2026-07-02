@@ -225,6 +225,16 @@ body.sheet-open{overflow:hidden}
 .sheet .sact{display:flex;gap:10px;margin-top:20px}
 .sheet .sact .btn{flex:1}
 
+/* ── collapsible settings section ── */
+details.sec{margin:10px 0;border-radius:var(--r,16px);overflow:hidden;background:var(--card);border:1px solid var(--line)}
+details.sec>summary{list-style:none;cursor:pointer;padding:16px 18px;font-size:15px;font-weight:800;color:var(--ink);display:flex;align-items:center;gap:10px;user-select:none}
+details.sec>summary::-webkit-details-marker{display:none}
+details.sec>summary::after{content:"▾";margin-inline-start:auto;font-size:13px;color:var(--muted);transition:transform .2s}
+details.sec[open]>summary::after{transform:rotate(180deg)}
+details.sec>summary .sec-emoji{font-size:18px}
+details.sec .sec-body{padding:0 14px 14px}
+details.sec .sec-body .card{margin-top:10px}
+
 /* ── tab bar ── */
 nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,255,.92);backdrop-filter:blur(14px);
   border-top:1px solid var(--line);display:flex;max-width:640px;margin:0 auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
@@ -2961,12 +2971,6 @@ const FEATURE_TIER = {
   receiptPack:'pro',       // Receipt Pack PDF
   mtdReady:'pro'           // MTD-ready quarterly export
 };
-function isSignedIn(){
-  try{
-    const u = firebase.auth().currentUser;
-    return !!(u && !u.isAnonymous);
-  }catch(e){ return false; }
-}
 /* ═══════════ Trial Logic ═══════════ */
 const TRIAL_LAUNCH_END   = '2027-01-05'; // Fixed end for launch users
 const TRIAL_LAUNCH_CUT   = '2026-08-01'; // Sign-up before this → fixed end date
@@ -3077,7 +3081,6 @@ function planBlock(tier){
 }
 function tierEmoji(tier){ return tier==='free'?'🟢':(tier==='plus'?'⭐':'👑'); }
 function tierTick(tier){ return '✓'; }
-function featureNeedsTier(key){ return FEATURE_TIER[key]; }
 function lockGuard(key){
   // returns true if BLOCKED (and shows the upgrade sheet); false if allowed
   if(hasFeature(key)) return false;
@@ -3753,93 +3756,112 @@ function pageMore(){
   return `
   <div class="h1">${t('m.title')}</div>
 
-  ${secHead('sec.account')}
   ${accountCard}<div id="plans-anchor"></div>${proCard}
   ${syncCard}
-  ${installCard()}
 
-  ${secHead('sec.biz')}
-  ${bizCard}
-
-  ${secHead('sec.prefs')}
-  <div class="card">
-    <div class="t" style="margin-bottom:10px">🎨 ${t('m.theme')}</div>
-    <div class="seg">
-      <button class="${(S.settings.theme||'auto')==='auto'?'on':''}" onclick="setTheme('auto')">${t('theme.auto')}</button>
-      <button class="${S.settings.theme==='light'?'on':''}" onclick="setTheme('light')">☀️ ${t('theme.light')}</button>
-      <button class="${S.settings.theme==='dark'?'on':''}" onclick="setTheme('dark')">🌙 ${t('theme.dark')}</button>
+  <details class="sec">
+    <summary><span class="sec-emoji">🏢</span>${t('sec.biz')}</summary>
+    <div class="sec-body">
+      ${bizCard}
+      ${installCard()}
     </div>
-  </div>
-  <div class="card">
-    <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
-    <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
-    ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px">ℹ️ ${t('lang.pdfHint')}</div>`:''}
-  </div>
-  ${organiseSection}
+  </details>
 
-  ${secHead('sec.report')}
-  <div class="card">
-    <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}${featBadge('pdfReport')}</div>
-    <div class="s" style="margin-bottom:12px">${t('rep.desc')}</div>
-    ${S.settings.lang!=='en'?`<div class="fhint" style="margin-bottom:12px">ℹ️ ${t('pdf.enHint')}</div>`:''}
-    <button class="btn soft" style="margin-bottom:10px" onclick="${hasFeature('pdfReport')?'generatePDF()':`lockGuard('pdfReport')`}">📄 ${t('pdf.download')}${hasFeature('pdfReport')?'':' 🔒'}</button>
-    <button class="btn ghost" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
-    <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
-  </div>
-  <!-- TODO: Fix Storage CORS before launch — exportReceiptPack() uses Firebase Storage -->
-  <div class="card">
-    <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}${featBadge('receiptPack')}</div>
-    <div class="s" style="margin-bottom:12px">${t('rp.desc')}</div>
-    <button class="btn soft" onclick="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">🧾 ${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
-  </div>
-
-  ${secHead('sec.data')}
-  <div class="card">
-    <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
-    <div class="s" style="margin-bottom:12px">${cloudUser()
-      ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
-      : ''}${t('m.backupHint')}</div>
-    <button class="btn ghost" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
-    <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
-    <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
-  </div>
-  <div class="card" style="text-align:center">
-    <button class="link danger" onclick="confirmAction(t('m.resetT'),t('m.resetM'),resetAll)">${t('m.reset')}</button>
-  </div>
-  ${(fbConfigured() && FB.ready && firebase.auth().currentUser) ? `<div class="card" style="text-align:center">
-    <button class="link danger" onclick="confirmAction(t('m.eraseCloudT'),t('m.eraseCloudM'),eraseEverything)">${t('m.eraseCloud')}</button>
-  </div>` : ''}
-
-  ${secHead('sec.legal')}
-  <div class="card">
-    <div class="t" style="margin-bottom:4px">✉️ Contact us</div>
-    <div class="s" style="margin-bottom:12px">We aim to reply within 2–3 working days.</div>
-    <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">✉️ support@taxmate.uk</a>
-  </div>
-  <div class="card">
-    <div class="t" style="margin-bottom:12px">❓ FAQ</div>
-    ${[
-      ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
-      ['Can I use TaxMate on multiple devices?', 'Yes, but edit on one device at a time. TaxMate uses last-write-wins sync — editing simultaneously on two devices may overwrite changes.'],
-      ['What happens when my trial ends?', 'You move to the Free plan automatically. Your data is never deleted — only paid features are locked.'],
-      ['Is TaxMate HMRC-approved?', 'TaxMate is MTD-ready for planning purposes. It is not yet a HMRC-recognised submission tool. Always confirm figures with HMRC or an accountant before filing.'],
-      ['How do I contact support?', 'Email support@taxmate.uk — we aim to reply within 2–3 working days.'],
-    ].map(([q,a])=>`
-      <div style="padding:10px 0;border-bottom:1px solid var(--line)">
-        <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px">${q}</div>
-        <div style="font-size:13px;color:var(--muted);line-height:1.5">${a}</div>
-      </div>`).join('')}
-  </div>
-  <div class="card">
-    <div class="notice amber" style="margin-bottom:0">
-      <div style="font-weight:800;margin-bottom:4px">⚠️ ${t('leg.disclaimer')}</div>
-      ${t('leg.disclaimerBody')}
+  <details class="sec">
+    <summary><span class="sec-emoji">⚙️</span>${t('sec.prefs')}</summary>
+    <div class="sec-body">
+      <div class="card">
+        <div class="t" style="margin-bottom:10px">🎨 ${t('m.theme')}</div>
+        <div class="seg">
+          <button class="${(S.settings.theme||'auto')==='auto'?'on':''}" onclick="setTheme('auto')">${t('theme.auto')}</button>
+          <button class="${S.settings.theme==='light'?'on':''}" onclick="setTheme('light')">☀️ ${t('theme.light')}</button>
+          <button class="${S.settings.theme==='dark'?'on':''}" onclick="setTheme('dark')">🌙 ${t('theme.dark')}</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
+        <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" onclick="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
+        ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px">ℹ️ ${t('lang.pdfHint')}</div>`:''}
+      </div>
+      ${organiseSection}
     </div>
-  </div>
-  <div class="card" style="padding:6px 18px">
-    <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line)" onclick="openLegal('privacy')">${t('leg.privacy')} ›</button>
-    <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0" onclick="openLegal('terms')">${t('leg.terms')} ›</button>
-  </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="sec-emoji">📄</span>${t('sec.report')}</summary>
+    <div class="sec-body">
+      <div class="card">
+        <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}${featBadge('pdfReport')}</div>
+        <div class="s" style="margin-bottom:12px">${t('rep.desc')}</div>
+        ${S.settings.lang!=='en'?`<div class="fhint" style="margin-bottom:12px">ℹ️ ${t('pdf.enHint')}</div>`:''}
+        <button class="btn soft" style="margin-bottom:10px" onclick="${hasFeature('pdfReport')?'generatePDF()':`lockGuard('pdfReport')`}">📄 ${t('pdf.download')}${hasFeature('pdfReport')?'':' 🔒'}</button>
+        <button class="btn ghost" onclick="exportCalendar()">📅 ${t('cal.export')}</button>
+        <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
+      </div>
+      <div class="card">
+        <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}${featBadge('receiptPack')}</div>
+        <div class="s" style="margin-bottom:12px">${t('rp.desc')}</div>
+        <button class="btn soft" onclick="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">🧾 ${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
+      </div>
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="sec-emoji">💾</span>${t('sec.data')}</summary>
+    <div class="sec-body">
+      <div class="card">
+        <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
+        <div class="s" style="margin-bottom:12px">${cloudUser()
+          ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
+          : ''}${t('m.backupHint')}</div>
+        <button class="btn ghost" style="margin-bottom:10px" onclick="exportJSON()">${t('m.export')}</button>
+        <input type="file" id="importFile" accept=".json" style="display:none" onchange="importJSON(event)">
+        <button class="btn ghost" onclick="document.getElementById('importFile').click()">${t('m.restore')}</button>
+      </div>
+      <div class="card" style="text-align:center">
+        <button class="link danger" onclick="confirmAction(t('m.resetT'),t('m.resetM'),resetAll)">${t('m.reset')}</button>
+      </div>
+      ${(fbConfigured() && FB.ready && firebase.auth().currentUser) ? `<div class="card" style="text-align:center">
+        <button class="link danger" onclick="confirmAction(t('m.eraseCloudT'),t('m.eraseCloudM'),eraseEverything)">${t('m.eraseCloud')}</button>
+      </div>` : ''}
+    </div>
+  </details>
+
+  <details class="sec">
+    <summary><span class="sec-emoji">⚖️</span>${t('sec.legal')}</summary>
+    <div class="sec-body">
+      <div class="card">
+        <div class="t" style="margin-bottom:4px">✉️ Contact us</div>
+        <div class="s" style="margin-bottom:12px">We aim to reply within 2–3 working days.</div>
+        <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">✉️ support@taxmate.uk</a>
+      </div>
+      <div class="card">
+        <div class="t" style="margin-bottom:12px">❓ FAQ</div>
+        ${[
+          ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
+          ['Can I use TaxMate on multiple devices?', 'Yes, but edit on one device at a time. TaxMate uses last-write-wins sync — editing simultaneously on two devices may overwrite changes.'],
+          ['What happens when my trial ends?', 'You move to the Free plan automatically. Your data is never deleted — only paid features are locked.'],
+          ['Is TaxMate HMRC-approved?', 'TaxMate is MTD-ready for planning purposes. It is not yet a HMRC-recognised submission tool. Always confirm figures with HMRC or an accountant before filing.'],
+          ['How do I contact support?', 'Email support@taxmate.uk — we aim to reply within 2–3 working days.'],
+        ].map(([q,a])=>`
+          <div style="padding:10px 0;border-bottom:1px solid var(--line)">
+            <div style="font-size:13.5px;font-weight:700;color:var(--ink);margin-bottom:4px">${q}</div>
+            <div style="font-size:13px;color:var(--muted);line-height:1.5">${a}</div>
+          </div>`).join('')}
+      </div>
+      <div class="card">
+        <div class="notice amber" style="margin-bottom:0">
+          <div style="font-weight:800;margin-bottom:4px">⚠️ ${t('leg.disclaimer')}</div>
+          ${t('leg.disclaimerBody')}
+        </div>
+      </div>
+      <div class="card" style="padding:6px 18px">
+        <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line)" onclick="openLegal('privacy')">${t('leg.privacy')} ›</button>
+        <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0" onclick="openLegal('terms')">${t('leg.terms')} ›</button>
+      </div>
+    </div>
+  </details>
+
   <p class="small" style="text-align:center">${t('leg.madeIn')}<br>${t('leg.version')} 1.0</p>`;
 }
 function openLegal(which){
@@ -4000,7 +4022,6 @@ function paintEntry(){
   fsel.value = EN.folderId || '';
 }
 let CC_EMOJI = CAT_EMOJIS[0];
-function setCatEmoji(em){ CC_EMOJI=em; const inp=document.getElementById('cc-emoji-input'); if(inp) inp.value=em; }
 function onEmojiInput(v){
   const trimmed = v.trim();
   // 用 Intl.Segmenter 正確分割 emoji（包括 variation selector、ZWJ sequences 等）
@@ -4087,7 +4108,6 @@ function catConfirmRename(){
   render();
   toast(t('cc.renameDone'));
 }
-function catDoRename(){ catStartRename(); }
 function catDoDelete(){
   const id = CAT_ACTION_ID;
   const n = S.entries.filter(e=>e.cat===id).length;
@@ -4298,7 +4318,6 @@ function deleteEntry(){
 let BZ = {id:null, structure:'sole'};
 // suggested-categories feature removed — businesses start empty, users add their own
 function paintTrades(){ /* trade selector removed */ }
-function setTrade(id){ /* removed */ }
 function openBiz(id){
   // Gate: more than one business needs Plus
   if(!id && S.businesses.length>=1 && lockGuard('multiBiz')) return;
@@ -4562,119 +4581,6 @@ function exportJSON(){
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
   a.download = 'taxmate-backup-'+todayISO()+'.json';
-  a.click(); URL.revokeObjectURL(a.href);
-}
-/* ═══════════ Accountant Export ═══════════ */
-function exportAccountant(){
-  const yr = S.year;
-  const tx = calcTax(yr);
-  const Q = s => '"'+String(s||'').replace(/"/g,'""')+'"';
-  const M = n => isNaN(n)?'':n.toFixed(2);
-  const rows = [];
-  const blank = () => rows.push([]);
-  const head = (...c) => rows.push(c.map(v=>Q(v)));
-  const row  = (...c) => rows.push(c.map((v,i)=>i>0&&typeof v==='number'?M(v):Q(v)));
-  const sep  = label => { blank(); rows.push([Q('--- '+label+' ---')]); };
-
-  // ── COVER ──
-  head('TAXMATE UK - ACCOUNTANT REPORT');
-  row('Tax year', yr);
-  row('Generated', new Date().toLocaleDateString('en-GB'));
-  row('Prepared by', t('acc.prepared'));
-  blank();
-
-  // ── BUSINESSES ──
-  sep('BUSINESSES');
-  head('Name','Structure','Share %');
-  S.businesses.forEach(b=>{
-    row(b.name, b.structure==='partnership'?'Partnership':'Sole trader',
-        b.structure==='partnership'?b.share:100);
-  });
-
-  // ── SUMMARY ──
-  sep('SUMMARY');
-  head('Item','Amount (GBP)');
-  row('Total income',              tx.soleIncome + tx.partShareProfit/((S.businesses.find(b=>b.structure==='partnership')?.share||50)/100));
-  row('Total allowable expenses',  tx.soleExpenses);
-  row('Trading allowance used',    tx.taUsed?'Yes':'No');
-  row('Net profit (taxable)',       tx.myProfit);
-  row('Estimated Income Tax',       tx.incomeTax);
-  row('Estimated Class 4 NI',       tx.class4);
-  row('Estimated total tax bill',   tx.liability);
-  blank();
-
-  // ── MONTHLY P&L ──
-  sep('MONTHLY PROFIT & LOSS');
-  head('Month','Income (GBP)','Expenses (GBP)','Net (GBP)');
-  const months = {};
-  entriesFor(yr,null,null).forEach(e=>{
-    const m = e.date.slice(0,7);
-    if(!months[m]) months[m]={inc:0,exp:0};
-    if(e.kind==='income') months[m].inc+=e.amount;
-    else months[m].exp+=effExact(e);
-  });
-  Object.keys(months).sort().forEach(m=>{
-    const lbl = new Date(m+'-15T12:00:00').toLocaleDateString('en-GB',{month:'long',year:'numeric'});
-    row(lbl, months[m].inc, months[m].exp, months[m].inc-months[m].exp);
-  });
-
-  // ── INCOME BY CATEGORY ──
-  sep('INCOME BY CATEGORY');
-  head('Category','Amount (GBP)');
-  const incCats={};
-  entriesFor(yr,null,'income').forEach(e=>{ incCats[e.cat]=(incCats[e.cat]||0)+e.amount; });
-  Object.entries(incCats).sort((a,b)=>b[1]-a[1]).forEach(([c,v])=>row(catName(c),v));
-
-  // ── EXPENSES BY CATEGORY (SA103 reference) ──
-  sep('EXPENSES BY CATEGORY (SA103 BOX REFERENCE)');
-  head('SA103 Box','Category','Gross (GBP)','Biz Use %','Claimable (GBP)');
-  const BOX_LABEL={19:'Box 19 - Stock',22:'Box 22 - Premises',23:'Box 23 - Repairs',
-    24:'Box 24 - Admin',25:'Box 25 - Motor',26:'Box 26 - Travel',
-    27:'Box 27 - Marketing',33:'Box 33 - Professional fees',35:'Box 35 - Other'};
-  const expByBox={};
-  entriesFor(yr,null,'expense').forEach(e=>{
-    const box=CAT_TO_BOX[e.cat]||35;
-    if(!expByBox[box]) expByBox[box]={gross:0,claimable:0,cats:new Set()};
-    expByBox[box].gross+=e.amount; expByBox[box].claimable+=effExact(e); expByBox[box].cats.add(catName(e.cat));
-  });
-  Object.keys(expByBox).sort((a,b)=>+a-+b).forEach(box=>{
-    const d=expByBox[box];
-    const pct=d.gross>0?Math.round(d.claimable/d.gross*100):0;
-    row(BOX_LABEL[box]||'Box '+box, Array.from(d.cats).join(', '), d.gross, pct, d.claimable);
-  });
-
-  // ── ALL TRANSACTIONS ──
-  sep('ALL TRANSACTIONS');
-  head('Date','Business','Type','Category','SA103 Box','Description','Gross (GBP)','Biz Use %','Claimable (GBP)','Receipt');
-  entriesFor(yr,null,null).sort((a,b)=>a.date.localeCompare(b.date)).forEach(e=>{
-    const b=bizById(e.bizId); const box=e.kind==='expense'?(CAT_TO_BOX[e.cat]||35):'-';
-    const pct=e.kind==='expense'?(e.pct==null?100:e.pct):100;
-    rows.push([Q(e.date),Q(b?b.name:'?'),Q(e.kind),Q(catName(e.cat)),Q(box),
-      Q(e.desc),Q(M(e.amount)),Q(pct+'%'),Q(M(effExact(e))),Q(e.receiptUrl?'Yes':'No')]);
-  });
-
-  // ── EXPORT ──
-  const csv = rows.map(r=>r.join(',')).join('\r\n');
-  const blob = new Blob([csv],{type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'taxmate-accountant-'+yr+'-'+new Date().toISOString().slice(0,10)+'.csv';
-  a.click(); URL.revokeObjectURL(a.href);
-}
-
-function exportCSV(){
-  const head = 'Date,Business,Type,Category,Description,Amount,Business use %,Claimable amount\n';
-  const q = s=>'"'+String(s||'').replace(/"/g,'""')+'"';
-  const rows = S.entries.slice().sort((a,b)=>a.date.localeCompare(b.date)).map(e=>{
-    const b = bizById(e.bizId);
-    return [e.date,q(b?b.name:''),e.kind,q(catName(e.cat)),q(e.desc),e.amount.toFixed(2),
-            e.kind==='expense'?(e.pct==null?100:e.pct):'',
-            (e.kind==='expense'?effExact(e):e.amount).toFixed(2)].join(',');
-  }).join('\n');
-  const blob = new Blob(['\ufeff'+head+rows],{type:'text/csv'});
-  const a = document.createElement('a');
-  a.href = URL.createObjectURL(blob);
-  a.download = 'taxmate-entries-'+todayISO()+'.csv';
   a.click(); URL.revokeObjectURL(a.href);
 }
 function importJSON(ev){
@@ -5167,12 +5073,6 @@ function bizFiguresRaw(b,yr){
   const inc = entriesFor(yr,b.id,'income').reduce((s,e)=>s+Math.max(0,e.amount),0);
   const exp = entriesFor(yr,b.id,'expense').reduce((s,e)=>s+Math.max(0,effExact(e)),0);
   return {income:inc, expenses:exp, profit:inc-exp};
-}
-
-function catExpenses(bizId, yr, cats){
-  return entriesFor(yr,bizId,'expense')
-    .filter(e=>cats.includes(e.cat))
-    .reduce((s,e)=>s+Math.max(0,effExact(e)),0);
 }
 
 function sa103Card(){
@@ -6195,7 +6095,6 @@ function obConfirmAddCat(kind){
   d.addCat[kind]=false; d.newCat[kind]='';
   obRender();
 }
-function obRenameGroup(kind,gi){ /* rename via inline not needed in onboarding; keep simple */ }
 function obDelGroup(kind,gi){
   const d=obMonthData(obCurMonth());
   obGroups(kind).splice(gi,1);
