@@ -68,6 +68,10 @@ html{ touch-action:pan-x pan-y; }
   --shadow-sm:0 1px 2px rgba(22,32,43,.06);
 }
 *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+/* iOS：手指掂到/拖過 UI 唔好自動反白文字（除咗真正輸入嘅地方）*/
+button,.card,.hero,.pill,.entry,.row,.chip,.ob-tile,.cxr-card,.cxr-inner,nav,summary,label,.link,.btn{
+  -webkit-user-select:none;-moz-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable]{-webkit-user-select:text;user-select:text}
 html{-webkit-text-size-adjust:100%}
 body{font-family:'Plus Jakarta Sans','Noto Sans Arabic',system-ui,sans-serif;background:var(--bg);color:var(--ink);
   font-size:16px;line-height:1.5;min-height:100vh}
@@ -105,6 +109,9 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .hero .hi{font-size:14px;font-weight:600;opacity:.9}
 .hero .label{font-size:13px;font-weight:600;opacity:.85;margin-top:12px}
 .hero .big{font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin:2px 0 14px}
+.hero .hero-owe{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.14);border-radius:12px;padding:10px 14px;margin-bottom:14px;cursor:pointer}
+.hero .hero-owe .ho-label{font-size:13px;font-weight:700;opacity:.95}
+.hero .hero-owe .ho-val{font-size:15px;font-weight:800}
 .hero .pills{display:flex;gap:10px;position:relative}
 .hero .pill{flex:1;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
 .hero .pill .pl{font-size:12px;font-weight:600;opacity:.85}
@@ -140,6 +147,8 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .btn:active{transform:scale(.97)}
 .btn.ink{background:var(--btn-dark);color:#fff;box-shadow:0 6px 16px rgba(22,32,43,.25)}
 .btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
+.btn.danger-soft{background:var(--coral-soft);color:var(--coral);box-shadow:none}
+:root[data-theme="dark"] .btn.danger-soft{background:rgba(229,72,77,.16);color:#FF8A8E}
 .btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
 .btn.coral{background:var(--coral);box-shadow:0 6px 16px rgba(229,72,77,.3)}
 .link{background:none;border:0;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;padding:4px}
@@ -648,6 +657,7 @@ en:{
  'home.out':'Money out',
  'home.taxT':'Set aside for tax',
  'home.taxS':'Estimated tax on your profit so far',
+ 'home.oweLine':'Estimated tax to pay',
  'home.biz':'Your businesses',
  'home.addBiz':'Add a business',
  'home.recent':'Recent activity',
@@ -1050,6 +1060,7 @@ zh:{
  'home.out':'開支',
  'home.taxT':'預留交稅',
  'home.taxS':'根據目前利潤估算的稅款',
+ 'home.oweLine':'預計需要繳交嘅稅項',
  'home.biz':'你的業務',
  'home.addBiz':'新增業務',
  'home.recent':'最近記錄',
@@ -1452,6 +1463,7 @@ pl:{
  'home.out':'Wydatki',
  'home.taxT':'Odłóż na podatek',
  'home.taxS':'Szacowany podatek od dotychczasowego zysku',
+ 'home.oweLine':'Szacowany podatek do zapłaty',
  'home.biz':'Twoje firmy',
  'home.addBiz':'Dodaj firmę',
  'home.recent':'Ostatnie wpisy',
@@ -1854,6 +1866,7 @@ ro:{
  'home.out':'Cheltuieli',
  'home.taxT':'Pune deoparte pentru taxe',
  'home.taxS':'Taxa estimată pe profitul de până acum',
+ 'home.oweLine':'Impozit estimat de plată',
  'home.biz':'Afacerile tale',
  'home.addBiz':'Adaugă o afacere',
  'home.recent':'Activitate recentă',
@@ -2256,6 +2269,7 @@ es:{
  'home.out':'Gastos',
  'home.taxT':'Aparta para impuestos',
  'home.taxS':'Impuesto estimado sobre tu beneficio hasta ahora',
+ 'home.oweLine':'Impuesto estimado a pagar',
  'home.biz':'Tus negocios',
  'home.addBiz':'Añadir un negocio',
  'home.recent':'Actividad reciente',
@@ -2658,6 +2672,7 @@ ur:{
  'home.out':'اخراجات',
  'home.taxT':'ٹیکس کے لیے رقم الگ رکھیں',
  'home.taxS':'اب تک کے منافع پر تخمینی ٹیکس',
+ 'home.oweLine':'ادا کرنے کے لیے تخمینی ٹیکس',
  'home.biz':'آپ کے کاروبار',
  'home.addBiz':'کاروبار شامل کریں',
  'home.recent':'حالیہ اندراجات',
@@ -3746,6 +3761,10 @@ function pageHome(){
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.profit',{y:S.year})}</div>
     <div class="big num">${fmt(tx.myProfit)}</div>
+    <div class="hero-owe" onclick="go('tax')">
+      <span class="ho-label">🐷 ${t('home.oweLine')}</span>
+      <span class="ho-val num">${fmt0(owe)} ›</span>
+    </div>
     <div class="pills">
       <button class="pill" onclick="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
       <button class="pill" onclick="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
@@ -3763,30 +3782,21 @@ function pageHome(){
 
   ${deadlineBanner()}
   ${trialBanner()}
-  <div class="card" style="cursor:pointer" onclick="go('tax')">
-    <div class="row">
-      <div class="ico" style="background:var(--brand-soft)">🐷</div>
-      <div class="grow">
-        <div class="t">${t('home.taxT')}</div>
-        <div class="s">${t('home.taxS')}</div>
-      </div>
-      <div class="v num">${fmt0(owe)}</div>
-      <div class="chev">›</div>
-    </div>
-  </div>
 
   <div style="display:flex;gap:10px;margin:14px 0">
     <button class="btn" style="flex:1" onclick="openEntry('income')">＋ ${t('f.addIncome')}</button>
-    <button class="btn soft" style="flex:1" onclick="openEntry('expense')">＋ ${t('f.addExpense')}</button>
+    <button class="btn danger-soft" style="flex:1" onclick="openEntry('expense')">＋ ${t('f.addExpense')}</button>
   </div>
 
   ${obReviewCard()}
-  ${obCatchupCard()}
 
   <div class="h2">${t('home.biz')}</div>
   <div class="card">${bizCards}</div>
   <button class="btn soft" onclick="openBiz()">+ ${t('home.addBiz')}</button>
+
   ${recentHTML}
+
+  ${obCatchupCard()}
   <p class="small">${t('w.priv')}</p>`;
 }
 
@@ -6549,8 +6559,7 @@ function obScrMonth(){
       ${d.milesOpen?`<label style="margin-top:12px">Business miles in ${full}</label><input type="number" inputmode="numeric" placeholder="e.g. 850" value="${d.miles}" oninput="obMiles(this.value)"><div class="ob-hint">Claimed at 55p per mile${d.miles?` · ≈ £${(parseFloat(d.miles)*OB_MILEAGE_RATE).toFixed(2)} deduction`:''}. Only if you haven't already added fuel as an expense.</div><div class="ob-mt8"><button class="ob-link muted" onclick="obCloseMiles()">No driving this month</button></div>`:''}
     </div>
     <div class="ob-totalpill"><span class="ob-tpl">${full} so far</span><span class="ob-tpv">£${(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2)}</span></div>`,
-    `<button class="ob-btn" onclick="obNextMonth()">${isLast?'Finish &amp; see my tax':'Next month →'}</button>
-    <div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obNextMonth()">Nothing for ${full} — skip</button></div>`
+    `<button class="ob-btn" onclick="obNextMonth()">${isLast?'Finish &amp; see my tax':'Next month →'}</button>`
   );
 }
 function obCurMonth(){ return obActiveMonths()[OB.cursor]; }
