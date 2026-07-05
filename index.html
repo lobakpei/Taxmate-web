@@ -154,6 +154,22 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .notice.green{background:var(--brand-soft);color:#065438}
 .notice.amber{background:var(--amber-soft);color:#6b4a06}
 
+/* ── home promo carousel (manual scroll-snap, no autoplay) ── */
+.cxr-wrap{margin-bottom:14px}
+.cxr-track{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;scrollbar-width:none;padding-bottom:2px}
+.cxr-track::-webkit-scrollbar{display:none}
+.cxr-card{position:relative;flex:0 0 100%;scroll-snap-align:center;border-radius:16px;padding:14px 16px;min-height:74px;box-sizing:border-box}
+.cxr-inner{display:flex;align-items:center;gap:12px;cursor:pointer;padding-right:20px}
+.cxr-emoji{font-size:26px;flex-shrink:0;line-height:1}
+.cxr-txt{flex:1;min-width:0}
+.cxr-title{font-size:15px;font-weight:800;line-height:1.25}
+.cxr-body{font-size:12.5px;opacity:.92;line-height:1.35;margin-top:2px}
+.cxr-cta{font-size:13px;font-weight:800;margin-top:7px}
+.cxr-x{position:absolute;top:8px;inset-inline-end:8px;background:rgba(0,0,0,.14);border:none;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:800;cursor:pointer;line-height:1;padding:0;z-index:2}
+.cxr-dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
+.cxr-dot{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .2s,width .2s}
+.cxr-dot.on{background:var(--muted);width:18px;border-radius:3px}
+
 /* ── chips ── */
 .chips{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 12px;-webkit-overflow-scrolling:touch;scrollbar-width:none}
 .chips::-webkit-scrollbar{display:none}
@@ -774,6 +790,29 @@ en:{
  'rc.view':'View receipt',
  'rc.delete':'Delete receipt',
  'rc.uploading':'Uploading…','rc.signinNeeded':'Please sign in again to save to the cloud',
+ 'rcb.tab':'Receipts',
+ 'rcb.title':'Add receipts',
+ 'rcb.intro':'Pick a category and month, then snap a photo for each expense that still needs one.',
+ 'rcb.cat':'Category',
+ 'rcb.month':'Month',
+ 'rcb.allMonths':'All months',
+ 'rcb.noMissing':'Every expense here already has a receipt. 🎉',
+ 'rcb.pickCat':'Pick a category to see expenses that need a receipt.',
+ 'rcb.noExpenses':'No expenses in this category yet.',
+ 'rcb.add':'📷 Add',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'Uploading…',
+ 'rcb.remaining':'{n} still need a receipt',
+ 'rcb.allDone':'All done — every expense here has a receipt.',
+ 'rcb.tip':'Two receipts for one expense? Photograph them side by side.',
+ 'car.proTitle':'Free Pro access',
+ 'car.proBody':'Limited time — activate now.',
+ 'car.proCta':'Activate →',
+ 'car.rcTitle':'Snap your receipts',
+ 'car.rcBody':'Attach photos to your expenses in one place.',
+ 'car.rcCta':'Add receipts →',
+ 'car.rcLockedBody':'A Pro feature — attach photo proof to expenses.',
+ 'car.rcLockedCta':'See Pro →',
  'rc.uploadErr':'Upload failed — try again',
  'rc.deleteConfirm':'Delete this receipt photo?',
  'rc.proOnly':'Receipt photos are a Pro feature — unlock in Settings.',
@@ -988,6 +1027,8 @@ en:{
  'ac.signout':'Sign out',
  'ac.signoutM':'Your data stays on this phone and in your cloud. Sign in again anytime.',
  'ac.local':'This device only — sign in to back up automatically.',
+ 'ac.needSignInTitle':'Sign in required',
+ 'ac.needSignInBody':'Plus and Pro need an account, so your plan follows you across devices. Sign in below, then choose your plan.',
  'ac.cloudOn':'Cloud backup on',
  'ac.err':'Sign-in didn\'t work — try again.',
  'ac.needNet':'Sign-in needs a connection.'
@@ -1151,6 +1192,29 @@ zh:{
  'rc.view':'查看收據',
  'rc.delete':'刪除收據',
  'rc.uploading':'上傳中…','rc.signinNeeded':'請重新登入以儲存到雲端',
+ 'rcb.tab':'收據',
+ 'rcb.title':'新增收據',
+ 'rcb.intro':'揀分類同月份,然後為每筆仲未有收據嘅開支影相。',
+ 'rcb.cat':'分類',
+ 'rcb.month':'月份',
+ 'rcb.allMonths':'所有月份',
+ 'rcb.noMissing':'呢度每筆開支都已經有收據。🎉',
+ 'rcb.pickCat':'揀一個分類,睇下邊啲開支未有收據。',
+ 'rcb.noExpenses':'呢個分類仲未有開支。',
+ 'rcb.add':'📷 加相',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'上傳中…',
+ 'rcb.remaining':'仲有 {n} 筆未有收據',
+ 'rcb.allDone':'全部搞掂 — 呢度每筆開支都有收據。',
+ 'rcb.tip':'一筆開支有兩張單?將兩張並排一齊影。',
+ 'car.proTitle':'免費 Pro',
+ 'car.proBody':'限時 — 立即啟用。',
+ 'car.proCta':'啟用 →',
+ 'car.rcTitle':'影低你啲收據',
+ 'car.rcBody':'喺同一個地方為開支貼上相片。',
+ 'car.rcCta':'新增收據 →',
+ 'car.rcLockedBody':'Pro 功能 — 為開支加上相片證明。',
+ 'car.rcLockedCta':'查看 Pro →',
  'rc.uploadErr':'上傳失敗，請再試',
  'rc.deleteConfirm':'刪除此收據相片？',
  'rc.proOnly':'收據相簿為 Pro 功能，請在設定中解鎖。',
@@ -1365,6 +1429,8 @@ zh:{
  'ac.signout':'登出',
  'ac.signoutM':'數據將保留於本裝置及雲端，可隨時重新登入。',
  'ac.local':'僅限本裝置 — 登入後即自動雲端備份。',
+ 'ac.needSignInTitle':'需要登入',
+ 'ac.needSignInBody':'Plus 同 Pro 需要帳戶,方案先可以跨裝置跟住你。喺下面登入,再揀方案。',
  'ac.cloudOn':'雲端備份開啟',
  'ac.err':'登入失敗,請再試。',
  'ac.needNet':'登入需要網絡連接。'
@@ -1528,6 +1594,29 @@ pl:{
  'rc.view':'Zobacz paragon',
  'rc.delete':'Usuń paragon',
  'rc.uploading':'Przesyłanie…','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
+ 'rcb.tab':'Paragony',
+ 'rcb.title':'Dodaj paragony',
+ 'rcb.intro':'Wybierz kategorię i miesiąc, a następnie zrób zdjęcie każdego wydatku, który go potrzebuje.',
+ 'rcb.cat':'Kategoria',
+ 'rcb.month':'Miesiąc',
+ 'rcb.allMonths':'Wszystkie miesiące',
+ 'rcb.noMissing':'Każdy wydatek tutaj ma już paragon. 🎉',
+ 'rcb.pickCat':'Wybierz kategorię, aby zobaczyć wydatki bez paragonu.',
+ 'rcb.noExpenses':'Brak wydatków w tej kategorii.',
+ 'rcb.add':'📷 Dodaj',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'Przesyłanie…',
+ 'rcb.remaining':'{n} nadal potrzebuje paragonu',
+ 'rcb.allDone':'Gotowe — każdy wydatek ma paragon.',
+ 'rcb.tip':'Dwa paragony za jeden wydatek? Sfotografuj je obok siebie.',
+ 'car.proTitle':'Darmowy dostęp Pro',
+ 'car.proBody':'Czas ograniczony — aktywuj teraz.',
+ 'car.proCta':'Aktywuj →',
+ 'car.rcTitle':'Zrób zdjęcia paragonów',
+ 'car.rcBody':'Dołącz zdjęcia do wydatków w jednym miejscu.',
+ 'car.rcCta':'Dodaj paragony →',
+ 'car.rcLockedBody':'Funkcja Pro — dołącz dowód zdjęciowy do wydatków.',
+ 'car.rcLockedCta':'Zobacz Pro →',
  'rc.uploadErr':'Błąd przesyłania — spróbuj ponownie',
  'rc.deleteConfirm':'Usunąć to zdjęcie paragonu?',
  'rc.proOnly':'Zdjęcia paragonów to funkcja Pro — odblokuj w Ustawieniach.',
@@ -1742,6 +1831,8 @@ pl:{
  'ac.signout':'Wyloguj',
  'ac.signoutM':'Dane zostają na tym telefonie i w chmurze. Zaloguj się ponownie kiedy chcesz.',
  'ac.local':'Tylko to urządzenie — zaloguj się, by mieć automatyczną kopię.',
+ 'ac.needSignInTitle':'Wymagane logowanie',
+ 'ac.needSignInBody':'Plus i Pro wymagają konta, aby Twój plan działał na wszystkich urządzeniach. Zaloguj się poniżej, a następnie wybierz plan.',
  'ac.cloudOn':'Kopia w chmurze włączona',
  'ac.err':'Logowanie nie powiodło się — spróbuj ponownie.',
  'ac.needNet':'Logowanie wymaga połączenia.'
@@ -1905,6 +1996,29 @@ ro:{
  'rc.view':'Vezi bon',
  'rc.delete':'Șterge bon',
  'rc.uploading':'Se încarcă…','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
+ 'rcb.tab':'Bonuri',
+ 'rcb.title':'Adaugă bonuri',
+ 'rcb.intro':'Alege o categorie și o lună, apoi fotografiază fiecare cheltuială care încă are nevoie.',
+ 'rcb.cat':'Categorie',
+ 'rcb.month':'Lună',
+ 'rcb.allMonths':'Toate lunile',
+ 'rcb.noMissing':'Fiecare cheltuială de aici are deja bon. 🎉',
+ 'rcb.pickCat':'Alege o categorie pentru a vedea cheltuielile fără bon.',
+ 'rcb.noExpenses':'Nicio cheltuială în această categorie.',
+ 'rcb.add':'📷 Adaugă',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'Se încarcă…',
+ 'rcb.remaining':'{n} încă au nevoie de bon',
+ 'rcb.allDone':'Gata — fiecare cheltuială are bon.',
+ 'rcb.tip':'Două bonuri pentru o cheltuială? Fotografiază-le alăturat.',
+ 'car.proTitle':'Acces Pro gratuit',
+ 'car.proBody':'Timp limitat — activează acum.',
+ 'car.proCta':'Activează →',
+ 'car.rcTitle':'Fotografiază bonurile',
+ 'car.rcBody':'Atașează poze la cheltuieli într-un singur loc.',
+ 'car.rcCta':'Adaugă bonuri →',
+ 'car.rcLockedBody':'O funcție Pro — atașează dovezi foto la cheltuieli.',
+ 'car.rcLockedCta':'Vezi Pro →',
  'rc.uploadErr':'Eroare la încărcare — încearcă din nou',
  'rc.deleteConfirm':'Ștergi această fotografie?',
  'rc.proOnly':'Pozele cu bonuri sunt o funcție Pro — deblocheaz-o în Setări.',
@@ -2119,6 +2233,8 @@ ro:{
  'ac.signout':'Deconectare',
  'ac.signoutM':'Datele rămân pe acest telefon și în cloud. Reconectează-te oricând.',
  'ac.local':'Doar acest dispozitiv — conectează-te pentru backup automat.',
+ 'ac.needSignInTitle':'Autentificare necesară',
+ 'ac.needSignInBody':'Plus și Pro necesită un cont, astfel încât planul tău să te urmeze pe toate dispozitivele. Conectează-te mai jos, apoi alege planul.',
  'ac.cloudOn':'Backup în cloud activ',
  'ac.err':'Conectarea a eșuat — încearcă din nou.',
  'ac.needNet':'Conectarea necesită internet.'
@@ -2282,6 +2398,29 @@ es:{
  'rc.view':'Ver recibo',
  'rc.delete':'Eliminar recibo',
  'rc.uploading':'Subiendo…','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
+ 'rcb.tab':'Recibos',
+ 'rcb.title':'Añadir recibos',
+ 'rcb.intro':'Elige una categoría y un mes, luego haz una foto de cada gasto que aún lo necesite.',
+ 'rcb.cat':'Categoría',
+ 'rcb.month':'Mes',
+ 'rcb.allMonths':'Todos los meses',
+ 'rcb.noMissing':'Cada gasto aquí ya tiene recibo. 🎉',
+ 'rcb.pickCat':'Elige una categoría para ver los gastos sin recibo.',
+ 'rcb.noExpenses':'No hay gastos en esta categoría.',
+ 'rcb.add':'📷 Añadir',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'Subiendo…',
+ 'rcb.remaining':'{n} aún necesitan recibo',
+ 'rcb.allDone':'Listo — cada gasto tiene recibo.',
+ 'rcb.tip':'¿Dos recibos para un gasto? Fotografíalos uno al lado del otro.',
+ 'car.proTitle':'Acceso Pro gratis',
+ 'car.proBody':'Tiempo limitado — actívalo ahora.',
+ 'car.proCta':'Activar →',
+ 'car.rcTitle':'Fotografía tus recibos',
+ 'car.rcBody':'Adjunta fotos a tus gastos en un solo lugar.',
+ 'car.rcCta':'Añadir recibos →',
+ 'car.rcLockedBody':'Una función Pro — adjunta prueba fotográfica a los gastos.',
+ 'car.rcLockedCta':'Ver Pro →',
  'rc.uploadErr':'Error al subir — inténtalo de nuevo',
  'rc.deleteConfirm':'¿Eliminar esta foto del recibo?',
  'rc.proOnly':'Las fotos de recibos son una función Pro — desbloquéala en Ajustes.',
@@ -2496,6 +2635,8 @@ es:{
  'ac.signout':'Cerrar sesión',
  'ac.signoutM':'Tus datos se quedan en este móvil y en tu nube. Vuelve a entrar cuando quieras.',
  'ac.local':'Solo este dispositivo — inicia sesión para copia automática.',
+ 'ac.needSignInTitle':'Inicio de sesión requerido',
+ 'ac.needSignInBody':'Plus y Pro necesitan una cuenta para que tu plan te acompañe en todos tus dispositivos. Inicia sesión abajo y luego elige tu plan.',
  'ac.cloudOn':'Copia en la nube activa',
  'ac.err':'No se pudo iniciar sesión — inténtalo de nuevo.',
  'ac.needNet':'Iniciar sesión requiere conexión.'
@@ -2659,6 +2800,29 @@ ur:{
  'rc.view':'رسید دیکھیں',
  'rc.delete':'رسید حذف کریں',
  'rc.uploading':'اپلوڈ ہو رہا ہے…','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
+ 'rcb.tab':'رسیدیں',
+ 'rcb.title':'رسیدیں شامل کریں',
+ 'rcb.intro':'ایک زمرہ اور مہینہ منتخب کریں، پھر ہر اُس خرچ کی تصویر لیں جسے ابھی رسید درکار ہے۔',
+ 'rcb.cat':'زمرہ',
+ 'rcb.month':'مہینہ',
+ 'rcb.allMonths':'تمام مہینے',
+ 'rcb.noMissing':'یہاں ہر خرچ کی رسید پہلے سے موجود ہے۔ 🎉',
+ 'rcb.pickCat':'رسید کے بغیر خرچ دیکھنے کے لیے ایک زمرہ منتخب کریں۔',
+ 'rcb.noExpenses':'اس زمرے میں ابھی کوئی خرچ نہیں۔',
+ 'rcb.add':'📷 شامل کریں',
+ 'rcb.done':'✓',
+ 'rcb.uploading':'اپلوڈ ہو رہا ہے…',
+ 'rcb.remaining':'{n} کو ابھی رسید درکار ہے',
+ 'rcb.allDone':'مکمل — یہاں ہر خرچ کی رسید موجود ہے۔',
+ 'rcb.tip':'ایک خرچ کے لیے دو رسیدیں؟ انہیں ساتھ ساتھ رکھ کر تصویر لیں۔',
+ 'car.proTitle':'مفت Pro رسائی',
+ 'car.proBody':'محدود وقت — ابھی فعال کریں۔',
+ 'car.proCta':'فعال کریں →',
+ 'car.rcTitle':'اپنی رسیدوں کی تصویر لیں',
+ 'car.rcBody':'اپنے اخراجات کے ساتھ تصاویر ایک جگہ منسلک کریں۔',
+ 'car.rcCta':'رسیدیں شامل کریں →',
+ 'car.rcLockedBody':'ایک Pro فیچر — اخراجات کے ساتھ تصویری ثبوت منسلک کریں۔',
+ 'car.rcLockedCta':'Pro دیکھیں →',
  'rc.uploadErr':'اپلوڈ ناکام — دوبارہ کوشش کریں',
  'rc.deleteConfirm':'یہ رسید کی تصویر حذف کریں؟',
  'rc.proOnly':'رسید فوٹو Pro فیچر ہے — ترتیبات میں کھولیں۔',
@@ -2871,6 +3035,8 @@ ur:{
  'ac.signout':'سائن آؤٹ',
  'ac.signoutM':'ڈیٹا اس فون اور آپ کے کلاؤڈ میں محفوظ رہے گا۔ جب چاہیں دوبارہ سائن ان کریں۔',
  'ac.local':'صرف یہ ڈیوائس — خودکار بیک اپ کے لیے سائن ان کریں۔',
+ 'ac.needSignInTitle':'سائن اِن ضروری ہے',
+ 'ac.needSignInBody':'Plus اور Pro کے لیے اکاؤنٹ ضروری ہے، تاکہ آپ کا پلان تمام ڈیوائسز پر آپ کے ساتھ رہے۔ نیچے سائن اِن کریں، پھر اپنا پلان منتخب کریں۔',
  'ac.cloudOn':'کلاؤڈ بیک اپ آن',
  'ac.err':'سائن ان ناکام — دوبارہ کوشش کریں۔',
  'ac.needNet':'سائن ان کے لیے انٹرنیٹ درکار ہے۔'
@@ -3112,13 +3278,26 @@ function lockSeeplans(){
   S.tab='more'; render();
   setTimeout(()=>{ const el=document.getElementById('plans-anchor'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 150);
 }
+// Plus/Pro 一定要真正登入(唔係匿名 session)先可以 switch——otherwise 個「方案」淨係綁死喺呢部電話,
+// 換機/清 cache 就會走數,亦同將來 Stripe 要求嘅「帳戶先有得畀錢」對唔上。降返 free 唔受影響。
+function requireLoginForTier(){
+  if(cloudUser()) return true;
+  confirmAction(
+    t('ac.needSignInTitle'),
+    t('ac.needSignInBody'),
+    ()=>{ const el=document.getElementById('account-anchor'); if(el) el.scrollIntoView({behavior:'smooth'}); }
+  );
+  return false;
+}
 function setTier(tier){
+  if(tier!=='free' && !requireLoginForTier()) return;
   S.settings.tier = tier;
   S.settings.pro = (tier==='pro'); // keep legacy flag roughly in sync
   save(); render();
   toast(t('tier.active')+' · '+t('tier.'+tier));
 }
 function activateTrial(){
+  if(!requireLoginForTier()) return;
   const tr = trialStatus();
   const endStr = tr.endDate ? tr.endDate.toLocaleDateString(LOCALES[S.settings.lang]||'en-GB', {year:'numeric',month:'long',day:'numeric'}) : '';
   confirmAction(
@@ -3333,8 +3512,10 @@ const NAV_ICONS = {
   more:'<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="19" cy="12" r="1.6"/></svg>'
 };
 function renderNav(){
-  document.getElementById('nav').innerHTML = ['home','income','expenses','tax','more'].map(n=>
-    `<button class="${S.tab===n?'on':''}" onclick="go('${n}')">${NAV_ICONS[n]}<span>${t('nav.'+n)}</span></button>`).join('');
+  document.getElementById('nav').innerHTML = ['home','income','expenses','tax','more'].map(n=>{
+    const on = (S.tab===n) || (n==='expenses' && S.tab==='receipts'); // receipts 係開支嘅子頁
+    return `<button class="${on?'on':''}" onclick="go('${n}')">${NAV_ICONS[n]}<span>${t('nav.'+n)}</span></button>`;
+  }).join('');
 }
 function go(tab){ S.tab=tab; save(); render(); window.scrollTo(0,0); }
 function setYear(y){ S.year=y; save(); render(); }
@@ -3351,6 +3532,7 @@ function render(){
   else if(S.tab==='income') page.innerHTML = pageList('income');
   else if(S.tab==='expenses') page.innerHTML = pageList('expense');
   else if(S.tab==='tax') page.innerHTML = pageTax();
+  else if(S.tab==='receipts') page.innerHTML = pageReceipts();
   else page.innerHTML = pageMore();
 }
 
@@ -3421,6 +3603,104 @@ function hideProBanner(){
   try{ sessionStorage.setItem('tmProBannerHidden','1'); }catch(e){}
   const el=document.getElementById('pro-banner'); if(el) el.remove();
 }
+
+/* ─── 主頁頂部宣傳輪播（手動 slide、最多幾張、可 dismiss）───
+   每張卡係一個 promo，唔同 tipsCard（tipsCard 係稅頁、被動、睇你資料先觸發）。*/
+function carouselDismissed(){
+  try{ return JSON.parse(sessionStorage.getItem('tmCarouselDismissed')||'[]'); }catch(e){ return []; }
+}
+function dismissCarouselCard(id){
+  try{
+    const d=carouselDismissed(); if(!d.includes(id)) d.push(id);
+    sessionStorage.setItem('tmCarouselDismissed', JSON.stringify(d));
+  }catch(e){}
+  render();
+}
+function carouselCards(){
+  const dismissed = carouselDismissed();
+  const cards = [];
+  const isPro = currentTier()!=='free';
+  const canReceipt = hasFeature('receiptPhoto');
+
+  // 卡 1：限時免費 Pro（只在未升級時）
+  if(!isPro && !dismissed.includes('pro')){
+    cards.push({ id:'pro', bg:'linear-gradient(135deg,#FFB347,#FF9500)', fg:'#3D2800', emoji:'🎁',
+      title:t('car.proTitle'), body:t('car.proBody'), cta:t('car.proCta'),
+      onclick:'lockSeeplans()' });
+  }
+
+  // 卡 2：影收據 —— 有 Pro 就去批量補收據頁；未有就去 Pro 方案頁（+ 提示係 Pro 功能）
+  if(!dismissed.includes('receipt')){
+    cards.push({ id:'receipt', bg:'linear-gradient(135deg,#3478F6,#1F4E9C)', fg:'#EAF1FF', emoji:'📸',
+      title:t('car.rcTitle'),
+      body: canReceipt ? t('car.rcBody') : t('car.rcLockedBody'),
+      cta:  canReceipt ? t('car.rcCta') : t('car.rcLockedCta'),
+      onclick: canReceipt ? "go('receipts')" : "lockGuard('receiptPhoto')" });
+  }
+
+  // 卡 3：最相關嘅一條 context tip（借用 tipsCard 嘅資料，但淨係抽一條擺喺輪播）
+  if(!dismissed.includes('tip')){
+    const tip = topContextTip();
+    if(tip){
+      cards.push({ id:'tip', bg:'linear-gradient(135deg,#0AA968,#0D8C86)', fg:'#EAFBF3', emoji:tip.icon,
+        title:tip.t, body:tip.b, cta:t('home.taxT'), onclick:"go('tax')" });
+    }
+  }
+  return cards;
+}
+function homeCarousel(){
+  const cards = carouselCards();
+  if(!cards.length) return '';
+  const slides = cards.map((c,i)=>`
+    <div class="cxr-card" style="background:${c.bg};color:${c.fg}">
+      <button class="cxr-x" style="color:${c.fg}" onclick="event.stopPropagation();dismissCarouselCard('${c.id}')" aria-label="Dismiss">✕</button>
+      <div class="cxr-inner" onclick="${c.onclick}">
+        <div class="cxr-emoji">${c.emoji}</div>
+        <div class="cxr-txt">
+          <div class="cxr-title">${c.title}</div>
+          <div class="cxr-body">${c.body}</div>
+          <div class="cxr-cta">${c.cta}</div>
+        </div>
+      </div>
+    </div>`).join('');
+  const dots = cards.length>1
+    ? `<div class="cxr-dots">${cards.map((c,i)=>`<span class="cxr-dot${i===0?' on':''}" data-i="${i}"></span>`).join('')}</div>`
+    : '';
+  return `<div class="cxr-wrap">
+    <div class="cxr-track" id="cxr-track" onscroll="cxrOnScroll(this)">${slides}</div>
+    ${dots}
+  </div>`;
+}
+function cxrOnScroll(el){
+  // 更新指示點（純顯示，唔影響任何資料）
+  const dots = el.parentElement.querySelectorAll('.cxr-dot');
+  if(!dots.length) return;
+  const i = Math.round(el.scrollLeft / el.clientWidth);
+  dots.forEach((d,idx)=>d.classList.toggle('on', idx===i));
+}
+/* 由 tipsCard 嘅同一套規則抽「最相關嗰一條」，畀輪播用（唔改 tipsCard 本身）*/
+function topContextTip(){
+  const yr = S.year;
+  const d = yd();
+  const dismissed = d.dismissedTips || [];
+  const hasIncome = entriesFor(yr,null,'income').length>0 || calcTax(yr).myProfit!==0;
+  if(!hasIncome) return null;
+  const hasSole = S.businesses.some(b=>b.structure==='sole');
+  const exp = entriesFor(yr,null,'expense');
+  // 收據提示（Pro）——一疊未補相就係最實際嗰條
+  if(hasFeature('receiptPhoto') && !dismissed.includes('receipt_missing')){
+    const noR = exp.filter(e=>!e.receiptUrl);
+    if(noR.length>=3){
+      const suf = noR.length===1?t('tip.entry'):t('tip.entries');
+      return {icon:'📸', t:t('tip.receipt_t'), b:t('tip.receipt_b',{n:noR.length,e:' '+suf})};
+    }
+  }
+  if(!dismissed.includes('home_working') && hasSole && !exp.some(e=>e.cat==='home'))
+    return {icon:'🏠', t:t('tip.home_t'), b:t('tip.home_b')};
+  if(!dismissed.includes('phone_claim') && hasSole && !exp.some(e=>e.cat==='phone'))
+    return {icon:'📱', t:t('tip.phone_t'), b:t('tip.phone_b')};
+  return null;
+}
 function pageHome(){
   const tx = calcTax(S.year);
   const totalIn = entriesFor(S.year,null,'income').reduce((s,e)=>s+e.amount,0);
@@ -3448,7 +3728,7 @@ function pageHome(){
     <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
 
   return `
-  ${proBanner()}
+  ${homeCarousel()}
   <div class="hero">
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.profit',{y:S.year})}</div>
@@ -3687,12 +3967,146 @@ function pageTax(){
 }
 function setTaMode(m){ yd().taMode=m; save(); render(); }
 
+/* ═══════════ BATCH RECEIPTS (independent page) ═══════════
+   補收據頁：揀分類＋月份 → 列出「同類、未有收據」嘅開支 → 逐行影相貼上。
+   唔製造新 data（純補相落已存在嘅開支），一筆一相。Pro 功能。*/
+function receiptsUI(){ return {cat: RCB.cat, month: RCB.month}; }
+let RCB = { cat:'all', month:'all' };
+function rcbSetCat(v){ RCB.cat=v; render(); }
+function rcbSetMonth(v){ RCB.month=v; render(); }
+
+function pageReceipts(){
+  const yr = S.year;
+  const backBtn = `<button class="btn ghost" style="width:auto;padding:8px 14px;margin-bottom:12px" onclick="go('expenses')">‹ ${t('nav.expenses')}</button>`;
+
+  // Pro gate：未夠 Pro 就唔畀入，引導升級
+  if(!hasFeature('receiptPhoto')){
+    return `${backBtn}
+    <div class="h1">${t('rcb.title')}</div>
+    <div class="card" style="text-align:center;padding:28px 18px">
+      <div style="font-size:40px;margin-bottom:8px">📸</div>
+      <div class="t" style="margin-bottom:6px">${t('car.rcTitle')}</div>
+      <div class="s" style="margin-bottom:16px">${t('car.rcLockedBody')}</div>
+      <button class="btn ink" onclick="lockSeeplans()">${t('car.rcLockedCta')}</button>
+    </div>`;
+  }
+
+  // 所有「開支 + 未有收據」entries（本年度）
+  let missing = entriesFor(yr,null,'expense').filter(e=>!e.receiptUrl);
+
+  // 分類選項（由「未補相」嗰堆開支本身抽出，唔會列出無關分類）
+  const catIds = [...new Set(missing.map(e=>e.cat))];
+  const catOpts = catIds.map(cid=>`<option value="${cid}" ${RCB.cat===cid?'selected':''}>${(catById(cid).e||'🏷️')+' '+catName(cid)}</option>`).join('');
+
+  // 月份選項（同樣由未補相開支抽出）
+  const monthsSet = [...new Set(missing.map(e=>e.date.slice(0,7)))].sort().reverse();
+  const monthLabel = ym => { const [y,m]=ym.split('-'); return new Date(+y,+m-1,1).toLocaleDateString(locale(),{month:'long',year:'numeric'}); };
+  const monthOpts = monthsSet.map(ym=>`<option value="${ym}" ${RCB.month===ym?'selected':''}>${monthLabel(ym)}</option>`).join('');
+
+  // 套用篩選
+  let list = missing.slice();
+  if(RCB.cat!=='all') list = list.filter(e=>e.cat===RCB.cat);
+  if(RCB.month!=='all') list = list.filter(e=>e.date.slice(0,7)===RCB.month);
+  list.sort((a,b)=>b.date.localeCompare(a.date));
+
+  const controls = `<div class="card" style="padding:14px">
+    <div class="s" style="margin-bottom:12px">${t('rcb.intro')}</div>
+    <div style="display:flex;gap:10px;flex-wrap:wrap">
+      <div style="flex:1;min-width:140px">
+        <label style="display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:4px">${t('rcb.cat')}</label>
+        <select onchange="rcbSetCat(this.value)">
+          <option value="all" ${RCB.cat==='all'?'selected':''}>${t('flt.all')}</option>
+          ${catOpts}
+        </select>
+      </div>
+      <div style="flex:1;min-width:140px">
+        <label style="display:block;font-size:12px;font-weight:800;color:var(--muted);margin-bottom:4px">${t('rcb.month')}</label>
+        <select onchange="rcbSetMonth(this.value)">
+          <option value="all" ${RCB.month==='all'?'selected':''}>${t('rcb.allMonths')}</option>
+          ${monthOpts}
+        </select>
+      </div>
+    </div>
+  </div>`;
+
+  // 一疊都補晒 → 恭喜；未揀到嘢 → 提示
+  let body;
+  if(!missing.length){
+    body = `<div class="card" style="text-align:center;padding:24px"><div style="font-size:32px;margin-bottom:6px">🎉</div><div class="s">${t('rcb.allDone')}</div></div>`;
+  } else if(!list.length){
+    body = `<div class="card" style="text-align:center;padding:24px"><div class="s">${t('rcb.noMissing')}</div></div>`;
+  } else {
+    const rows = list.map(e=>{
+      const c = catById(e.cat);
+      const b = bizById(e.bizId);
+      const d = new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
+      return `<div class="frow" style="align-items:center;padding:10px 0">
+        <div class="edot" style="background:${c.dot}1A;flex-shrink:0">${c.e||'🏷️'}</div>
+        <div class="grow" style="min-width:0;margin-inline-start:10px">
+          <div class="t" style="font-size:14px">${esc(e.desc)||esc(catName(c.id))}</div>
+          <div class="s">${d}${b?' · '+esc(b.name):''} · ${fmt(effExact(e)).replace('−','')}</div>
+        </div>
+        <label class="btn soft" style="width:auto;padding:8px 14px;flex-shrink:0;cursor:pointer;margin:0" id="rcb-btn-${e.id}">
+          <span id="rcb-label-${e.id}">${t('rcb.add')}</span>
+          <input type="file" accept="image/*" capture="environment" style="display:none" onchange="onBatchReceiptFile('${e.id}', this)">
+        </label>
+      </div>`;
+    }).join('');
+    const remain = list.length;
+    body = `<div class="card">
+      <div class="row" style="margin-bottom:6px">
+        <div class="grow"><div class="t" style="font-size:14px">${t('rcb.remaining',{n:remain})}</div></div>
+      </div>
+      ${rows}
+      <div class="s" style="margin-top:12px;opacity:.8">💡 ${t('rcb.tip')}</div>
+    </div>`;
+  }
+
+  return `${backBtn}
+  <div class="h1">${t('rcb.title')}</div>
+  ${controls}
+  ${body}`;
+}
+
+async function onBatchReceiptFile(entryId, inputEl){
+  const file = inputEl.files[0]; if(!file) return;
+  inputEl.value='';
+  if(!hasFeature('receiptPhoto')){ lockGuard('receiptPhoto'); return; }
+  const e = S.entries.find(x=>x.id===entryId);
+  if(!e) return;
+  const labelEl = document.getElementById('rcb-label-'+entryId);
+  const btnEl = document.getElementById('rcb-btn-'+entryId);
+  if(labelEl) labelEl.textContent = '⏳ '+t('rcb.uploading');
+  if(btnEl) btnEl.style.opacity = '0.6';
+  try{
+    const compressed = await compressImage(file, 1200, 0.82);
+    const db = await ensureFB(); if(!db) throw new Error('no-db');
+    const u = await ensureAuth(); if(!u) throw new Error('no-auth');
+    try{ await u.getIdToken(); }catch(_){}
+    const path = `receipts/${u.uid}/${entryId}.jpg`;   // 同單筆上載完全一致嘅路徑規則
+    const ref = firebase.storage().ref(path);
+    await ref.put(compressed, {contentType:'image/jpeg'});
+    const url = await ref.getDownloadURL();
+    e.receiptUrl = url;
+    e.receiptPath = path;
+    pushEntryRemote(e);  // partnership sync（如有）
+    save();              // 個人雲端 sync 由 save() 自動觸發
+    render();            // 補完該筆會由未補清單消失
+    toast(t('rcb.done'));
+  }catch(err){
+    console.warn(err);
+    if(labelEl) labelEl.textContent = t('rcb.add');
+    if(btnEl) btnEl.style.opacity = '';
+    toast(t('rc.uploadErr')||'Upload failed');
+  }
+}
+
 /* ═══════════ MORE ═══════════ */
 function pageMore(){
   const GOOGLE_SVG = `<svg width="17" height="17" viewBox="0 0 48 48" style="flex-shrink:0"><path fill="#FFC107" d="M43.6 20.1H42V20H24v8h11.3C33.7 32.7 29.2 36 24 36c-6.6 0-12-5.4-12-12s5.4-12 12-12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 13 4 4 13 4 24s9 20 20 20 20-9 20-20c0-1.3-.1-2.6-.4-3.9z"/><path fill="#FF3D00" d="M6.3 14.7l6.6 4.8C14.7 15.1 19 12 24 12c3.1 0 5.8 1.2 8 3l5.7-5.7C34.3 6.1 29.4 4 24 4 16.3 4 9.7 8.3 6.3 14.7z"/><path fill="#4CAF50" d="M24 44c5.2 0 9.9-2 13.4-5.2l-6.2-5.2C29.2 35.1 26.7 36 24 36c-5.2 0-9.6-3.3-11.3-8l-6.5 5C9.5 39.6 16.2 44 24 44z"/><path fill="#1976D2" d="M43.6 20.1H42V20H24v8h11.3c-.8 2.2-2.2 4.2-4.1 5.6l6.2 5.2C36.9 39.2 44 34 44 24c0-1.3-.1-2.6-.4-3.9z"/></svg>`;
   const secHead = key => `<div style="font-size:12px;font-weight:800;color:var(--muted);letter-spacing:.6px;padding:22px 4px 10px">${t(key)}</div>`;
 
-  const accountCard = `<div class="card">
+  const accountCard = `<div class="card" id="account-anchor">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
       <div style="font-size:18px">☁️</div><div class="t">${t('ac.title')}</div>
     </div>
