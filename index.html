@@ -187,6 +187,10 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 input[type=text],input[type=number],input[type=date],select,textarea{
   width:100%;font-family:inherit;font-size:16px;padding:13px 15px;border:1.5px solid var(--line);
   border-radius:var(--r-sm);background:#FAFBFC;color:var(--ink);-webkit-appearance:none;appearance:none}
+/* 剷走 number input 個原生上下 spinner(桌面版先見到,撳落個掣就有加減箭嘴)——全部數字欄都唔需要 */
+input[type=number]::-webkit-outer-spin-button,
+input[type=number]::-webkit-inner-spin-button{-webkit-appearance:none;margin:0}
+input[type=number]{-moz-appearance:textfield}
 input:focus,select:focus{border-color:var(--brand);background:#fff}
 input.err{border-color:var(--coral);background:var(--coral-soft)}
 .ferr{font-size:13px;font-weight:700;color:var(--coral);margin-top:5px;display:none}
@@ -6048,12 +6052,12 @@ function obScrMonth(){
   // inline "add category" input (no popup)
   const addCatHTML = (kind) => d.addCat[kind]
     ? `<div class="ob-newcat">
-         <input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)">
+         <div class="ob-ncemojiwrap"><span class="ob-nclabel">Icon</span><input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)"></div>
          <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
          <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
          <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
        </div>
-       <div class="ob-hint" style="margin:6px 2px 0">Small box = icon. Tap it and pick an emoji from your keyboard (optional).</div>`
+       <div class="ob-hint" style="margin:6px 2px 0">Tap the icon box and pick an emoji from your keyboard — every category needs one.</div>`
     : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
 
   // MONEY IN
@@ -6144,13 +6148,20 @@ function obTypeNewCatEmoji(kind,el){
   const d=obMonthData(obCurMonth());
   d.newCatE[kind]=lastGrapheme(el.value);
   el.value=d.newCatE[kind];
+  el.classList.remove('err');
 }
 function obConfirmAddCat(kind){
   const d=obMonthData(obCurMonth());
   const name=(d.newCat[kind]||'').trim();
   if(!name){ obCancelAddCat(kind); return; }
+  const emoji=(d.newCatE&&d.newCatE[kind])||'';
+  if(!emoji){
+    const el=document.getElementById('ob-newcat-e-'+kind);
+    if(el){ el.classList.add('err'); el.focus(); }
+    return; // icon is required — block confirm until one is picked
+  }
   if(kind==='in') d.inGrouped=true;
-  obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), e:(d.newCatE&&d.newCatE[kind])||'', open:true, rows:[{d:'',v:'',day:''}]});
+  obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), e:emoji, open:true, rows:[{d:'',v:'',day:''}]});
   d.addCat[kind]=false; d.newCat[kind]=''; if(d.newCatE)d.newCatE[kind]='';
   obRender();
 }
@@ -6541,8 +6552,13 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   /* inline add-category input */
   .ob-newcat{display:flex;align-items:center;gap:7px;margin-top:4px}
   .ob-newcat .ob-fdesc{flex:1;background:var(--card);border-color:var(--brand)}
-  .ob-ncemoji{flex-shrink:0;width:46px;height:42px;text-align:center;font-size:20px;font-family:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:0;color:var(--ink)}
+  .ob-ncemojiwrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
+  .ob-nclabel{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  /* 呢個 selector 特登加多層 (#ob-root .ob-newcat …) 先夠 specificity 打贏 #ob-root input[type=text]{width:100%} ——
+     舊版冧咗畀嗰條全局 rule 打贏,搞到個 emoji 格谷到成排咁長,個名格就縮埋一嚿 */
+  #ob-root .ob-newcat .ob-ncemoji{flex-shrink:0;width:46px;height:42px;text-align:center;font-size:20px;font-family:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:0;color:var(--ink)}
   .ob-ncemoji:focus{border-color:var(--brand);outline:none}
+  .ob-ncemoji.err{border-color:var(--coral)}
   /* one-tap chips for categories used in other months */
   .ob-prevcats{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 2px}
   .ob-pclab{font-size:12px;font-weight:700;color:var(--muted)}
