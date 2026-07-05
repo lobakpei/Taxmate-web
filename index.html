@@ -5832,7 +5832,9 @@ function obDefaultState(loggedIn){
 function obKey(mObj){ return mObj.year+'-'+mObj.m; }
 function obMonthData(mObj){
   const k=obKey(mObj);
-  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''},newCatE:{in:'',out:''}};
+  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''},newCatE:{in:'',out:''},catHintOpen:{in:false,out:false},emojiPickerOpen:{in:false,out:false}};
+  if(!OB.data[k].catHintOpen) OB.data[k].catHintOpen={in:false,out:false};
+  if(!OB.data[k].emojiPickerOpen) OB.data[k].emojiPickerOpen={in:false,out:false};
   if(!OB.data[k].newCatE) OB.data[k].newCatE={in:'',out:''};
   return OB.data[k];
 }
@@ -6049,15 +6051,24 @@ function obScrMonth(){
       `<button class="ob-pchip" onclick="obAddPrevCat('${kind}',${i})">${c.e?esc(c.e)+' ':''}${esc(c.name)}</button>`).join('')}</div>`;
   };
 
+  // tap-to-pick emoji grid — reuses the existing CAT_EMOJIS list (already curated, never actually rendered anywhere until now)
+  const emojiGridHTML = (kind) => (d.emojiPickerOpen&&d.emojiPickerOpen[kind])
+    ? `<div class="ob-emojigrid" id="ob-emojigrid-${kind}">
+         ${CAT_EMOJIS.map(e=>`<button type="button" class="ob-egbtn" onclick="obPickCatEmoji('${kind}','${e}')">${e}</button>`).join('')}
+         <button type="button" class="ob-egclose" onclick="obCloseEmojiPicker('${kind}')">Close</button>
+       </div>` : '';
+
   // inline "add category" input (no popup)
   const addCatHTML = (kind) => d.addCat[kind]
     ? `<div class="ob-newcat">
-         <div class="ob-ncemojiwrap"><span class="ob-nclabel">Icon</span><input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)"></div>
+         <input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" placeholder="📁" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)" onfocus="obOpenEmojiPicker('${kind}')">
+         <button type="button" class="ob-ncinfo" onclick="obToggleCatHint('${kind}')" aria-label="What is this box for?">!</button>
          <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
          <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
          <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
        </div>
-       <div class="ob-hint" style="margin:6px 2px 0">Tap the icon box and pick an emoji from your keyboard — every category needs one.</div>`
+       ${emojiGridHTML(kind)}
+       ${(d.catHintOpen&&d.catHintOpen[kind]) ? `<div class="ob-hint" style="margin:6px 2px 0">Tap the box, then pick any emoji. Required.</div>` : ''}`
     : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
 
   // MONEY IN
@@ -6143,19 +6154,66 @@ function obCancelAddCat(kind){
   obRender();
 }
 function obTypeNewCat(kind,val){ const d=obMonthData(obCurMonth()); d.newCat[kind]=val; }
-/* icon box keeps exactly ONE emoji — picking a new one replaces the old */
+// 判斷係咪真係一個 emoji(唔係普通字母/數字)。用 Extended_Pictographic 唔用 \p{Emoji} ——
+// \p{Emoji} 因為歷史原因連 0-9、#、* 都算(keycap sequence 嘅底),\p{Extended_Pictographic} 先啱用嚟分真假 emoji
+function isEmojiIcon(s){
+  if(!s) return false;
+  try{ return /\p{Extended_Pictographic}/u.test(s); }
+  catch(e){ return true; } // 舊瀏覽器唔支援就寬鬆處理,唔好因為呢個擋晒所有人
+}
+function obToggleCatHint(kind){
+  const d=obMonthData(obCurMonth());
+  if(!d.catHintOpen) d.catHintOpen={in:false,out:false};
+  d.catHintOpen[kind]=!d.catHintOpen[kind];
+  obRender();
+}
+/* tap the icon box → open a grid of ready-made emoji, so people don't have to hunt through their own keyboard */
+function obOpenEmojiPicker(kind){
+  const d=obMonthData(obCurMonth());
+  if(!d.emojiPickerOpen) d.emojiPickerOpen={in:false,out:false};
+  if(d.emojiPickerOpen[kind]) return; // already open — re-rendering again would just steal focus for nothing
+  d.emojiPickerOpen[kind]=true;
+  obRender();
+  setTimeout(()=>{const el=document.getElementById('ob-newcat-e-'+kind); if(el) el.focus();},30);
+}
+function obCloseEmojiPicker(kind){
+  const d=obMonthData(obCurMonth());
+  if(d.emojiPickerOpen) d.emojiPickerOpen[kind]=false;
+  obRender();
+}
+function obPickCatEmoji(kind,e){
+  const d=obMonthData(obCurMonth());
+  d.newCatE[kind]=e;
+  if(d.emojiPickerOpen) d.emojiPickerOpen[kind]=false;
+  obRender();
+  setTimeout(()=>{const el=document.getElementById('ob-newcat-'+kind); if(el) el.focus();},30); // hop straight to the name field next
+}
+/* icon box keeps exactly ONE emoji — picking a new one replaces the old; 打錯(例如字母)一律唔接受 */
 function obTypeNewCatEmoji(kind,el){
   const d=obMonthData(obCurMonth());
-  d.newCatE[kind]=lastGrapheme(el.value);
-  el.value=d.newCatE[kind];
+  const g=lastGrapheme(el.value);
+  if(g && !isEmojiIcon(g)){
+    // 唔係真 emoji ——唔接受,個格彈返去上一個有效值,閃一閃紅框提示打錯咗
+    el.value=(d.newCatE&&d.newCatE[kind])||'';
+    el.classList.add('err');
+    setTimeout(()=>el.classList.remove('err'),300);
+    return;
+  }
+  d.newCatE[kind]=g;
+  el.value=g;
   el.classList.remove('err');
+  // 用戶自己用鍵盤打咗個有效 emoji ——個 grid 都可以收埋喇,直接郁 DOM 唔使成頁 obRender(),唔會累事甩焦點
+  if(g && d.emojiPickerOpen && d.emojiPickerOpen[kind]){
+    d.emojiPickerOpen[kind]=false;
+    const grid=document.getElementById('ob-emojigrid-'+kind); if(grid) grid.remove();
+  }
 }
 function obConfirmAddCat(kind){
   const d=obMonthData(obCurMonth());
   const name=(d.newCat[kind]||'').trim();
   if(!name){ obCancelAddCat(kind); return; }
   const emoji=(d.newCatE&&d.newCatE[kind])||'';
-  if(!emoji){
+  if(!emoji || !isEmojiIcon(emoji)){
     const el=document.getElementById('ob-newcat-e-'+kind);
     if(el){ el.classList.add('err'); el.focus(); }
     return; // icon is required — block confirm until one is picked
@@ -6552,8 +6610,12 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   /* inline add-category input */
   .ob-newcat{display:flex;align-items:center;gap:7px;margin-top:4px}
   .ob-newcat .ob-fdesc{flex:1;background:var(--card);border-color:var(--brand)}
-  .ob-ncemojiwrap{display:flex;flex-direction:column;align-items:center;gap:3px;flex-shrink:0}
-  .ob-nclabel{font-size:9px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.4px}
+  .ob-ncinfo{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;padding:0;line-height:1}
+  .ob-ncinfo:active{border-color:var(--brand);color:var(--brand-deep)}
+  .ob-emojigrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px}
+  .ob-egbtn{width:38px;height:38px;flex-shrink:0;font-size:19px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;cursor:pointer;padding:0;font-family:inherit}
+  .ob-egbtn:active{border-color:var(--brand);background:var(--brand-soft)}
+  .ob-egclose{width:100%;margin-top:4px;font-size:13px;font-weight:700;color:var(--muted);background:none;border:0;padding:6px;cursor:pointer;font-family:inherit}
   /* 呢個 selector 特登加多層 (#ob-root .ob-newcat …) 先夠 specificity 打贏 #ob-root input[type=text]{width:100%} ——
      舊版冧咗畀嗰條全局 rule 打贏,搞到個 emoji 格谷到成排咁長,個名格就縮埋一嚿 */
   #ob-root .ob-newcat .ob-ncemoji{flex-shrink:0;width:46px;height:42px;text-align:center;font-size:20px;font-family:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:0;color:var(--ink)}
