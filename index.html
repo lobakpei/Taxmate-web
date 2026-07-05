@@ -5833,8 +5833,7 @@ function obDefaultState(loggedIn){
 function obKey(mObj){ return mObj.year+'-'+mObj.m; }
 function obMonthData(mObj){
   const k=obKey(mObj);
-  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''},newCatE:{in:'',out:''},catHintOpen:{in:false,out:false},emojiPickerOpen:{in:false,out:false}};
-  if(!OB.data[k].catHintOpen) OB.data[k].catHintOpen={in:false,out:false};
+  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''},newCatE:{in:'',out:''},emojiPickerOpen:{in:false,out:false}};
   if(!OB.data[k].emojiPickerOpen) OB.data[k].emojiPickerOpen={in:false,out:false};
   if(!OB.data[k].newCatE) OB.data[k].newCatE={in:'',out:''};
   return OB.data[k];
@@ -6063,13 +6062,11 @@ function obScrMonth(){
   const addCatHTML = (kind) => d.addCat[kind]
     ? `<div class="ob-newcat">
          <input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" placeholder="📁" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)" onfocus="obOpenEmojiPicker('${kind}')">
-         <button type="button" class="ob-ncinfo" onclick="obToggleCatHint('${kind}')" aria-label="What is this box for?">!</button>
          <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
          <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
          <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
        </div>
-       ${emojiGridHTML(kind)}
-       ${(d.catHintOpen&&d.catHintOpen[kind]) ? `<div class="ob-hint" style="margin:6px 2px 0">Tap the box, then pick any emoji. Required.</div>` : ''}`
+       ${emojiGridHTML(kind)}`
     : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
 
   // MONEY IN
@@ -6085,7 +6082,7 @@ function obScrMonth(){
   }
   // MONEY OUT (always categories)
   const outHTML = d.outGroups.map((g,gi)=>folderHTML('out',g,gi)).join('')
-    + (d.outGroups.length?'':`<p class="ob-hint" style="margin:2px 0 10px">Add a category for each kind of cost — fuel, phone, insurance…</p>`)
+    + (d.outGroups.length?'':`<p class="ob-hint" style="margin:2px 0 10px">Pick an icon and add a category — fuel, phone, insurance…</p>`)
     + addCatHTML('out');
 
   const renderIn = () => inHTML;
@@ -6161,12 +6158,6 @@ function isEmojiIcon(s){
   if(!s) return false;
   try{ return /\p{Extended_Pictographic}/u.test(s); }
   catch(e){ return true; } // 舊瀏覽器唔支援就寬鬆處理,唔好因為呢個擋晒所有人
-}
-function obToggleCatHint(kind){
-  const d=obMonthData(obCurMonth());
-  if(!d.catHintOpen) d.catHintOpen={in:false,out:false};
-  d.catHintOpen[kind]=!d.catHintOpen[kind];
-  obRender();
 }
 /* tap the icon box → open a grid of ready-made emoji, so people don't have to hunt through their own keyboard */
 function obOpenEmojiPicker(kind){
@@ -6611,8 +6602,6 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   /* inline add-category input */
   .ob-newcat{display:flex;align-items:center;gap:7px;margin-top:4px}
   .ob-newcat .ob-fdesc{flex:1;background:var(--card);border-color:var(--brand)}
-  .ob-ncinfo{flex-shrink:0;width:24px;height:24px;border-radius:50%;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font-size:13px;font-weight:800;font-family:inherit;cursor:pointer;padding:0;line-height:1}
-  .ob-ncinfo:active{border-color:var(--brand);color:var(--brand-deep)}
   .ob-emojigrid{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px;padding:12px;background:var(--card);border:1.5px solid var(--line);border-radius:14px}
   .ob-egbtn{width:38px;height:38px;flex-shrink:0;font-size:19px;display:flex;align-items:center;justify-content:center;border:1.5px solid var(--line);background:var(--bg);border-radius:10px;cursor:pointer;padding:0;font-family:inherit}
   .ob-egbtn:active{border-color:var(--brand);background:var(--brand-soft)}
