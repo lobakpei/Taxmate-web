@@ -5980,7 +5980,7 @@ function obEnterPartner(){
 /* STEP 2 — start month */
 function obScrStart(){
   const opts = OB.monthsAll.map((mo,i)=>
-    `<button class="ob-tile" onclick="obPickStart(${i})" style="${OB.startIdx===i?'border-color:var(--brand);background:var(--brand-soft)':''}">
+    `<button class="ob-tile" onclick="obPickStart(${i})">
       <span class="ob-emoji">📅</span><span><span class="ob-tt">${OB_MONTHS_FULL[mo.m]} ${mo.year}</span><span class="ob-ts">Add my figures from ${OB_MONTHS_FULL[mo.m]}</span></span>
     </button>`).join('');
   return obShell(
@@ -5988,11 +5988,10 @@ function obScrStart(){
     `<h1>Where shall we start?</h1>
     <p class="ob-lede">Pick the first month you want to add figures for. We'll go month by month from there.</p>
     ${opts}
-    <p class="ob-hint ob-center ob-mt8">The UK tax year runs April → April.</p>`,
-    `<button class="ob-btn" onclick="OB.cursor=0;obGo('month')">Continue</button>`
+    <p class="ob-hint ob-center ob-mt8">The UK tax year runs April → April.</p>`
   );
 }
-function obPickStart(i){ OB.startIdx=i; OB.cursor=0; obRender(); }
+function obPickStart(i){ OB.startIdx=i; OB.cursor=0; obGo('month'); }
 
 /* day picker */
 function obDayPicker(mObj,val,setExpr){
