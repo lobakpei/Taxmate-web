@@ -3582,9 +3582,22 @@ function obCatchupCard(){
   </div>`;
 }
 function obReopenCatchup(){
-  // re-run the flow; if a business already exists, skip the business step is complex —
-  // simplest: launch flow fresh (user can add a second business or re-confirm)
-  startOnboarding();
+  // 已有 business 嘅現有用戶「補返之前月份」——唔可以由 login 螢幕重頭嚟（嗰個係全新用戶用、冇退出掣，會卡死）。
+  OB = obDefaultState(!!cloudUser());
+  OB._catchup = true;
+  if(S.businesses.length>1){
+    // 多過一個 business → 要先揀補邊個
+    OB._catchupBizId = null;
+    OB.screen = 'pickbiz';
+  }else{
+    // 得一個 → 直接去揀月份
+    OB._catchupBizId = S.businesses.length ? S.businesses[0].id : null;
+    OB.screen = 'start';
+  }
+  const r = obEnsureRoot();
+  r.classList.add('active');
+  document.body.style.overflow='hidden';
+  obRender();
 }
 
 /* ═══════════ HOME (dashboard only) ═══════════ */
@@ -6287,7 +6300,7 @@ function obClose(){
   OB=null;
 }
 function obRender(){
-  const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
+  const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
@@ -6398,13 +6411,34 @@ function obEnterPartner(){
 }
 
 /* STEP 2 — start month */
+/* CATCH-UP: pick which business to add past months to (only shown when >1 business) */
+function obScrPickBiz(){
+  const tiles = S.businesses.map(b=>{
+    const col = bizColor(b);
+    const letter = esc((b.name||'?').trim().charAt(0).toUpperCase());
+    const sub = b.structure==='partnership' ? 'Partnership · your '+(b.share||50)+'%' : 'Sole trader';
+    return `<button class="ob-tile" onclick="obPickCatchupBiz('${b.id}')">
+      <span class="ob-emoji" style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">${letter}</span>
+      <span><span class="ob-tt">${esc(b.name)}</span><span class="ob-ts">${sub}</span></span>
+    </button>`;
+  }).join('');
+  return obShell(
+    obProgress(10,'Catch up · pick a business','obClose()'),
+    `<h1>Which business?</h1>
+    <p class="ob-lede">Add the past months to the right business. You can catch up the others separately.</p>
+    ${tiles}`
+  );
+}
+function obPickCatchupBiz(id){ OB._catchupBizId = id; obGo('start'); }
 function obScrStart(){
   const opts = OB.monthsAll.map((mo,i)=>
     `<button class="ob-tile" onclick="obPickStart(${i})">
       <span class="ob-emoji">📅</span><span><span class="ob-tt">${OB_MONTHS_FULL[mo.m]} ${mo.year}</span><span class="ob-ts">Add my figures from ${OB_MONTHS_FULL[mo.m]}</span></span>
     </button>`).join('');
+  const label = OB._catchup ? 'Catch up · pick a month' : 'Step 2 of 3 · Start month';
+  const back  = OB._catchup ? (S.businesses.length>1 ? "obGo('pickbiz')" : 'obClose()') : "obGo('biz')";
   return obShell(
-    obProgress(40,'Step 2 of 3 · Start month',"obGo('biz')"),
+    obProgress(OB._catchup?10:40, label, back),
     `<h1>Where shall we start?</h1>
     <p class="ob-lede">Pick the first month you want to add figures for. We'll go month by month from there.</p>
     ${opts}
@@ -6694,17 +6728,22 @@ function obScrDone(){
 
 /* ═══ COMMIT to real S ═══ */
 function obFinish(){
-  const newId = uid();
+  // Catch-up 模式（現有用戶補月份）：唔好開新 business，掛落用戶揀咗嗰個現有 business。
+  const catchup = !!(OB && OB._catchup) && S.businesses.length>0;
+  const existingBiz = catchup ? (bizById(OB._catchupBizId) || S.businesses[0]) : null;
+  const newId = existingBiz ? existingBiz.id : uid();
   const pad = n => String(n).padStart(2,'0');
-  // 1) create business (sole or partnership, from Step 1)
-  const isPart = OB.structure==='partnership';
-  const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:isPart?50:100};
-  if(isPart && OB.partnerCode && OB.loggedIn) newBiz.syncCode = OB.partnerCode;
+  // 1) create business only in the genuine first-run flow
+  if(!existingBiz){
+    const isPart = OB.structure==='partnership';
+    const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:isPart?50:100};
+    if(isPart && OB.partnerCode && OB.loggedIn) newBiz.syncCode = OB.partnerCode;
+    S.businesses.push(newBiz);
+    OB._newBiz = newBiz; // 記低畀後面 sync 用
+  }
   // 2) seed category containers (income uses 'sales'; expense categories come from the user's folders)
   if(!S.customCats[newId]) S.customCats[newId]={income:[],expense:[]};
   if(!S.activeCats[newId]) S.activeCats[newId]={income:['sales'],expense:[]};
-  // make sure any category actually used in entries is active for this biz
-  S.businesses.push(newBiz);
 
   // 3) write all month entries
   const mkDate=(mObj,day)=>{ const dd=day?Math.min(parseInt(day),28):15; return mObj.year+'-'+pad(mObj.m)+'-'+pad(dd); };
@@ -6760,13 +6799,15 @@ function obFinish(){
   save();
 
   // 6) push to cloud if signed in
-  if(OB.loggedIn && typeof scheduleCloudPush==='function'){ try{ scheduleCloudPush(); }catch(e){} }
-  // 7) if partnership with a code, start syncing
-  if(newBiz.syncCode && typeof subscribeSync==='function'){ try{ subscribeSync(newBiz.syncCode, newId); }catch(e){} }
+  if((OB.loggedIn||cloudUser()) && typeof scheduleCloudPush==='function'){ try{ scheduleCloudPush(); }catch(e){} }
+  // 7) if a NEW partnership with a code was just created, start syncing
+  const nb = OB._newBiz;
+  if(nb && nb.syncCode && typeof subscribeSync==='function'){ try{ subscribeSync(nb.syncCode, newId); }catch(e){} }
 
+  const wasCatchup = catchup;
   obClose();
   S.tab='home'; render(); window.scrollTo(0,0);
-  if(typeof toast==='function') toast('All caught up — welcome to TaxMate!');
+  if(typeof toast==='function') toast(wasCatchup ? 'Months added ✓' : 'All caught up — welcome to TaxMate!');
 }
 
 /* ═══════════ boot ═══════════ */
