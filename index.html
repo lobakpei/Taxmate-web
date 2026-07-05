@@ -448,7 +448,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <!-- inline rename (hidden by default) -->
   <div id="cat-rename-row" style="display:none;margin-bottom:14px">
     <div style="display:flex;gap:10px;margin-bottom:10px;align-items:center">
-      <input type="text" id="cat-rename-emoji" maxlength="4" placeholder="🏷️" style="text-align:center;font-size:28px;padding:10px;border-radius:12px;width:64px;flex-shrink:0;background:var(--card);border:1.5px solid var(--border);color:var(--text)" oninput="onCatRenameEmoji(this.value)">
+      <input type="text" id="cat-rename-emoji" style="text-align:center;font-size:28px;padding:10px;border-radius:12px;width:64px;flex-shrink:0;background:var(--card);border:1.5px solid var(--border);color:var(--text)" oninput="onCatRenameEmoji(this.value)">
       <input type="text" id="cat-rename-input" class="finput" style="font-size:16px;padding:12px 14px;border-radius:12px;flex:1;box-sizing:border-box" placeholder="Category name" onkeydown="if(event.key==='Enter')catConfirmRename()">
     </div>
     <div style="display:flex;gap:10px">
@@ -566,7 +566,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
   <div class="fg"><label data-i18n="cc.emoji"></label>
     <div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.emojiHint"></div>
-    <input type="text" id="cc-emoji-input" maxlength="2" placeholder="🏷️" style="text-align:center;font-size:32px;padding:14px" oninput="onEmojiInput(this.value)">
+    <input type="text" id="cc-emoji-input" style="text-align:center;font-size:32px;padding:14px" oninput="onEmojiInput(this.value)">
     <div class="ferr" id="cc-emoji-err" data-i18n="cc.emojiErr"></div></div>
   <div class="sact">
     <button class="btn ghost" onclick="closeSheet('cat')" data-i18n="c.cancel"></button>
@@ -3168,7 +3168,7 @@ function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 /* ═══════════ state ═══════════ */
 const STORE_KEY = 'taxmateuk_v1';
 const DEFAULT_STATE = {
-  v:3, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all',
+  v:3, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all', incCat:'all', expCat:'all',
   businesses:[], entries:[], yearData:{}, customCats:{}, folders:[], expFolder:'all', catRenames:{}, activeCats:{}, settings:{lang:'en', pro:false, tier:'free', theme:'auto'}
 };
 let S = load();
@@ -3526,8 +3526,23 @@ function pageList(kind){
       ${S.folders.map(f=>`<button class="chip ${S.expFolder===f.id?'on':''}" onclick="setFilter('expFolder','${f.id}')">📁 ${esc(f.name)}</button>`).join('')}
     </div>` : '';
 
-  let list = entriesFor(S.year, filt==='all'?null:filt, kind).sort((a,b)=>b.date.localeCompare(a.date));
+  // category filter — e.g. tap "⛽ Fuel" to see only fuel entries
+  const cKey = isInc?'incCat':'expCat';
+  const baseList = entriesFor(S.year, filt==='all'?null:filt, kind);
+  const seenCat = new Set();
+  const usedCats = [...new Set(baseList.map(e=>e.cat))].map(catById)
+    .filter(c=>{ if(seenCat.has(c.id)) return false; seenCat.add(c.id); return true; })
+    .sort((a,b)=>catName(a.id).localeCompare(catName(b.id)));
+  const selCat = usedCats.some(c=>c.id===S[cKey]) ? S[cKey] : 'all';
+  const cchips = usedCats.length>1 ?
+    `<div class="chips">
+      <button class="chip ${selCat==='all'?'on':''}" onclick="setFilter('${cKey}','all')">${t('flt.all')}</button>
+      ${usedCats.map(c=>`<button class="chip ${selCat===c.id?'on':''}" onclick="setFilter('${cKey}','${c.id}')">${c.e||'🏷️'} ${esc(catName(c.id))}</button>`).join('')}
+    </div>` : '';
+
+  let list = baseList.sort((a,b)=>b.date.localeCompare(a.date));
   if(!isInc && S.expFolder!=='all') list = list.filter(e=>e.folderId===S.expFolder);
+  if(selCat!=='all') list = list.filter(e=>e.cat===selCat);
   const total = list.reduce((s,e)=>s+(isInc?e.amount:effExact(e)),0);
   let body='';
   if(!list.length){
@@ -3559,6 +3574,7 @@ function pageList(kind){
     <span class="num ${isInc?'pos':'neg'}" style="font-size:18px">${isInc?'+':'−'}${fmt(total).replace('−','')}</span>
   </div>
   ${chips}
+  ${cchips}
   ${fchips}
   ${body}
   <button class="fab" onclick="openEntry('${kind}')" aria-label="Add">+</button>`;
@@ -4022,22 +4038,23 @@ function paintEntry(){
   fsel.value = EN.folderId || '';
 }
 let CC_EMOJI = CAT_EMOJIS[0];
-function onEmojiInput(v){
-  const trimmed = v.trim();
-  // 用 Intl.Segmenter 正確分割 emoji（包括 variation selector、ZWJ sequences 等）
-  if(trimmed){
-    try{
-      const segs = [...new Intl.Segmenter('en',{granularity:'grapheme'}).segment(trimmed)];
-      CC_EMOJI = segs.length ? segs[segs.length-1].segment : trimmed[0];
-    }catch(e){
-      // fallback：用 Array.from 但取第一個 grapheme cluster
-      const arr = [...trimmed];
-      CC_EMOJI = arr[0] || '';
-    }
-  } else {
-    CC_EMOJI = '';
+// 攞字串入面「最後一個」grapheme（正確處理 variation selector、ZWJ sequences 等）
+// 用途：emoji 輸入框永遠只保留一個 emoji — 新揀嘅自動取代舊嘅
+function lastGrapheme(v){
+  const s = (v||'').trim();
+  if(!s) return '';
+  try{
+    const segs = [...new Intl.Segmenter('en',{granularity:'grapheme'}).segment(s)];
+    return segs.length ? segs[segs.length-1].segment : '';
+  }catch(e){
+    const arr = [...s];
+    return arr[arr.length-1] || '';
   }
-  const ei=document.getElementById('cc-emoji-input'); if(ei) ei.classList.remove('err');
+}
+function onEmojiInput(v){
+  CC_EMOJI = lastGrapheme(v);
+  const ei=document.getElementById('cc-emoji-input');
+  if(ei){ ei.value = CC_EMOJI; ei.classList.remove('err'); }
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
 }
 function openCatSheet(){
@@ -4062,13 +4079,10 @@ function catLongPress(id){
 }
 let CAT_RENAME_EMOJI = '';
 function onCatRenameEmoji(v){
-  const trimmed = v.trim();
-  if(trimmed){
-    try{
-      const segs = [...new Intl.Segmenter('en',{granularity:'grapheme'}).segment(trimmed)];
-      CAT_RENAME_EMOJI = segs.length ? segs[0].segment : trimmed[0];
-    }catch(e){ CAT_RENAME_EMOJI = [...trimmed][0]||''; }
-  } else { CAT_RENAME_EMOJI = ''; }
+  // 只保留最新揀嗰個 emoji — 舊嗰個自動被取代，唔使手動剷
+  CAT_RENAME_EMOJI = lastGrapheme(v);
+  const ei=document.getElementById('cat-rename-emoji');
+  if(ei) ei.value = CAT_RENAME_EMOJI;
 }
 function catStartRename(){
   const id = CAT_ACTION_ID;
@@ -5814,7 +5828,8 @@ function obDefaultState(loggedIn){
 function obKey(mObj){ return mObj.year+'-'+mObj.m; }
 function obMonthData(mObj){
   const k=obKey(mObj);
-  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''}};
+  if(!OB.data[k]) OB.data[k]={inRows:[{d:'',v:'',day:''}],inGrouped:false,inGroups:[],outGroups:[],milesOpen:false,miles:'',addCat:{in:false,out:false},newCat:{in:'',out:''},newCatE:{in:'',out:''}};
+  if(!OB.data[k].newCatE) OB.data[k].newCatE={in:'',out:''};
   return OB.data[k];
 }
 function obActiveMonths(){ return OB.monthsAll.slice(OB.startIdx); }
@@ -5854,8 +5869,12 @@ function obClose(){
 function obRender(){
   const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
+  // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
+  const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
+  const keep = (OB._lastView===view) ? r.scrollTop : 0;
   r.innerHTML = fns[OB.screen]();
-  r.scrollTop=0;
+  OB._lastView = view;
+  r.scrollTop = keep;
 }
 function obGo(s){ OB.screen=s; obRender(); }
 function obProgress(pct,label,back){
@@ -5992,11 +6011,11 @@ function obScrMonth(){
   const isLast=idx===total-1;
   const full=OB_MONTHS_FULL[m];
 
-  // a single editable row: [Date] [What for?] [£] [×]
-  const rowHTML = (kind,gi,ri,r,setExpr,delExpr) => `
+  // a single editable row: [Date] [Details] [£] [×]
+  const rowHTML = (kind,gi,ri,r,setExpr,delExpr,ph) => `
     <div class="ob-frow"><div class="ob-fline">
       ${obDayPicker(mObj, r.day, setExpr('day'))}
-      <input type="text" class="ob-fdesc" placeholder="What for?" value="${esc(r.d||'')}" oninput="${setExpr('d')}">
+      <input type="text" class="ob-fdesc" placeholder="${ph||'Details'}" value="${esc(r.d||'')}" oninput="${setExpr('d')}">
       <div class="ob-famt"><span class="ob-cur">£</span><input type="number" inputmode="decimal" placeholder="0.00" value="${r.v}" oninput="${setExpr('v')}"></div>
       <button class="ob-del" onclick="${delExpr}">×</button>
     </div></div>`;
@@ -6010,7 +6029,7 @@ function obScrMonth(){
     return `<div class="ob-folder">
       <div class="ob-fhead" onclick="obToggleGroup('${kind}',${gi})">
         <span class="ob-fcaret">${g.open?'▼':'▶'}</span>
-        <span class="ob-fname">📁 ${esc(g.name)}</span>
+        <span class="ob-fname">${esc(g.e||'📁')} ${esc(g.name)}</span>
         <span class="ob-fsum">£${sum.toFixed(2)}</span>
         <button class="ob-fdel" onclick="event.stopPropagation();obDelGroup('${kind}',${gi})">🗑️</button>
       </div>
@@ -6018,14 +6037,25 @@ function obScrMonth(){
     </div>`;
   };
 
+  // chips of categories already used in other months — one tap re-adds the folder here
+  OB._prevCats = {in:obPrevCats('in'), out:obPrevCats('out')};
+  const prevCatChips = (kind) => {
+    const l = OB._prevCats[kind];
+    if(!l.length) return '';
+    return `<div class="ob-prevcats"><span class="ob-pclab">Add again:</span>${l.map((c,i)=>
+      `<button class="ob-pchip" onclick="obAddPrevCat('${kind}',${i})">${c.e?esc(c.e)+' ':''}${esc(c.name)}</button>`).join('')}</div>`;
+  };
+
   // inline "add category" input (no popup)
   const addCatHTML = (kind) => d.addCat[kind]
     ? `<div class="ob-newcat">
+         <input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)">
          <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
          <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
          <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
-       </div>`
-    : `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
+       </div>
+       <div class="ob-hint" style="margin:6px 2px 0">Small box = icon. Tap it and pick an emoji from your keyboard (optional).</div>`
+    : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
 
   // MONEY IN
   let inHTML;
@@ -6034,9 +6064,9 @@ function obScrMonth(){
   } else {
     const simple = d.inRows.map((r,ri)=>rowHTML('in',0,ri,r,
       (f)=>`obSetSimpleRow(${ri},'${f}',this.value)`,
-      `obDelSimpleRow(${ri})`)).join('');
+      `obDelSimpleRow(${ri})`,'From?')).join('');
     inHTML = `<div class="ob-fbody open">${simple}<button class="ob-additem" onclick="obAddSimpleRow()">＋ Add another</button></div>
-      <button class="ob-groupbtn" onclick="obGroupIncome()">⊕ Split into categories</button>`;
+      <button class="ob-groupbtn" onclick="obGroupIncome()">⊕ Split into categories</button>${prevCatChips('in')}`;
   }
   // MONEY OUT (always categories)
   const outHTML = d.outGroups.map((g,gi)=>folderHTML('out',g,gi)).join('')
@@ -6077,22 +6107,52 @@ function obGroupIncome(){
   obRender();
   setTimeout(()=>{const el=document.getElementById('ob-newcat-in'); if(el)el.focus();},30);
 }
+/* categories used in OTHER months but not this one — offered as one-tap chips */
+function obPrevCats(kind){
+  const cur=obMonthData(obCurMonth());
+  const curKey=obKey(obCurMonth());
+  const curNames=new Set((kind==='in'?cur.inGroups:cur.outGroups).map(g=>g.name.toLowerCase()));
+  const out=[], seen=new Set();
+  Object.keys(OB.data).forEach(k=>{
+    if(k===curKey) return;
+    const d=OB.data[k]; if(!d) return;
+    ((kind==='in'?d.inGroups:d.outGroups)||[]).forEach(g=>{
+      const key=(g.name||'').toLowerCase();
+      if(key && !curNames.has(key) && !seen.has(key)){ seen.add(key); out.push({name:g.name, e:g.e||''}); }
+    });
+  });
+  return out;
+}
+function obAddPrevCat(kind,i){
+  const c = OB._prevCats && OB._prevCats[kind] && OB._prevCats[kind][i];
+  if(!c) return;
+  const d=obMonthData(obCurMonth());
+  if(kind==='in') d.inGrouped=true;
+  obGroups(kind).push({id:'g_'+uid(), name:c.name, e:c.e||'', open:true, rows:[{d:'',v:'',day:''}]});
+  obRender();
+}
 /* inline "Add category" — reveals a text input in the page (no popup) */
-function obStartAddCat(kind){ const d=obMonthData(obCurMonth()); d.addCat[kind]=true; d.newCat[kind]=''; obRender(); setTimeout(()=>{const el=document.getElementById('ob-newcat-'+kind); if(el)el.focus();},30); }
+function obStartAddCat(kind){ const d=obMonthData(obCurMonth()); d.addCat[kind]=true; d.newCat[kind]=''; d.newCatE[kind]=''; obRender(); setTimeout(()=>{const el=document.getElementById('ob-newcat-'+kind); if(el)el.focus();},30); }
 function obCancelAddCat(kind){
   const d=obMonthData(obCurMonth());
-  d.addCat[kind]=false; d.newCat[kind]='';
+  d.addCat[kind]=false; d.newCat[kind]=''; d.newCatE[kind]='';
   if(kind==='in' && !d.inGroups.length) d.inGrouped=false; // nothing added → back to simple rows
   obRender();
 }
 function obTypeNewCat(kind,val){ const d=obMonthData(obCurMonth()); d.newCat[kind]=val; }
+/* icon box keeps exactly ONE emoji — picking a new one replaces the old */
+function obTypeNewCatEmoji(kind,el){
+  const d=obMonthData(obCurMonth());
+  d.newCatE[kind]=lastGrapheme(el.value);
+  el.value=d.newCatE[kind];
+}
 function obConfirmAddCat(kind){
   const d=obMonthData(obCurMonth());
   const name=(d.newCat[kind]||'').trim();
   if(!name){ obCancelAddCat(kind); return; }
   if(kind==='in') d.inGrouped=true;
-  obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), open:true, rows:[{d:'',v:'',day:''}]});
-  d.addCat[kind]=false; d.newCat[kind]='';
+  obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), e:(d.newCatE&&d.newCatE[kind])||'', open:true, rows:[{d:'',v:'',day:''}]});
+  d.addCat[kind]=false; d.newCat[kind]=''; if(d.newCatE)d.newCatE[kind]='';
   obRender();
 }
 function obDelGroup(kind,gi){
@@ -6178,13 +6238,17 @@ function obFinish(){
   let yearsTouched=new Set();
   const CAT_COLOURS=['#E5484D','#F47738','#3478F6','#9B59B6','#0AA968','#6B7686','#85994B','#0D8C86','#1F4E9C','#B47D12'];
   const expCatByName={}; // group name -> category id (so same-named folders across months share one category)
-  const ensureExpCat=(rawName)=>{
+  const ensureExpCat=(rawName,emoji)=>{
     const safe=(rawName==null?'':String(rawName)).trim() || 'Other';
     const key=safe.toLowerCase();
-    if(expCatByName[key]) return expCatByName[key];
+    if(expCatByName[key]){
+      // already created from an earlier month — backfill its emoji if that month had none
+      if(emoji){ const cc=S.customCats[newId].expense.find(c=>c.id===expCatByName[key]); if(cc && (!cc.e||cc.e==='📁')) cc.e=emoji; }
+      return expCatByName[key];
+    }
     const cid='c_'+uid();
     const idx=Object.keys(expCatByName).length;
-    S.customCats[newId].expense.push({id:cid,name:safe.slice(0,28),e:'📁',dot:CAT_COLOURS[idx%CAT_COLOURS.length],custom:true,bizId:newId});
+    S.customCats[newId].expense.push({id:cid,name:safe.slice(0,28),e:emoji||'📁',dot:CAT_COLOURS[idx%CAT_COLOURS.length],custom:true,bizId:newId});
     if(!S.activeCats[newId].expense.includes(cid)) S.activeCats[newId].expense.push(cid);
     expCatByName[key]=cid;
     return cid;
@@ -6202,7 +6266,7 @@ function obFinish(){
     else { d.inRows.forEach(it=>pushIncome(it,'')); }
     // expense — each group name becomes a category
     d.outGroups.forEach(g=>{
-      const cid=ensureExpCat(g.name);
+      const cid=ensureExpCat(g.name, g.e||'');
       g.rows.forEach(it=>{ const v=parseFloat(it.v)||0; if(v>0){
         const rev=it.day==='';
         const r={id:uid(),bizId:newId,kind:'expense',date:mkDate(mObj,it.day),amount:Math.round(v*100)/100,cat:cid,pct:100,folderId:null,receiptUrl:null,receiptPath:null,desc:(it.d||'').trim(),_review:rev};
@@ -6478,6 +6542,13 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   /* inline add-category input */
   .ob-newcat{display:flex;align-items:center;gap:7px;margin-top:4px}
   .ob-newcat .ob-fdesc{flex:1;background:var(--card);border-color:var(--brand)}
+  .ob-ncemoji{flex-shrink:0;width:46px;height:42px;text-align:center;font-size:20px;font-family:inherit;background:var(--card);border:1.5px solid var(--line);border-radius:11px;padding:0;color:var(--ink)}
+  .ob-ncemoji:focus{border-color:var(--brand);outline:none}
+  /* one-tap chips for categories used in other months */
+  .ob-prevcats{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:8px 0 2px}
+  .ob-pclab{font-size:12px;font-weight:700;color:var(--muted)}
+  .ob-pchip{font-size:13px;font-weight:700;color:var(--ink);background:var(--card);border:1.5px solid var(--line);border-radius:999px;padding:7px 12px;cursor:pointer;font-family:inherit}
+  .ob-pchip:active{border-color:var(--brand);background:var(--brand-soft)}
   .ob-ncok{flex-shrink:0;width:42px;height:42px;border-radius:11px;border:0;background:var(--brand);color:#fff;font-size:18px;font-weight:800;cursor:pointer}
   .ob-nccancel{flex-shrink:0;width:42px;height:42px;border-radius:11px;border:1.5px solid var(--line);background:var(--card);color:var(--muted);font-size:20px;cursor:pointer}
   .ob-reminder{display:flex;gap:8px;background:var(--amber-soft);color:var(--amber);border-radius:14px;padding:11px 13px;font-size:12.5px;font-weight:600;line-height:1.5;margin-top:8px}
