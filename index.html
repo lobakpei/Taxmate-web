@@ -1018,7 +1018,7 @@ en:{
  'sy.enable':'Sync with my partner',
  'sy.code':'Partnership code',
  'sy.invite':'Invite my partner',
- 'sy.inviteMsg':'Join my business "{n}" on TaxMate UK — enter code {c}',
+ 'sy.inviteMsg':'Hey! This is the partner sync code for "{n}" on TaxMate UK. 🤝\nGo to taxmate.uk\n1. Tap "Sign in"\n2. Choose "🚀 Go straight to dashboard"\n3. Tap "Settings" — lower right corner 😉\n4. Upgrade to Pro\n5. Then enter code: {c}',
  'sy.join':'Got a code from your partner? Enter it and everything syncs automatically.',
  'sy.enterCode':'Enter the code',
  'sy.synced':'Synced',
@@ -1421,7 +1421,7 @@ zh:{
  'sy.enable':'與合夥人同步',
  'sy.code':'合夥代碼',
  'sy.invite':'邀請合夥人',
- 'sy.inviteMsg':'請在 TaxMate UK 加入我的業務「{n}」— 輸入代碼 {c}',
+ 'sy.inviteMsg':'Hey！呢個係 TaxMate UK 上面「{n}」嘅 partner sync code。🤝\n去 taxmate.uk\n1. 撳「Sign in」\n2. 揀「🚀 Go straight to dashboard」\n3. 撳「Settings」——右下角 😉\n4. 升級做 Pro\n5. 然後輸入代碼：{c}',
  'sy.join':'收到合夥人的代碼？輸入後所有數據將自動同步。',
  'sy.enterCode':'輸入代碼',
  'sy.synced':'已同步',
@@ -1824,7 +1824,7 @@ pl:{
  'sy.enable':'Synchronizuj z partnerem',
  'sy.code':'Kod spółki',
  'sy.invite':'Zaproś partnera',
- 'sy.inviteMsg':'Dołącz do mojej firmy „{n}" w TaxMate UK — wpisz kod {c}',
+ 'sy.inviteMsg':'Cześć! To jest kod synchronizacji partnera dla „{n}" w TaxMate UK. 🤝\nWejdź na taxmate.uk\n1. Kliknij „Sign in"\n2. Wybierz „🚀 Go straight to dashboard"\n3. Kliknij „Settings" — prawy dolny róg 😉\n4. Przejdź na Pro\n5. Następnie wpisz kod: {c}',
  'sy.join':'Masz kod od partnera? Wpisz go, a wszystko zsynchronizuje się automatycznie.',
  'sy.enterCode':'Wpisz kod',
  'sy.synced':'Zsynchronizowano',
@@ -2227,7 +2227,7 @@ ro:{
  'sy.enable':'Sincronizează cu partenerul meu',
  'sy.code':'Cod de parteneriat',
  'sy.invite':'Invită partenerul',
- 'sy.inviteMsg':'Alătură-te afacerii mele „{n}" pe TaxMate UK — introdu codul {c}',
+ 'sy.inviteMsg':'Salut! Acesta este codul de sincronizare pentru „{n}" pe TaxMate UK. 🤝\nMergi pe taxmate.uk\n1. Apasă „Sign in"\n2. Alege „🚀 Go straight to dashboard"\n3. Apasă „Settings" — colțul din dreapta jos 😉\n4. Treci la Pro\n5. Apoi introdu codul: {c}',
  'sy.join':'Ai un cod de la partener? Introdu-l și totul se sincronizează automat.',
  'sy.enterCode':'Introdu codul',
  'sy.synced':'Sincronizat',
@@ -2630,7 +2630,7 @@ es:{
  'sy.enable':'Sincronizar con mi socio',
  'sy.code':'Código de la sociedad',
  'sy.invite':'Invitar a mi socio',
- 'sy.inviteMsg':'Únete a mi negocio «{n}» en TaxMate UK — introduce el código {c}',
+ 'sy.inviteMsg':'¡Hola! Este es el código de sincronización para «{n}» en TaxMate UK. 🤝\nEntra en taxmate.uk\n1. Toca «Sign in»\n2. Elige «🚀 Go straight to dashboard»\n3. Toca «Settings» — esquina inferior derecha 😉\n4. Cambia a Pro\n5. Luego introduce el código: {c}',
  'sy.join':'¿Tienes un código de tu socio? Introdúcelo y todo se sincroniza automáticamente.',
  'sy.enterCode':'Introduce el código',
  'sy.synced':'Sincronizado',
@@ -3031,7 +3031,7 @@ ur:{
  'sy.enable':'اپنے پارٹنر سے سنک کریں',
  'sy.code':'پارٹنرشپ کوڈ',
  'sy.invite':'پارٹنر کو دعوت دیں',
- 'sy.inviteMsg':'TaxMate UK پر میرے کاروبار «{n}» میں شامل ہوں — کوڈ {c} درج کریں',
+ 'sy.inviteMsg':'Hey! یہ TaxMate UK پر «{n}» کے لیے پارٹنر سنک کوڈ ہے۔ 🤝\ntaxmate.uk پر جائیں\n1. «Sign in» پر ٹیپ کریں\n2. «🚀 Go straight to dashboard» منتخب کریں\n3. «Settings» پر ٹیپ کریں — نیچے دائیں کونہ 😉\n4. Pro میں اپ گریڈ کریں\n5. پھر کوڈ درج کریں: {c}',
  'sy.join':'پارٹنر سے کوڈ ملا؟ درج کریں اور سب کچھ خودبخود سنک ہو جائے گا۔',
  'sy.enterCode':'کوڈ درج کریں',
  'sy.synced':'سنک ہو گیا',
@@ -6259,7 +6259,7 @@ function obStartMonthList(){
 function obDefaultState(loggedIn){
   return {
     screen:'login', loggedIn:!!loggedIn,
-    bizName:'', structure:'sole', partnerCode:'',
+    bizName:'', structure:'sole', share:50, partnerCode:'',
     cats:[],                 // (no longer chosen in onboarding; kept for compat)
     monthsAll: obStartMonthList(),
     startIdx:0,
@@ -6341,7 +6341,7 @@ function obScrLogin(){
     <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
     <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
     <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">Start without an account</span><span class="ob-ts">Stays on this phone — sign in anytime</span></span></button>
-    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9;);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner code? Sign in first, then add it in Settings.</div>
+    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner sync code? — please sign in first.</div>
   </div></div>`;
 }
 async function obSignIn(){
@@ -6364,11 +6364,10 @@ function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <div style="font-size:40px;margin-bottom:10px">👋</div>
-    <h1>Let's set you up</h1>
-    <p class="ob-lede">Started partway through the year? Add your past months once — then you're done.</p>
-    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🧹</span><span><span class="ob-tt">Quick setup</span><span class="ob-ts">Add the months you've missed</span></span></button>
-    <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">👀</span><span><span class="ob-tt">Look around first</span><span class="ob-ts">Jump in — catch up later</span></span></button>
-    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner code? Tap "Look around first", then add it in Settings.</div>
+    <h1>How would you like to get started?</h1>
+    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">Let's do this together</span><span class="ob-ts">I'll walk you through it — first income, then expenses, 🥁 then you'll know exactly what you owe.</span></span></button>
+    <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">🚀</span><span><span class="ob-tt">Go straight to dashboard</span><span class="ob-ts">I know what I'm doing. I've got this!</span></span></button>
+    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a share code? Choose “Go straight to dashboard”, then go to Settings to enter it.</div>
   </div></div>`;
 }
 function obExplore(){
@@ -6378,29 +6377,39 @@ function obExplore(){
   render();
 }
 
-/* STEP 1 — business name (+ structure only when signed in) */
+/* STEP 1 — business name + structure (structure/share% shown to everyone; sync is separate) */
 function obScrBiz(){
   const isSole = (OB.structure||'sole')==='sole';
-  // Structure choice only matters when signed in (partnership needs cloud sync)
-  const structureCard = OB.loggedIn ? `
+  const share = OB.share || 50;
+  // 結構 + 佔幾多% —— 開放畀所有人（影響報幾多稅），唔再淨係登入先出
+  const structureCard = `
     <div class="ob-card">
       <label>How do you run it?</label>
       <div class="ob-seg">
         <button class="${isSole?'on':''}" onclick="obSetStruct('sole')">Just me</button>
-        <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">With a partner<sup class="ob-probadge">Pro</sup></button>
+        <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">With a partner</button>
       </div>
       <p class="ob-hint" style="margin-top:10px">${isSole
         ? 'You work for yourself and keep all the profit.'
-        : 'You run it with someone and split the profit — only your share is taxed. Both phones stay in sync.'}</p>
+        : 'You run it with someone and split the profit — only your share is taxed.'}</p>
     </div>
     ${!isSole ? `
+    <div class="ob-card">
+      <label>Your share of the profit</label>
+      <div class="ob-sharewrap">
+        <input type="number" id="ob-share" inputmode="numeric" min="1" max="100" value="${share}" oninput="obSetShare(this.value)">
+        <span class="ob-sharepct">%</span>
+      </div>
+      <p class="ob-hint" style="margin-top:8px">Only this share of the profit is taxed as yours. Most equal partnerships are 50%.</p>
+    </div>
     <div class="ob-card flat" style="margin-top:4px">
-      <div class="ob-seclabel"><span class="ob-dot in"></span> Link with your partner</div>
-      <p class="ob-hint" style="margin:0 0 10px">If they already use TaxMate, enter their share code now — or skip and do it later.</p>
-      ${OB.partnerCode
-        ? `<div class="ob-totalpill"><span class="ob-tpl">Joining code</span><span class="ob-tpv">${esc(OB.partnerCode)}</span></div><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="OB.partnerCode='';obRender()">Remove</button></div>`
-        : `<button class="ob-btn ghost" onclick="obEnterPartner()">Enter partner's code</button><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obGo('start')">I'll do this later</button></div>`}
-    </div>` : ''}` : '';
+      <div class="ob-seclabel"><span class="ob-dot in"></span> Sync with your partner<sup class="ob-probadge">Pro</sup></div>
+      ${OB.loggedIn
+        ? (OB.partnerCode
+            ? `<div class="ob-totalpill"><span class="ob-tpl">Joining code</span><span class="ob-tpv">${esc(OB.partnerCode)}</span></div><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="OB.partnerCode='';obRender()">Remove</button></div>`
+            : `<p class="ob-hint" style="margin:0 0 10px">If your partner already uses TaxMate, enter their share code to keep both phones in sync.</p><button class="ob-btn ghost" onclick="obEnterPartner()">Enter partner's code</button><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obGo('start')">I'll do this later</button></div>`)
+        : `<p class="ob-hint" style="margin:0">Keeping both phones in sync is a Pro feature — sign in and upgrade any time in Settings. Your figures still work perfectly on this phone without it.</p>`}
+    </div>` : ''}`;
   return obShell(
     obProgress(25,'Step 1 of 3 · Your work',"obGo('entry')"),
     `<h1>What do you do?</h1>
@@ -6415,6 +6424,7 @@ function obScrBiz(){
   );
 }
 function obSetStruct(s){ OB.structure=s; if(s==='sole') OB.partnerCode=''; obRender(); }
+function obSetShare(v){ let n=parseInt(v,10); if(isNaN(n)) n=50; n=Math.max(1,Math.min(100,n)); OB.share=n; }
 function obEnterPartner(){
   const c=prompt("Enter your partner's 8-character share code:");
   if(c && c.trim()){ OB.partnerCode=c.trim().toUpperCase().slice(0,8); obRender(); }
@@ -6745,7 +6755,8 @@ function obFinish(){
   // 1) create business only in the genuine first-run flow
   if(!existingBiz){
     const isPart = OB.structure==='partnership';
-    const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:isPart?50:100};
+    const shareVal = isPart ? Math.max(1,Math.min(100, OB.share||50)) : 100;
+    const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:shareVal};
     if(isPart && OB.partnerCode && OB.loggedIn) newBiz.syncCode = OB.partnerCode;
     S.businesses.push(newBiz);
     OB._newBiz = newBiz; // 記低畀後面 sync 用
@@ -7042,6 +7053,9 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   .ob-catchip.on{background:var(--coral-soft);border-color:var(--coral);color:var(--coral)}
   .ob-catchip.add{border-style:dashed;color:var(--brand-deep)}
   .ob-probadge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
+  .ob-sharewrap{display:flex;align-items:center;gap:8px}
+  #ob-root .ob-sharewrap input{width:100px;text-align:center;font-size:20px;font-weight:800}
+  .ob-sharepct{font-size:20px;font-weight:800;color:var(--muted)}
   .ob-additem{font-size:13.5px;color:var(--brand-deep);font-weight:700;cursor:pointer;background:none;border:0;padding:6px 2px;font-family:inherit}
   /* category folders */
   .ob-folder{border:1.5px solid var(--line);border-radius:14px;margin-bottom:10px;overflow:hidden}
