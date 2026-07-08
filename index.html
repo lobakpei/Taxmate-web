@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-05T19:05 UK — deploy-retry marker, no functional change -->
+<!-- build: 2026-07-08T10:54 UK — Batch C+OG+D1+D2: entry order+star, OG meta, tax-year date lock, recurring start-month/group edit-delete, ur fixes -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -30,6 +30,12 @@
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)">
 <title>TaxMate UK</title>
+<meta property="og:title" content="TaxMate UK">
+<meta property="og:description" content="Track income, expenses and tax in seconds. Built for UK sole traders and gig workers.">
+<meta property="og:image" content="https://taxmate.uk/og-image.png">
+<meta property="og:url" content="https://taxmate.uk">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -381,13 +387,17 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <div class="sb" id="sb-entry"><div class="sheet">
   <div class="grab" onclick="closeParentSheet(this)"></div>
   <div class="stitle" id="en-title"></div>
+  <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
   <div class="fg">
-    <label for="en-amount" data-i18n="f.amount"></label>
+    <label for="en-desc"><span data-i18n="f.note"></span> <span style="font-weight:500;color:var(--muted)" data-i18n="f.optional"></span></label>
+    <input type="text" id="en-desc" maxlength="80">
+  </div>
+  <div class="fg">
+    <label for="en-amount"><span data-i18n="f.amount"></span><span style="color:var(--coral);font-weight:800"> *</span></label>
     <div class="amt"><span class="cur">£</span>
       <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" max="10000000" placeholder="0.00"></div>
     <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
   </div>
-  <div class="fg"><label for="en-date" data-i18n="f.date"></label><input type="date" id="en-date" onchange="checkEntryDate(this.value)"><div class="fhint" id="en-date-hint" style="display:none;color:var(--amber);font-weight:600"></div></div>
   <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz" onchange="paintEntry()"></select></div>
   <div class="fg"><label data-i18n="f.category"></label><div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.longPress"></div><div class="catgrid" id="en-cats"></div></div>
   <div class="fg" id="en-folder-group" style="display:none">
@@ -416,10 +426,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     </div>
     <div class="s" id="en-receipt-status" style="margin-top:6px"></div>
   </div>
-  <div class="fg">
-    <label for="en-desc"><span data-i18n="f.note"></span> <span style="font-weight:500;color:var(--muted)" data-i18n="f.optional"></span></label>
-    <input type="text" id="en-desc" maxlength="80">
-  </div>
   <div class="fg" id="en-repeat-group">
     <label data-i18n="f.repeat"></label>
     <div class="seg">
@@ -427,6 +433,10 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
       <button type="button" id="en-repeat-on" onclick="setRepeat(true)" data-i18n="f.repeatOn"></button>
     </div>
     <div class="fhint" id="en-repeat-hint" style="display:none;margin-top:8px" data-i18n="f.repeatHint"></div>
+    <div id="en-repeat-from" style="display:none;margin-top:10px">
+      <label for="en-repeat-start" style="font-size:13px" data-i18n="f.repeatFrom"></label>
+      <select id="en-repeat-start" style="margin-top:4px"></select>
+    </div>
   </div>
   <div class="sact">
     <button class="btn ghost" onclick="closeSheet('entry')" data-i18n="c.cancel"></button>
@@ -965,6 +975,11 @@ en:{
  'sug.added':'{n} categories added',
  'f.repeat':'Repeat monthly',
  'f.repeatHint':'Fixed monthly cost? Add it for all 12 months of the tax year in one tap.',
+ 'f.dateLocked':'Pick a date within tax year {y}.',
+ 'f.repeatFrom':'Repeat from',
+ 'f.recQ':'This is a monthly repeating expense.',
+ 'f.recThis':'Only this month',
+ 'f.recFuture':'This + future months',
  'f.repeatAdded':'Added for {n} months',
  'f.repeatOff':'One-off',
  'f.repeatOn':'Every month',
@@ -1368,6 +1383,11 @@ zh:{
  'sug.added':'已新增 {n} 個分類',
  'f.repeat':'每月重複',
  'f.repeatHint':'固定每月開支？一按即可為整個稅務年度的12個月一次過新增。',
+ 'f.dateLocked':'請選擇 {y} 稅務年度內的日期。',
+ 'f.repeatFrom':'從哪個月開始',
+ 'f.recQ':'這是一筆每月重複的開支。',
+ 'f.recThis':'只限這個月',
+ 'f.recFuture':'這個月及之後',
  'f.repeatAdded':'已新增 {n} 個月',
  'f.repeatOff':'單次',
  'f.repeatOn':'每月',
@@ -1771,6 +1791,11 @@ pl:{
  'sug.added':'Dodano {n} kategorii',
  'f.repeat':'Powtarzaj miesięcznie',
  'f.repeatHint':'Stały koszt miesięczny? Dodaj go dla wszystkich 12 miesięcy jednym dotknięciem.',
+ 'f.dateLocked':'Wybierz datę w roku podatkowym {y}.',
+ 'f.repeatFrom':'Powtarzaj od',
+ 'f.recQ':'To jest miesięczny powtarzający się wydatek.',
+ 'f.recThis':'Tylko ten miesiąc',
+ 'f.recFuture':'Ten i kolejne miesiące',
  'f.repeatAdded':'Dodano na {n} miesięcy',
  'f.repeatOff':'Jednorazowo',
  'f.repeatOn':'Co miesiąc',
@@ -2174,6 +2199,11 @@ ro:{
  'sug.added':'{n} categorii adăugate',
  'f.repeat':'Repetă lunar',
  'f.repeatHint':'Cost lunar fix? Adaugă-l pentru toate cele 12 luni dintr-o atingere.',
+ 'f.dateLocked':'Alege o dată din anul fiscal {y}.',
+ 'f.repeatFrom':'Repetă din',
+ 'f.recQ':'Aceasta este o cheltuială lunară recurentă.',
+ 'f.recThis':'Doar luna aceasta',
+ 'f.recFuture':'Luna aceasta și următoarele',
  'f.repeatAdded':'Adăugat pentru {n} luni',
  'f.repeatOff':'O singură dată',
  'f.repeatOn':'Lunar',
@@ -2577,6 +2607,11 @@ es:{
  'sug.added':'{n} categorías añadidas',
  'f.repeat':'Repetir mensualmente',
  'f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.',
+ 'f.dateLocked':'Elige una fecha dentro del año fiscal {y}.',
+ 'f.repeatFrom':'Repetir desde',
+ 'f.recQ':'Este es un gasto mensual recurrente.',
+ 'f.recThis':'Solo este mes',
+ 'f.recFuture':'Este mes y los siguientes',
  'f.repeatAdded':'Añadido para {n} meses',
  'f.repeatOff':'Una vez',
  'f.repeatOn':'Cada mes',
@@ -2977,8 +3012,13 @@ ur:{
  'sug.skip':'Omitir',
  'sug.added':'{n} categorías añadidas',
  'f.repeat':'Repetir mensualmente',
- 'f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.',
- 'f.repeatAdded':'Añadido para {n} meses',
+ 'f.repeatHint':'ہر ماہ کا مقررہ خرچ؟ ایک ٹیپ سے پورے ٹیکس سال کے 12 مہینوں کے لیے شامل کریں۔',
+ 'f.dateLocked':'ٹیکس سال {y} کے اندر کی تاریخ منتخب کریں۔',
+ 'f.repeatFrom':'اس مہینے سے شروع کریں',
+ 'f.recQ':'یہ ہر ماہ دہرایا جانے والا خرچ ہے۔',
+ 'f.recThis':'صرف یہی مہینہ',
+ 'f.recFuture':'یہ اور آنے والے مہینے',
+ 'f.repeatAdded':'{n} مہینوں کے لیے شامل کر دیا گیا',
  'f.repeatOff':'Una vez',
  'f.repeatOn':'Cada mes',
  'sec.account':'Cuenta',
@@ -2995,7 +3035,7 @@ ur:{
  'leg.version':'Versión',
  'leg.madeIn':'Hecho en el Reino Unido para autónomos.',
  'f.catErr':'Elige una categoría',
- 'f.dateOtherYear':'Esta fecha pertenece al año fiscal {y} — la entrada aparecerá allí.',
+ 'f.dateOtherYear':'یہ تاریخ ٹیکس سال {y} کی ہے — اندراج وہاں نظر آئے گا۔',
  'tax.emptyT':'Añade un negocio para ver tu estimación',
  'tax.emptyS':'Tu panorama fiscal aparece aquí cuando añadas un negocio y registres ingresos.',
  'tip.entries':'',
@@ -4427,7 +4467,13 @@ function openEntry(kind, id){
   document.getElementById('en-amount').value = e?e.amount:'';
   document.getElementById('en-amount').classList.remove('err');
   document.getElementById('en-amount-err').classList.remove('show');
-  document.getElementById('en-date').value = e?e.date:todayISO();
+  const _dEl = document.getElementById('en-date');
+  const _tr = taxYearRange(e ? dateToTaxYear(e.date) : S.year);
+  _dEl.min = _tr.min; _dEl.max = _tr.max;
+  if(e){ _dEl.value = e.date; }
+  else { const _td = todayISO(); _dEl.value = _td<_tr.min?_tr.min:(_td>_tr.max?_tr.max:_td); }
+  const _dh = document.getElementById('en-date-hint');
+  if(_dh){ _dh.style.display='none'; _dh.style.color='var(--amber)'; }
   document.getElementById('en-desc').value = e?(e.desc||''):'';
   document.getElementById('en-delete').style.display = e?'inline':'none';
   const sel = document.getElementById('en-biz');
@@ -4671,6 +4717,7 @@ function dateToTaxYear(dateStr){
   const startY = d >= apr6 ? y : y-1;
   return startY + '-' + String((startY+1)%100).padStart(2,'0');
 }
+function taxYearRange(y){ const a=parseInt(String(y).slice(0,4)); return {min:a+'-04-06', max:(a+1)+'-04-05'}; }
 function checkEntryDate(dateStr){
   const hint = document.getElementById('en-date-hint');
   if(!hint || !dateStr) return;
@@ -4688,6 +4735,38 @@ function setRepeat(on){
   document.getElementById('en-repeat-off').classList.toggle('on', !on);
   document.getElementById('en-repeat-on').classList.toggle('on', on);
   document.getElementById('en-repeat-hint').style.display = on ? 'block' : 'none';
+  const fr = document.getElementById('en-repeat-from');
+  if(fr){ fr.style.display = on ? 'block' : 'none'; if(on) paintRepeatStart(); }
+}
+function paintRepeatStart(){
+  const sel = document.getElementById('en-repeat-start'); if(!sel) return;
+  const yrS = parseInt(S.year.slice(0,4));
+  let opts = '';
+  for(let m=0;m<12;m++){
+    const mi = (3+m)%12 + 1;
+    const ry = (3+m) > 11 ? yrS+1 : yrS;
+    opts += `<option value="${m}">${OB_MON_SHORT[mi]} ${ry}</option>`;
+  }
+  sel.innerHTML = opts;
+  let def = 0;
+  const dv = document.getElementById('en-date').value;
+  const src = (dv && dateToTaxYear(dv)===S.year) ? dv : (dateToTaxYear(todayISO())===S.year ? todayISO() : null);
+  if(src){ const mm = parseInt(src.slice(5,7)); def = (mm - 4 + 12) % 12; }
+  sel.value = String(def);
+}
+function recAsk(fn){
+  const ov = document.createElement('div');
+  ov.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:9999;display:flex;align-items:center;justify-content:center;padding:24px';
+  ov.innerHTML = `<div style="background:var(--card);border-radius:16px;padding:20px;max-width:340px;width:100%;box-shadow:0 12px 40px rgba(0,0,0,.3)">
+    <div style="font-weight:800;margin-bottom:14px">${t('f.recQ')}</div>
+    <button type="button" class="btn" style="width:100%;margin-bottom:8px" id="rec-one">${t('f.recThis')}</button>
+    <button type="button" class="btn" style="width:100%;margin-bottom:8px" id="rec-fut">${t('f.recFuture')}</button>
+    <button type="button" class="btn ghost" style="width:100%" id="rec-cxl">${t('c.cancel')}</button></div>`;
+  document.body.appendChild(ov);
+  const done = v => { ov.remove(); if(v) fn(v); };
+  ov.querySelector('#rec-one').onclick = ()=>done('one');
+  ov.querySelector('#rec-fut').onclick = ()=>done('future');
+  ov.querySelector('#rec-cxl').onclick = ()=>done(null);
 }
 function saveEntry(){
   // 收據仲上載緊 → 唔好即刻儲存，等上載完會自動幫你 save
@@ -4702,6 +4781,15 @@ function saveEntry(){
     document.getElementById('en-amount').classList.add('err');
     document.getElementById('en-amount-err').classList.add('show');
     document.getElementById('en-amount').focus();
+    return;
+  }
+  const _de = document.getElementById('en-date');
+  let _dv = _de.value;
+  if(!_dv){ const _td = todayISO(); _dv = (_de.min && _td<_de.min) ? _de.min : ((_de.max && _td>_de.max) ? _de.max : _td); }
+  if((_de.min && _dv<_de.min) || (_de.max && _dv>_de.max)){
+    const _h = document.getElementById('en-date-hint');
+    if(_h){ _h.textContent = t('f.dateLocked',{y: dateToTaxYear(_de.min)}); _h.style.color='var(--coral)'; _h.style.display='block'; }
+    _de.focus();
     return;
   }
   if(!EN.cat){
@@ -4720,7 +4808,7 @@ function saveEntry(){
     id:EN.id||uid(),
     bizId:document.getElementById('en-biz').value||(S.businesses[0]&&S.businesses[0].id),
     kind:EN.kind,
-    date:document.getElementById('en-date').value||todayISO(),
+    date:_dv,
     amount:Math.round(amt*100)/100,
     cat:EN.cat,
     pct:EN.kind==='expense'?EN.pct:null,
@@ -4732,8 +4820,21 @@ function saveEntry(){
   if(EN.id){
     const i=S.entries.findIndex(x=>x.id===EN.id);
     if(i>-1){
-      S.entries[i]=rec;
-      save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+      const orig = S.entries[i];
+      if(orig.rgid) rec.rgid = orig.rgid;   // keep the monthly-group link
+      const commit = (mode)=>{
+        S.entries[i]=rec; pushEntryRemote(rec);
+        if(mode==='future' && rec.rgid){
+          S.entries.forEach(x=>{
+            if(x.rgid===rec.rgid && x.id!==rec.id && x.date>orig.date){
+              x.amount=rec.amount; x.cat=rec.cat; x.desc=rec.desc; x.pct=rec.pct; x.folderId=rec.folderId;
+              pushEntryRemote(x);
+            }
+          });
+        }
+        save(); closeSheet('entry'); render(); toast(t('toast.saved'));
+      };
+      if(orig.rgid){ recAsk(commit); } else { commit('one'); }
     } else {
       // EN.id 係由 onReceiptFile 生成嘅，唔係 existing entry → 當新 entry 處理
       S.entries.push(rec);
@@ -4745,14 +4846,19 @@ function saveEntry(){
     const yrStart = parseInt(S.year.slice(0,4));
     const pad = n => String(n).padStart(2,'0');
     let count=0;
-    // Tax year runs April (month index 3) of yrStart through March of yrStart+1
-    for(let m=0;m<12;m++){
+    const _sel = document.getElementById('en-repeat-start');
+    const _startOff = _sel ? Math.max(0, Math.min(11, parseInt(_sel.value)||0)) : 0;
+    const _range = taxYearRange(S.year);
+    const _rgid = uid();
+    // Tax year runs April (month index 3) of yrStart through March of yrStart+1; start at chosen month
+    for(let m=_startOff;m<12;m++){
       const monthIdx = (3+m) % 12;
       const realYear = (3+m) > 11 ? yrStart+1 : yrStart;
       const daysInMonth = new Date(realYear, monthIdx+1, 0).getDate();
       const day = Math.min(baseDay, daysInMonth);
       const dateStr = realYear+'-'+pad(monthIdx+1)+'-'+pad(day);
-      const r = Object.assign({}, rec, {id:uid(), date:dateStr});
+      if(dateStr < _range.min || dateStr > _range.max) continue; // e.g. 1–5 April belongs to the previous tax year
+      const r = Object.assign({}, rec, {id:uid(), date:dateStr, rgid:_rgid});
       S.entries.push(r); pushEntryRemote(r); count++;
     }
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
@@ -4762,12 +4868,18 @@ function saveEntry(){
   }
 }
 function deleteEntry(){
-  confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
-    const e = S.entries.find(x=>x.id===EN.id);
-    S.entries = S.entries.filter(x=>x.id!==EN.id);
-    if(e) deleteEntryRemote(e.bizId, e.id);
+  const e = S.entries.find(x=>x.id===EN.id);
+  const wipe = (mode)=>{
+    const doomed = (mode==='future' && e && e.rgid)
+      ? S.entries.filter(x=>x.rgid===e.rgid && x.date>=e.date)
+      : (e ? [e] : []);
+    doomed.forEach(x=>deleteEntryRemote(x.bizId, x.id));
+    const ids = new Set(doomed.map(x=>x.id));
+    S.entries = S.entries.filter(x=>!ids.has(x.id));
     save(); closeSheet('entry'); render();
-  });
+  };
+  if(e && e.rgid){ recAsk(wipe); }
+  else confirmAction(t('d.entryT'), t('d.entryM'), ()=>wipe('one'));
 }
 
 /* ═══════════ business sheet ═══════════ */
@@ -7068,9 +7180,10 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   .ob-frow{margin-bottom:8px}
   .ob-fline{display:flex;align-items:center;gap:5px}
   .ob-fline .ob-daywrap{flex-shrink:0}
-  .ob-fdesc{flex:1;min-width:0;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink)}
+  .ob-fdesc{flex:1;min-width:0;font-family:inherit;font-size:13px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink)}
   .ob-famt{position:relative;width:82px;flex-shrink:0}
   .ob-famt .ob-cur{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--muted)}
+  .ob-famt .ob-cur::after{content:"*";color:var(--coral);font-weight:800;font-size:11px;vertical-align:top;margin-left:1px}
   .ob-famt input{width:100%;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 6px 9px 21px;color:var(--ink);font-variant-numeric:tabular-nums}
   .ob-fline .ob-del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:0 1px;flex-shrink:0}
   .ob-addcat{display:block;width:100%;font-size:14px;color:var(--brand-deep);font-weight:800;cursor:pointer;background:var(--brand-soft);border:1.5px dashed var(--brand);border-radius:12px;padding:12px;font-family:inherit;margin-top:4px}
