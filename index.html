@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-08T10:54 UK — Batch C+OG+D1+D2: entry order+star, OG meta, tax-year date lock, recurring start-month/group edit-delete, ur fixes -->
+<!-- build: 2026-07-09T11:54 UK — Batch E (13 UI fixes): drum emoji, partner-sync-code wording, struct pill styling, first-screen lang picker, folder icon optional default, star position, TBC undated entries, month-checkbox recurring, catch-up overlap -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -194,7 +194,7 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 
 /* ── entries ── */
 .month{font-size:13px;font-weight:800;color:var(--muted);padding:16px 4px 8px;display:flex;justify-content:space-between;text-transform:capitalize}
-.elist{background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm);overflow:hidden}
+.elist{background:var(--card);border-radius:var(--r-md);box-shadow:var(--shadow-sm);overflow:hidden;margin-bottom:14px}
 .entry{display:flex;align-items:center;gap:12px;padding:13px 15px;cursor:pointer;border:0;background:none;width:100%;text-align:start}
 .entry+.entry{border-top:1px solid var(--line)}
 .entry:active{background:#FAFBFC}
@@ -233,6 +233,9 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .seg{display:flex;background:#EEF1F4;border-radius:999px;padding:4px}
 .seg button{flex:1;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
+.rmgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
+.rmgrid button{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 4px;font-family:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .12s}
+.rmgrid button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
 .pctrow{display:flex;gap:8px;flex-wrap:wrap}
 .catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
@@ -434,8 +437,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     </div>
     <div class="fhint" id="en-repeat-hint" style="display:none;margin-top:8px" data-i18n="f.repeatHint"></div>
     <div id="en-repeat-from" style="display:none;margin-top:10px">
-      <label for="en-repeat-start" style="font-size:13px" data-i18n="f.repeatFrom"></label>
-      <select id="en-repeat-start" style="margin-top:4px"></select>
+      <label style="font-size:13px" data-i18n="f.repeatPick"></label>
+      <div id="en-repeat-months" class="rmgrid"></div>
     </div>
   </div>
   <div class="sact">
@@ -983,6 +986,8 @@ en:{
  'f.repeatAdded':'Added for {n} months',
  'f.repeatOff':'One-off',
  'f.repeatOn':'Every month',
+ 'f.repeatPick':'Which months? Tap to include.',
+ 'f.tbc':'TBC',
  'sec.account':'Account',
  'sec.biz':'Your businesses',
  'sec.prefs':'Preferences',
@@ -1391,6 +1396,8 @@ zh:{
  'f.repeatAdded':'已新增 {n} 個月',
  'f.repeatOff':'單次',
  'f.repeatOn':'每月',
+ 'f.repeatPick':'邊幾個月？撳一下加入。',
+ 'f.tbc':'待定',
  'sec.account':'帳戶',
  'sec.biz':'你的業務',
  'sec.prefs':'偏好設定',
@@ -1799,6 +1806,8 @@ pl:{
  'f.repeatAdded':'Dodano na {n} miesięcy',
  'f.repeatOff':'Jednorazowo',
  'f.repeatOn':'Co miesiąc',
+ 'f.repeatPick':'Które miesiące? Dotknij, aby dodać.',
+ 'f.tbc':'Do ustalenia',
  'sec.account':'Konto',
  'sec.biz':'Twoje firmy',
  'sec.prefs':'Preferencje',
@@ -2207,6 +2216,8 @@ ro:{
  'f.repeatAdded':'Adăugat pentru {n} luni',
  'f.repeatOff':'O singură dată',
  'f.repeatOn':'Lunar',
+ 'f.repeatPick':'Ce luni? Atinge pentru a include.',
+ 'f.tbc':'De stabilit',
  'sec.account':'Cont',
  'sec.biz':'Afacerile tale',
  'sec.prefs':'Preferințe',
@@ -2615,6 +2626,8 @@ es:{
  'f.repeatAdded':'Añadido para {n} meses',
  'f.repeatOff':'Una vez',
  'f.repeatOn':'Cada mes',
+ 'f.repeatPick':'¿Qué meses? Toca para incluir.',
+ 'f.tbc':'Por confirmar',
  'sec.account':'Cuenta',
  'sec.biz':'Tus negocios',
  'sec.prefs':'Preferencias',
@@ -3020,7 +3033,9 @@ ur:{
  'f.recFuture':'یہ اور آنے والے مہینے',
  'f.repeatAdded':'{n} مہینوں کے لیے شامل کر دیا گیا',
  'f.repeatOff':'Una vez',
- 'f.repeatOn':'Cada mes',
+ 'f.repeatOn':'ہر ماہ',
+ 'f.repeatPick':'کون سے مہینے؟ شامل کرنے کے لیے ٹیپ کریں۔',
+ 'f.tbc':'زیر التوا',
  'sec.account':'Cuenta',
  'sec.biz':'Tus negocios',
  'sec.prefs':'Preferencias',
@@ -3845,7 +3860,7 @@ function entryRow(e){
   const c = catById(e.cat);
   const b = bizById(e.bizId);
   const pctNote = (e.kind==='expense'&&e.pct!=null&&e.pct<100) ? ` · ${e.pct}%` : '';
-  const d = new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
+  const d = e.dateTBC ? t('f.tbc') : new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
   return `<button class="entry" onclick="openEntry('${e.kind}','${e.id}')">
     <div class="edot" style="background:${c.dot}1A">${c.e||'🏷️'}</div>
     <div class="grow">
@@ -4102,7 +4117,7 @@ function pageReceipts(){
     const rows = list.map(e=>{
       const c = catById(e.cat);
       const b = bizById(e.bizId);
-      const d = new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
+      const d = e.dateTBC ? t('f.tbc') : new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
       return `<div class="frow" style="align-items:center;padding:10px 0">
         <div class="edot" style="background:${c.dot}1A;flex-shrink:0">${c.e||'🏷️'}</div>
         <div class="grow" style="min-width:0;margin-inline-start:10px">
@@ -4375,7 +4390,7 @@ function openLegal(which){
 <div style="font-size:14px;line-height:1.7;color:var(--ink)">
 
 <p><strong>Who we are</strong><br>
-TaxMate UK is operated by Robert Ho, a sole trader based in the United Kingdom.<br>
+TaxMate UK is operated by Hau Ying Ou-Yang, a sole trader based in the United Kingdom.<br>
 ICO Registration Number: <strong>ZC174150</strong><br>
 Contact: support@taxmate.uk</p>
 
@@ -4430,7 +4445,7 @@ You are responsible for the accuracy of data you enter. You are responsible for 
 We aim to keep TaxMate UK available at all times but cannot guarantee uninterrupted service. We are not liable for any losses caused by downtime or data loss.</p>
 
 <p><strong>Intellectual property</strong><br>
-TaxMate UK and its content are owned by Robert Ho. You may not copy, distribute, or create derivative works without permission.</p>
+TaxMate UK and its content are owned by Hau Ying Ou-Yang. You may not copy, distribute, or create derivative works without permission.</p>
 
 <p><strong>Changes to the service</strong><br>
 We may update or change features of TaxMate UK at any time. We will endeavour to give notice of significant changes.</p>
@@ -4455,6 +4470,7 @@ function setTheme(th){
   S.settings.theme = th; save(); applyTheme(); render();
 }
 function setLang(l){ S.settings.lang=l; save(); render(); }
+function obSetLang(l){ S.settings.lang=l; save(); if(typeof applyI18n==='function') applyI18n(); obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
 let EN = {id:null, kind:'expense', cat:null, pct:100};
@@ -4474,6 +4490,7 @@ function openEntry(kind, id){
   else { const _td = todayISO(); _dEl.value = _td<_tr.min?_tr.min:(_td>_tr.max?_tr.max:_td); }
   const _dh = document.getElementById('en-date-hint');
   if(_dh){ _dh.style.display='none'; _dh.style.color='var(--amber)'; }
+  EN.repeatMonths = null;
   document.getElementById('en-desc').value = e?(e.desc||''):'';
   document.getElementById('en-delete').style.display = e?'inline':'none';
   const sel = document.getElementById('en-biz');
@@ -4736,23 +4753,30 @@ function setRepeat(on){
   document.getElementById('en-repeat-on').classList.toggle('on', on);
   document.getElementById('en-repeat-hint').style.display = on ? 'block' : 'none';
   const fr = document.getElementById('en-repeat-from');
-  if(fr){ fr.style.display = on ? 'block' : 'none'; if(on) paintRepeatStart(); }
+  if(fr){ fr.style.display = on ? 'block' : 'none'; if(on) paintRepeatMonths(); }
 }
-function paintRepeatStart(){
-  const sel = document.getElementById('en-repeat-start'); if(!sel) return;
+function paintRepeatMonths(){
+  const wrap = document.getElementById('en-repeat-months'); if(!wrap) return;
   const yrS = parseInt(S.year.slice(0,4));
-  let opts = '';
+  if(!EN.repeatMonths){
+    // default: from the entry's month through end of the tax year
+    let start = 0;
+    const dv = document.getElementById('en-date').value;
+    const src = (dv && dateToTaxYear(dv)===S.year) ? dv : (dateToTaxYear(todayISO())===S.year ? todayISO() : null);
+    if(src){ start = (parseInt(src.slice(5,7)) - 4 + 12) % 12; }
+    EN.repeatMonths = new Set(); for(let m=start;m<12;m++) EN.repeatMonths.add(m);
+  }
+  let html='';
   for(let m=0;m<12;m++){
     const mi = (3+m)%12 + 1;
-    const ry = (3+m) > 11 ? yrS+1 : yrS;
-    opts += `<option value="${m}">${OB_MON_SHORT[mi]} ${ry}</option>`;
+    html += `<button type="button" class="${EN.repeatMonths.has(m)?'on':''}" onclick="toggleRepeatMonth(${m})">${OB_MON_SHORT[mi]}</button>`;
   }
-  sel.innerHTML = opts;
-  let def = 0;
-  const dv = document.getElementById('en-date').value;
-  const src = (dv && dateToTaxYear(dv)===S.year) ? dv : (dateToTaxYear(todayISO())===S.year ? todayISO() : null);
-  if(src){ const mm = parseInt(src.slice(5,7)); def = (mm - 4 + 12) % 12; }
-  sel.value = String(def);
+  wrap.innerHTML = html;
+}
+function toggleRepeatMonth(m){
+  if(!EN.repeatMonths) EN.repeatMonths=new Set();
+  if(EN.repeatMonths.has(m)) EN.repeatMonths.delete(m); else EN.repeatMonths.add(m);
+  paintRepeatMonths();
 }
 function recAsk(fn){
   const ov = document.createElement('div');
@@ -4846,21 +4870,21 @@ function saveEntry(){
     const yrStart = parseInt(S.year.slice(0,4));
     const pad = n => String(n).padStart(2,'0');
     let count=0;
-    const _sel = document.getElementById('en-repeat-start');
-    const _startOff = _sel ? Math.max(0, Math.min(11, parseInt(_sel.value)||0)) : 0;
     const _range = taxYearRange(S.year);
     const _rgid = uid();
-    // Tax year runs April (month index 3) of yrStart through March of yrStart+1; start at chosen month
-    for(let m=_startOff;m<12;m++){
+    const months = (EN.repeatMonths && EN.repeatMonths.size) ? [...EN.repeatMonths].sort((a,b)=>a-b) : [];
+    // each selected offset maps to a real calendar month within the tax year
+    months.forEach(m=>{
       const monthIdx = (3+m) % 12;
       const realYear = (3+m) > 11 ? yrStart+1 : yrStart;
       const daysInMonth = new Date(realYear, monthIdx+1, 0).getDate();
       const day = Math.min(baseDay, daysInMonth);
       const dateStr = realYear+'-'+pad(monthIdx+1)+'-'+pad(day);
-      if(dateStr < _range.min || dateStr > _range.max) continue; // e.g. 1–5 April belongs to the previous tax year
+      if(dateStr < _range.min || dateStr > _range.max) return;
       const r = Object.assign({}, rec, {id:uid(), date:dateStr, rgid:_rgid});
       S.entries.push(r); pushEntryRemote(r); count++;
-    }
+    });
+    if(!count){ S.entries.push(rec); pushEntryRemote(rec); count=1; } // safety: nothing picked => single entry
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
   } else {
     S.entries.push(rec);
@@ -6447,8 +6471,10 @@ function obShell(progHTML, bodyHTML, footHTML){
 
 /* LOGIN */
 function obScrLogin(){
-  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
-    <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
+  const langBar = `<div class="ob-langbar">${Object.keys(LANG_NAMES).map(l=>`<button class="${S.settings.lang===l?'on':''}" onclick="obSetLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>`;
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:20px">
+    ${langBar}
+    <div class="ob-logo" style="margin-top:20px"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
     <h1>Know your tax<br>in seconds</h1>
     <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
     <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
@@ -6477,9 +6503,9 @@ function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <div style="font-size:40px;margin-bottom:10px">👋</div>
     <h1>How would you like to get started?</h1>
-    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">Let's do this together</span><span class="ob-ts">I'll walk you through it — first income, then expenses, 🥁 then you'll know exactly what you owe.</span></span></button>
+    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">Let's do this together</span><span class="ob-ts">I'll walk you through it — first income, then expenses, then you'll know exactly what you owe.</span></span></button>
     <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">🚀</span><span><span class="ob-tt">Go straight to dashboard</span><span class="ob-ts">I know what I'm doing. I've got this!</span></span></button>
-    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a share code? Choose “Go straight to dashboard”, then go to Settings to enter it.</div>
+    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.</div>
   </div></div>`;
 }
 function obExplore(){
@@ -6501,9 +6527,6 @@ function obScrBiz(){
         <button class="${isSole?'on':''}" onclick="obSetStruct('sole')">Just me</button>
         <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">With a partner</button>
       </div>
-      <p class="ob-hint" style="margin-top:10px">${isSole
-        ? 'You work for yourself and keep all the profit.'
-        : 'You run it with someone and split the profit — only your share is taxed.'}</p>
     </div>
     ${!isSole ? `
     <div class="ob-card">
@@ -6783,12 +6806,8 @@ function obConfirmAddCat(kind){
   const d=obMonthData(obCurMonth());
   const name=(d.newCat[kind]||'').trim();
   if(!name){ obCancelAddCat(kind); return; }
-  const emoji=(d.newCatE&&d.newCatE[kind])||'';
-  if(!emoji || !isEmojiIcon(emoji)){
-    const el=document.getElementById('ob-newcat-e-'+kind);
-    if(el){ el.classList.add('err'); el.focus(); }
-    return; // icon is required — block confirm until one is picked
-  }
+  let emoji=(d.newCatE&&d.newCatE[kind])||'';
+  if(!emoji || !isEmojiIcon(emoji)) emoji='📁'; // icon optional — default to folder
   if(kind==='in') d.inGrouped=true;
   obGroups(kind).push({id:'g_'+uid(), name:name.slice(0,28), e:emoji, open:true, rows:[{d:'',v:'',day:''}]});
   d.addCat[kind]=false; d.newCat[kind]=''; if(d.newCatE)d.newCatE[kind]='';
@@ -6878,7 +6897,7 @@ function obFinish(){
   if(!S.activeCats[newId]) S.activeCats[newId]={income:['sales'],expense:[]};
 
   // 3) write all month entries
-  const mkDate=(mObj,day)=>{ const dd=day?Math.min(parseInt(day),28):15; return mObj.year+'-'+pad(mObj.m)+'-'+pad(dd); };
+  const mkDate=(mObj,day)=>{ const dd=day?Math.min(parseInt(day),28):1; return mObj.year+'-'+pad(mObj.m)+'-'+pad(dd); };
   const needsRev=[]; // ids needing later review
   let yearsTouched=new Set();
   const CAT_COLOURS=['#E5484D','#F47738','#3478F6','#9B59B6','#0AA968','#6B7686','#85994B','#0D8C86','#1F4E9C','#B47D12'];
@@ -6904,7 +6923,7 @@ function obFinish(){
     const pushIncome=(it,groupName)=>{ const v=parseFloat(it.v)||0; if(v>0){
       const rev=it.day==='';
       const desc=[(groupName||'').trim(),(it.d||'').trim()].filter(Boolean).join(' · ');
-      const r={id:uid(),bizId:newId,kind:'income',date:mkDate(mObj,it.day),amount:Math.round(v*100)/100,cat:'sales',pct:null,folderId:null,receiptUrl:null,receiptPath:null,desc,_review:rev};
+      const r={id:uid(),bizId:newId,kind:'income',date:mkDate(mObj,it.day),dateTBC:rev,amount:Math.round(v*100)/100,cat:'sales',pct:null,folderId:null,receiptUrl:null,receiptPath:null,desc,_review:rev};
       S.entries.push(r); if(rev)needsRev.push(r.id); yearsTouched.add(dateToTaxYear(r.date));
     } };
     if(d.inGrouped){ d.inGroups.forEach(g=>g.rows.forEach(it=>pushIncome(it,g.name))); }
@@ -6914,7 +6933,7 @@ function obFinish(){
       const cid=ensureExpCat(g.name, g.e||'');
       g.rows.forEach(it=>{ const v=parseFloat(it.v)||0; if(v>0){
         const rev=it.day==='';
-        const r={id:uid(),bizId:newId,kind:'expense',date:mkDate(mObj,it.day),amount:Math.round(v*100)/100,cat:cid,pct:100,folderId:null,receiptUrl:null,receiptPath:null,desc:(it.d||'').trim(),_review:rev};
+        const r={id:uid(),bizId:newId,kind:'expense',date:mkDate(mObj,it.day),dateTBC:rev,amount:Math.round(v*100)/100,cat:cid,pct:100,folderId:null,receiptUrl:null,receiptPath:null,desc:(it.d||'').trim(),_review:rev};
         S.entries.push(r); if(rev)needsRev.push(r.id); yearsTouched.add(dateToTaxYear(r.date));
       } });
     });
@@ -7118,6 +7137,10 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   @keyframes obfade{from{opacity:0}to{opacity:1}}
   #ob-root h1{font-size:25px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px;color:var(--ink)}
   #ob-root .ob-lede{font-size:15px;color:var(--muted);margin-bottom:22px;line-height:1.55}
+  .ob-langbar{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none}
+  .ob-langbar::-webkit-scrollbar{display:none}
+  .ob-langbar button{flex:0 0 auto;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}
+  .ob-langbar button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
   .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .ob-logo .lo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
   .ob-logo .lo-name{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
@@ -7125,6 +7148,9 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   .ob-tile{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;cursor:pointer;margin-bottom:12px;transition:border-color .15s,transform .12s;font-family:inherit}
   .ob-tile:active{transform:scale(.985)}
   .ob-tile.solid{border-color:var(--brand);background:var(--brand-soft)}
+  .ob-seg{display:flex;gap:0;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:4px}
+  .ob-seg button{flex:1;border:0;background:none;border-radius:999px;padding:11px 8px;font-family:inherit;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
+  .ob-seg button.on{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(10,169,104,.28)}
   .ob-tile .ob-emoji{font-size:26px;flex-shrink:0;line-height:1}
   .ob-tile .ob-tt{display:block;font-size:16px;font-weight:800;color:var(--ink);line-height:1.25}
   .ob-tile .ob-ts{display:block;font-size:13px;color:var(--muted);line-height:1.35;margin-top:3px}
@@ -7183,7 +7209,6 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   .ob-fdesc{flex:1;min-width:0;font-family:inherit;font-size:13px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink)}
   .ob-famt{position:relative;width:82px;flex-shrink:0}
   .ob-famt .ob-cur{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--muted)}
-  .ob-famt .ob-cur::after{content:"*";color:var(--coral);font-weight:800;font-size:11px;vertical-align:top;margin-left:1px}
   .ob-famt input{width:100%;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 6px 9px 21px;color:var(--ink);font-variant-numeric:tabular-nums}
   .ob-fline .ob-del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:0 1px;flex-shrink:0}
   .ob-addcat{display:block;width:100%;font-size:14px;color:var(--brand-deep);font-weight:800;cursor:pointer;background:var(--brand-soft);border:1.5px dashed var(--brand);border-radius:12px;padding:12px;font-family:inherit;margin-top:4px}
