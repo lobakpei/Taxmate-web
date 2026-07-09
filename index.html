@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-09T11:54 UK — Batch E (13 UI fixes): drum emoji, partner-sync-code wording, struct pill styling, first-screen lang picker, folder icon optional default, star position, TBC undated entries, month-checkbox recurring, catch-up overlap -->
+<!-- build: 2026-07-09T12:35 UK — Batch E+F2: 13 UI fixes, tax-year day-picker boundary, WhatsApp OG dims, single lang button, FULL onboarding i18n ×6 (78 keys) -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -33,9 +33,16 @@
 <meta property="og:title" content="TaxMate UK">
 <meta property="og:description" content="Track income, expenses and tax in seconds. Built for UK sole traders and gig workers.">
 <meta property="og:image" content="https://taxmate.uk/og-image.png">
+<meta property="og:image:secure_url" content="https://taxmate.uk/og-image.png">
+<meta property="og:image:type" content="image/png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="TaxMate UK — Just did it.">
 <meta property="og:url" content="https://taxmate.uk">
 <meta property="og:type" content="website">
+<meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:image" content="https://taxmate.uk/og-image.png">
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -650,6 +657,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script>
 /* ═══════════ i18n ═══════════ */
 const LOCALES = { en:'en-GB', zh:'zh-HK', pl:'pl-PL', ro:'ro-RO', es:'es-ES', ur:'ur-PK' };
+function obMonShort(m){ return new Date(2026, m-1, 1).toLocaleDateString(LOCALES[S.settings.lang]||'en-GB', {month:'short'}); }
+function obMonFull(m){ return new Date(2026, m-1, 1).toLocaleDateString(LOCALES[S.settings.lang]||'en-GB', {month:'long'}); }
 const LANG_NAMES = { en:'English', zh:'繁體中文', pl:'Polski', ro:'Română', es:'Español', ur:'اردو' };
 
 const I18N = {
@@ -988,6 +997,86 @@ en:{
  'f.repeatOn':'Every month',
  'f.repeatPick':'Which months? Tap to include.',
  'f.tbc':'TBC',
+ 'f.tbc2':'To be confirmed',
+ 'ob.h1':'Know your tax<br>in seconds',
+ 'ob.lede':'Money in, money out, tax sorted. No accountant, no jargon.',
+ 'ob.signIn':'Sign in',
+ 'ob.signInS':'Save your data & sync across devices',
+ 'ob.noAcc':'Start without an account',
+ 'ob.noAccS':'Stays on this phone — sign in anytime',
+ 'ob.codeLogin':'🤝 Got a partner sync code? — please sign in first.',
+ 'ob.howStart':'How would you like to get started?',
+ 'ob.together':'Let\'s do this together',
+ 'ob.togetherS':'I\'ll walk you through it — first income, then expenses, then you\'ll know exactly what you owe.',
+ 'ob.dash':'Go straight to dashboard',
+ 'ob.dashS':'I know what I\'m doing. I\'ve got this!',
+ 'ob.codeEntry':'🤝 Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
+ 'ob.run':'How do you run it?',
+ 'ob.partner':'With a partner',
+ 'ob.shareLabel':'Your share of the profit',
+ 'ob.shareHint':'Only this share of the profit is taxed as yours. Most equal partnerships are 50%.',
+ 'ob.syncTitle':'Sync with your partner',
+ 'ob.joinCode':'Joining code',
+ 'ob.remove':'Remove',
+ 'ob.syncHint':'If your partner already uses TaxMate, enter their partner sync code to keep both phones in sync.',
+ 'ob.enterCode':'Enter partner\'s code',
+ 'ob.later':'I\'ll do this later',
+ 'ob.syncPro':'Keeping both phones in sync is a Pro feature — sign in and upgrade any time in Settings. Your figures still work perfectly on this phone without it.',
+ 'ob.step1':'Step 1 of 3 · Your work',
+ 'ob.whatDo':'What do you do?',
+ 'ob.bizLede':'Your business name — most people just put their job.',
+ 'ob.bizName':'Business name',
+ 'ob.bizPh':'e.g. Evri driver',
+ 'ob.bizEg':'Uber driver · Cleaner · Handyman · Deliveroo',
+ 'ob.continue':'Continue',
+ 'ob.codePrompt':'Enter your partner\'s 8-character partner sync code:',
+ 'ob.catchBiz':'Catch up · pick a business',
+ 'ob.whichBiz':'Which business?',
+ 'ob.pickLede':'Add the past months to the right business. You can catch up the others separately.',
+ 'ob.soleTag':'Sole trader',
+ 'ob.partTag':'Partnership · your {s}%',
+ 'ob.addFrom':'Add my figures from {m}',
+ 'ob.catchMonth':'Catch up · pick a month',
+ 'ob.step2':'Step 2 of 3 · Start month',
+ 'ob.whereStart':'Where shall we start?',
+ 'ob.startLede':'Pick the first month you want to add figures for. We\'ll go month by month from there.',
+ 'ob.taxYearNote':'The UK tax year runs April → April.',
+ 'ob.step3':'Step 3 of 3 · {a} of {b} months',
+ 'ob.yourWork':'Your work',
+ 'ob.addAnother':'Add another',
+ 'ob.split':'Split into categories',
+ 'ob.addAgain':'Add again:',
+ 'ob.close':'Close',
+ 'ob.pickIcon':'Pick an icon and add a category — fuel, phone, insurance…',
+ 'ob.addCat':'Add category',
+ 'ob.details':'Details',
+ 'ob.from':'From?',
+ 'ob.catInPh':'e.g. Uber Eats, Evri, Amazon',
+ 'ob.catOutPh':'e.g. Fuel, Insurance, Phone',
+ 'ob.drive':'🚗 Did you drive for work?',
+ 'ob.addMiles':'Add mileage',
+ 'ob.milesIn':'Business miles in {m}',
+ 'ob.milesPh':'e.g. 850',
+ 'ob.mileHintA':'Claimed at {p}p per mile',
+ 'ob.mileHintB':' · ≈ £{x} deduction',
+ 'ob.mileHintC':'. Only if you haven\'t already added fuel as an expense.',
+ 'ob.noDrive':'No driving this month',
+ 'ob.soFar':'{m} so far',
+ 'ob.nextMonth':'Next month →',
+ 'ob.finishBtn':'Finish & see my tax',
+ 'ob.allCaught':'All caught up',
+ 'ob.estLabel':'Estimated tax set aside',
+ 'ob.basedOn':'based on {n} month(s) so far',
+ 'ob.monthsAdded':'Months added',
+ 'ob.totIn':'Total income',
+ 'ob.totOut':'Total expenses',
+ 'ob.mileRow':'Mileage ({n} mi)',
+ 'ob.profitFar':'Profit so far',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'You\'re all caught up. {n} item(s) can be tidied up later — you\'ll find them flagged on your dashboard. From here, just tap ＋ whenever money comes in or goes out.',
+ 'ob.cleanLine':'You\'re all caught up. From here, just tap ＋ whenever money comes in or goes out — TaxMate keeps the rest up to date.',
+ 'ob.goDash':'Go to my dashboard',
+ 'ob.estWarn':'⚠️ Estimate only — not your final tax. You still file with HMRC by 31 Jan.',
  'sec.account':'Account',
  'sec.biz':'Your businesses',
  'sec.prefs':'Preferences',
@@ -1398,6 +1487,86 @@ zh:{
  'f.repeatOn':'每月',
  'f.repeatPick':'邊幾個月？撳一下加入。',
  'f.tbc':'待定',
+ 'f.tbc2':'待定',
+ 'ob.h1':'幾秒之內<br>知道要交幾多稅',
+ 'ob.lede':'收入、支出、稅項一目了然。唔使會計師，冇術語。',
+ 'ob.signIn':'登入',
+ 'ob.signInS':'儲存資料，多部裝置同步',
+ 'ob.noAcc':'唔開帳戶直接開始',
+ 'ob.noAccS':'資料只留喺呢部電話——隨時都可以登入',
+ 'ob.codeLogin':'🤝 有 partner sync code？請先登入。',
+ 'ob.howStart':'想點樣開始？',
+ 'ob.together':'一齊嚟啦',
+ 'ob.togetherS':'我會一步步陪你行——先收入，再支出，然後你就知道要交幾多稅。',
+ 'ob.dash':'直接去主頁',
+ 'ob.dashS':'我識㗎喇，交畀我！',
+ 'ob.codeEntry':'🤝 有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
+ 'ob.run':'你點樣經營？',
+ 'ob.partner':'同拍檔一齊',
+ 'ob.shareLabel':'你佔利潤幾多',
+ 'ob.shareHint':'只有你嗰份利潤先會當你嘅收入嚟計稅。大部分平分嘅合夥係 50%。',
+ 'ob.syncTitle':'同拍檔同步',
+ 'ob.joinCode':'加入代碼',
+ 'ob.remove':'移除',
+ 'ob.syncHint':'如果你拍檔已經用緊 TaxMate，輸入佢嘅 partner sync code 就可以兩部電話同步。',
+ 'ob.enterCode':'輸入拍檔嘅代碼',
+ 'ob.later':'遲啲先算',
+ 'ob.syncPro':'兩機同步係 Pro 功能——隨時喺「設定」登入同升級。冇佢，你嘅數字喺呢部電話一樣用得好好。',
+ 'ob.step1':'第 1 步（共 3 步）· 你嘅工作',
+ 'ob.whatDo':'你做邊行？',
+ 'ob.bizLede':'你嘅業務名——大部分人直接寫自己份工。',
+ 'ob.bizName':'業務名稱',
+ 'ob.bizPh':'例如：Evri 司機',
+ 'ob.bizEg':'Uber 司機 · 清潔 · 雜工 · Deliveroo',
+ 'ob.continue':'繼續',
+ 'ob.codePrompt':'輸入你拍檔嘅 8 位 partner sync code：',
+ 'ob.catchBiz':'補返舊數 · 揀業務',
+ 'ob.whichBiz':'邊個業務？',
+ 'ob.pickLede':'將過去嘅月份加落啱嘅業務。其他業務可以之後逐個補。',
+ 'ob.soleTag':'自僱經營',
+ 'ob.partTag':'合夥 · 你佔 {s}%',
+ 'ob.addFrom':'由 {m} 開始加數',
+ 'ob.catchMonth':'補返舊數 · 揀月份',
+ 'ob.step2':'第 2 步（共 3 步）· 起始月份',
+ 'ob.whereStart':'由邊個月開始？',
+ 'ob.startLede':'揀你想開始入數嘅第一個月，之後逐個月行。',
+ 'ob.taxYearNote':'英國稅年由 4 月至翌年 4 月。',
+ 'ob.step3':'第 3 步（共 3 步）· 第 {a}／{b} 個月',
+ 'ob.yourWork':'你嘅工作',
+ 'ob.addAnother':'加多一行',
+ 'ob.split':'拆分做分類',
+ 'ob.addAgain':'再加：',
+ 'ob.close':'關閉',
+ 'ob.pickIcon':'揀個 icon，加個分類——油費、電話、保險…',
+ 'ob.addCat':'加分類',
+ 'ob.details':'詳情',
+ 'ob.from':'邊度嚟？',
+ 'ob.catInPh':'例如：Uber Eats、Evri、Amazon',
+ 'ob.catOutPh':'例如：油費、保險、電話',
+ 'ob.drive':'🚗 呢個月有冇揸車開工？',
+ 'ob.addMiles':'加里數',
+ 'ob.milesIn':'{m} 嘅工作里數',
+ 'ob.milesPh':'例如：850',
+ 'ob.mileHintA':'每 mile 可扣 {p}p',
+ 'ob.mileHintB':' · ≈ 扣減 £{x}',
+ 'ob.mileHintC':'。如果已經入咗油費做支出就唔好重複。',
+ 'ob.noDrive':'呢個月冇揸車',
+ 'ob.soFar':'{m} 小計',
+ 'ob.nextMonth':'下一個月 →',
+ 'ob.finishBtn':'完成，睇我要交幾多稅',
+ 'ob.allCaught':'全部搞掂',
+ 'ob.estLabel':'預留稅款估算',
+ 'ob.basedOn':'按目前 {n} 個月計',
+ 'ob.monthsAdded':'已加月份',
+ 'ob.totIn':'總收入',
+ 'ob.totOut':'總支出',
+ 'ob.mileRow':'里數（{n} miles）',
+ 'ob.profitFar':'目前利潤',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'全部搞掂。有 {n} 項可以遲啲執靚——喺主頁會見到提示。之後有錢入或者出，撳 ＋ 就得。',
+ 'ob.cleanLine':'全部搞掂。之後有錢入或者出，撳 ＋ 就得——其餘 TaxMate 幫你搞。',
+ 'ob.goDash':'去我嘅主頁',
+ 'ob.estWarn':'⚠️ 只係估算，唔係最終稅款。你仍然要喺 1 月 31 日前向 HMRC 報稅。',
  'sec.account':'帳戶',
  'sec.biz':'你的業務',
  'sec.prefs':'偏好設定',
@@ -1808,6 +1977,86 @@ pl:{
  'f.repeatOn':'Co miesiąc',
  'f.repeatPick':'Które miesiące? Dotknij, aby dodać.',
  'f.tbc':'Do ustalenia',
+ 'f.tbc2':'Do ustalenia',
+ 'ob.h1':'Poznaj swój podatek<br>w kilka sekund',
+ 'ob.lede':'Przychody, wydatki, podatek — wszystko jasne. Bez księgowego, bez żargonu.',
+ 'ob.signIn':'Zaloguj się',
+ 'ob.signInS':'Zapisuj dane i synchronizuj między urządzeniami',
+ 'ob.noAcc':'Zacznij bez konta',
+ 'ob.noAccS':'Dane zostają na tym telefonie — zaloguj się kiedy chcesz',
+ 'ob.codeLogin':'🤝 Masz partner sync code? Najpierw się zaloguj.',
+ 'ob.howStart':'Jak chcesz zacząć?',
+ 'ob.together':'Zróbmy to razem',
+ 'ob.togetherS':'Poprowadzę Cię krok po kroku — najpierw przychody, potem wydatki, a na końcu zobaczysz, ile podatku odłożyć.',
+ 'ob.dash':'Przejdź od razu do pulpitu',
+ 'ob.dashS':'Wiem, co robię. Dam radę!',
+ 'ob.codeEntry':'🤝 Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
+ 'ob.run':'Jak prowadzisz działalność?',
+ 'ob.partner':'Ze wspólnikiem',
+ 'ob.shareLabel':'Twój udział w zysku',
+ 'ob.shareHint':'Tylko Twoja część zysku jest opodatkowana jako Twoja. Większość równych spółek to 50%.',
+ 'ob.syncTitle':'Synchronizacja ze wspólnikiem',
+ 'ob.joinCode':'Kod dołączenia',
+ 'ob.remove':'Usuń',
+ 'ob.syncHint':'Jeśli wspólnik już używa TaxMate, wpisz jego partner sync code, aby oba telefony były zsynchronizowane.',
+ 'ob.enterCode':'Wpisz kod wspólnika',
+ 'ob.later':'Zrobię to później',
+ 'ob.syncPro':'Synchronizacja dwóch telefonów to funkcja Pro — zaloguj się i przejdź na Pro w Ustawieniach. Bez tego liczby na tym telefonie działają bez zarzutu.',
+ 'ob.step1':'Krok 1 z 3 · Twoja praca',
+ 'ob.whatDo':'Czym się zajmujesz?',
+ 'ob.bizLede':'Nazwa działalności — większość wpisuje po prostu swój zawód.',
+ 'ob.bizName':'Nazwa działalności',
+ 'ob.bizPh':'np. kurier Evri',
+ 'ob.bizEg':'Kierowca Uber · Sprzątanie · Złota rączka · Deliveroo',
+ 'ob.continue':'Dalej',
+ 'ob.codePrompt':'Wpisz 8-znakowy partner sync code wspólnika:',
+ 'ob.catchBiz':'Nadrób zaległości · wybierz działalność',
+ 'ob.whichBiz':'Która działalność?',
+ 'ob.pickLede':'Dodaj minione miesiące do właściwej działalności. Pozostałe możesz uzupełnić osobno.',
+ 'ob.soleTag':'Działalność jednoosobowa',
+ 'ob.partTag':'Spółka · Twoje {s}%',
+ 'ob.addFrom':'Dodaj moje liczby od: {m}',
+ 'ob.catchMonth':'Nadrób zaległości · wybierz miesiąc',
+ 'ob.step2':'Krok 2 z 3 · Miesiąc startowy',
+ 'ob.whereStart':'Od czego zaczynamy?',
+ 'ob.startLede':'Wybierz pierwszy miesiąc, który chcesz uzupełnić. Dalej pójdziemy miesiąc po miesiącu.',
+ 'ob.taxYearNote':'Rok podatkowy w UK trwa od kwietnia do kwietnia.',
+ 'ob.step3':'Krok 3 z 3 · {a} z {b} mies.',
+ 'ob.yourWork':'Twoja praca',
+ 'ob.addAnother':'Dodaj kolejny',
+ 'ob.split':'Podziel na kategorie',
+ 'ob.addAgain':'Dodaj ponownie:',
+ 'ob.close':'Zamknij',
+ 'ob.pickIcon':'Wybierz ikonę i dodaj kategorię — paliwo, telefon, ubezpieczenie…',
+ 'ob.addCat':'Dodaj kategorię',
+ 'ob.details':'Szczegóły',
+ 'ob.from':'Od kogo?',
+ 'ob.catInPh':'np. Uber Eats, Evri, Amazon',
+ 'ob.catOutPh':'np. Paliwo, Ubezpieczenie, Telefon',
+ 'ob.drive':'🚗 Jeździłeś w pracy w tym miesiącu?',
+ 'ob.addMiles':'Dodaj mile',
+ 'ob.milesIn':'Mile służbowe: {m}',
+ 'ob.milesPh':'np. 850',
+ 'ob.mileHintA':'Odliczenie {p}p za milę',
+ 'ob.mileHintB':' · ≈ £{x} odliczenia',
+ 'ob.mileHintC':'. Tylko jeśli nie dodałeś już paliwa jako wydatku.',
+ 'ob.noDrive':'Brak jazdy w tym miesiącu',
+ 'ob.soFar':'{m} — razem',
+ 'ob.nextMonth':'Następny miesiąc →',
+ 'ob.finishBtn':'Zakończ i zobacz podatek',
+ 'ob.allCaught':'Wszystko uzupełnione',
+ 'ob.estLabel':'Szacowany podatek do odłożenia',
+ 'ob.basedOn':'na podstawie {n} mies.',
+ 'ob.monthsAdded':'Dodane miesiące',
+ 'ob.totIn':'Łączny przychód',
+ 'ob.totOut':'Łączne wydatki',
+ 'ob.mileRow':'Mile ({n} mi)',
+ 'ob.profitFar':'Zysk dotychczas',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'Wszystko uzupełnione. {n} pozycji możesz doszlifować później — znajdziesz je oznaczone na pulpicie. Od teraz po prostu stukaj ＋, gdy pieniądze wpływają lub wypływają.',
+ 'ob.cleanLine':'Wszystko uzupełnione. Od teraz po prostu stukaj ＋, gdy pieniądze wpływają lub wypływają — resztą zajmie się TaxMate.',
+ 'ob.goDash':'Przejdź do pulpitu',
+ 'ob.estWarn':'⚠️ To tylko szacunek — nie ostateczny podatek. Rozliczasz się z HMRC do 31 stycznia.',
  'sec.account':'Konto',
  'sec.biz':'Twoje firmy',
  'sec.prefs':'Preferencje',
@@ -2218,6 +2467,86 @@ ro:{
  'f.repeatOn':'Lunar',
  'f.repeatPick':'Ce luni? Atinge pentru a include.',
  'f.tbc':'De stabilit',
+ 'f.tbc2':'De stabilit',
+ 'ob.h1':'Află-ți taxele<br>în câteva secunde',
+ 'ob.lede':'Bani intrați, bani ieșiți, taxe la zi. Fără contabil, fără jargon.',
+ 'ob.signIn':'Conectează-te',
+ 'ob.signInS':'Salvează datele și sincronizează între dispozitive',
+ 'ob.noAcc':'Începe fără cont',
+ 'ob.noAccS':'Rămâne pe acest telefon — te poți conecta oricând',
+ 'ob.codeLogin':'🤝 Ai un partner sync code? Conectează-te mai întâi.',
+ 'ob.howStart':'Cum vrei să începi?',
+ 'ob.together':'Hai să o facem împreună',
+ 'ob.togetherS':'Te ghidez pas cu pas — întâi veniturile, apoi cheltuielile, apoi știi exact cât ai de plătit.',
+ 'ob.dash':'Direct la panou',
+ 'ob.dashS':'Știu ce fac. Mă descurc!',
+ 'ob.codeEntry':'🤝 Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
+ 'ob.run':'Cum lucrezi?',
+ 'ob.partner':'Cu un partener',
+ 'ob.shareLabel':'Partea ta din profit',
+ 'ob.shareHint':'Doar partea ta din profit se impozitează ca a ta. Majoritatea parteneriatelor egale sunt 50%.',
+ 'ob.syncTitle':'Sincronizare cu partenerul',
+ 'ob.joinCode':'Cod de alăturare',
+ 'ob.remove':'Elimină',
+ 'ob.syncHint':'Dacă partenerul folosește deja TaxMate, introdu partner sync code-ul lui ca ambele telefoane să fie sincronizate.',
+ 'ob.enterCode':'Introdu codul partenerului',
+ 'ob.later':'Mai târziu',
+ 'ob.syncPro':'Sincronizarea a două telefoane e funcție Pro — conectează-te și treci la Pro oricând din Setări. Fără ea, cifrele merg perfect pe acest telefon.',
+ 'ob.step1':'Pasul 1 din 3 · Munca ta',
+ 'ob.whatDo':'Cu ce te ocupi?',
+ 'ob.bizLede':'Numele activității — cei mai mulți pun pur și simplu meseria.',
+ 'ob.bizName':'Numele activității',
+ 'ob.bizPh':'ex. curier Evri',
+ 'ob.bizEg':'Șofer Uber · Curățenie · Meșter · Deliveroo',
+ 'ob.continue':'Continuă',
+ 'ob.codePrompt':'Introdu partner sync code-ul de 8 caractere al partenerului:',
+ 'ob.catchBiz':'Recuperează · alege activitatea',
+ 'ob.whichBiz':'Care activitate?',
+ 'ob.pickLede':'Adaugă lunile trecute la activitatea potrivită. Pe celelalte le poți recupera separat.',
+ 'ob.soleTag':'Activitate individuală',
+ 'ob.partTag':'Parteneriat · {s}% al tău',
+ 'ob.addFrom':'Adaugă cifrele din {m}',
+ 'ob.catchMonth':'Recuperează · alege luna',
+ 'ob.step2':'Pasul 2 din 3 · Luna de start',
+ 'ob.whereStart':'De unde începem?',
+ 'ob.startLede':'Alege prima lună pe care vrei să o completezi. Mergem apoi lună cu lună.',
+ 'ob.taxYearNote':'Anul fiscal UK ține din aprilie până în aprilie.',
+ 'ob.step3':'Pasul 3 din 3 · {a} din {b} luni',
+ 'ob.yourWork':'Munca ta',
+ 'ob.addAnother':'Adaugă încă unul',
+ 'ob.split':'Împarte pe categorii',
+ 'ob.addAgain':'Adaugă din nou:',
+ 'ob.close':'Închide',
+ 'ob.pickIcon':'Alege o pictogramă și adaugă o categorie — combustibil, telefon, asigurare…',
+ 'ob.addCat':'Adaugă categorie',
+ 'ob.details':'Detalii',
+ 'ob.from':'De la cine?',
+ 'ob.catInPh':'ex. Uber Eats, Evri, Amazon',
+ 'ob.catOutPh':'ex. Combustibil, Asigurare, Telefon',
+ 'ob.drive':'🚗 Ai condus pentru muncă?',
+ 'ob.addMiles':'Adaugă mile',
+ 'ob.milesIn':'Mile de lucru în {m}',
+ 'ob.milesPh':'ex. 850',
+ 'ob.mileHintA':'Deducere {p}p pe milă',
+ 'ob.mileHintB':' · ≈ £{x} deducere',
+ 'ob.mileHintC':'. Doar dacă nu ai adăugat deja combustibilul la cheltuieli.',
+ 'ob.noDrive':'Fără condus luna asta',
+ 'ob.soFar':'{m} până acum',
+ 'ob.nextMonth':'Luna următoare →',
+ 'ob.finishBtn':'Termină și vezi taxa',
+ 'ob.allCaught':'Totul la zi',
+ 'ob.estLabel':'Taxă estimată de pus deoparte',
+ 'ob.basedOn':'pe baza a {n} luni',
+ 'ob.monthsAdded':'Luni adăugate',
+ 'ob.totIn':'Venit total',
+ 'ob.totOut':'Cheltuieli totale',
+ 'ob.mileRow':'Mile ({n} mi)',
+ 'ob.profitFar':'Profit până acum',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'Totul la zi. {n} elemente pot fi aranjate mai târziu — le găsești marcate pe panou. De acum, apasă ＋ când intră sau ies bani.',
+ 'ob.cleanLine':'Totul la zi. De acum, apasă ＋ când intră sau ies bani — de restul se ocupă TaxMate.',
+ 'ob.goDash':'Mergi la panoul meu',
+ 'ob.estWarn':'⚠️ Doar estimare — nu taxa finală. Depui la HMRC până pe 31 ianuarie.',
  'sec.account':'Cont',
  'sec.biz':'Afacerile tale',
  'sec.prefs':'Preferințe',
@@ -2628,6 +2957,86 @@ es:{
  'f.repeatOn':'Cada mes',
  'f.repeatPick':'¿Qué meses? Toca para incluir.',
  'f.tbc':'Por confirmar',
+ 'f.tbc2':'Por confirmar',
+ 'ob.h1':'Conoce tu impuesto<br>en segundos',
+ 'ob.lede':'Dinero que entra, dinero que sale, impuestos claros. Sin contable, sin jerga.',
+ 'ob.signIn':'Iniciar sesión',
+ 'ob.signInS':'Guarda tus datos y sincroniza entre dispositivos',
+ 'ob.noAcc':'Empezar sin cuenta',
+ 'ob.noAccS':'Se queda en este teléfono — inicia sesión cuando quieras',
+ 'ob.codeLogin':'🤝 ¿Tienes un partner sync code? Inicia sesión primero.',
+ 'ob.howStart':'¿Cómo quieres empezar?',
+ 'ob.together':'Hagámoslo juntos',
+ 'ob.togetherS':'Te guío paso a paso — primero ingresos, luego gastos, y sabrás exactamente cuánto debes.',
+ 'ob.dash':'Ir directo al panel',
+ 'ob.dashS':'Sé lo que hago. ¡Yo me encargo!',
+ 'ob.codeEntry':'🤝 ¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
+ 'ob.run':'¿Cómo trabajas?',
+ 'ob.partner':'Con un socio',
+ 'ob.shareLabel':'Tu parte del beneficio',
+ 'ob.shareHint':'Solo tu parte del beneficio tributa como tuya. La mayoría de sociedades igualitarias son 50%.',
+ 'ob.syncTitle':'Sincroniza con tu socio',
+ 'ob.joinCode':'Código de unión',
+ 'ob.remove':'Quitar',
+ 'ob.syncHint':'Si tu socio ya usa TaxMate, introduce su partner sync code para mantener ambos teléfonos sincronizados.',
+ 'ob.enterCode':'Introducir código del socio',
+ 'ob.later':'Lo haré más tarde',
+ 'ob.syncPro':'Sincronizar dos teléfonos es función Pro — inicia sesión y pásate a Pro cuando quieras en Ajustes. Sin ella, tus cifras funcionan perfectamente en este teléfono.',
+ 'ob.step1':'Paso 1 de 3 · Tu trabajo',
+ 'ob.whatDo':'¿A qué te dedicas?',
+ 'ob.bizLede':'El nombre de tu negocio — la mayoría pone simplemente su oficio.',
+ 'ob.bizName':'Nombre del negocio',
+ 'ob.bizPh':'p. ej. repartidor de Evri',
+ 'ob.bizEg':'Conductor de Uber · Limpieza · Manitas · Deliveroo',
+ 'ob.continue':'Continuar',
+ 'ob.codePrompt':'Introduce el partner sync code de 8 caracteres de tu socio:',
+ 'ob.catchBiz':'Ponte al día · elige negocio',
+ 'ob.whichBiz':'¿Qué negocio?',
+ 'ob.pickLede':'Añade los meses pasados al negocio correcto. Los demás puedes ponerlos al día por separado.',
+ 'ob.soleTag':'Autónomo individual',
+ 'ob.partTag':'Sociedad · tu {s}%',
+ 'ob.addFrom':'Añadir mis cifras desde {m}',
+ 'ob.catchMonth':'Ponte al día · elige mes',
+ 'ob.step2':'Paso 2 de 3 · Mes de inicio',
+ 'ob.whereStart':'¿Por dónde empezamos?',
+ 'ob.startLede':'Elige el primer mes que quieras completar. Iremos mes a mes desde ahí.',
+ 'ob.taxYearNote':'El año fiscal del Reino Unido va de abril a abril.',
+ 'ob.step3':'Paso 3 de 3 · {a} de {b} meses',
+ 'ob.yourWork':'Tu trabajo',
+ 'ob.addAnother':'Añadir otro',
+ 'ob.split':'Dividir en categorías',
+ 'ob.addAgain':'Añadir de nuevo:',
+ 'ob.close':'Cerrar',
+ 'ob.pickIcon':'Elige un icono y añade una categoría — gasolina, teléfono, seguro…',
+ 'ob.addCat':'Añadir categoría',
+ 'ob.details':'Detalles',
+ 'ob.from':'¿De quién?',
+ 'ob.catInPh':'p. ej. Uber Eats, Evri, Amazon',
+ 'ob.catOutPh':'p. ej. Gasolina, Seguro, Teléfono',
+ 'ob.drive':'🚗 ¿Condujiste por trabajo?',
+ 'ob.addMiles':'Añadir millas',
+ 'ob.milesIn':'Millas de trabajo en {m}',
+ 'ob.milesPh':'p. ej. 850',
+ 'ob.mileHintA':'Deducción de {p}p por milla',
+ 'ob.mileHintB':' · ≈ £{x} de deducción',
+ 'ob.mileHintC':'. Solo si no has añadido ya la gasolina como gasto.',
+ 'ob.noDrive':'Sin conducir este mes',
+ 'ob.soFar':'{m} hasta ahora',
+ 'ob.nextMonth':'Mes siguiente →',
+ 'ob.finishBtn':'Terminar y ver mi impuesto',
+ 'ob.allCaught':'Todo al día',
+ 'ob.estLabel':'Impuesto estimado a apartar',
+ 'ob.basedOn':'según {n} mes(es)',
+ 'ob.monthsAdded':'Meses añadidos',
+ 'ob.totIn':'Ingresos totales',
+ 'ob.totOut':'Gastos totales',
+ 'ob.mileRow':'Millas ({n} mi)',
+ 'ob.profitFar':'Beneficio hasta ahora',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'Todo al día. {n} elemento(s) puedes pulirlos después — los verás marcados en tu panel. Desde aquí, toca ＋ cuando entre o salga dinero.',
+ 'ob.cleanLine':'Todo al día. Desde aquí, toca ＋ cuando entre o salga dinero — del resto se encarga TaxMate.',
+ 'ob.goDash':'Ir a mi panel',
+ 'ob.estWarn':'⚠️ Solo estimación — no tu impuesto final. Debes declarar a HMRC antes del 31 de enero.',
  'sec.account':'Cuenta',
  'sec.biz':'Tus negocios',
  'sec.prefs':'Preferencias',
@@ -3036,6 +3445,86 @@ ur:{
  'f.repeatOn':'ہر ماہ',
  'f.repeatPick':'کون سے مہینے؟ شامل کرنے کے لیے ٹیپ کریں۔',
  'f.tbc':'زیر التوا',
+ 'f.tbc2':'زیر التوا',
+ 'ob.h1':'اپنا ٹیکس جانیں<br>چند سیکنڈ میں',
+ 'ob.lede':'آمدنی، اخراجات، ٹیکس — سب صاف۔ نہ اکاؤنٹنٹ، نہ مشکل الفاظ۔',
+ 'ob.signIn':'سائن ان',
+ 'ob.signInS':'اپنا ڈیٹا محفوظ کریں اور آلات کے درمیان سنک کریں',
+ 'ob.noAcc':'بغیر اکاؤنٹ شروع کریں',
+ 'ob.noAccS':'ڈیٹا اسی فون پر رہتا ہے — جب چاہیں سائن ان کریں',
+ 'ob.codeLogin':'🤝 partner sync code ہے؟ پہلے سائن ان کریں۔',
+ 'ob.howStart':'آپ کیسے شروع کرنا چاہیں گے؟',
+ 'ob.together':'آئیں مل کر کریں',
+ 'ob.togetherS':'میں قدم بہ قدم ساتھ چلوں گا — پہلے آمدنی، پھر اخراجات، پھر آپ کو ٹھیک معلوم ہوگا کہ کتنا ٹیکس بنتا ہے۔',
+ 'ob.dash':'سیدھا ڈیش بورڈ پر جائیں',
+ 'ob.dashS':'مجھے معلوم ہے۔ میں سنبھال لوں گا!',
+ 'ob.codeEntry':'🤝 partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
+ 'ob.run':'آپ کام کیسے چلاتے ہیں؟',
+ 'ob.partner':'پارٹنر کے ساتھ',
+ 'ob.shareLabel':'منافع میں آپ کا حصہ',
+ 'ob.shareHint':'صرف آپ کے حصے کے منافع پر آپ کا ٹیکس لگتا ہے۔ زیادہ تر برابر پارٹنرشپ 50% ہوتی ہیں۔',
+ 'ob.syncTitle':'اپنے پارٹنر کے ساتھ سنک',
+ 'ob.joinCode':'جوائننگ کوڈ',
+ 'ob.remove':'ہٹائیں',
+ 'ob.syncHint':'اگر آپ کا پارٹنر پہلے سے TaxMate استعمال کرتا ہے تو اس کا partner sync code درج کریں تاکہ دونوں فون سنک رہیں۔',
+ 'ob.enterCode':'پارٹنر کا کوڈ درج کریں',
+ 'ob.later':'بعد میں کروں گا',
+ 'ob.syncPro':'دو فون سنک رکھنا Pro فیچر ہے — Settings میں کبھی بھی سائن ان کر کے اپ گریڈ کریں۔ اس کے بغیر بھی آپ کے اعداد اسی فون پر بالکل ٹھیک چلتے ہیں۔',
+ 'ob.step1':'مرحلہ 1 از 3 · آپ کا کام',
+ 'ob.whatDo':'آپ کیا کام کرتے ہیں؟',
+ 'ob.bizLede':'اپنے کاروبار کا نام — زیادہ تر لوگ بس اپنا پیشہ لکھتے ہیں۔',
+ 'ob.bizName':'کاروبار کا نام',
+ 'ob.bizPh':'مثلاً Evri ڈرائیور',
+ 'ob.bizEg':'Uber ڈرائیور · صفائی · ہینڈی مین · Deliveroo',
+ 'ob.continue':'جاری رکھیں',
+ 'ob.codePrompt':'اپنے پارٹنر کا 8 حرفی partner sync code درج کریں:',
+ 'ob.catchBiz':'پرانے مہینے · کاروبار چنیں',
+ 'ob.whichBiz':'کون سا کاروبار؟',
+ 'ob.pickLede':'گزرے مہینے صحیح کاروبار میں شامل کریں۔ باقی الگ سے مکمل کر سکتے ہیں۔',
+ 'ob.soleTag':'انفرادی کاروبار',
+ 'ob.partTag':'پارٹنرشپ · آپ کا {s}%',
+ 'ob.addFrom':'{m} سے میرے اعداد شامل کریں',
+ 'ob.catchMonth':'پرانے مہینے · مہینہ چنیں',
+ 'ob.step2':'مرحلہ 2 از 3 · شروع کا مہینہ',
+ 'ob.whereStart':'کہاں سے شروع کریں؟',
+ 'ob.startLede':'پہلا مہینہ چنیں جس کے اعداد ڈالنے ہیں۔ پھر ہم مہینہ بہ مہینہ چلیں گے۔',
+ 'ob.taxYearNote':'برطانیہ کا ٹیکس سال اپریل سے اپریل تک چلتا ہے۔',
+ 'ob.step3':'مرحلہ 3 از 3 · {a} از {b} مہینے',
+ 'ob.yourWork':'آپ کا کام',
+ 'ob.addAnother':'ایک اور شامل کریں',
+ 'ob.split':'زمروں میں تقسیم کریں',
+ 'ob.addAgain':'دوبارہ شامل کریں:',
+ 'ob.close':'بند کریں',
+ 'ob.pickIcon':'آئیکن چنیں اور زمرہ شامل کریں — پیٹرول، فون، انشورنس…',
+ 'ob.addCat':'زمرہ شامل کریں',
+ 'ob.details':'تفصیل',
+ 'ob.from':'کس سے؟',
+ 'ob.catInPh':'مثلاً Uber Eats، Evri، Amazon',
+ 'ob.catOutPh':'مثلاً پیٹرول، انشورنس، فون',
+ 'ob.drive':'🚗 اس مہینے کام کے لیے گاڑی چلائی؟',
+ 'ob.addMiles':'میل شامل کریں',
+ 'ob.milesIn':'{m} کے کام کے میل',
+ 'ob.milesPh':'مثلاً 850',
+ 'ob.mileHintA':'فی میل {p}p کٹوتی',
+ 'ob.mileHintB':' · ≈ £{x} کٹوتی',
+ 'ob.mileHintC':'۔ صرف اگر پیٹرول پہلے خرچ میں شامل نہیں کیا۔',
+ 'ob.noDrive':'اس مہینے گاڑی نہیں چلائی',
+ 'ob.soFar':'{m} اب تک',
+ 'ob.nextMonth':'اگلا مہینہ ←',
+ 'ob.finishBtn':'مکمل کریں اور ٹیکس دیکھیں',
+ 'ob.allCaught':'سب مکمل',
+ 'ob.estLabel':'الگ رکھنے کا تخمینی ٹیکس',
+ 'ob.basedOn':'اب تک {n} مہینوں کی بنیاد پر',
+ 'ob.monthsAdded':'شامل کیے گئے مہینے',
+ 'ob.totIn':'کل آمدنی',
+ 'ob.totOut':'کل اخراجات',
+ 'ob.mileRow':'میل ({n} mi)',
+ 'ob.profitFar':'اب تک کا منافع',
+ 'ob.partnerSync':'Partner sync',
+ 'ob.revLine':'سب مکمل۔ {n} اندراج بعد میں سنوار سکتے ہیں — ڈیش بورڈ پر نشان زد ملیں گے۔ اب جب بھی پیسہ آئے یا جائے، ＋ دبائیں۔',
+ 'ob.cleanLine':'سب مکمل۔ اب جب بھی پیسہ آئے یا جائے، ＋ دبائیں — باقی TaxMate سنبھالتا ہے۔',
+ 'ob.goDash':'میرے ڈیش بورڈ پر جائیں',
+ 'ob.estWarn':'⚠️ صرف تخمینہ — حتمی ٹیکس نہیں۔ HMRC کو 31 جنوری تک فائل کرنا آپ کی ذمہ داری ہے۔',
  'sec.account':'Cuenta',
  'sec.biz':'Tus negocios',
  'sec.prefs':'Preferencias',
@@ -4470,7 +4959,7 @@ function setTheme(th){
   S.settings.theme = th; save(); applyTheme(); render();
 }
 function setLang(l){ S.settings.lang=l; save(); render(); }
-function obSetLang(l){ S.settings.lang=l; save(); if(typeof applyI18n==='function') applyI18n(); obRender(); }
+function obSetLang(l){ S.settings.lang=l; save(); OB._langOpen=false; obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
 let EN = {id:null, kind:'expense', cat:null, pct:100};
@@ -4769,7 +5258,7 @@ function paintRepeatMonths(){
   let html='';
   for(let m=0;m<12;m++){
     const mi = (3+m)%12 + 1;
-    html += `<button type="button" class="${EN.repeatMonths.has(m)?'on':''}" onclick="toggleRepeatMonth(${m})">${OB_MON_SHORT[mi]}</button>`;
+    html += `<button type="button" class="${EN.repeatMonths.has(m)?'on':''}" onclick="toggleRepeatMonth(${m})">${obMonShort(mi)}</button>`;
   }
   wrap.innerHTML = html;
 }
@@ -6471,17 +6960,19 @@ function obShell(progHTML, bodyHTML, footHTML){
 
 /* LOGIN */
 function obScrLogin(){
-  const langBar = `<div class="ob-langbar">${Object.keys(LANG_NAMES).map(l=>`<button class="${S.settings.lang===l?'on':''}" onclick="obSetLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>`;
-  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:20px">
-    ${langBar}
-    <div class="ob-logo" style="margin-top:20px"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
-    <h1>Know your tax<br>in seconds</h1>
-    <p class="ob-lede">Money in, money out, tax sorted. No accountant, no jargon.</p>
-    <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">Sign in</span><span class="ob-ts">Save your data &amp; sync across devices</span></span></button>
-    <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">Start without an account</span><span class="ob-ts">Stays on this phone — sign in anytime</span></span></button>
-    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner sync code? — please sign in first.</div>
+  const langUI = `<div class="ob-langtop"><button class="ob-langbtn" onclick="obToggleLang()">🌐 ${LANG_NAMES[S.settings.lang]}</button></div>`
+    + (OB._langOpen ? `<div class="ob-langbar">${Object.keys(LANG_NAMES).map(l=>`<button class="${S.settings.lang===l?'on':''}" onclick="obSetLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>` : '');
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:16px">
+    ${langUI}
+    <div class="ob-logo" style="margin-top:14px"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
+    <h1>${t('ob.h1')}</h1>
+    <p class="ob-lede">${t('ob.lede')}</p>
+    <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
+    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>
   </div></div>`;
 }
+function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Use the app's real Google sign-in (popup). On success, continue onboarding.
   OB && (OB._signingInFlow = true); // 標記：用戶喺新手流程內主動登入，唔好被 watchAuth 關閉
@@ -6502,10 +6993,10 @@ function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <div style="font-size:40px;margin-bottom:10px">👋</div>
-    <h1>How would you like to get started?</h1>
-    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">Let's do this together</span><span class="ob-ts">I'll walk you through it — first income, then expenses, then you'll know exactly what you owe.</span></span></button>
-    <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">🚀</span><span><span class="ob-tt">Go straight to dashboard</span><span class="ob-ts">I know what I'm doing. I've got this!</span></span></button>
-    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">🤝 Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.</div>
+    <h1>${t('ob.howStart')}</h1>
+    <button class="ob-tile" onclick="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
+    <button class="ob-tile" onclick="obExplore()"><span class="ob-emoji">🚀</span><span><span class="ob-tt">${t('ob.dash')}</span><span class="ob-ts">${t('ob.dashS')}</span></span></button>
+    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeEntry')}</div>
   </div></div>`;
 }
 function obExplore(){
@@ -6522,46 +7013,46 @@ function obScrBiz(){
   // 結構 + 佔幾多% —— 開放畀所有人（影響報幾多稅），唔再淨係登入先出
   const structureCard = `
     <div class="ob-card">
-      <label>How do you run it?</label>
+      <label>${t('ob.run')}</label>
       <div class="ob-seg">
-        <button class="${isSole?'on':''}" onclick="obSetStruct('sole')">Just me</button>
-        <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">With a partner</button>
+        <button class="${isSole?'on':''}" onclick="obSetStruct('sole')">${t('b.justMe')}</button>
+        <button class="${!isSole?'on':''}" onclick="obSetStruct('partnership')">${t('ob.partner')}</button>
       </div>
     </div>
     ${!isSole ? `
     <div class="ob-card">
-      <label>Your share of the profit</label>
+      <label>${t('ob.shareLabel')}</label>
       <div class="ob-sharewrap">
         <input type="number" id="ob-share" inputmode="numeric" min="1" max="100" value="${share}" oninput="obSetShare(this.value)">
         <span class="ob-sharepct">%</span>
       </div>
-      <p class="ob-hint" style="margin-top:8px">Only this share of the profit is taxed as yours. Most equal partnerships are 50%.</p>
+      <p class="ob-hint" style="margin-top:8px">${t('ob.shareHint')}</p>
     </div>
     <div class="ob-card flat" style="margin-top:4px">
-      <div class="ob-seclabel"><span class="ob-dot in"></span> Sync with your partner<sup class="ob-probadge">Pro</sup></div>
+      <div class="ob-seclabel"><span class="ob-dot in"></span> ${t('ob.syncTitle')}<sup class="ob-probadge">Pro</sup></div>
       ${OB.loggedIn
         ? (OB.partnerCode
-            ? `<div class="ob-totalpill"><span class="ob-tpl">Joining code</span><span class="ob-tpv">${esc(OB.partnerCode)}</span></div><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="OB.partnerCode='';obRender()">Remove</button></div>`
-            : `<p class="ob-hint" style="margin:0 0 10px">If your partner already uses TaxMate, enter their share code to keep both phones in sync.</p><button class="ob-btn ghost" onclick="obEnterPartner()">Enter partner's code</button><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obGo('start')">I'll do this later</button></div>`)
-        : `<p class="ob-hint" style="margin:0">Keeping both phones in sync is a Pro feature — sign in and upgrade any time in Settings. Your figures still work perfectly on this phone without it.</p>`}
+            ? `<div class="ob-totalpill"><span class="ob-tpl">${t('ob.joinCode')}</span><span class="ob-tpv">${esc(OB.partnerCode)}</span></div><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="OB.partnerCode='';obRender()">${t('ob.remove')}</button></div>`
+            : `<p class="ob-hint" style="margin:0 0 10px">${t('ob.syncHint')}</p><button class="ob-btn ghost" onclick="obEnterPartner()">${t('ob.enterCode')}</button><div class="ob-center ob-mt8"><button class="ob-link muted" onclick="obGo('start')">${t('ob.later')}</button></div>`)
+        : `<p class="ob-hint" style="margin:0">${t('ob.syncPro')}</p>`}
     </div>` : ''}`;
   return obShell(
-    obProgress(25,'Step 1 of 3 · Your work',"obGo('entry')"),
-    `<h1>What do you do?</h1>
-    <p class="ob-lede">Your business name — most people just put their job.</p>
+    obProgress(25,t('ob.step1'),"obGo('entry')"),
+    `<h1>${t('ob.whatDo')}</h1>
+    <p class="ob-lede">${t('ob.bizLede')}</p>
     <div class="ob-card">
-      <label>Business name</label>
-      <input type="text" id="ob-bizname" placeholder="e.g. Evri driver" value="${esc(OB.bizName)}" oninput="OB.bizName=this.value;document.getElementById('ob-s1next').disabled=!this.value.trim()">
-      <div class="ob-hint">Uber driver · Cleaner · Handyman · Deliveroo</div>
+      <label>${t('ob.bizName')}</label>
+      <input type="text" id="ob-bizname" placeholder="${t('ob.bizPh')}" value="${esc(OB.bizName)}" oninput="OB.bizName=this.value;document.getElementById('ob-s1next').disabled=!this.value.trim()">
+      <div class="ob-hint">${t('ob.bizEg')}</div>
     </div>
     ${structureCard}`,
-    `<button class="ob-btn" id="ob-s1next" ${OB.bizName.trim()?'':'disabled'} onclick="obGo('start')">Continue</button>`
+    `<button class="ob-btn" id="ob-s1next" ${OB.bizName.trim()?'':'disabled'} onclick="obGo('start')">${t('ob.continue')}</button>`
   );
 }
 function obSetStruct(s){ OB.structure=s; if(s==='sole') OB.partnerCode=''; obRender(); }
 function obSetShare(v){ let n=parseInt(v,10); if(isNaN(n)) n=50; n=Math.max(1,Math.min(100,n)); OB.share=n; }
 function obEnterPartner(){
-  const c=prompt("Enter your partner's 8-character share code:");
+  const c=prompt(t('ob.codePrompt'));
   if(c && c.trim()){ OB.partnerCode=c.trim().toUpperCase().slice(0,8); obRender(); }
 }
 
@@ -6571,16 +7062,16 @@ function obScrPickBiz(){
   const tiles = S.businesses.map(b=>{
     const col = bizColor(b);
     const letter = esc((b.name||'?').trim().charAt(0).toUpperCase());
-    const sub = b.structure==='partnership' ? 'Partnership · your '+(b.share||50)+'%' : 'Sole trader';
+    const sub = b.structure==='partnership' ? t('ob.partTag',{s:(b.share||50)}) : t('ob.soleTag');
     return `<button class="ob-tile" onclick="obPickCatchupBiz('${b.id}')">
       <span class="ob-emoji" style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">${letter}</span>
       <span><span class="ob-tt">${esc(b.name)}</span><span class="ob-ts">${sub}</span></span>
     </button>`;
   }).join('');
   return obShell(
-    obProgress(10,'Catch up · pick a business','obClose()'),
-    `<h1>Which business?</h1>
-    <p class="ob-lede">Add the past months to the right business. You can catch up the others separately.</p>
+    obProgress(10,t('ob.catchBiz'),'obClose()'),
+    `<h1>${t('ob.whichBiz')}</h1>
+    <p class="ob-lede">${t('ob.pickLede')}</p>
     ${tiles}`
   );
 }
@@ -6588,26 +7079,32 @@ function obPickCatchupBiz(id){ OB._catchupBizId = id; obGo('start'); }
 function obScrStart(){
   const opts = OB.monthsAll.map((mo,i)=>
     `<button class="ob-tile" onclick="obPickStart(${i})">
-      <span class="ob-emoji">📅</span><span><span class="ob-tt">${OB_MONTHS_FULL[mo.m]} ${mo.year}</span><span class="ob-ts">Add my figures from ${OB_MONTHS_FULL[mo.m]}</span></span>
+      <span class="ob-emoji">📅</span><span><span class="ob-tt">${obMonFull(mo.m)} ${mo.year}</span><span class="ob-ts">${t('ob.addFrom',{m:obMonFull(mo.m)})}</span></span>
     </button>`).join('');
-  const label = OB._catchup ? 'Catch up · pick a month' : 'Step 2 of 3 · Start month';
+  const label = OB._catchup ? t('ob.catchMonth') : t('ob.step2');
   const back  = OB._catchup ? (S.businesses.length>1 ? "obGo('pickbiz')" : 'obClose()') : "obGo('biz')";
   return obShell(
     obProgress(OB._catchup?10:40, label, back),
-    `<h1>Where shall we start?</h1>
-    <p class="ob-lede">Pick the first month you want to add figures for. We'll go month by month from there.</p>
+    `<h1>${t('ob.whereStart')}</h1>
+    <p class="ob-lede">${t('ob.startLede')}</p>
     ${opts}
-    <p class="ob-hint ob-center ob-mt8">The UK tax year runs April → April.</p>`
+    <p class="ob-hint ob-center ob-mt8">${t('ob.taxYearNote')}</p>`
   );
 }
 function obPickStart(i){ OB.startIdx=i; OB.cursor=0; obGo('month'); }
 
 /* day picker */
 function obDayPicker(mObj,val,setExpr){
-  const sh=OB_MON_SHORT[mObj.m];
-  let opts=`<option value="" ${val===''?'selected':''}>To be confirmed</option>`;
-  for(let d=1;d<=31;d++) opts+=`<option value="${d}" ${String(val)===String(d)?'selected':''}>${d} ${sh}</option>`;
-  const label = val==='' ? 'Date' : `${val} ${sh}`;
+  const sh=obMonShort(mObj.m);
+  // UK tax year runs 6 Apr → 5 Apr. Constrain the day list so no out-of-year date can be picked.
+  const ty = dateToTaxYear(mObj.year+'-'+String(mObj.m).padStart(2,'0')+'-15');
+  const startY = parseInt(ty.slice(0,4));
+  let lo=1, hi=new Date(mObj.year, mObj.m, 0).getDate();
+  if(mObj.m===4 && mObj.year===startY) lo=6;        // first month of the tax year: 6th onward
+  if(mObj.m===4 && mObj.year===startY+1) hi=5;      // final month of the tax year: up to 5th
+  let opts=`<option value="" ${val===''?'selected':''}>${t('f.tbc2')}</option>`;
+  for(let d=lo;d<=hi;d++) opts+=`<option value="${d}" ${String(val)===String(d)?'selected':''}>${d} ${sh}</option>`;
+  const label = val==='' ? t('f.date') : `${val} ${sh}`;
   return `<span class="ob-daywrap"><span class="ob-daylabel ${val===''?'empty':''}">${label}</span><select class="ob-daysel" onchange="${setExpr}">${opts}</select></span>`;
 }
 
@@ -6617,13 +7114,13 @@ function obScrMonth(){
   const d=obMonthData(mObj);
   const pct=40+Math.round((idx/total)*50);
   const isLast=idx===total-1;
-  const full=OB_MONTHS_FULL[m];
+  const full=obMonFull(m);
 
   // a single editable row: [Date] [Details] [£] [×]
   const rowHTML = (kind,gi,ri,r,setExpr,delExpr,ph) => `
     <div class="ob-frow"><div class="ob-fline">
       ${obDayPicker(mObj, r.day, setExpr('day'))}
-      <input type="text" class="ob-fdesc" placeholder="${ph||'Details'}" value="${esc(r.d||'')}" oninput="${setExpr('d')}">
+      <input type="text" class="ob-fdesc" placeholder="${ph||t('ob.details')}" value="${esc(r.d||'')}" oninput="${setExpr('d')}">
       <div class="ob-famt"><span class="ob-cur">£</span><input type="number" inputmode="decimal" placeholder="0.00" value="${r.v}" oninput="${setExpr('v')}"></div>
       <button class="ob-del" onclick="${delExpr}">×</button>
     </div></div>`;
@@ -6641,7 +7138,7 @@ function obScrMonth(){
         <span class="ob-fsum">£${sum.toFixed(2)}</span>
         <button class="ob-fdel" onclick="event.stopPropagation();obDelGroup('${kind}',${gi})">🗑️</button>
       </div>
-      ${g.open?`<div class="ob-fbody">${rows}<button class="ob-additem" onclick="obAddRow('${kind}',${gi})">＋ Add another</button></div>`:''}
+      ${g.open?`<div class="ob-fbody">${rows}<button class="ob-additem" onclick="obAddRow('${kind}',${gi})">＋ ${t('ob.addAnother')}</button></div>`:''}
     </div>`;
   };
 
@@ -6650,7 +7147,7 @@ function obScrMonth(){
   const prevCatChips = (kind) => {
     const l = OB._prevCats[kind];
     if(!l.length) return '';
-    return `<div class="ob-prevcats"><span class="ob-pclab">Add again:</span>${l.map((c,i)=>
+    return `<div class="ob-prevcats"><span class="ob-pclab">${t('ob.addAgain')}</span>${l.map((c,i)=>
       `<button class="ob-pchip" onclick="obAddPrevCat('${kind}',${i})">${c.e?esc(c.e)+' ':''}${esc(c.name)}</button>`).join('')}</div>`;
   };
 
@@ -6658,19 +7155,19 @@ function obScrMonth(){
   const emojiGridHTML = (kind) => (d.emojiPickerOpen&&d.emojiPickerOpen[kind])
     ? `<div class="ob-emojigrid" id="ob-emojigrid-${kind}">
          ${CAT_EMOJIS.map(e=>`<button type="button" class="ob-egbtn" onclick="obPickCatEmoji('${kind}','${e}')">${e}</button>`).join('')}
-         <button type="button" class="ob-egclose" onclick="obCloseEmojiPicker('${kind}')">Close</button>
+         <button type="button" class="ob-egclose" onclick="obCloseEmojiPicker('${kind}')">${t('ob.close')}</button>
        </div>` : '';
 
   // inline "add category" input (no popup)
   const addCatHTML = (kind) => d.addCat[kind]
     ? `<div class="ob-newcat">
          <input type="text" id="ob-newcat-e-${kind}" class="ob-ncemoji" aria-label="Icon" placeholder="📁" value="${esc((d.newCatE&&d.newCatE[kind])||'')}" oninput="obTypeNewCatEmoji('${kind}',this)" onfocus="obOpenEmojiPicker('${kind}')">
-         <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?'e.g. Uber Eats, Evri, Amazon':'e.g. Fuel, Insurance, Phone'}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
+         <input type="text" id="ob-newcat-${kind}" class="ob-fdesc" placeholder="${kind==='in'?t('ob.catInPh'):t('ob.catOutPh')}" value="${esc(d.newCat[kind]||'')}" oninput="obTypeNewCat('${kind}',this.value)" onkeydown="if(event.key==='Enter')obConfirmAddCat('${kind}')">
          <button class="ob-ncok" onclick="obConfirmAddCat('${kind}')">✓</button>
          <button class="ob-nccancel" onclick="obCancelAddCat('${kind}')">×</button>
        </div>
        ${emojiGridHTML(kind)}`
-    : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ Add category</button>`;
+    : prevCatChips(kind) + `<button class="ob-addcat" onclick="obStartAddCat('${kind}')">＋ ${t('ob.addCat')}</button>`;
 
   // MONEY IN
   let inHTML;
@@ -6679,32 +7176,32 @@ function obScrMonth(){
   } else {
     const simple = d.inRows.map((r,ri)=>rowHTML('in',0,ri,r,
       (f)=>`obSetSimpleRow(${ri},'${f}',this.value)`,
-      `obDelSimpleRow(${ri})`,'From?')).join('');
-    inHTML = `<div class="ob-fbody open">${simple}<button class="ob-additem" onclick="obAddSimpleRow()">＋ Add another</button></div>
-      <button class="ob-groupbtn" onclick="obGroupIncome()">⊕ Split into categories</button>${prevCatChips('in')}`;
+      `obDelSimpleRow(${ri})`,t('ob.from'))).join('');
+    inHTML = `<div class="ob-fbody open">${simple}<button class="ob-additem" onclick="obAddSimpleRow()">＋ ${t('ob.addAnother')}</button></div>
+      <button class="ob-groupbtn" onclick="obGroupIncome()">⊕ ${t('ob.split')}</button>${prevCatChips('in')}`;
   }
   // MONEY OUT (always categories)
   const outHTML = d.outGroups.map((g,gi)=>folderHTML('out',g,gi)).join('')
-    + (d.outGroups.length?'':`<p class="ob-hint" style="margin:2px 0 10px">Pick an icon and add a category — fuel, phone, insurance…</p>`)
+    + (d.outGroups.length?'':`<p class="ob-hint" style="margin:2px 0 10px">${t('ob.pickIcon')}</p>`)
     + addCatHTML('out');
 
   const renderIn = () => inHTML;
   const renderOut = () => outHTML;
 
   return obShell(
-    obProgress(pct,`Step 3 of 3 · ${idx+1} of ${total} months`, idx===0?"obGo('start')":'obPrevMonth()'),
-    `<div class="ob-mhead"><div class="ob-mname">${full} ${mObj.year}</div><div class="ob-mtag">${esc(OB.bizName||'Your work')}</div></div>
-    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot in"></span> Money in</div>${renderIn()}</div>
-    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot out"></span> Money out</div>${renderOut()}</div>
+    obProgress(pct,t('ob.step3',{a:idx+1,b:total}), idx===0?"obGo('start')":'obPrevMonth()'),
+    `<div class="ob-mhead"><div class="ob-mname">${full} ${mObj.year}</div><div class="ob-mtag">${esc(OB.bizName||t('ob.yourWork'))}</div></div>
+    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot in"></span> ${t('home.in')}</div>${renderIn()}</div>
+    <div class="ob-card"><div class="ob-seclabel"><span class="ob-dot out"></span> ${t('home.out')}</div>${renderOut()}</div>
     <div class="ob-card flat">
       <div style="display:flex;align-items:center;justify-content:space-between">
-        <span style="font-size:14px;font-weight:700;color:var(--muted)">🚗 Did you drive for work?</span>
-        ${d.milesOpen?'':`<button class="ob-btn soft sm" onclick="obOpenMiles()">Add mileage</button>`}
+        <span style="font-size:14px;font-weight:700;color:var(--muted)">${t('ob.drive')}</span>
+        ${d.milesOpen?'':`<button class="ob-btn soft sm" onclick="obOpenMiles()">${t('ob.addMiles')}</button>`}
       </div>
-      ${d.milesOpen?`<label style="margin-top:12px">Business miles in ${full}</label><input type="number" inputmode="numeric" placeholder="e.g. 850" value="${d.miles}" oninput="obMiles(this.value)"><div class="ob-hint">Claimed at 55p per mile${d.miles?` · ≈ £${(parseFloat(d.miles)*OB_MILEAGE_RATE).toFixed(2)} deduction`:''}. Only if you haven't already added fuel as an expense.</div><div class="ob-mt8"><button class="ob-link muted" onclick="obCloseMiles()">No driving this month</button></div>`:''}
+      ${d.milesOpen?`<label style="margin-top:12px">${t('ob.milesIn',{m:full})}</label><input type="number" inputmode="numeric" placeholder="${t('ob.milesPh')}" value="${d.miles}" oninput="obMiles(this.value)"><div class="ob-hint">${t('ob.mileHintA',{p:Math.round(OB_MILEAGE_RATE*100)})}${d.miles?t('ob.mileHintB',{x:(parseFloat(d.miles)*OB_MILEAGE_RATE).toFixed(2)}):''}${t('ob.mileHintC')}</div><div class="ob-mt8"><button class="ob-link muted" onclick="obCloseMiles()">${t('ob.noDrive')}</button></div>`:''}
     </div>
-    <div class="ob-totalpill"><span class="ob-tpl">${full} so far</span><span class="ob-tpv">£${(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2)}</span></div>`,
-    `<button class="ob-btn" onclick="obNextMonth()">${isLast?'Finish &amp; see my tax':'Next month →'}</button>`
+    <div class="ob-totalpill"><span class="ob-tpl">${t('ob.soFar',{m:full})}</span><span class="ob-tpv">£${(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2)}</span></div>`,
+    `<button class="ob-btn" onclick="obNextMonth()">${isLast?t('ob.finishBtn'):t('ob.nextMonth')}</button>`
   );
 }
 function obCurMonth(){ return obActiveMonths()[OB.cursor]; }
@@ -6856,23 +7353,23 @@ function obScrDone(){
   const first=months[0], last=months[months.length-1];
   const rev=obCountReview();
   const revLine = rev>0
-    ? `<p class="ob-lede ob-center" style="margin-top:4px">You're all caught up. ${rev} item${rev>1?'s':''} can be tidied up later — you'll find ${rev>1?'them':'it'} flagged on your dashboard. From here, just tap ＋ whenever money comes in or goes out.</p>`
-    : `<p class="ob-lede ob-center" style="margin-top:4px">You're all caught up. From here, just tap ＋ whenever money comes in or goes out — TaxMate keeps the rest up to date.</p>`;
+    ? `<p class="ob-lede ob-center" style="margin-top:4px">${t('ob.revLine',{n:rev})}</p>`
+    : `<p class="ob-lede ob-center" style="margin-top:4px">${t('ob.cleanLine')}</p>`;
   return obShell(
-    obProgress(100,'All caught up',''),
+    obProgress(100,t('ob.allCaught'),''),
     `<div class="ob-confetti">🎉</div>
-    <div class="ob-donehero"><div class="ob-dl">Estimated tax set aside</div><div class="ob-big">£${Math.max(0,est).toFixed(0)}</div><div style="font-size:13px;opacity:.9">based on ${months.length} month${months.length>1?'s':''} so far</div></div>
+    <div class="ob-donehero"><div class="ob-dl">${t('ob.estLabel')}</div><div class="ob-big">£${Math.max(0,est).toFixed(0)}</div><div style="font-size:13px;opacity:.9">${t('ob.basedOn',{n:months.length})}</div></div>
     <div class="ob-card">
-      <div class="ob-srow"><span class="ob-sl">Months added</span><span class="ob-sv">${OB_MON_SHORT[first.m]} – ${OB_MON_SHORT[last.m]} ${last.year}</span></div>
-      <div class="ob-srow"><span class="ob-sl">Total income</span><span class="ob-sv" style="color:var(--brand-deep)">£${inc.toFixed(2)}</span></div>
-      <div class="ob-srow"><span class="ob-sl">Total expenses</span><span class="ob-sv" style="color:var(--coral)">−£${exp.toFixed(2)}</span></div>
-      ${miles?`<div class="ob-srow"><span class="ob-sl">Mileage (${miles} mi)</span><span class="ob-sv" style="color:var(--coral)">−£${mileDed.toFixed(2)}</span></div>`:''}
-      <div class="ob-srow"><span class="ob-sl">Profit so far</span><span class="ob-sv">£${profit.toFixed(2)}</span></div>
-      ${OB.partnerCode?`<div class="ob-srow"><span class="ob-sl">Partner sync</span><span class="ob-sv" style="color:var(--brand-deep)">${esc(OB.partnerCode)}</span></div>`:''}
+      <div class="ob-srow"><span class="ob-sl">${t('ob.monthsAdded')}</span><span class="ob-sv">${obMonShort(first.m)} – ${obMonShort(last.m)} ${last.year}</span></div>
+      <div class="ob-srow"><span class="ob-sl">${t('ob.totIn')}</span><span class="ob-sv" style="color:var(--brand-deep)">£${inc.toFixed(2)}</span></div>
+      <div class="ob-srow"><span class="ob-sl">${t('ob.totOut')}</span><span class="ob-sv" style="color:var(--coral)">−£${exp.toFixed(2)}</span></div>
+      ${miles?`<div class="ob-srow"><span class="ob-sl">${t('ob.mileRow',{n:miles})}</span><span class="ob-sv" style="color:var(--coral)">−£${mileDed.toFixed(2)}</span></div>`:''}
+      <div class="ob-srow"><span class="ob-sl">${t('ob.profitFar')}</span><span class="ob-sv">£${profit.toFixed(2)}</span></div>
+      ${OB.partnerCode?`<div class="ob-srow"><span class="ob-sl">${t('ob.partnerSync')}</span><span class="ob-sv" style="color:var(--brand-deep)">${esc(OB.partnerCode)}</span></div>`:''}
     </div>
     ${revLine}`,
-    `<button class="ob-btn" onclick="obFinish()">Go to my dashboard</button>
-    <p class="ob-hint ob-center ob-mt8">⚠️ Estimate only — not your final tax. You still file with HMRC by 31 Jan.</p>`
+    `<button class="ob-btn" onclick="obFinish()">${t('ob.goDash')}</button>
+    <p class="ob-hint ob-center ob-mt8">${t('ob.estWarn')}</p>`
   );
 }
 
