@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-09T12:35 UK — Batch E+F2: 13 UI fixes, tax-year day-picker boundary, WhatsApp OG dims, single lang button, FULL onboarding i18n ×6 (78 keys) -->
+<!-- build: 2026-07-09T13:29 UK — Batch E+F2+F3: 13 UI fixes, tax-year day-picker, WhatsApp OG, full onboarding i18n, onboarding done-screen now uses dynamic tax rates (shared estimate engine, tapered PA + banded IT + Class4) -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -3907,6 +3907,21 @@ const TAXCFG = {
   '2026-27':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6845,c2Weekly:3.50,tradingAllowance:1000,poaThreshold:1000,mileageRate1:0.55,mileageRate2:0.25,fileDeadline:'31 Jan 2028'}
 };
 function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
+// Shared estimate used by both the main app path and onboarding — same maths, dynamic cfg.
+function estimateIncomeAndNIC(profit, cfg){
+  const myProfit = Math.max(0, profit);
+  let pa = cfg.pa;
+  if(myProfit>cfg.paTaperFrom) pa = Math.max(0, cfg.pa - Math.floor((myProfit-cfg.paTaperFrom)/2));
+  const taxable = Math.max(0, myProfit-pa);
+  const higherLimit = Math.max(cfg.basicBand, cfg.addlFrom-pa);
+  const basicAmt = Math.min(taxable,cfg.basicBand);
+  const higherAmt = Math.min(Math.max(taxable-cfg.basicBand,0), higherLimit-cfg.basicBand);
+  const addlAmt = Math.max(taxable-higherLimit,0);
+  const incomeTax = basicAmt*cfg.basic + higherAmt*cfg.higher + addlAmt*cfg.addl;
+  const c4 = Math.min(Math.max(myProfit-cfg.c4Low,0), cfg.c4High-cfg.c4Low)*cfg.c4Main
+           + Math.max(myProfit-cfg.c4High,0)*cfg.c4Upper;
+  return incomeTax + c4;
+}
 
 /* ═══════════ state ═══════════ */
 const STORE_KEY = 'taxmateuk_v1';
@@ -6853,6 +6868,13 @@ function setupBackButton(){
 const OB_MONTHS_FULL = {1:'January',2:'February',3:'March',4:'April',5:'May',6:'June',7:'July',8:'August',9:'September',10:'October',11:'November',12:'December'};
 const OB_MON_SHORT = {1:'Jan',2:'Feb',3:'Mar',4:'Apr',5:'May',6:'Jun',7:'Jul',8:'Aug',9:'Sep',10:'Oct',11:'Nov',12:'Dec'};
 const OB_MILEAGE_RATE = (TAXCFG['2026-27'] && TAXCFG['2026-27'].mileageRate1) || 0.55;
+function obTaxYear(){
+  // the tax year of the latest month being entered (falls back to current)
+  const ms = obActiveMonths();
+  if(ms && ms.length){ const last=ms[ms.length-1]; return dateToTaxYear(last.year+'-'+String(last.m).padStart(2,'0')+'-15'); }
+  return currentTaxYear();
+}
+function obMileageRate(){ const c=cfgFor(obTaxYear()); return (c&&c.mileageRate1)||OB_MILEAGE_RATE; }
 // suggestion chips for expense categories (id maps to built-in CATS where possible)
 const OB_SUGGEST = [
   {id:'vehicle',label:'Vehicle',e:'⛽'},{id:'travel',label:'Parking/Travel',e:'🅿️'},
@@ -7345,10 +7367,10 @@ function obCountReview(){
 
 /* DONE */
 function obScrDone(){
-  const inc=obGrand('in'), exp=obGrand('out'), miles=obGrandMiles(), mileDed=miles*OB_MILEAGE_RATE;
+  const _cfg=cfgFor(obTaxYear());
+  const inc=obGrand('in'), exp=obGrand('out'), miles=obGrandMiles(), mileDed=miles*obMileageRate();
   const profit=inc-exp-mileDed;
-  const taxable=Math.max(0,profit-12570);
-  const est=taxable*0.2+taxable*0.06;
+  const est=estimateIncomeAndNIC(profit, _cfg);
   const months=obActiveMonths();
   const first=months[0], last=months[months.length-1];
   const rev=obCountReview();
