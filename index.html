@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-09T14:09 UK — Batch E+F2+F3 (re-issue for upload): single lang toggle, tax-year day-picker, WhatsApp OG, full onboarding i18n ×6, dynamic tax rates on done screen -->
+<!-- build: 2026-07-09T14:23 UK — F2b: language picker redesigned — bottom-anchored link + slide-up bottom sheet (fixes broken top bar), clean hero on first screen -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -999,6 +999,7 @@ en:{
  'f.tbc':'TBC',
  'f.tbc2':'To be confirmed',
  'ob.h1':'Know your tax<br>in seconds',
+ 'ob.chooseLang':'Choose your language',
  'ob.lede':'Money in, money out, tax sorted. No accountant, no jargon.',
  'ob.signIn':'Sign in',
  'ob.signInS':'Save your data & sync across devices',
@@ -1489,6 +1490,7 @@ zh:{
  'f.tbc':'待定',
  'f.tbc2':'待定',
  'ob.h1':'幾秒之內<br>知道要交幾多稅',
+ 'ob.chooseLang':'選擇語言',
  'ob.lede':'收入、支出、稅項一目了然。唔使會計師，冇術語。',
  'ob.signIn':'登入',
  'ob.signInS':'儲存資料，多部裝置同步',
@@ -1979,6 +1981,7 @@ pl:{
  'f.tbc':'Do ustalenia',
  'f.tbc2':'Do ustalenia',
  'ob.h1':'Poznaj swój podatek<br>w kilka sekund',
+ 'ob.chooseLang':'Wybierz język',
  'ob.lede':'Przychody, wydatki, podatek — wszystko jasne. Bez księgowego, bez żargonu.',
  'ob.signIn':'Zaloguj się',
  'ob.signInS':'Zapisuj dane i synchronizuj między urządzeniami',
@@ -2469,6 +2472,7 @@ ro:{
  'f.tbc':'De stabilit',
  'f.tbc2':'De stabilit',
  'ob.h1':'Află-ți taxele<br>în câteva secunde',
+ 'ob.chooseLang':'Alege limba',
  'ob.lede':'Bani intrați, bani ieșiți, taxe la zi. Fără contabil, fără jargon.',
  'ob.signIn':'Conectează-te',
  'ob.signInS':'Salvează datele și sincronizează între dispozitive',
@@ -2959,6 +2963,7 @@ es:{
  'f.tbc':'Por confirmar',
  'f.tbc2':'Por confirmar',
  'ob.h1':'Conoce tu impuesto<br>en segundos',
+ 'ob.chooseLang':'Elige tu idioma',
  'ob.lede':'Dinero que entra, dinero que sale, impuestos claros. Sin contable, sin jerga.',
  'ob.signIn':'Iniciar sesión',
  'ob.signInS':'Guarda tus datos y sincroniza entre dispositivos',
@@ -3447,6 +3452,7 @@ ur:{
  'f.tbc':'زیر التوا',
  'f.tbc2':'زیر التوا',
  'ob.h1':'اپنا ٹیکس جانیں<br>چند سیکنڈ میں',
+ 'ob.chooseLang':'اپنی زبان منتخب کریں',
  'ob.lede':'آمدنی، اخراجات، ٹیکس — سب صاف۔ نہ اکاؤنٹنٹ، نہ مشکل الفاظ۔',
  'ob.signIn':'سائن ان',
  'ob.signInS':'اپنا ڈیٹا محفوظ کریں اور آلات کے درمیان سنک کریں',
@@ -6982,17 +6988,24 @@ function obShell(progHTML, bodyHTML, footHTML){
 
 /* LOGIN */
 function obScrLogin(){
-  const langUI = `<div class="ob-langtop"><button class="ob-langbtn" onclick="obToggleLang()">🌐 ${LANG_NAMES[S.settings.lang]}</button></div>`
-    + (OB._langOpen ? `<div class="ob-langbar">${Object.keys(LANG_NAMES).map(l=>`<button class="${S.settings.lang===l?'on':''}" onclick="obSetLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>` : '');
-  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:16px">
-    ${langUI}
-    <div class="ob-logo" style="margin-top:14px"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
+    <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
     <h1>${t('ob.h1')}</h1>
     <p class="ob-lede">${t('ob.lede')}</p>
     <button class="ob-tile solid" onclick="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
     <button class="ob-tile" onclick="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
     <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>
-  </div></div>`;
+    <div class="ob-langfoot"><button class="ob-langlink" onclick="obToggleLang()">🌐 ${LANG_NAMES[S.settings.lang]} ›</button></div>
+  </div></div>${obLangSheet()}`;
+}
+function obLangSheet(){
+  if(!OB._langOpen) return '';
+  return `<div class="ob-sheet-back" onclick="obToggleLang()"></div>
+    <div class="ob-sheet" role="dialog">
+      <div class="ob-sheet-grip"></div>
+      <div class="ob-sheet-title">${t('ob.chooseLang')}</div>
+      ${Object.keys(LANG_NAMES).map(l=>`<button class="ob-sheet-row ${S.settings.lang===l?'on':''}" onclick="obSetLang('${l}')"><span>${LANG_NAMES[l]}</span>${S.settings.lang===l?'<span class="ob-sheet-tick">✓</span>':''}</button>`).join('')}
+    </div>`;
 }
 function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
@@ -7656,10 +7669,20 @@ if(new URLSearchParams(location.search).get('audit')==='1'){
   @keyframes obfade{from{opacity:0}to{opacity:1}}
   #ob-root h1{font-size:25px;font-weight:800;letter-spacing:-.6px;margin-bottom:8px;color:var(--ink)}
   #ob-root .ob-lede{font-size:15px;color:var(--muted);margin-bottom:22px;line-height:1.55}
-  .ob-langbar{display:flex;gap:6px;overflow-x:auto;-webkit-overflow-scrolling:touch;padding-bottom:2px;scrollbar-width:none}
-  .ob-langbar::-webkit-scrollbar{display:none}
-  .ob-langbar button{flex:0 0 auto;border:1.5px solid var(--line);background:var(--card);border-radius:999px;padding:7px 13px;font-family:inherit;font-size:13px;font-weight:700;color:var(--muted);cursor:pointer;white-space:nowrap}
-  .ob-langbar button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
+  .ob-langfoot{margin-top:26px;text-align:center}
+  .ob-langlink{border:0;background:none;font-family:inherit;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer;padding:8px 12px;border-radius:999px}
+  .ob-langlink:active{background:var(--card)}
+  .ob-sheet-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;animation:obFade .18s ease}
+  .ob-sheet{position:fixed;left:0;right:0;bottom:0;z-index:999;background:var(--card);border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;box-shadow:0 -8px 40px rgba(0,0,0,.35);animation:obSlideUp .26s cubic-bezier(.16,1,.3,1)}
+  .ob-sheet-grip{width:40px;height:4px;border-radius:999px;background:var(--line);margin:8px auto 12px}
+  .ob-sheet-title{font-size:13px;font-weight:700;color:var(--muted);text-align:center;margin-bottom:8px}
+  .ob-sheet-row{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:none;font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;padding:15px 8px;border-radius:12px;text-align:start}
+  .ob-sheet-row:active{background:var(--bg)}
+  .ob-sheet-row.on{color:var(--brand-deep)}
+  .ob-sheet-row+.ob-sheet-row{border-top:1px solid var(--line)}
+  .ob-sheet-tick{color:var(--brand);font-weight:800}
+  @keyframes obFade{from{opacity:0}to{opacity:1}}
+  @keyframes obSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
   .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
   .ob-logo .lo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
   .ob-logo .lo-name{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
