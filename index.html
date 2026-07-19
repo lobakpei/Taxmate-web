@@ -1,14 +1,17 @@
 <!DOCTYPE html>
-<!-- build: 2026-07-09T14:23 UK — F2b: language picker redesigned — bottom-anchored link + slide-up bottom sheet (fixes broken top bar), clean hero on first screen -->
+<!-- build: 2026-07-19T15:59 UK — GA4 fix + Privacy Policy sync: removed now-inaccurate 'denied by default' wording, replaced with accurate no-cookies/no-stored-identifiers description -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
 <script>
   window.dataLayer = window.dataLayer || [];
   function gtag(){dataLayer.push(arguments);}
-  // Cookieless mode — no cookies, no personal data sent to Google
+  // Cookieless mode — no cookies, no personal data sent to Google.
+  // analytics_storage is granted because this deployment never stores identifiers,
+  // uses no cookies (client_storage:'none' below), and only sends anonymised,
+  // aggregated usage data — there is nothing here that requires per-user consent.
   gtag('consent', 'default', {
-    analytics_storage: 'denied',
+    analytics_storage: 'granted',
     ad_storage: 'denied',
     wait_for_update: 0
   });
@@ -4920,7 +4923,7 @@ Under UK GDPR, you have the right to: access your data (use the Export function 
 We retain your data for as long as you use the service. When you delete your data via the app, it is permanently removed from our systems.</p>
 
 <p><strong>Cookies and analytics</strong><br>
-TaxMate UK does not use cookies. We use Google Analytics 4 in cookieless mode to understand general app usage (page views, session duration, country). No personally identifiable information is collected or shared. Analytics storage is denied by default — only anonymised, aggregated data is processed.</p>
+TaxMate UK does not use cookies. We use Google Analytics 4 in cookieless mode to understand general app usage (page views, session duration, country). No personally identifiable information is collected or shared. This anonymised, aggregated data is processed without cookies or any stored identifiers.</p>
 
 <p><strong>Children</strong><br>
 TaxMate UK is intended for adults (18+). We do not knowingly collect data from children.</p>
