@@ -1,0 +1,12 @@
+# TaxMate Optional UI Polish Candidates
+
+These are observations only. None may be implemented before Founder selection and the later Claude UI gate.
+
+| ID | Screen/page | Current appearance | Screenshot/reference | Issue | Why it may feel template-like or less polished | Suggested direction | Scope | Behaviour change | Priority | Claude UI suitable |
+|---|---|---|---|---|---|---|---|---|---|---|
+| UI-01 | Settings / plans | Emoji plan markers (`🟢`, `⭐`, `👑`) plus badges | `evidence/w0/screenshots/live-settings-mobile-dark.png` | Several competing status signals | Emoji, badge and border all communicate tier simultaneously | Founder may choose one quieter, existing-language status treatment | Tiny | No | Optional | Yes |
+| UI-02 | Settings / plans | Three nested plan cards with long feature lists | `evidence/w0/screenshots/live-settings-mobile-light.png` | Dense card-within-card hierarchy on mobile | Repeated SaaS pricing-card pattern competes with utility settings | Consider reducing repeated chrome or progressive disclosure without changing plans | Small | No | Recommended | Yes |
+| UI-03 | Onboarding | Emoji-led choice tiles and explanatory copy | `evidence/w0/screenshots/live-onboarding-mobile-dark.png` | Messaging is warm but visually busy | Multiple emoji and long subtitles can read as generic AI-onboarding copy | Consider selective subtraction and shorter copy while preserving the two choices | Small | No | Optional | Yes |
+| UI-04 | Home promotion | Gradient Pro banner and separate promo carousel | Frozen baseline source lines 4191-4253 | Promotion can compete with core bookkeeping task | Multiple promotional surfaces create startup-template flavour | Founder may choose one restrained acquisition surface | Small | No | Recommended | Yes |
+| UI-05 | Settings sections | Mixed emoji section icons and inline symbols | `evidence/w0/screenshots/live-settings-desktop-light.png` | Icon style is inconsistent across utilities | Mixed platform emoji render differently by OS | Consider a consistent subset of existing iconography | Medium | No | Optional | Yes |
+| UI-06 | Plan feature labels | Internal labels `PRO`/`MAX` differ from Plus/Pro names | Frozen baseline source lines 3823-3842 | Naming hierarchy is inconsistent | Generic badge vocabulary weakens product-specific clarity | Align labels only if Founder selects it after billing terminology is final | Tiny | No | Must | Yes |

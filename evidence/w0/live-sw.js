@@ -1,8 +1,6 @@
 /* TaxMate UK — service worker (resilient install for PWA installability) */
-const CACHE = 'taxmate-v2-preview-2';
-const CACHE_PREFIX = 'taxmate-';
-const SHELL = ['/', '/index.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon-512-maskable.png',
-  '/src/core/versions.js','/src/core/tax-rules.js','/src/core/tax-engine.js','/src/core/mtd.js','/src/core/form-mappings.js','/src/core/state-schema.js','/src/core/sync.js','/src/core/entitlement.js','/src/core/telemetry.js'];
+const CACHE = 'taxmate-v2';
+const SHELL = ['./', './index.html', './manifest.json', './icon-192.png', './icon-512.png'];
 
 self.addEventListener('install', e => {
   e.waitUntil((async () => {
@@ -11,14 +9,14 @@ self.addEventListener('install', e => {
     await Promise.all(SHELL.map(async (u) => {
       try { await c.add(new Request(u, { cache: 'reload' })); } catch (err) { /* ignore individual failures */ }
     }));
+    self.skipWaiting();
   })());
 });
 
 self.addEventListener('activate', e => {
   e.waitUntil((async () => {
     const keys = await caches.keys();
-    const old = keys.filter(k => k.startsWith(CACHE_PREFIX) && k !== CACHE).sort();
-    await Promise.all(old.slice(0,-1).map(k => caches.delete(k))); // retain one previous shell for rollback
+    await Promise.all(keys.filter(k => k !== CACHE).map(k => caches.delete(k)));
     await self.clients.claim();
   })());
 });
@@ -36,7 +34,7 @@ self.addEventListener('fetch', e => {
       return res;
     } catch (err) {
       const cached = await caches.match(e.request);
-      return cached || caches.match('/index.html') || caches.match('/');
+      return cached || caches.match('./index.html') || caches.match('./');
     }
   })());
 });

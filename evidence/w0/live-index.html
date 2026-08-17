@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-17.w0-w5.2 — Founder Preview candidate; not production -->
+<!-- build: 2026-07-19T15:59 UK — GA4 fix + Privacy Policy sync: removed now-inaccurate 'denied by default' wording, replaced with accurate no-cookies/no-stored-identifiers description -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -24,20 +24,15 @@
     client_storage: 'none'
   });
 </script>
-<script src="src/core/telemetry.js"></script>
-<script>window.sentryOnLoad=function(){Sentry.init({sendDefaultPii:false,beforeSend:TaxMateTelemetry.scrubSentryEvent});};</script>
 <script
   src="https://js-de.sentry-cdn.com/95145fe82ff528333c69e34ee61f6d86.min.js"
   crossorigin="anonymous"
 ></script>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)">
 <title>TaxMate UK</title>
-<meta name="description" content="Track income, expenses, mileage and estimated UK Self Assessment tax with TaxMate UK.">
-<link rel="canonical" href="https://taxmate.uk/">
-<meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:title" content="TaxMate UK">
 <meta property="og:description" content="Track income, expenses and tax in seconds. Built for UK sole traders and gig workers.">
 <meta property="og:image" content="https://taxmate.uk/og-image.png">
@@ -51,7 +46,6 @@
 <meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:image" content="https://taxmate.uk/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://taxmate.uk/","description":"Income, expense, mileage and estimated Self Assessment tracking for UK self-employed people.","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"}}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -67,7 +61,7 @@
 /* ════════════════════════════════════════════════════
    TAXMATE UK v2 — warm, modern, close to people
    ════════════════════════════════════════════════════ */
-html{ touch-action:auto; }
+html{ touch-action:pan-x pan-y; }
 :root{
   --bg:#F5F7F9;
   --card:#FFFFFF;
@@ -611,19 +605,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="amt"><span class="cur">£</span>
       <input type="number" id="adj-prior" inputmode="decimal" step="0.01" placeholder="0.00"></div>
   </div>
-  <div class="fg">
-    <label for="adj-poa-outside">Tax collected outside Self Assessment</label>
-    <div class="fhint">Enter the percentage of your total tax already collected at source (for example through PAYE). More than 80% can remove Payments on Account.</div>
-    <div class="amt"><span class="cur">%</span>
-      <input type="number" id="adj-poa-outside" inputmode="decimal" step="0.01" min="0" max="100" placeholder="0"></div>
-  </div>
-  <div class="fg">
-    <label for="adj-property">Gross property income for MTD assessment (optional)</label>
-    <div class="fhint">Gross UK property income before expenses. Used only to assess MTD qualifying income; TaxMate does not provide landlord bookkeeping.</div>
-    <div class="amt"><span class="cur">£</span>
-      <input type="number" id="adj-property" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
-    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:600"><input type="checkbox" id="adj-property-complete" style="width:auto"> I have included all relevant gross property income</label>
-  </div>
   <div class="sact">
     <button class="btn ghost" onclick="closeSheet('adj')" data-i18n="c.cancel"></button>
     <button class="btn" onclick="saveAdj()" data-i18n="c.save"></button>
@@ -676,14 +657,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-check-compat.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script defer src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js"></script>
-<script src="src/core/versions.js"></script>
-<script src="src/core/tax-rules.js"></script>
-<script src="src/core/tax-engine.js"></script>
-<script src="src/core/mtd.js"></script>
-<script src="src/core/form-mappings.js"></script>
-<script src="src/core/state-schema.js"></script>
-<script src="src/core/sync.js"></script>
-<script src="src/core/entitlement.js"></script>
 <script>
 /* ═══════════ i18n ═══════════ */
 const LOCALES = { en:'en-GB', zh:'zh-HK', pl:'pl-PL', ro:'ro-RO', es:'es-ES', ur:'ur-PK' };
@@ -969,12 +942,7 @@ en:{
  'mtd.30k':'MTD applies to you from April 2027 — your profit is over £30,000.',
  'mtd.20k':'MTD applies to you from April 2028 — your profit is over £20,000.',
  'mtd.ok':'MTD not required yet — threshold is £20,000. Keep records in case rules change.',
- 'mtd.what':'TaxMate helps you keep records and prepare summaries. It does not submit MTD updates to HMRC. If MTD applies, use HMRC-compatible software for submission.',
- 'mtd.required':'Based on gross qualifying income of {x}, MTD is expected to apply from {d}.',
- 'mtd.notRequired':'Based on gross qualifying income of {x}, this year does not cross the {y} threshold.',
- 'mtd.incomplete':'Add all gross property income before relying on this assessment.',
- 'mtd.unsupported':'No assessment is shown because the official threshold mapping for this tax year is not bundled.',
- 'sa.future':'The official short-form mapping for this tax year is not yet bundled. TaxMate will not guess future form boxes.',
+ 'mtd.what':'MTD means filing quarterly updates via HMRC-approved software instead of one annual return.',
  'cal.export':'Add tax dates to calendar (.ics)',
  'cal.desc':'UK tax deadlines with 7-day reminders — opens in your calendar app.',
  'nb.jan':'Self Assessment due in {n} day{s} — 31 January',
@@ -3642,14 +3610,6 @@ ur:{
  'ac.needNet':'سائن ان کے لیے انٹرنیٹ درکار ہے۔'
 }
 };;
-// Changed regulated claims use one reviewed fallback until translations receive legal review.
-Object.keys(I18N).forEach(lang=>{
-  I18N[lang]['mtd.what']=I18N.en['mtd.what'];
-  I18N[lang]['feat.mtdReady']='Quarterly record summaries (not HMRC submission)';
-});
-Object.assign(I18N.ur,{
-  'm.theme':'ظاہری شکل','theme.light':'روشن','theme.dark':'تاریک','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','sec.legal':'تعارف اور قانونی','leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','cal.export':'ٹیکس کی تاریخیں کیلنڈر میں شامل کریں (.ics)','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی'
-});
 
 function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
@@ -3755,7 +3715,6 @@ const TRIAL_LAUNCH_END   = '2027-01-05'; // Fixed end for launch users
 const TRIAL_LAUNCH_CUT   = '2026-08-01'; // Sign-up before this → fixed end date
 const TRIAL_MONTHS       = 6;
 const TRIAL_KEY          = 'tmTrialStart';
-let ENTITLEMENT={snapshot:null,loaded:false};
 
 function trialStatus(){
   const start = localStorage.getItem(TRIAL_KEY);
@@ -3771,26 +3730,39 @@ function trialStatus(){
 }
 
 function initTrial(){
-  // Legacy client trials are intentionally not created. Entitlements are server verified.
+  if(localStorage.getItem(TRIAL_KEY)) return; // already set
+  const start = new Date().toISOString().slice(0,10);
+  localStorage.setItem(TRIAL_KEY, start);
+  // persist to Firestore so other devices pick it up
+  const u = cloudUser();
+  if(u && FB.db){
+    try{ userRoot(u.uid).collection('app').doc('trial').set({trialStart:start},{merge:true}); }catch(e){}
+  }
 }
-function trackEvent(name){try{const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
 
 async function loadTrialFromCloud(uid){
   try{
-    const doc = await userRoot(uid).collection('entitlements').doc('current').get();
+    const doc = await userRoot(uid).collection('app').doc('trial').get();
     if(doc.exists){
-      ENTITLEMENT.snapshot=doc.data()||null;
-      try{ localStorage.setItem('taxmateuk_entitlement_cache',JSON.stringify(ENTITLEMENT.snapshot)); }catch(e){}
-    }else ENTITLEMENT.snapshot=null;
-    ENTITLEMENT.loaded=true;
-    if(!doc.exists){
-      try{ const c=JSON.parse(localStorage.getItem('taxmateuk_entitlement_cache')); if(c) ENTITLEMENT.snapshot=c; }catch(e){}
+      const d = doc.data()||{};
+      if(d.trialStart && !localStorage.getItem(TRIAL_KEY)) localStorage.setItem(TRIAL_KEY, d.trialStart);
+      if(d.trialActivated && !(S.settings && S.settings.trialActivated)){
+        S.settings.trialActivated = true; S.settings.pro = true; save();
+      }
     }
-  }catch(e){ try{ ENTITLEMENT.snapshot=JSON.parse(localStorage.getItem('taxmateuk_entitlement_cache')); }catch(_){} ENTITLEMENT.loaded=true; }
+    if(!localStorage.getItem(TRIAL_KEY)) initTrial();
+  }catch(e){ if(!localStorage.getItem(TRIAL_KEY)) initTrial(); }
 }
 
 function currentTier(){
-  return TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine).tier;
+  // Opt-in trial: user must activate the limited-time free Pro themselves
+  const trial = trialStatus();
+  if(S.settings && S.settings.trialActivated && trial.active) return 'pro';
+  // Otherwise → use stored tier (everyone starts Free)
+  const ti = (S.settings && S.settings.tier) || 'free';
+  // legacy: old pro flag maps to 'pro'
+  if((!S.settings.tier || S.settings.tier==='free') && S.settings.pro) return 'pro';
+  return ti;
 }
 function hasFeature(key){
   const need = FEATURE_TIER[key];
@@ -3812,17 +3784,28 @@ function planBlock(tier){
   const rank = TIER_RANK[tier];
   const name = t('tier.'+tier);
   const sub = t('tier.'+tier+'Sub');
+  const trial = trialStatus();
+  const activated = !!(S.settings && S.settings.trialActivated);
   const feats = tierFeatureList(tier).map(k=>
     `<div class="frow" style="padding:5px 0"><span class="fl" style="font-size:13.5px">${tierTick(tier)} ${t(k)}</span></div>`
   ).join('');
   // "Limited-time free" badge on paid tiers while trial window is open and not yet activated
+  const freeBadge = (tier!=='free' && trial.active && !activated)
+    ? `<span class="tagchip amber" style="margin-inline-start:auto">${t('tier.freeNow')}</span>` : '';
   const badge = isCurrent
     ? `<span class="tagchip green" style="margin-inline-start:auto">${t('tier.current')}</span>`
-    : '';
+    : freeBadge;
   let btn = '';
   if(!isCurrent){
-    btn = `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
-    if(tier==='pro') btn += `<button class="btn ghost" style="margin-top:8px;width:100%" onclick="activateTrial()">Redeem promotion code</button>`;
+    if(tier!=='free' && trial.active && !activated){
+      // activate the limited-time free Pro
+      btn = `<button class="btn ink" style="margin-top:12px;width:100%" onclick="activateTrial()">${t('tier.activateFree')}</button>`;
+    } else if(tier!=='free' && !trial.active){
+      // trial window closed → paid (placeholder until Stripe in 2027)
+      btn = `<button class="btn ink" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+    } else {
+      btn = `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" onclick="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+    }
   }
   const ring = isCurrent ? 'border:2px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<div class="card" style="${ring}margin-bottom:12px">
@@ -3859,7 +3842,6 @@ function featBadge(key){
   return `<span class="feat-lock-badge ${cls}">${label}</span>`;
 }
 function lockSeeplans(){
-  trackEvent('upgrade_viewed');
   closeSheet('lock');
   S.tab='more'; render();
   setTimeout(()=>{ const el=document.getElementById('plans-anchor'); if(el) el.scrollIntoView({behavior:'smooth'}); }, 150);
@@ -3877,30 +3859,30 @@ function requireLoginForTier(){
 }
 function setTier(tier){
   if(tier!=='free' && !requireLoginForTier()) return;
-  if(tier==='free'){ openBillingPortal(); return; }
-  startBillingAction('createCheckoutSession',{tier});
+  S.settings.tier = tier;
+  S.settings.pro = (tier==='pro'); // keep legacy flag roughly in sync
+  save(); render();
+  toast(t('tier.active')+' · '+t('tier.'+tier));
 }
 function activateTrial(){
   if(!requireLoginForTier()) return;
-  const code=prompt('Enter your TaxMate promotion code');
-  if(!code) return;
-  if(!TaxMateEntitlement.validatePromotionCode(code)){ alert('That promotion code format is not valid.'); return; }
-  startBillingAction('redeemPromotion',{code:code.trim().toUpperCase()});
+  const tr = trialStatus();
+  const endStr = tr.endDate ? tr.endDate.toLocaleDateString(LOCALES[S.settings.lang]||'en-GB', {year:'numeric',month:'long',day:'numeric'}) : '';
+  confirmAction(
+    t('trial.activateTitle'),
+    t('trial.activateBody',{d:endStr}),
+    ()=>{
+      S.settings.trialActivated = true;
+      S.settings.pro = true;
+      save();
+      // persist to cloud so other devices see it
+      const u = (typeof cloudUser==='function') ? cloudUser() : null;
+      if(u && FB.db){ try{ userRoot(u.uid).collection('app').doc('trial').set({trialActivated:true},{merge:true}); }catch(e){} }
+      render();
+      toast(t('trial.activated'));
+    }
+  );
 }
-async function callSecureFunction(name,data){
-    const u=cloudUser(); if(!u) throw new Error('Sign in required');
-    const token=await u.getIdToken();
-    const res=await fetch('https://europe-west2-taxmate-uk-2.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token},body:JSON.stringify({data})});
-    const body=await res.json(); if(!res.ok||body.error) throw new Error((body.error&&body.error.message)||'Billing is unavailable');
-    return body.result||{};
-}
-async function startBillingAction(name,data){
-  try{
-    const u=cloudUser(), result=await callSecureFunction(name,data);
-    if(result.url) location.assign(result.url); else { await loadTrialFromCloud(u.uid); render(); toast('Access updated'); }
-  }catch(e){ alert('Secure billing is not configured in this preview. No plan was changed.'); }
-}
-function openBillingPortal(){ if(requireLoginForTier()) startBillingAction('createBillingPortal',{}); }
 function installCard(){
   // Hide entirely if already running as an installed app
   if(typeof isStandalone==='function' && isStandalone()) return '';
@@ -3928,7 +3910,11 @@ function proPlansCard(){
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
 function folderById(id){ return S.folders.find(f=>f.id===id); }
 
-const TAXCFG = TaxMateCore.buildLegacyTaxConfig();
+const TAXCFG = {
+  '2024-25':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6725,c2Weekly:3.45,tradingAllowance:1000,poaThreshold:1000,mileageRate1:0.45,mileageRate2:0.25,fileDeadline:'31 Jan 2026'},
+  '2025-26':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6845,c2Weekly:3.50,tradingAllowance:1000,poaThreshold:1000,mileageRate1:0.45,mileageRate2:0.25,fileDeadline:'31 Jan 2027'},
+  '2026-27':{pa:12570,paTaperFrom:100000,basicBand:37700,addlFrom:125140,basic:.20,higher:.40,addl:.45,c4Low:12570,c4High:50270,c4Main:.06,c4Upper:.02,c2SmallProfits:6845,c2Weekly:3.50,tradingAllowance:1000,poaThreshold:1000,mileageRate1:0.55,mileageRate2:0.25,fileDeadline:'31 Jan 2028'}
+};
 function cfgFor(yr){ return TAXCFG[yr] || TAXCFG['2025-26']; }
 // Shared estimate used by both the main app path and onboarding — same maths, dynamic cfg.
 function estimateIncomeAndNIC(profit, cfg){
@@ -3948,11 +3934,9 @@ function estimateIncomeAndNIC(profit, cfg){
 
 /* ═══════════ state ═══════════ */
 const STORE_KEY = 'taxmateuk_v1';
-const DEVICE_KEY = 'taxmateuk_device_v1';
-const DEVICE_ID = (()=>{ try{ let id=localStorage.getItem(DEVICE_KEY); if(!id){ id='dev-'+crypto.getRandomValues(new Uint32Array(2)).join('-'); localStorage.setItem(DEVICE_KEY,id); } return id; }catch(e){ return 'dev-local'; } })();
 const DEFAULT_STATE = {
-  v:5, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all', incCat:'all', expCat:'all',
-  businesses:[], entries:[], tombstones:[], yearData:{}, customCats:{}, folders:[], expFolder:'all', catRenames:{}, activeCats:{}, settings:{lang:'en', tier:'free', theme:'auto'}
+  v:3, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all', incCat:'all', expCat:'all',
+  businesses:[], entries:[], yearData:{}, customCats:{}, folders:[], expFolder:'all', catRenames:{}, activeCats:{}, settings:{lang:'en', pro:false, tier:'free', theme:'auto'}
 };
 let S = load();
 function load(){
@@ -3993,16 +3977,13 @@ function load(){
       merged.customCats = newCustom;
       merged.activeCats = newActive;
     }
-    Object.keys(merged.yearData||{}).forEach(year=>{
-      merged.yearData[year] = Object.assign({grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0}, merged.yearData[year]||{});
-    });
-    merged.v = 5;
-    return TaxMateState.migrate(merged,Date.now(),DEVICE_ID);
+    merged.v = 3; // mark migrated
+    return merged;
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
 }
-function save(){ S=TaxMateState.migrate(S,Date.now(),DEVICE_ID); try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} CLOUD.localEditAt = Date.now(); if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
+function save(){ try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} CLOUD.localEditAt = Date.now(); if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
 function yd(){
-  if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};
+  if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[]};
   return S.yearData[S.year];
 }
 
@@ -4079,20 +4060,30 @@ function calcTax(yr){
   if(!allowanceAvailable) taUsed=false;
   const soleProfit = taUsed ? profitAllowance : profitActual;
   const myProfit = soleProfit + partShareProfit;
+  const profitForNIC = Math.max(0,myProfit);
+  let pa = cfg.pa;
+  if(myProfit>cfg.paTaperFrom) pa = Math.max(0, cfg.pa - Math.floor((myProfit-cfg.paTaperFrom)/2));
+  const taxable = Math.max(0, myProfit-pa);
+  const higherLimit = Math.max(cfg.basicBand, cfg.addlFrom-pa);
+  const basicAmt = Math.min(taxable,cfg.basicBand);
+  const higherAmt = Math.min(Math.max(taxable-cfg.basicBand,0), higherLimit-cfg.basicBand);
+  const addlAmt = Math.max(taxable-higherLimit,0);
+  const incomeTax = basicAmt*cfg.basic + higherAmt*cfg.higher + addlAmt*cfg.addl;
+  const c4 = Math.min(Math.max(profitForNIC-cfg.c4Low,0), cfg.c4High-cfg.c4Low)*cfg.c4Main
+           + Math.max(profitForNIC-cfg.c4High,0)*cfg.c4Upper;
+  const class2TreatedPaid = profitForNIC >= cfg.c2SmallProfits;
+  const class2Voluntary = Math.round(cfg.c2Weekly*52*100)/100;
+  const liability = incomeTax + c4;
   const priorAdj = Number(d.priorAdj)||0;
   const poaPaid = Number(d.poaPaid)||0;
-  const coreTax = TaxMateCore.calculateTaxEstimate({taxYear:yr,profit:myProfit,priorAdjustment:priorAdj,paymentsAlreadyMade:poaPaid,collectedOutsideSaPercent:Number(d.poaOutsidePercent)||0});
-  const pa = coreTax.personalAllowance, taxable = coreTax.taxable;
-  const basicAmt = coreTax.basicAmount, higherAmt = coreTax.higherAmount, addlAmt = coreTax.additionalAmount;
-  const incomeTax = coreTax.incomeTax, c4 = coreTax.class4;
-  const class2TreatedPaid = coreTax.class2TreatedPaid, class2Voluntary = coreTax.class2Voluntary;
-  const liability = coreTax.liability, balancing = coreTax.balancing;
-  const poaRequired = coreTax.paymentsOnAccount.required, poaEach = coreTax.paymentsOnAccount.each;
-  const poaReason = coreTax.paymentsOnAccount.reason, janTotal = coreTax.januaryTotal;
+  const balancing = liability + priorAdj - poaPaid;
+  const poaRequired = liability > cfg.poaThreshold;
+  const poaEach = poaRequired ? liability/2 : 0;
+  const janTotal = balancing + poaEach;
   return {cfg,perBiz,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
           taUsed,taMode,soleProfit,partShareProfit,myProfit,pa,taxable,basicAmt,higherAmt,addlAmt,
           incomeTax,class4:c4,class2TreatedPaid,class2Voluntary,liability,priorAdj,poaPaid,balancing,
-          poaRequired,poaEach,poaReason,poaOutsidePercent:Number(d.poaOutsidePercent)||0,janTotal};
+          poaRequired,poaEach,janTotal};
 }
 
 /* ═══════════ navigation ═══════════ */
@@ -4194,13 +4185,13 @@ function obReopenCatchup(){
 
 /* ═══════════ HOME (dashboard only) ═══════════ */
 function proBanner(){
-  // Paid access is shown only from a server-verified entitlement.
+  // 已開 Pro（trial 或付費）→ 唔出
   if(currentTier()!=='free') return '';
   // 今次 session 撳咗 ✕ → 唔出（下次開 app 又會出）
   try{ if(sessionStorage.getItem('tmProBannerHidden')==='1') return ''; }catch(e){}
   return `<div id="pro-banner" style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800;padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:700;font-size:14px;cursor:pointer" onclick="lockSeeplans()">
-    <span style="font-size:18px">✨</span>
-    <span style="flex:1;line-height:1.35">Explore TaxMate Plus and Pro →</span>
+    <span style="font-size:18px">🎁</span>
+    <span style="flex:1;line-height:1.35">Free Pro access — limited time. Activate now →</span>
     <button onclick="event.stopPropagation();hideProBanner()" style="background:rgba(0,0,0,.12);border:none;color:#3D2800;width:26px;height:26px;border-radius:50%;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
   </div>`;
 }
@@ -4468,7 +4459,6 @@ function setFilter(key,v){ S[key]=v; save(); render(); }
 
 /* ═══════════ TAX ═══════════ */
 function pageTax(){
-  trackEvent('tax_estimate_viewed');
   if(!S.businesses.length){
     return '<div class="h1">'+t('nav.tax')+'</div>'
       +'<div class="card" style="text-align:center;padding:40px 24px">'
@@ -4875,9 +4865,9 @@ function pageMore(){
         <div class="t" style="margin-bottom:12px">❓ FAQ</div>
         ${[
           ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
-          ['Can I use TaxMate on multiple devices?', 'Yes. TaxMate merges records individually using modification time, deterministic device tie-breaking and deletion tombstones.'],
+          ['Can I use TaxMate on multiple devices?', 'Yes, but edit on one device at a time. TaxMate uses last-write-wins sync — editing simultaneously on two devices may overwrite changes.'],
           ['What happens when my trial ends?', 'You move to the Free plan automatically. Your data is never deleted — only paid features are locked.'],
-          ['Does TaxMate submit MTD updates?', 'No. TaxMate keeps records and prepares summaries. If MTD applies, use HMRC-compatible software for submission. Always confirm figures before filing.'],
+          ['Is TaxMate HMRC-approved?', 'TaxMate is MTD-ready for planning purposes. It is not yet a HMRC-recognised submission tool. Always confirm figures with HMRC or an accountant before filing.'],
           ['How do I contact support?', 'Email support@taxmate.uk — we aim to reply within 2–3 working days.'],
         ].map(([q,a])=>`
           <div style="padding:10px 0;border-bottom:1px solid var(--line)">
@@ -4898,13 +4888,13 @@ function pageMore(){
     </div>
   </details>
 
-  <p class="small" style="text-align:center">${t('leg.madeIn')}<br>${t('leg.version')} ${TaxMateCore.VERSIONS.APP_VERSION} · ${TaxMateCore.VERSIONS.BUILD_ID}</p>`;
+  <p class="small" style="text-align:center">${t('leg.madeIn')}<br>${t('leg.version')} 1.0</p>`;
 }
 function openLegal(which){
   const el = document.getElementById('legal-content');
   if(!el) return;
   const today = new Date();
-  const updated = '17 August 2026 · policy version 2026-08-17';
+  const updated = 'June 2026';
   if(which==='privacy'){
     el.innerHTML = `
 <div class="stitle" style="margin-bottom:16px">Privacy Policy</div>
@@ -4924,16 +4914,16 @@ When you use TaxMate UK, you may provide: income and expense records, business d
 Your data is used solely to provide the TaxMate UK service — to calculate your tax estimate, generate reports, and sync your records across devices. We do not sell, share, or use your data for advertising.</p>
 
 <p><strong>Where your data is stored</strong><br>
-If you sign in, Google Firebase processes account and record data. Firestore is configured in europe-west2 (London); receipt Storage is configured in US-CENTRAL1. Stripe processes subscriptions and promotions; TaxMate does not receive payment card details.</p>
+If you use cloud sync (sign in with Google or Apple), your data is stored securely in Google Firebase (Firestore and Storage), hosted in the United States and subject to Google's data protection standards. Firebase is GDPR-compliant and processes data under a Data Processing Agreement with Google.</p>
 
 <p><strong>Your rights</strong><br>
-Under UK GDPR, you may access or export your data, correct inaccurate data, and use "Delete all my data" to request deletion of personal cloud records, receipts, billing customer data and your TaxMate authentication account. Shared partnership records are retained for other authorised members and your membership is removed.</p>
+Under UK GDPR, you have the right to: access your data (use the Export function in Settings), correct inaccurate data, delete your data (use "Delete all my data" in Settings — this removes all data from your device and our cloud), and withdraw consent at any time by deleting your account and data.</p>
 
 <p><strong>Data retention</strong><br>
-We retain your data while you use the service. Provider backups and the configured Storage soft-delete period may retain recoverable copies for a limited period after deletion.</p>
+We retain your data for as long as you use the service. When you delete your data via the app, it is permanently removed from our systems.</p>
 
 <p><strong>Cookies and analytics</strong><br>
-Google Analytics 4 runs without client storage for aggregate usage. Sentry receives scrubbed error diagnostics. TaxMate does not intentionally send financial values, descriptions, receipt images, account identity or URL query strings to analytics or error monitoring.</p>
+TaxMate UK does not use cookies. We use Google Analytics 4 in cookieless mode to understand general app usage (page views, session duration, country). No personally identifiable information is collected or shared. This anonymised, aggregated data is processed without cookies or any stored identifiers.</p>
 
 <p><strong>Children</strong><br>
 TaxMate UK is intended for adults (18+). We do not knowingly collect data from children.</p>
@@ -5364,12 +5354,10 @@ function saveEntry(){
     receiptPath: EN.receiptPath||null,
     desc:document.getElementById('en-desc').value.trim()
   };
-  Object.assign(rec,TaxMateSync.touch(Object.assign({},rec,{taxYear:dateToTaxYear(_dv),businessId:rec.bizId,source:'user',recordType:'entry'}),DEVICE_ID,Date.now()));
   if(EN.id){
     const i=S.entries.findIndex(x=>x.id===EN.id);
     if(i>-1){
       const orig = S.entries[i];
-      rec.createdAt = orig.createdAt || rec.createdAt;
       if(orig.rgid) rec.rgid = orig.rgid;   // keep the monthly-group link
       const commit = (mode)=>{
         S.entries[i]=rec; pushEntryRemote(rec);
@@ -5377,7 +5365,6 @@ function saveEntry(){
           S.entries.forEach(x=>{
             if(x.rgid===rec.rgid && x.id!==rec.id && x.date>orig.date){
               x.amount=rec.amount; x.cat=rec.cat; x.desc=rec.desc; x.pct=rec.pct; x.folderId=rec.folderId;
-              Object.assign(x,TaxMateSync.touch(x,DEVICE_ID,Date.now()));
               pushEntryRemote(x);
             }
           });
@@ -5423,7 +5410,7 @@ function deleteEntry(){
     const doomed = (mode==='future' && e && e.rgid)
       ? S.entries.filter(x=>x.rgid===e.rgid && x.date>=e.date)
       : (e ? [e] : []);
-    doomed.forEach(x=>{ const tomb=TaxMateSync.tombstone(x,DEVICE_ID,Date.now()); S.tombstones.push(tomb); pushEntryRemote(tomb); });
+    doomed.forEach(x=>deleteEntryRemote(x.bizId, x.id));
     const ids = new Set(doomed.map(x=>x.id));
     S.entries = S.entries.filter(x=>!ids.has(x.id));
     save(); closeSheet('entry'); render();
@@ -5506,11 +5493,10 @@ function saveBiz(){
   if(BZ.id){
     const b = bizById(BZ.id);
     b.name=name; b.structure=BZ.structure; b.share=BZ.structure==='partnership'?share:100;
-    Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
     pushBizRemote(b);
   } else {
     newId = uid();
-    const newBiz = TaxMateSync.touch({id:newId,name,structure:BZ.structure,share:BZ.structure==='partnership'?share:100,recordType:'business'},DEVICE_ID,Date.now());
+    const newBiz = {id:newId, name, structure:BZ.structure, share:BZ.structure==='partnership'?share:100};
     // Partnership + Pro + Firebase: 一次過儲存並推上雲端
     if(BZ.structure==='partnership' && BZ.pendingCode && hasFeature('partnerSync') && fbConfigured()){
       newBiz.syncCode = BZ.pendingCode;
@@ -5520,7 +5506,6 @@ function saveBiz(){
     S.customCats[newId] = {income:[],expense:[]};
     S.activeCats[newId] = {income:['sales'], expense:['vehicle','phone','home','other']};
     S.businesses.push(newBiz);
-    trackEvent('business_created');
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
   // 有 pendingCode → 直接啟用 sync，唔使重開 sheet
@@ -5530,7 +5515,7 @@ function saveBiz(){
       if(!u) return;
       FB.db.collection('partnerships').doc(code).set({
         bizId: newId, name, structure:'partnership', createdBy: u.uid, createdAt: Date.now(), v:1
-      }).then(()=>FB.db.collection('partnerships').doc(code).collection('members').doc(u.uid).set({uid:u.uid,role:'owner',joinedAt:Date.now()})).then(()=>{
+      }).then(()=>{
         const batch = FB.db.batch();
         S.entries.filter(e=>e.bizId===newId).forEach(e=>{
           batch.set(FB.db.collection('partnerships').doc(code).collection('entries').doc(e.id), e);
@@ -5547,8 +5532,6 @@ function saveBiz(){
 }
 function deleteBiz(){
   confirmAction(t('d.bizT'), t('d.bizM'), ()=>{
-    const doomed=S.entries.filter(e=>e.bizId===BZ.id);
-    doomed.forEach(e=>S.tombstones.push(TaxMateSync.tombstone(e,DEVICE_ID,Date.now())));
     S.entries = S.entries.filter(e=>e.bizId!==BZ.id);
     S.businesses = S.businesses.filter(b=>b.id!==BZ.id);
     delete S.customCats[BZ.id];
@@ -5564,18 +5547,12 @@ function openAdj(){
   const d = yd();
   document.getElementById('adj-poa').value = d.poaPaid||'';
   document.getElementById('adj-prior').value = d.priorAdj||'';
-  document.getElementById('adj-poa-outside').value = d.poaOutsidePercent||'';
-  document.getElementById('adj-property').value = d.grossPropertyIncome||'';
-  document.getElementById('adj-property-complete').checked = d.propertyIncomeComplete===true;
   openSheet('adj');
 }
 function saveAdj(){
   const d = yd();
   d.poaPaid = Math.max(0, parseFloat(document.getElementById('adj-poa').value)||0);
   d.priorAdj = parseFloat(document.getElementById('adj-prior').value)||0;
-  d.poaOutsidePercent = Math.min(100,Math.max(0,parseFloat(document.getElementById('adj-poa-outside').value)||0));
-  d.grossPropertyIncome = Math.max(0,parseFloat(document.getElementById('adj-property').value)||0);
-  d.propertyIncomeComplete = document.getElementById('adj-property-complete').checked===true;
   save(); closeSheet('adj'); render();
 }
 
@@ -5620,14 +5597,11 @@ async function eraseEverything(){
   try{ if(CLOUD.entUnsub) CLOUD.entUnsub(); }catch(e){}
   CLOUD.metaUnsub = null; CLOUD.entUnsub = null;
   toast(t('m.erasing'));
-  const accountUser=cloudUser();
-  let cloudOk=false;
-  if(accountUser){ try{ await callSecureFunction('deleteAccountData',{}); cloudOk=true; }catch(e){ cloudOk=false; } }
-  else cloudOk=await deleteCloudData();
+  const cloudOk = await deleteCloudData();
   // local wipe
   localStorage.removeItem(STORE_KEY);
-  // Delete the Auth identity only after server-side data cleanup succeeds.
-  try{ if(cloudOk&&accountUser) await accountUser.delete(); else if(fbConfigured()&&firebase.auth().currentUser) await firebase.auth().signOut(); }catch(e){}
+  // sign out so a fresh empty state is used
+  try{ if(fbConfigured() && firebase.auth().currentUser) await firebase.auth().signOut(); }catch(e){}
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
   S.tab='more';
   render();
@@ -5647,8 +5621,7 @@ function sheetSnapshot(sheetEl){
     return f.value||'';
   }).join('\u0001');
 }
-let sheetOpener=null;
-function openSheet(id){ const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
+function openSheet(id){ const el=document.getElementById('sb-'+id); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(initSheetDrag,50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); }
@@ -5671,7 +5644,7 @@ function initSheetDrag(){
     document.addEventListener('mouseup',onEnd);
   });
 }
-function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); if(sheetOpener&&sheetOpener.focus)sheetOpener.focus(); }
+function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); }
 
 /* Toast feedback */
 let _toastTimer=null;
@@ -5691,11 +5664,24 @@ function toast(msg){
 
 /* ═══════════ export / import ═══════════ */
 function exportJSON(){
-  trackEvent('backup_exported');
   // GDPR data portability: structured, machine-readable export of the user's own data
   const u = (fbConfigured() && FB.ready && firebase.auth().currentUser) ? firebase.auth().currentUser : null;
-  const receipts=(S.entries||[]).filter(e=>e.receiptPath||e.receiptUrl).map(e=>({entryId:e.id,path:e.receiptPath||null,urlReference:!!e.receiptUrl}));
-  const payload = TaxMateState.createExport(S,{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID,account:u?(u.email||u.uid):'local-only'},receipts);
+  const payload = {
+    _export: {
+      app: 'TaxMate UK',
+      format: 'taxmate-data-export-v1',
+      exportedAt: new Date().toISOString(),
+      account: u ? (u.email || u.uid) : 'local-only (not signed in)',
+      note: 'This file contains all the data you entered into TaxMate, in machine-readable JSON. You can keep it as a backup or import it into another tool.'
+    },
+    businesses: S.businesses || [],
+    entries: S.entries || [],
+    yearData: S.yearData || {},
+    customCats: S.customCats || {},
+    activeCats: S.activeCats || {},
+    catRenames: S.catRenames || {},
+    settings: S.settings || {}
+  };
   const blob = new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
   const a = document.createElement('a');
   a.href = URL.createObjectURL(blob);
@@ -5708,16 +5694,11 @@ function importJSON(ev){
   r.onload = e=>{
     try{
       const data = JSON.parse(e.target.result);
-      const candidate=TaxMateState.importBackup(data,Date.now(),DEVICE_ID);
-      const msg=t('r.msg')+'\n\n'+candidate.businesses.length+' business(es), '+candidate.entries.length+' record(s). Receipt image binaries are not included in JSON backups.';
-      confirmAction(t('r.title'), msg, ()=>{
-        const before=JSON.stringify(S);
-        try{
-          localStorage.setItem('taxmateuk_preimport_backup',before);
-          S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),candidate);
-          S.settings=Object.assign({lang:'en',tier:'free'},candidate.settings||{});
-          save(); render(); toast(t('toast.restored'));
-        }catch(err){ S=JSON.parse(before); try{localStorage.setItem(STORE_KEY,before);}catch(_){} alert(t('r.bad')); }
+      if(!data || !Array.isArray(data.businesses)){ alert(t('r.bad')); return; }
+      confirmAction(t('r.title'), t('r.msg'), ()=>{
+        S = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), data);
+        S.settings = Object.assign({lang:'en'}, data.settings||{});
+        save(); render(); toast(t('toast.restored'));
       });
     }catch(err){ alert(t('r.bad')); }
   };
@@ -5741,7 +5722,6 @@ const FIREBASE_CONFIG = {
 let FB = { db:null, uid:null, ready:false, subs:{} };
 function fbConfigured(){ return (typeof firebase!=='undefined') && !!FIREBASE_CONFIG.apiKey; }
 async function ensureFB(){
-  if((location.hostname==='127.0.0.1'||location.hostname==='localhost')&&!new URLSearchParams(location.search).has('firebase')) return null;
   if(!fbConfigured()) return null;
   if(FB.ready) return FB.db;
   try{
@@ -5788,7 +5768,6 @@ async function enableSync(bizId){
       bizId: b.id, name: b.name, structure: 'partnership',
       createdBy: u.uid, createdAt: Date.now(), v: 1
     });
-    await db.collection('partnerships').doc(code).collection('members').doc(u.uid).set({uid:u.uid,role:'owner',joinedAt:Date.now()});
     const batch = db.batch();
     S.entries.filter(e=>e.bizId===b.id).forEach(e=>{
       batch.set(db.collection('partnerships').doc(code).collection('entries').doc(e.id), e);
@@ -5814,10 +5793,7 @@ function subscribeSync(code, bizId){
     unsubs.push(db.collection('partnerships').doc(code).collection('entries').onSnapshot(snap=>{
       const remote = [];
       snap.forEach(x=>remote.push(x.data()));
-      const current=S.entries.filter(e=>e.bizId===bizId).concat((S.tombstones||[]).filter(e=>e.bizId===bizId));
-      const merged=TaxMateSync.mergeRecords(current,remote);
-      S.entries=S.entries.filter(e=>e.bizId!==bizId).concat(TaxMateSync.visible(merged));
-      S.tombstones=(S.tombstones||[]).filter(e=>e.bizId!==bizId).concat(merged.filter(e=>e.deletedAt!=null));
+      S.entries = S.entries.filter(e=>e.bizId!==bizId).concat(remote);
       save(); render();
     }, ()=>{}));
     FB.subs[code] = unsubs;
@@ -5835,7 +5811,6 @@ async function joinPartnership(){
   const u = await ensureAuth();
   if(!u){ if(msg) msg.textContent = t('sy.needNet'); return; }
   try{
-    await db.collection('partnerships').doc(code).collection('members').doc(u.uid).set({uid:u.uid,role:'member',joinedAt:Date.now()});
     const doc = await db.collection('partnerships').doc(code).get();
     if(!doc.exists){ if(msg) msg.textContent = t('sy.badCode'); return; }
     const d = doc.data();
@@ -5865,15 +5840,12 @@ function invitePartner(bizId){
 function pushEntryRemote(rec){
   const b = bizById(rec.bizId);
   if(!b || !b.syncCode || !FB.ready) return;
-  const ready=TaxMateSync.touch(Object.assign({},rec,{businessId:rec.businessId||rec.bizId,recordType:'entry'}),rec.deviceId||DEVICE_ID,rec.updatedAt||Date.now());
-  if(rec.deletedAt!=null){ ready.deletedAt=rec.deletedAt; ready.updatedAt=rec.updatedAt; }
-  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(rec.id).set(ready).catch(()=>{});
+  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(rec.id).set(rec).catch(()=>{});
 }
 function deleteEntryRemote(bizId, id){
   const b = bizById(bizId);
   if(!b || !b.syncCode || !FB.ready) return;
-  const old=S.entries.find(e=>e.id===id)||{id,bizId,businessId:bizId,recordType:'entry'};
-  pushEntryRemote(TaxMateSync.tombstone(old,DEVICE_ID,Date.now()));
+  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(id).delete().catch(()=>{});
 }
 function pushBizRemote(b){
   if(!b || !b.syncCode || !FB.ready) return;
@@ -5955,11 +5927,10 @@ async function startUserSync(u){
         });
       }
       Object.keys(m.yearData||{}).forEach(y=>{ S.yearData[y] = Object.assign({}, S.yearData[y]||{}, m.yearData[y]); });
+      if(m.settings && m.settings.pro) S.settings.pro = true;
     }
-    const remote=[]; entSnap.forEach(d=>{ const re=d.data(); if(re) remote.push(re); });
-    const mergedEntries=TaxMateSync.mergeRecords(S.entries.concat(S.tombstones||[]),remote);
-    S.entries=TaxMateSync.visible(mergedEntries);
-    S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
+    const localIds = new Set(S.entries.map(e=>e.id));
+    entSnap.forEach(d=>{ const re=d.data(); if(re && !localIds.has(re.id)) S.entries.push(re); });
     try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
 
     /* 2 ── 推合併結果上雲 */
@@ -5975,6 +5946,7 @@ async function startUserSync(u){
       if(m.customCats && typeof m.customCats==='object' && !Array.isArray(m.customCats.income)) S.customCats = m.customCats;
       if(m.activeCats && typeof m.activeCats==='object' && !Array.isArray(m.activeCats.income)) S.activeCats = m.activeCats;
       if(m.yearData) S.yearData = m.yearData;
+      if(m.settings && typeof m.settings.pro==='boolean') S.settings.pro = m.settings.pro;
       try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
       CLOUD.applying = false;
       render();
@@ -5988,10 +5960,7 @@ async function startUserSync(u){
       const remote = []; snap.forEach(d=>remote.push(d.data()));
       const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
       const partnerEntries = S.entries.filter(e=>partnerBiz.has(e.bizId));
-      const personal=S.entries.filter(e=>!partnerBiz.has(e.bizId)).concat((S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId)));
-      const merged=TaxMateSync.mergeRecords(personal,remote);
-      S.entries=TaxMateSync.visible(merged).filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
-      S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
+      S.entries = remote.filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
       try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
       CLOUD.applying = false;
       render();
@@ -6011,14 +5980,18 @@ async function pushUserState(uid, force){
   if(!uid){ const cu = cloudUser(); if(!cu) return; uid = cu.uid; }
   const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
   const meta = { businesses:S.businesses, folders:S.folders, customCats:S.customCats, activeCats:S.activeCats,
-                 yearData:S.yearData, settings:{lang:S.settings.lang,theme:S.settings.theme}, updatedAt:Date.now() };
-  const mine = S.entries.concat(S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId));
+                 yearData:S.yearData, settings:{pro:!!S.settings.pro}, updatedAt:Date.now() };
+  const mine = S.entries.filter(e=>!partnerBiz.has(e.bizId));
   const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.activeCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
   if(!force && payload === CLOUD.lastPushed) return;
   try{
     await userRoot(uid).collection('app').doc('meta').set(meta);
+    const entSnap = await userRoot(uid).collection('entries').get();
+    const remoteIds = new Set(); entSnap.forEach(d=>remoteIds.add(d.id));
+    const localIds = new Set(mine.map(e=>e.id));
     const batch = FB.db.batch();
     mine.forEach(e=>batch.set(userRoot(uid).collection('entries').doc(e.id), e));
+    remoteIds.forEach(id=>{ if(!localIds.has(id)) batch.delete(userRoot(uid).collection('entries').doc(id)); });
     await batch.commit();
     CLOUD.lastPushed = payload;   // 只喺成功後先記低，失敗會重試
   }catch(e){
@@ -6047,28 +6020,18 @@ const RATES_CACHE_KEY = 'taxmateuk_rates_v1';
 function applyCachedRates(){
   try{
     const c = localStorage.getItem(RATES_CACHE_KEY);
-    if(c) applyValidatedRules(JSON.parse(c));
+    if(c) Object.assign(TAXCFG, JSON.parse(c));
   }catch(e){}
-}
-function applyValidatedRules(payload){
-  if(!payload||payload.schemaVersion!==1||!Array.isArray(payload.rulesets)) throw new Error('Unrecognised remote tax rule envelope');
-  const next={};
-  payload.rulesets.forEach(rule=>{
-    const check=TaxMateCore.validateTaxRuleset(rule);
-    if(!check.valid||!TaxMateCore.TAX_RULESETS[rule.taxYear]) throw new Error('Rejected remote tax rules: '+check.errors.join('; '));
-    next[rule.taxYear]=TaxMateCore.toLegacyTaxConfig(rule);
-  });
-  Object.assign(TAXCFG,next); return next;
 }
 async function loadCloudRates(){
   const db = await ensureFB(); if(!db) return;
   try{
     const doc = await db.collection('appConfig').doc('taxRates').get();
     if(doc.exists){
-      const envelope=doc.data()||{};
-      if(Array.isArray(envelope.rulesets)&&envelope.rulesets.length){
-        applyValidatedRules(envelope);
-        try{ localStorage.setItem(RATES_CACHE_KEY, JSON.stringify(envelope)); }catch(e){}
+      const years = (doc.data()||{}).years || {};
+      if(Object.keys(years).length){
+        Object.assign(TAXCFG, years);
+        try{ localStorage.setItem(RATES_CACHE_KEY, JSON.stringify(years)); }catch(e){}
         render();
       }
     }
@@ -6130,8 +6093,7 @@ function tipsCard(){
 
   // TIP 3: Class 2 voluntary
   if(!dismissed.includes('c2_voluntary') && !tx.class2TreatedPaid && tx.myProfit>0){
-    const annual=tx.cfg.c2Weekly*52;
-    tips.push({id:'c2_voluntary', icon:'🏦', t:t('tip.c2_t'), b:'Your profit is below the '+fmt0(tx.cfg.c2SmallProfits)+' Class 2 threshold. Voluntary Class 2 is '+fmt(tx.cfg.c2Weekly)+' a week (about '+fmt0(annual)+' a year) and may protect your National Insurance record. Check eligibility with HMRC.', action:''});
+    tips.push({id:'c2_voluntary', icon:'🏦', t:t('tip.c2_t'), b:t('tip.c2_b'), action:''});
   }
 
   // TIP 4: POA warning (first time over £1k)
@@ -6177,7 +6139,11 @@ function tipsCard(){
 }
 
 /* ═══════════ SA103 / SA104 Form Reference ═══════════ */
-const CAT_TO_BOX = TaxMateCore.SA103S_EXPENSE_BOXES;
+const CAT_TO_BOX = {
+  stock:19, home:22, insure:22, repair:23, office:24,
+  vehicle:25, travel:26, market:27, fees:33,
+  phone:35, equip:35, other:35
+};
 
 function saBoxRow(box, desc, val, isTick, isExp){
   // HMRC SA: 整數英鎊 — 收入向下取整，開支向上取整
@@ -6216,12 +6182,9 @@ function bizFiguresRaw(b,yr){
 
 function sa103Card(){
   const yr = S.year;
-  const mapping=TaxMateCore.mappingFor('SA103S',yr);
   const tx = calcTax(yr);
   const soleBiz = S.businesses.filter(b=>b.structure==='sole');
   if(!soleBiz.length) return '';
-  if(!mapping.supported) return '<div class="card"><div class="t">📋 '+t('sa.103')+'</div><div class="notice amber" style="margin-top:10px">'+t('sa.future')+'</div></div>';
-  const boxes=mapping.boxes;
 
   let html = '<div class="card"><div class="t" style="margin-bottom:4px">📋 '+t('sa.103')+'</div>'
     +'<div class="s" style="margin-bottom:12px">'+t('sa.sub')+'</div>'
@@ -6234,20 +6197,20 @@ function sa103Card(){
 
     if(soleBiz.length>1) html += '<div style="font-size:13px;font-weight:800;color:var(--brand-deep);padding:8px 0 4px">'+esc(b.name)+'</div>';
 
-    html += saBoxRow(boxes.turnover, 'Turnover — total income', fig.income);
+    html += saBoxRow(7, 'Turnover — total income', fig.income);
     if(!tx.taUsed){
-      html += saBoxRow(boxes.totalAllowableExpenses, 'Total allowable expenses', fig.expenses, false, true);
+      html += saBoxRow(9, 'Total allowable expenses', fig.expenses, false, true);
     }
-    html += saBoxRow(boxes.netProfit, 'Net profit', isLoss ? 0 : profit);
-    if(isLoss) html += saBoxRow(boxes.netLoss, 'Net loss', Math.abs(profit));
-    if(tx.taUsed) html += saBoxRow(boxes.tradingIncomeAllowance, 'Trading income allowance', Math.min(1000,fig.income));
-    html += saBoxRow(boxes.taxableBusinessProfit, 'Taxable business profit', Math.max(0,profit));
+    html += saBoxRow(10, 'Net profit', isLoss ? 0 : profit);
+    if(isLoss) html += saBoxRow(11, 'Net loss', Math.abs(profit));
+    html += saBoxRow(38, 'Used £1,000 Trading Allowance', null, tx.taUsed);
+    html += saBoxRow(39, 'Profit after allowances', Math.max(0,profit));
 
     if(!tx.taUsed && fig.expenses>0){
       html += '<div style="font-size:12px;font-weight:800;color:var(--muted);padding:10px 0 4px;text-transform:uppercase;letter-spacing:.5px">'+t('sa.expBreakdown')+'</div>';
       const boxGroups = {};
-      [11,12,13,14,15,16,17,18,19].forEach(n=>{ boxGroups[n]=0; });
-      const boxDesc = {11:'Cost of goods / stock',12:'Car, van and travel',13:'Employee costs',14:'Premises, insurance and utilities',15:'Repairs',16:'Professional fees',17:'Interest and finance',18:'Phone, office and admin',19:'Other expenses'};
+      [19,22,23,24,25,26,27,33,35].forEach(n=>{ boxGroups[n]=0; });
+      const boxDesc = {19:'Cost of goods / stock',22:'Premises costs',23:'Repairs',24:'Admin expenses',25:'Motor expenses',26:'Travel',27:'Marketing & subs',33:'Professional fees',35:'Other expenses'};
       entriesFor(yr,b.id,'expense').forEach(e=>{
         const box = CAT_TO_BOX[e.cat]||35;
         boxGroups[box] = (boxGroups[box]||0) + Math.max(0,effExact(e));
@@ -6266,11 +6229,8 @@ function sa103Card(){
 
 function sa104Card(){
   const yr = S.year;
-  const mapping=TaxMateCore.mappingFor('SA104S',yr);
   const partBiz = S.businesses.filter(b=>b.structure==='partnership');
   if(!partBiz.length) return '';
-  if(!mapping.supported) return '<div class="card"><div class="t">📋 '+t('sa.104')+'</div><div class="notice amber" style="margin-top:10px">'+t('sa.future')+'</div></div>';
-  const boxes=mapping.boxes;
 
   let html = '<div class="card"><div class="t" style="margin-bottom:4px">📋 '+t('sa.104')+'</div>'
     +'<div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div>';
@@ -6281,11 +6241,13 @@ function sa104Card(){
     const isLoss = myShare < 0;
 
     html += '<div style="font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px">'+esc(b.name)+' ('+t('tag.your',{n:b.share||50})+')</div>';
-    html += saBoxRow(boxes.description, 'Description of partnership business', b.name);
-    html += saBoxRow(boxes.statementProfitOrLoss, 'Your share from Partnership Statement box 11 (profit) or 12 (loss) — confirm against the Statement', myShare);
-    html += saBoxRow(boxes.adjustedProfit, 'Adjusted partnership profit estimate', isLoss?0:myShare);
-    if(isLoss) html += saBoxRow(boxes.adjustedLoss, 'Adjusted partnership loss estimate', Math.abs(myShare));
-    html += saBoxRow(boxes.totalTaxableProfit, 'Total taxable partnership profit estimate', isLoss?0:myShare);
+    html += saBoxRow(3, 'Description of business', b.name);
+    html += saBoxRow(11, 'Total partnership turnover', fig.income);
+    html += saBoxRow(12, 'Total partnership expenses', fig.expenses, false, true);
+    html += saBoxRow(14, 'Partnership net profit', isLoss?0:fig.profit);
+    if(isLoss) html += saBoxRow('14L', 'Partnership net loss', Math.abs(fig.profit));
+    html += saBoxRow(15, 'Your share of profit', isLoss?0:myShare);
+    if(isLoss) html += saBoxRow(16, 'Your share of loss', Math.abs(myShare));
   });
 
   html += '<div style="margin-top:12px"><a href="https://www.gov.uk/log-in-file-self-assessment-tax-return" target="_blank" style="font-size:13px;color:var(--blue);font-weight:700">↗ '+t('sa.govLink')+'</a></div>';
@@ -6352,27 +6314,36 @@ function quarterlyCard(){
 
 function mtdCard(){
   const yr = S.year;
-  const turnover=S.businesses.filter(b=>b.structure!=='partnership').reduce((sum,b)=>sum+bizFiguresRaw(b,yr).income,0);
-  const d=S.yearData[yr]||{};
-  const result=TaxMateCore.assessMtdEligibility({assessmentTaxYear:yr,selfEmploymentTurnover:turnover,grossPropertyIncome:d.grossPropertyIncome,propertyIncomeComplete:d.propertyIncomeComplete});
+  const profit = calcTax(yr).myProfit;
   let msg='', col='var(--muted)', bg='var(--bg)';
-  if(!result.supported) msg=t('mtd.unsupported');
-  else if(result.required){ msg=t('mtd.required',{x:fmt0(result.qualifyingIncome),d:new Date(result.startDate+'T12:00:00').toLocaleDateString(locale(),{month:'long',year:'numeric'})}); col='var(--coral)'; bg='var(--coral-soft)'; }
-  else msg=t('mtd.notRequired',{x:fmt0(result.qualifyingIncome),y:fmt0(result.threshold)});
-  if(result.incompleteWarning) msg+=' '+t('mtd.incomplete');
+  if(profit>=50000){msg=t('mtd.50k'); col='var(--coral)'; bg='var(--coral-soft)';}
+  else if(profit>=30000){msg=t('mtd.30k'); col='var(--amber)'; bg='var(--amber-soft)';}
+  else if(profit>=20000){msg=t('mtd.20k'); col='#6b4a06'; bg='var(--amber-soft)';}
+  else{msg=t('mtd.ok'); col='var(--muted)'; bg='#F5F7F9';}
   return '<div class="card"><div class="t" style="margin-bottom:6px">🏛 '+t('mtd.title')+'</div>'
     +'<div style="background:'+bg+';border-radius:12px;padding:12px 14px;margin-bottom:8px">'
     +'<div style="font-size:13px;font-weight:700;color:'+col+'">'+msg+'</div></div>'
-    +'<div class="s">'+t('mtd.what')+' <button class="link" onclick="openAdj()">Review income used</button></div></div>';
+    +'<div class="s">'+t('mtd.what')+'</div></div>';
 }
 
 // Deadline banner (shown on Home + Tax pages if within 7 days)
 // ── Trial reminder banner ──────────────────────────────────
 function trialBanner(){
-  const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine);
-  if(access.source==='promotion'&&ENTITLEMENT.snapshot&&ENTITLEMENT.snapshot.promotion){
-    const end=new Date(Number(ENTITLEMENT.snapshot.promotion.expiresAt)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});
-    return `<div class="notice amber" style="margin-bottom:14px">⏳ Promotional ${access.tier} access ends ${end}. You will return to Free automatically; your data is retained.</div>`;
+  // Only relevant if the user activated the limited-time free Pro
+  if(!(S.settings && S.settings.trialActivated)) return '';
+  const tr = trialStatus();
+  const end = tr.endDate ? tr.endDate.toLocaleDateString(LOCALES[S.settings.lang]||'en-GB',{day:'numeric',month:'short',year:'numeric'}) : '';
+  // Reminder appears ~1 month before expiry (warn2 = ≤30 days)
+  if(tr.phase==='warn2'){
+    return `<div class="notice amber" style="margin-bottom:14px">
+      ⏳ <strong>${t('trial.endingTitle',{d:end})}</strong> ${t('trial.endingDays',{n:tr.daysLeft})}<br>
+      <span style="opacity:.85">${t('trial.endingBody')}</span>
+    </div>`;
+  }
+  if(tr.phase==='expired'){
+    return `<div class="notice" style="background:#FDEDEE;color:var(--coral);margin-bottom:14px">
+      🔒 <strong>${t('trial.endedTitle')}</strong> ${t('trial.endedBody')}
+    </div>`;
   }
   return '';
 }
@@ -6807,7 +6778,7 @@ deleteEntry = function(){
   confirmAction(t('d.entryT'), t('d.entryM'), ()=>{
     const e = S.entries.find(x=>x.id===EN.id);
     S.entries = S.entries.filter(x=>x.id!==EN.id);
-    if(e){ const tomb=TaxMateSync.tombstone(e,DEVICE_ID,Date.now()); S.tombstones.push(tomb); pushEntryRemote(tomb); if(e.receiptPath) deleteReceiptFromStorage(e.receiptPath); }
+    if(e){ deleteEntryRemote(e.bizId, e.id); if(e.receiptPath) deleteReceiptFromStorage(e.receiptPath); }
     save(); closeSheet('entry'); render(); toast(t('toast.deleted'));
   });
 };
@@ -7579,11 +7550,7 @@ function doInstall(){
 }
 
 // ── Disable pinch-zoom (iOS Safari ignores user-scalable=no) ──
-document.addEventListener('keydown',e=>{
-  const dialog=document.querySelector('.sb.open'); if(!dialog)return;
-  if(e.key==='Escape'){const id=dialog.id.replace('sb-','');closeSheet(id);return;}
-  if(e.key==='Tab'){const f=Array.from(dialog.querySelectorAll('button:not([disabled]),[href],input:not([disabled]),select:not([disabled]),textarea:not([disabled]),[tabindex]:not([tabindex="-1"])')).filter(x=>x.offsetParent!==null);if(!f.length)return;const first=f[0],last=f[f.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
-});
+document.addEventListener('gesturestart', e=>e.preventDefault());
 document.addEventListener('gesturechange', e=>e.preventDefault());
 document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
 // Block double-tap zoom (only when the two taps are at nearly the same spot,
