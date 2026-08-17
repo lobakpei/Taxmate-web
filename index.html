@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-17.w0-w5.2 — Founder Preview candidate; not production -->
+<!-- build: 2026-08-17.final-ui-integration.1 — Founder Preview release candidate; not production -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -113,11 +113,11 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .hero .big{font-size:40px;font-weight:800;letter-spacing:-1.5px;line-height:1.1;margin:2px 0 14px}
 .hero .hero-owe{display:flex;justify-content:space-between;align-items:center;background:rgba(255,255,255,.14);border-radius:12px;padding:10px 14px;margin-bottom:14px;cursor:pointer}
 .hero .hero-owe .ho-label{font-size:13px;font-weight:700;opacity:.95}
-.hero .hero-owe .ho-val{font-size:15px;font-weight:800}
+.hero .hero-owe .ho-val{font-size:15px;font-weight:800;white-space:nowrap}
 .hero .pills{display:flex;gap:10px;position:relative}
-.hero .pill{flex:1;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
+.hero .pill{flex:1;min-width:0;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
 .hero .pill .pl{font-size:12px;font-weight:600;opacity:.85}
-.hero .pill .pv{font-size:17px;font-weight:800;margin-top:1px}
+.hero .pill .pv{font-size:17px;font-weight:800;margin-top:1px;white-space:nowrap}
 
 /* ── cards ── */
 .card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
@@ -153,6 +153,12 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 :root[data-theme="dark"] .btn.danger-soft{background:rgba(229,72,77,.16);color:#FF8A8E}
 .btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
 .btn.coral{background:var(--coral);box-shadow:0 6px 16px rgba(229,72,77,.3)}
+/* UI-08: Home add-income/add-expense pair — one line side by side when the labels fit,
+   otherwise a deliberate stacked layout instead of accidental mid-label wrapping.
+   Each button keeps its automatic min-content width, so a label that cannot fit at
+   half-width pushes itself onto the next flex line and both then span full width. */
+.homecta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
+.homecta .btn{flex:1 1 calc(50% - 4px);white-space:nowrap;padding-inline:14px}
 .link{background:none;border:0;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;padding:4px}
 .link.danger{color:var(--coral)}
 
@@ -174,9 +180,9 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .cxr-emoji{font-size:26px;flex-shrink:0;line-height:1}
 .cxr-txt{flex:1;min-width:0}
 .cxr-title{font-size:15px;font-weight:800;line-height:1.25}
-.cxr-body{font-size:12.5px;opacity:.92;line-height:1.35;margin-top:2px}
+.cxr-body{font-size:12.5px;color:var(--muted);line-height:1.35;margin-top:2px}
 .cxr-cta{font-size:13px;font-weight:800;margin-top:7px}
-.cxr-x{position:absolute;top:8px;inset-inline-end:8px;background:rgba(0,0,0,.14);border:none;width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:800;cursor:pointer;line-height:1;padding:0;z-index:2}
+.cxr-x{position:absolute;top:8px;inset-inline-end:8px;background:var(--bg);border:none;color:var(--muted);width:24px;height:24px;border-radius:50%;font-size:14px;font-weight:800;cursor:pointer;line-height:1;padding:0;z-index:2}
 .cxr-dots{display:flex;justify-content:center;gap:6px;margin-top:8px}
 .cxr-dot{width:6px;height:6px;border-radius:50%;background:var(--line);transition:background .2s,width .2s}
 .cxr-dot.on{background:var(--muted);width:18px;border-radius:3px}
@@ -198,11 +204,9 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .emojibtn{aspect-ratio:1;border-radius:12px;border:2px solid var(--line);background:var(--bg);cursor:pointer;font-size:20px;display:flex;align-items:center;justify-content:center;padding:0}
 .emojibtn.on{border-color:var(--brand);background:var(--brand-soft)}
 .planbadge{display:inline-block;font-size:11px;font-weight:800;letter-spacing:.5px;padding:3px 9px;border-radius:6px;vertical-align:middle}
-.planbadge.pro{background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800}
-.planbadge.max{background:linear-gradient(135deg,#A78BFA,#7C5CE6);color:#fff}
+.planbadge.pro,.planbadge.max{background:var(--brand-soft);color:var(--brand-deep)}
 .feat-lock-badge{font-size:9px;font-weight:800;letter-spacing:.4px;padding:2px 6px;border-radius:5px;margin-inline-start:6px;vertical-align:middle}
-.feat-lock-badge.pro{background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800}
-.feat-lock-badge.max{background:linear-gradient(135deg,#A78BFA,#7C5CE6);color:#fff}
+.feat-lock-badge.pro,.feat-lock-badge.max{background:var(--brand-soft);color:var(--brand-deep)}
 .entry .grow .t{font-size:14.5px}
 .empty{padding:40px 22px;text-align:center;background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-sm)}
 .empty .big-emoji{font-size:40px;margin-bottom:10px}
@@ -227,7 +231,7 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .amt .cur{position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);font-size:21px;font-weight:800;color:var(--muted)}
 .amt input{padding-inline-start:38px;font-size:24px;font-weight:800}
 .seg{display:flex;background:#EEF1F4;border-radius:999px;padding:4px}
-.seg button{flex:1;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
+.seg button{flex:1;min-width:0;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
 .rmgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
 .rmgrid button{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 4px;font-family:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .12s}
@@ -266,7 +270,6 @@ details.sec>summary{list-style:none;cursor:pointer;padding:16px 18px;font-size:1
 details.sec>summary::-webkit-details-marker{display:none}
 details.sec>summary::after{content:"▾";margin-inline-start:auto;font-size:13px;color:var(--muted);transition:transform .2s}
 details.sec[open]>summary::after{transform:rotate(180deg)}
-details.sec>summary .sec-emoji{font-size:18px}
 details.sec .sec-body{padding:0 14px 14px}
 details.sec .sec-body .card{margin-top:10px}
 
@@ -286,6 +289,12 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 .receipt-thumb{width:56px;height:56px;border-radius:10px;object-fit:cover;flex-shrink:0;cursor:pointer;border:1.5px solid var(--line)}
 .receipt-add{width:56px;height:56px;border-radius:10px;border:2px dashed var(--line);display:flex;align-items:center;justify-content:center;font-size:22px;cursor:pointer;flex-shrink:0;background:#FAFBFC;color:var(--muted)}
 .receipt-add:active{background:var(--brand-soft)}
+/* UI-09: receipt actions — real TaxMate buttons, stacked, identical geometry.
+   No separate icon tile: the empty state is exactly two (mobile) or one (desktop) control. */
+#en-receipt-thumb-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:100%}
+.rc-actions{display:flex;flex-direction:column;gap:8px;width:100%}
+.rc-actions .btn{width:100%;border:1px solid transparent}
+.rc-actions .fhint{margin-top:2px}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
 .lightbox img{max-width:96vw;max-height:80vh;border-radius:16px;object-fit:contain}
 .lightbox-bar{display:flex;gap:16px}
@@ -369,6 +378,25 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   :root:not([data-theme="light"]):not([data-theme="dark"]) .receipt-add{background:#1A2533}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .grab{background:#3A4756}
 }
+
+/* ── UI-08: viewport integrity ── */
+/* Very narrow phones (~320px): stop money values and segmented labels spilling
+   out of the hero and the theme switch. Same layout, slightly tighter. */
+@media (max-width:360px){
+  .hero .pills{gap:8px}
+  .hero .pill{padding:10px 9px}
+  .hero .pill .pv{font-size:14.5px}
+  .seg button{padding:9px 2px;font-size:12px}
+}
+/* A single long word in a squeezed list row must wrap, not overflow its box. */
+.grow .t,.grow .s{overflow-wrap:break-word}
+/* Desktop: present sheets as centred dialogs rather than an enlarged phone
+   bottom-sheet. Same sheet, same drag handle, same behaviour. */
+@media (min-width:900px){
+  .sb{align-items:center}
+  .sheet{max-width:520px;max-height:86vh;border-radius:22px;
+    padding:10px 22px 24px;box-shadow:0 24px 64px rgba(16,24,32,.28)}
+}
 </style>
 </head>
 <body>
@@ -419,9 +447,12 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <div class="fg" id="en-receipt-group">
     <label data-i18n="rc.add"></label>
-    <div style="display:flex;gap:10px;align-items:center">
+    <div style="display:flex;gap:12px;align-items:stretch">
       <div id="en-receipt-thumb-wrap"></div>
+      <!-- UI-09: camera-first input for touch devices, plain file picker for pointer devices.
+           Both feed the same onReceiptFile() engine path; neither changes upload behaviour. -->
       <input type="file" id="en-receipt-file" accept="image/*" capture="environment" style="display:none" data-tm-change="onReceiptFile(event)">
+      <input type="file" id="en-receipt-pick" accept="image/*" style="display:none" data-tm-change="onReceiptFile(event)">
     </div>
     <div class="s" id="en-receipt-status" style="margin-top:6px"></div>
   </div>
@@ -508,7 +539,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div style="text-align:center;padding:8px 0 4px">
     <div style="font-size:40px;margin-bottom:8px">🔒</div>
-    <span id="lock-badge" class="planbadge pro">PRO</span>
+    <span id="lock-badge" class="planbadge pro">Pro</span>
     <div class="stitle" id="lock-title" style="margin-top:12px;text-align:center"></div>
     <div class="s" id="lock-body" style="margin:8px 16px 20px;text-align:center"></div>
   </div>
@@ -649,6 +680,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
 </div></div>
 
+<!-- Deterministic onboarding mount: present before deferred application startup. -->
+<div id="ob-root" aria-hidden="true"></div>
+
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
@@ -664,13 +698,13 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/form-mappings.js"></script>
 <script src="src/core/state-schema.js"></script>
 <script src="src/core/portable-backup.js"></script>
+<script src="src/core/onboarding-root.js"></script>
 <script src="src/core/sync.js"></script>
 <script src="src/core/entitlement.js"></script>
 <script src="src/app/action-dispatch.js"></script>
-<script src="src/app/app.js"></script>
-<script src="src/app/audit.js"></script>
+<script defer src="src/app/app.js"></script>
+<script defer src="src/app/audit.js"></script>
 <!-- ═══════════ ONBOARDING OVERLAY (catch-up flow) ═══════════ -->
-<div id="ob-root" style="display:none"></div>
 <style>
   #ob-root{display:none}
   #ob-root.active{display:block;position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}

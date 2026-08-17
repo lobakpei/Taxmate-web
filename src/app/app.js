@@ -132,6 +132,8 @@ en:{
  'm.backup':'Back up & restore',
  'm.backupHint':'Your figures are already saved to the cloud. Download a local copy as extra insurance.',
  'm.export':'Back up data (JSON)',
+ 'm.backupFull':'Full backup','m.backupFullS':'Includes your TaxMate data and receipt files (ZIP)',
+ 'm.backupData':'Data-only backup','m.backupDataS':'TaxMate records only; receipt files are not included (JSON)',
  'm.csv':'Export entries (CSV)',
  'm.restore':'Restore from backup',
  'm.danger':'Danger zone','m.eraseCloud':'Delete all my data (incl. cloud)','m.eraseCloudT':'Erase everything everywhere?','m.eraseCloudM':'This permanently deletes all your businesses, entries, receipts and settings from this device AND from the cloud. This cannot be undone. Export a backup first if unsure.','m.erasing':'Erasing your data…','m.erasedAll':'All your data has been deleted from this device and the cloud.','m.erasedLocal':'Local data deleted. Cloud data could not be reached — try again when online.',
@@ -163,24 +165,26 @@ en:{
  'cat.royalty':'Royalties',
  'cat.otherin':'Other income',
  'rc.add':'Add receipt',
+ 'rc.take':'Take photo','rc.upload':'Upload receipt','rc.chooseExisting':'Choose existing photo',
+ 'rc.imagesOnly':'Image files only',
  'rc.view':'View receipt',
  'rc.delete':'Delete receipt',
  'rc.uploading':'Uploading…','rc.signinNeeded':'Please sign in again to save to the cloud',
  'rcb.tab':'Receipts',
  'rcb.title':'Add receipts',
- 'rcb.intro':'Pick a category and month, then snap a photo for each expense that still needs one.',
+ 'rcb.intro':'Pick a category and month, then add a receipt for each expense that still needs one.',
  'rcb.cat':'Category',
  'rcb.month':'Month',
  'rcb.allMonths':'All months',
  'rcb.noMissing':'Every expense here already has a receipt. 🎉',
  'rcb.pickCat':'Pick a category to see expenses that need a receipt.',
  'rcb.noExpenses':'No expenses in this category yet.',
- 'rcb.add':'📷 Add',
+ 'rcb.add':'Add',
  'rcb.done':'✓',
  'rcb.uploading':'Uploading…',
  'rcb.remaining':'{n} still need a receipt',
  'rcb.allDone':'All done — every expense here has a receipt.',
- 'rcb.tip':'Two receipts for one expense? Photograph them side by side.',
+ 'rcb.tip':'Two receipts for one expense? Put them side by side in one image.',
  'car.proTitle':'Free Pro access',
  'car.proBody':'Limited time — activate now.',
  'car.proCta':'Activate →',
@@ -354,13 +358,13 @@ en:{
  'ob.signInS':'Save your data & sync across devices',
  'ob.noAcc':'Start without an account',
  'ob.noAccS':'Stays on this phone — sign in anytime',
- 'ob.codeLogin':'🤝 Got a partner sync code? — please sign in first.',
+ 'ob.codeLogin':'Got a partner sync code? — please sign in first.',
  'ob.howStart':'How would you like to get started?',
  'ob.together':'Let\'s do this together',
- 'ob.togetherS':'I\'ll walk you through it — first income, then expenses, then you\'ll know exactly what you owe.',
+ 'ob.togetherS':'I\'ll walk you through it — then you\'ll know what you owe.',
  'ob.dash':'Go straight to dashboard',
- 'ob.dashS':'I know what I\'m doing. I\'ve got this!',
- 'ob.codeEntry':'🤝 Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
+ 'ob.dashS':'I know what I\'m doing.',
+ 'ob.codeEntry':'Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
  'ob.run':'How do you run it?',
  'ob.partner':'With a partner',
  'ob.shareLabel':'Your share of the profit',
@@ -628,6 +632,8 @@ zh:{
  'm.backup':'備份與還原',
  'm.backupHint':'你的數據已自動備份至雲端。本地下載作為額外保障。',
  'm.export':'備份數據 (JSON)',
+ 'm.backupFull':'完整備份','m.backupFullS':'包含你的 TaxMate 數據同收據檔案（ZIP）',
+ 'm.backupData':'只備份數據','m.backupDataS':'只有 TaxMate 記錄；不包含收據檔案（JSON）',
  'm.csv':'匯出記錄 (CSV 可開 Excel)',
  'm.restore':'由備份還原',
  'm.danger':'危險地帶','m.eraseCloud':'刪除我所有資料（包括雲端）','m.eraseCloudT':'徹底刪除所有地方嘅資料？','m.eraseCloudM':'呢個會永久刪除你喺呢部裝置「同埋」雲端上嘅所有生意、記錄、收據同設定，無法復原。如有疑問請先匯出備份。','m.erasing':'正在刪除你嘅資料…','m.erasedAll':'你嘅所有資料已從呢部裝置同雲端刪除。','m.erasedLocal':'本機資料已刪除。雲端資料無法連接 — 請喺有網絡時再試。',
@@ -659,24 +665,26 @@ zh:{
  'cat.royalty':'版稅',
  'cat.otherin':'其他收入',
  'rc.add':'新增收據',
+ 'rc.take':'影相','rc.upload':'上載收據','rc.chooseExisting':'揀現有相片',
+ 'rc.imagesOnly':'只支援圖片檔',
  'rc.view':'查看收據',
  'rc.delete':'刪除收據',
  'rc.uploading':'上傳中…','rc.signinNeeded':'請重新登入以儲存到雲端',
  'rcb.tab':'收據',
  'rcb.title':'新增收據',
- 'rcb.intro':'揀分類同月份,然後為每筆仲未有收據嘅開支影相。',
+ 'rcb.intro':'揀分類同月份,然後為每筆仲未有收據嘅開支加收據。',
  'rcb.cat':'分類',
  'rcb.month':'月份',
  'rcb.allMonths':'所有月份',
  'rcb.noMissing':'呢度每筆開支都已經有收據。🎉',
  'rcb.pickCat':'揀一個分類,睇下邊啲開支未有收據。',
  'rcb.noExpenses':'呢個分類仲未有開支。',
- 'rcb.add':'📷 加相',
+ 'rcb.add':'新增',
  'rcb.done':'✓',
  'rcb.uploading':'上傳中…',
  'rcb.remaining':'仲有 {n} 筆未有收據',
  'rcb.allDone':'全部搞掂 — 呢度每筆開支都有收據。',
- 'rcb.tip':'一筆開支有兩張單?將兩張並排一齊影。',
+ 'rcb.tip':'一筆開支有兩張單?將兩張並排放埋一張圖。',
  'car.proTitle':'免費 Pro',
  'car.proBody':'限時 — 立即啟用。',
  'car.proCta':'啟用 →',
@@ -845,13 +853,13 @@ zh:{
  'ob.signInS':'儲存資料，多部裝置同步',
  'ob.noAcc':'唔開帳戶直接開始',
  'ob.noAccS':'資料只留喺呢部電話——隨時都可以登入',
- 'ob.codeLogin':'🤝 有 partner sync code？請先登入。',
+ 'ob.codeLogin':'有 partner sync code？請先登入。',
  'ob.howStart':'想點樣開始？',
  'ob.together':'一齊嚟啦',
- 'ob.togetherS':'我會一步步陪你行——先收入，再支出，然後你就知道要交幾多稅。',
+ 'ob.togetherS':'我會一步步陪你行——跟住你就知要交幾多稅。',
  'ob.dash':'直接去主頁',
- 'ob.dashS':'我識㗎喇，交畀我！',
- 'ob.codeEntry':'🤝 有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
+ 'ob.dashS':'我識㗎喇。',
+ 'ob.codeEntry':'有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
  'ob.run':'你點樣經營？',
  'ob.partner':'同拍檔一齊',
  'ob.shareLabel':'你佔利潤幾多',
@@ -1119,6 +1127,8 @@ pl:{
  'm.backup':'Kopia zapasowa',
  'm.backupHint':'Twoje dane są już w chmurze. Pobierz lokalną kopię jako dodatkowe zabezpieczenie.',
  'm.export':'Kopia zapasowa (JSON)',
+ 'm.backupFull':'Pełna kopia zapasowa','m.backupFullS':'Zawiera dane TaxMate i pliki paragonów (ZIP)',
+ 'm.backupData':'Kopia tylko z danymi','m.backupDataS':'Tylko zapisy TaxMate; pliki paragonów nie są dołączone (JSON)',
  'm.csv':'Eksport wpisów (CSV do Excela)',
  'm.restore':'Przywróć z kopii',
  'm.danger':'Strefa ryzyka','m.eraseCloud':'Usuń wszystkie moje dane (też w chmurze)','m.eraseCloudT':'Usunąć wszystko wszędzie?','m.eraseCloudM':'To trwale usunie wszystkie Twoje firmy, wpisy, paragony i ustawienia z tego urządzenia ORAZ z chmury. Nie można tego cofnąć. Najpierw wyeksportuj kopię, jeśli nie masz pewności.','m.erasing':'Usuwanie danych…','m.erasedAll':'Wszystkie Twoje dane zostały usunięte z urządzenia i chmury.','m.erasedLocal':'Dane lokalne usunięte. Nie można połączyć z chmurą — spróbuj ponownie online.',
@@ -1150,24 +1160,26 @@ pl:{
  'cat.royalty':'Tantiemy',
  'cat.otherin':'Inny przychód',
  'rc.add':'Dodaj paragon',
+ 'rc.take':'Zrób zdjęcie','rc.upload':'Wgraj paragon','rc.chooseExisting':'Wybierz istniejące zdjęcie',
+ 'rc.imagesOnly':'Tylko pliki graficzne',
  'rc.view':'Zobacz paragon',
  'rc.delete':'Usuń paragon',
  'rc.uploading':'Przesyłanie…','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
  'rcb.tab':'Paragony',
  'rcb.title':'Dodaj paragony',
- 'rcb.intro':'Wybierz kategorię i miesiąc, a następnie zrób zdjęcie każdego wydatku, który go potrzebuje.',
+ 'rcb.intro':'Wybierz kategorię i miesiąc, a następnie dodaj paragon do każdego wydatku, który go potrzebuje.',
  'rcb.cat':'Kategoria',
  'rcb.month':'Miesiąc',
  'rcb.allMonths':'Wszystkie miesiące',
  'rcb.noMissing':'Każdy wydatek tutaj ma już paragon. 🎉',
  'rcb.pickCat':'Wybierz kategorię, aby zobaczyć wydatki bez paragonu.',
  'rcb.noExpenses':'Brak wydatków w tej kategorii.',
- 'rcb.add':'📷 Dodaj',
+ 'rcb.add':'Dodaj',
  'rcb.done':'✓',
  'rcb.uploading':'Przesyłanie…',
  'rcb.remaining':'{n} nadal potrzebuje paragonu',
  'rcb.allDone':'Gotowe — każdy wydatek ma paragon.',
- 'rcb.tip':'Dwa paragony za jeden wydatek? Sfotografuj je obok siebie.',
+ 'rcb.tip':'Dwa paragony za jeden wydatek? Umieść je obok siebie na jednym obrazie.',
  'car.proTitle':'Darmowy dostęp Pro',
  'car.proBody':'Czas ograniczony — aktywuj teraz.',
  'car.proCta':'Aktywuj →',
@@ -1336,13 +1348,13 @@ pl:{
  'ob.signInS':'Zapisuj dane i synchronizuj między urządzeniami',
  'ob.noAcc':'Zacznij bez konta',
  'ob.noAccS':'Dane zostają na tym telefonie — zaloguj się kiedy chcesz',
- 'ob.codeLogin':'🤝 Masz partner sync code? Najpierw się zaloguj.',
+ 'ob.codeLogin':'Masz partner sync code? Najpierw się zaloguj.',
  'ob.howStart':'Jak chcesz zacząć?',
  'ob.together':'Zróbmy to razem',
- 'ob.togetherS':'Poprowadzę Cię krok po kroku — najpierw przychody, potem wydatki, a na końcu zobaczysz, ile podatku odłożyć.',
+ 'ob.togetherS':'Poprowadzę Cię krok po kroku — zobaczysz, ile podatku odłożyć.',
  'ob.dash':'Przejdź od razu do pulpitu',
- 'ob.dashS':'Wiem, co robię. Dam radę!',
- 'ob.codeEntry':'🤝 Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
+ 'ob.dashS':'Wiem, co robię.',
+ 'ob.codeEntry':'Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
  'ob.run':'Jak prowadzisz działalność?',
  'ob.partner':'Ze wspólnikiem',
  'ob.shareLabel':'Twój udział w zysku',
@@ -1610,6 +1622,8 @@ ro:{
  'm.backup':'Backup și restaurare',
  'm.backupHint':'Datele tale sunt deja în cloud. Descarcă o copie locală ca asigurare suplimentară.',
  'm.export':'Backup date (JSON)',
+ 'm.backupFull':'Backup complet','m.backupFullS':'Include datele TaxMate și fișierele bonurilor (ZIP)',
+ 'm.backupData':'Backup doar cu date','m.backupDataS':'Doar înregistrările TaxMate; fișierele bonurilor nu sunt incluse (JSON)',
  'm.csv':'Exportă înregistrări (CSV pentru Excel)',
  'm.restore':'Restaurează din backup',
  'm.danger':'Zonă periculoasă','m.eraseCloud':'Șterge toate datele mele (inclusiv cloud)','m.eraseCloudT':'Ștergi tot, peste tot?','m.eraseCloudM':'Aceasta șterge permanent toate afacerile, înregistrările, chitanțele și setările de pe acest dispozitiv ȘI din cloud. Nu poate fi anulată. Exportă o copie mai întâi dacă nu ești sigur.','m.erasing':'Se șterg datele…','m.erasedAll':'Toate datele tale au fost șterse de pe dispozitiv și din cloud.','m.erasedLocal':'Date locale șterse. Cloud-ul nu a putut fi accesat — încearcă din nou online.',
@@ -1641,24 +1655,26 @@ ro:{
  'cat.royalty':'Drepturi de autor',
  'cat.otherin':'Alt venit',
  'rc.add':'Adaugă bon',
+ 'rc.take':'Fotografiază','rc.upload':'Încarcă bonul','rc.chooseExisting':'Alege o poză existentă',
+ 'rc.imagesOnly':'Doar fișiere imagine',
  'rc.view':'Vezi bon',
  'rc.delete':'Șterge bon',
  'rc.uploading':'Se încarcă…','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
  'rcb.tab':'Bonuri',
  'rcb.title':'Adaugă bonuri',
- 'rcb.intro':'Alege o categorie și o lună, apoi fotografiază fiecare cheltuială care încă are nevoie.',
+ 'rcb.intro':'Alege o categorie și o lună, apoi adaugă un bon pentru fiecare cheltuială care încă are nevoie.',
  'rcb.cat':'Categorie',
  'rcb.month':'Lună',
  'rcb.allMonths':'Toate lunile',
  'rcb.noMissing':'Fiecare cheltuială de aici are deja bon. 🎉',
  'rcb.pickCat':'Alege o categorie pentru a vedea cheltuielile fără bon.',
  'rcb.noExpenses':'Nicio cheltuială în această categorie.',
- 'rcb.add':'📷 Adaugă',
+ 'rcb.add':'Adaugă',
  'rcb.done':'✓',
  'rcb.uploading':'Se încarcă…',
  'rcb.remaining':'{n} încă au nevoie de bon',
  'rcb.allDone':'Gata — fiecare cheltuială are bon.',
- 'rcb.tip':'Două bonuri pentru o cheltuială? Fotografiază-le alăturat.',
+ 'rcb.tip':'Două bonuri pentru o cheltuială? Pune-le alăturat într-o singură imagine.',
  'car.proTitle':'Acces Pro gratuit',
  'car.proBody':'Timp limitat — activează acum.',
  'car.proCta':'Activează →',
@@ -1827,13 +1843,13 @@ ro:{
  'ob.signInS':'Salvează datele și sincronizează între dispozitive',
  'ob.noAcc':'Începe fără cont',
  'ob.noAccS':'Rămâne pe acest telefon — te poți conecta oricând',
- 'ob.codeLogin':'🤝 Ai un partner sync code? Conectează-te mai întâi.',
+ 'ob.codeLogin':'Ai un partner sync code? Conectează-te mai întâi.',
  'ob.howStart':'Cum vrei să începi?',
  'ob.together':'Hai să o facem împreună',
- 'ob.togetherS':'Te ghidez pas cu pas — întâi veniturile, apoi cheltuielile, apoi știi exact cât ai de plătit.',
+ 'ob.togetherS':'Te ghidez pas cu pas — apoi știi exact cât ai de plătit.',
  'ob.dash':'Direct la panou',
- 'ob.dashS':'Știu ce fac. Mă descurc!',
- 'ob.codeEntry':'🤝 Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
+ 'ob.dashS':'Știu ce fac.',
+ 'ob.codeEntry':'Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
  'ob.run':'Cum lucrezi?',
  'ob.partner':'Cu un partener',
  'ob.shareLabel':'Partea ta din profit',
@@ -2101,6 +2117,8 @@ es:{
  'm.backup':'Copia de seguridad',
  'm.backupHint':'Tus datos ya están en la nube. Descarga una copia local como seguro adicional.',
  'm.export':'Copia de seguridad (JSON)',
+ 'm.backupFull':'Copia completa','m.backupFullS':'Incluye tus datos de TaxMate y los archivos de recibos (ZIP)',
+ 'm.backupData':'Copia solo de datos','m.backupDataS':'Solo los registros de TaxMate; los archivos de recibos no se incluyen (JSON)',
  'm.csv':'Exportar entradas (CSV para Excel)',
  'm.restore':'Restaurar desde copia',
  'm.danger':'Zona de peligro','m.eraseCloud':'Borrar todos mis datos (incl. la nube)','m.eraseCloudT':'¿Borrar todo en todas partes?','m.eraseCloudM':'Esto elimina permanentemente todos tus negocios, entradas, recibos y ajustes de este dispositivo Y de la nube. No se puede deshacer. Exporta una copia primero si no estás seguro.','m.erasing':'Borrando tus datos…','m.erasedAll':'Todos tus datos se han borrado de este dispositivo y de la nube.','m.erasedLocal':'Datos locales borrados. No se pudo acceder a la nube — inténtalo de nuevo en línea.',
@@ -2132,24 +2150,26 @@ es:{
  'cat.royalty':'Regalías',
  'cat.otherin':'Otro ingreso',
  'rc.add':'Añadir recibo',
+ 'rc.take':'Hacer foto','rc.upload':'Subir recibo','rc.chooseExisting':'Elegir foto existente',
+ 'rc.imagesOnly':'Solo archivos de imagen',
  'rc.view':'Ver recibo',
  'rc.delete':'Eliminar recibo',
  'rc.uploading':'Subiendo…','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
  'rcb.tab':'Recibos',
  'rcb.title':'Añadir recibos',
- 'rcb.intro':'Elige una categoría y un mes, luego haz una foto de cada gasto que aún lo necesite.',
+ 'rcb.intro':'Elige una categoría y un mes, luego añade un recibo a cada gasto que aún lo necesite.',
  'rcb.cat':'Categoría',
  'rcb.month':'Mes',
  'rcb.allMonths':'Todos los meses',
  'rcb.noMissing':'Cada gasto aquí ya tiene recibo. 🎉',
  'rcb.pickCat':'Elige una categoría para ver los gastos sin recibo.',
  'rcb.noExpenses':'No hay gastos en esta categoría.',
- 'rcb.add':'📷 Añadir',
+ 'rcb.add':'Añadir',
  'rcb.done':'✓',
  'rcb.uploading':'Subiendo…',
  'rcb.remaining':'{n} aún necesitan recibo',
  'rcb.allDone':'Listo — cada gasto tiene recibo.',
- 'rcb.tip':'¿Dos recibos para un gasto? Fotografíalos uno al lado del otro.',
+ 'rcb.tip':'¿Dos recibos para un gasto? Ponlos uno al lado del otro en una sola imagen.',
  'car.proTitle':'Acceso Pro gratis',
  'car.proBody':'Tiempo limitado — actívalo ahora.',
  'car.proCta':'Activar →',
@@ -2318,13 +2338,13 @@ es:{
  'ob.signInS':'Guarda tus datos y sincroniza entre dispositivos',
  'ob.noAcc':'Empezar sin cuenta',
  'ob.noAccS':'Se queda en este teléfono — inicia sesión cuando quieras',
- 'ob.codeLogin':'🤝 ¿Tienes un partner sync code? Inicia sesión primero.',
+ 'ob.codeLogin':'¿Tienes un partner sync code? Inicia sesión primero.',
  'ob.howStart':'¿Cómo quieres empezar?',
  'ob.together':'Hagámoslo juntos',
- 'ob.togetherS':'Te guío paso a paso — primero ingresos, luego gastos, y sabrás exactamente cuánto debes.',
+ 'ob.togetherS':'Te guío paso a paso — y sabrás exactamente cuánto debes.',
  'ob.dash':'Ir directo al panel',
- 'ob.dashS':'Sé lo que hago. ¡Yo me encargo!',
- 'ob.codeEntry':'🤝 ¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
+ 'ob.dashS':'Sé lo que hago.',
+ 'ob.codeEntry':'¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
  'ob.run':'¿Cómo trabajas?',
  'ob.partner':'Con un socio',
  'ob.shareLabel':'Tu parte del beneficio',
@@ -2592,6 +2612,8 @@ ur:{
  'm.backup':'بیک اپ اور بحالی',
  'm.backupHint':'آپ کا ڈیٹا پہلے سے کلاؤڈ میں محفوظ ہے۔ اضافی تحفظ کے لیے مقامی کاپی ڈاؤن لوڈ کریں۔',
  'm.export':'ڈیٹا بیک اپ (JSON)',
+ 'm.backupFull':'مکمل بیک اپ','m.backupFullS':'آپ کا TaxMate ڈیٹا اور رسیدوں کی فائلیں شامل ہیں (ZIP)',
+ 'm.backupData':'صرف ڈیٹا کا بیک اپ','m.backupDataS':'صرف TaxMate ریکارڈ؛ رسیدوں کی فائلیں شامل نہیں (JSON)',
  'm.csv':'اندراجات ایکسپورٹ کریں (Excel کے لیے CSV)',
  'm.restore':'بیک اپ سے بحال کریں',
  'm.danger':'خطرے کا علاقہ','m.eraseCloud':'میرا تمام ڈیٹا حذف کریں (کلاؤڈ سمیت)','m.eraseCloudT':'ہر جگہ سے سب کچھ حذف کریں؟','m.eraseCloudM':'یہ آپ کے تمام کاروبار، اندراجات، رسیدیں اور ترتیبات اس ڈیوائس سے اور کلاؤڈ سے مستقل طور پر حذف کر دے گا۔ اسے واپس نہیں کیا جا سکتا۔ اگر یقین نہ ہو تو پہلے بیک اپ ایکسپورٹ کریں۔','m.erasing':'آپ کا ڈیٹا حذف ہو رہا ہے…','m.erasedAll':'آپ کا تمام ڈیٹا اس ڈیوائس اور کلاؤڈ سے حذف کر دیا گیا ہے۔','m.erasedLocal':'مقامی ڈیٹا حذف ہو گیا۔ کلاؤڈ تک رسائی نہیں ہو سکی — آن لائن ہونے پر دوبارہ کوشش کریں۔',
@@ -2623,24 +2645,26 @@ ur:{
  'cat.royalty':'رائلٹی',
  'cat.otherin':'دیگر آمدنی',
  'rc.add':'رسید شامل کریں',
+ 'rc.take':'تصویر لیں','rc.upload':'رسید اپ لوڈ کریں','rc.chooseExisting':'موجودہ تصویر منتخب کریں',
+ 'rc.imagesOnly':'صرف تصویری فائلیں',
  'rc.view':'رسید دیکھیں',
  'rc.delete':'رسید حذف کریں',
  'rc.uploading':'اپلوڈ ہو رہا ہے…','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
  'rcb.tab':'رسیدیں',
  'rcb.title':'رسیدیں شامل کریں',
- 'rcb.intro':'ایک زمرہ اور مہینہ منتخب کریں، پھر ہر اُس خرچ کی تصویر لیں جسے ابھی رسید درکار ہے۔',
+ 'rcb.intro':'ایک زمرہ اور مہینہ منتخب کریں، پھر ہر اُس خرچ کے لیے رسید شامل کریں جسے ابھی درکار ہے۔',
  'rcb.cat':'زمرہ',
  'rcb.month':'مہینہ',
  'rcb.allMonths':'تمام مہینے',
  'rcb.noMissing':'یہاں ہر خرچ کی رسید پہلے سے موجود ہے۔ 🎉',
  'rcb.pickCat':'رسید کے بغیر خرچ دیکھنے کے لیے ایک زمرہ منتخب کریں۔',
  'rcb.noExpenses':'اس زمرے میں ابھی کوئی خرچ نہیں۔',
- 'rcb.add':'📷 شامل کریں',
+ 'rcb.add':'شامل کریں',
  'rcb.done':'✓',
  'rcb.uploading':'اپلوڈ ہو رہا ہے…',
  'rcb.remaining':'{n} کو ابھی رسید درکار ہے',
  'rcb.allDone':'مکمل — یہاں ہر خرچ کی رسید موجود ہے۔',
- 'rcb.tip':'ایک خرچ کے لیے دو رسیدیں؟ انہیں ساتھ ساتھ رکھ کر تصویر لیں۔',
+ 'rcb.tip':'ایک خرچ کے لیے دو رسیدیں؟ انہیں ایک ہی تصویر میں ساتھ ساتھ رکھیں۔',
  'car.proTitle':'مفت Pro رسائی',
  'car.proBody':'محدود وقت — ابھی فعال کریں۔',
  'car.proCta':'فعال کریں →',
@@ -2807,13 +2831,13 @@ ur:{
  'ob.signInS':'اپنا ڈیٹا محفوظ کریں اور آلات کے درمیان سنک کریں',
  'ob.noAcc':'بغیر اکاؤنٹ شروع کریں',
  'ob.noAccS':'ڈیٹا اسی فون پر رہتا ہے — جب چاہیں سائن ان کریں',
- 'ob.codeLogin':'🤝 partner sync code ہے؟ پہلے سائن ان کریں۔',
+ 'ob.codeLogin':'partner sync code ہے؟ پہلے سائن ان کریں۔',
  'ob.howStart':'آپ کیسے شروع کرنا چاہیں گے؟',
  'ob.together':'آئیں مل کر کریں',
- 'ob.togetherS':'میں قدم بہ قدم ساتھ چلوں گا — پہلے آمدنی، پھر اخراجات، پھر آپ کو ٹھیک معلوم ہوگا کہ کتنا ٹیکس بنتا ہے۔',
+ 'ob.togetherS':'میں قدم بہ قدم ساتھ چلوں گا — پھر آپ کو معلوم ہوگا کہ کتنا ٹیکس بنتا ہے۔',
  'ob.dash':'سیدھا ڈیش بورڈ پر جائیں',
- 'ob.dashS':'مجھے معلوم ہے۔ میں سنبھال لوں گا!',
- 'ob.codeEntry':'🤝 partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
+ 'ob.dashS':'مجھے معلوم ہے۔',
+ 'ob.codeEntry':'partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
  'ob.run':'آپ کام کیسے چلاتے ہیں؟',
  'ob.partner':'پارٹنر کے ساتھ',
  'ob.shareLabel':'منافع میں آپ کا حصہ',
@@ -2956,13 +2980,28 @@ ur:{
  'ac.needNet':'سائن ان کے لیے انٹرنیٹ درکار ہے۔'
 }
 };;
-// Changed regulated claims use one reviewed fallback until translations receive legal review.
-Object.keys(I18N).forEach(lang=>{
-  I18N[lang]['mtd.what']=I18N.en['mtd.what'];
-  I18N[lang]['feat.mtdReady']='Quarterly record summaries (not HMRC submission)';
+Object.assign(I18N.en,{'promo.redeem':'Redeem promotion code'});
+Object.assign(I18N.zh,{
+  'mtd.required':'根據 {x} 的合資格總收入，預計 MTD 將由 {d} 起適用。','mtd.notRequired':'根據 {x} 的合資格總收入，本年度未超過 {y} 門檻。','mtd.incomplete':'請先加入所有物業總收入，才依賴此評估。','mtd.unsupported':'此課稅年度的官方門檻對照尚未收錄，因此不會顯示評估。','sa.future':'此課稅年度的官方短表對照尚未收錄。TaxMate 不會猜測未來表格欄位。','mtd.what':'TaxMate 協助你保存記錄和準備摘要，但不會向 HMRC 提交 MTD 更新。如 MTD 適用，請使用兼容 HMRC 的軟件提交。','feat.mtdReady':'季度記錄摘要（不會提交至 HMRC）','promo.redeem':'兌換推廣代碼'
+});
+Object.assign(I18N.pl,{
+  'mtd.required':'Na podstawie kwalifikującego się przychodu brutto w wysokości {x} przewiduje się, że MTD będzie obowiązywać od {d}.','mtd.notRequired':'Przy kwalifikującym się przychodzie brutto {x} próg {y} nie został w tym roku przekroczony.','mtd.incomplete':'Dodaj cały przychód brutto z nieruchomości, zanim oprzesz się na tej ocenie.','mtd.unsupported':'Ocena nie jest wyświetlana, ponieważ oficjalne progi dla tego roku podatkowego nie są jeszcze dołączone.','sa.future':'Oficjalne mapowanie krótkiego formularza dla tego roku podatkowego nie jest jeszcze dołączone. TaxMate nie będzie zgadywać pól przyszłych formularzy.','mtd.what':'TaxMate pomaga prowadzić ewidencję i przygotowywać podsumowania. Nie wysyła aktualizacji MTD do HMRC. Jeśli MTD Cię dotyczy, użyj do wysyłki oprogramowania zgodnego z HMRC.','feat.mtdReady':'Kwartalne podsumowania ewidencji (bez wysyłki do HMRC)','promo.redeem':'Zrealizuj kod promocyjny'
+});
+Object.assign(I18N.ro,{
+  'mtd.required':'Pe baza venitului brut eligibil de {x}, se estimează că MTD se va aplica din {d}.','mtd.notRequired':'Pe baza venitului brut eligibil de {x}, pragul de {y} nu este depășit în acest an.','mtd.incomplete':'Adaugă toate veniturile brute din proprietăți înainte de a te baza pe această evaluare.','mtd.unsupported':'Evaluarea nu este afișată deoarece pragurile oficiale pentru acest an fiscal nu sunt incluse.','sa.future':'Corespondența oficială a formularului scurt pentru acest an fiscal nu este încă inclusă. TaxMate nu va ghici rubricile formularelor viitoare.','mtd.what':'TaxMate te ajută să păstrezi evidențe și să pregătești rezumate. Nu trimite actualizări MTD către HMRC. Dacă ți se aplică MTD, folosește software compatibil HMRC pentru trimitere.','feat.mtdReady':'Rezumate trimestriale ale evidențelor (fără trimitere la HMRC)','promo.redeem':'Folosește codul promoțional'
+});
+Object.assign(I18N.es,{
+  'mtd.required':'Según unos ingresos brutos admisibles de {x}, se prevé que MTD se aplique desde {d}.','mtd.notRequired':'Con unos ingresos brutos admisibles de {x}, este año no se supera el umbral de {y}.','mtd.incomplete':'Añade todos los ingresos brutos por alquileres antes de basarte en esta evaluación.','mtd.unsupported':'No se muestra una evaluación porque no se incluye la tabla oficial de umbrales de este ejercicio fiscal.','sa.future':'La correspondencia oficial del formulario abreviado para este ejercicio fiscal aún no está incluida. TaxMate no adivinará las casillas de formularios futuros.','mtd.what':'TaxMate te ayuda a llevar registros y preparar resúmenes. No envía actualizaciones MTD a HMRC. Si se te aplica MTD, usa software compatible con HMRC para enviarlas.','feat.mtdReady':'Resúmenes trimestrales de registros (sin envío a HMRC)','promo.redeem':'Canjear código promocional'
 });
 Object.assign(I18N.ur,{
-  'm.theme':'ظاہری شکل','theme.light':'روشن','theme.dark':'تاریک','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','sec.legal':'تعارف اور قانونی','leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','cal.export':'ٹیکس کی تاریخیں کیلنڈر میں شامل کریں (.ics)','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی'
+  'm.theme':'ظاہری شکل','theme.auto':'خودکار','theme.light':'روشن','theme.dark':'تاریک','sec.biz':'آپ کے کاروبار','sec.prefs':'ترجیحات','sec.data':'بیک اپ اور ڈیٹا','sec.report':'رپورٹس','sec.legal':'تعارف اور قانونی','sec.account':'اکاؤنٹ','leg.version':'ورژن','leg.madeIn':'برطانیہ میں خود روزگار افراد کے لیے بنایا گیا۔','leg.privacy':'رازداری کی پالیسی','leg.terms':'استعمال کی شرائط','leg.disclaimer':'ٹیکس سے متعلق دستبرداری','leg.disclaimerBody':'TaxMate منصوبہ بندی میں مدد کے لیے تخمینے فراہم کرتا ہے۔ یہ ٹیکس مشورہ نہیں اور نہ ہی اکاؤنٹنٹ یا HMRC کا متبادل ہے۔ جمع کرانے سے پہلے ہمیشہ اعداد کی تصدیق کریں۔',
+  'qt.title':'سہ ماہی تفصیل','qt.q1':'سہ ماہی 1  6 اپریل – 5 جولائی','qt.q2':'سہ ماہی 2  6 جولائی – 5 اکتوبر','qt.q3':'سہ ماہی 3  6 اکتوبر – 5 جنوری','qt.q4':'سہ ماہی 4  6 جنوری – 5 اپریل','qt.current':'موجودہ','qt.income':'آمدنی','qt.expenses':'اخراجات','qt.profit':'منافع','qt.noData':'اس سہ ماہی میں کوئی اندراج نہیں۔',
+  'acc.export':'اکاؤنٹنٹ رپورٹ ڈاؤن لوڈ کریں (CSV)','acc.prepared':'TaxMate UK کی جانب سے تیار کردہ — صرف تخمینہ، ٹیکس مشورہ نہیں','cal.export':'ٹیکس کی تاریخیں کیلنڈر میں شامل کریں (.ics)','cal.desc':'برطانیہ کی ٹیکس آخری تاریخیں، 7 دن پہلے یاد دہانی کے ساتھ — آپ کی کیلنڈر ایپ میں کھلیں گی۔','toast.saved':'محفوظ ہو گیا','toast.deleted':'حذف ہو گیا','toast.restored':'بیک اپ بحال ہو گیا','toast.calAdded':'کیلنڈر فائل ڈاؤن لوڈ ہو گئی',
+  'mtd.50k':'آپ کی مجموعی اہل آمدنی £50,000 سے زیادہ ہے — توقع ہے کہ MTD اپریل 2026 سے لاگو ہوگا۔','mtd.30k':'آپ کی مجموعی اہل آمدنی £30,000 سے زیادہ ہے — توقع ہے کہ MTD اپریل 2027 سے لاگو ہوگا۔','mtd.20k':'آپ کی مجموعی اہل آمدنی £20,000 سے زیادہ ہے — توقع ہے کہ MTD اپریل 2028 سے لاگو ہوگا۔','mtd.ok':'ابھی MTD درکار نہیں — حد £20,000 ہے۔ قواعد بدلنے کی صورت میں ریکارڈ محفوظ رکھیں۔','mtd.what':'TaxMate ریکارڈ رکھنے اور خلاصے تیار کرنے میں مدد کرتا ہے۔ یہ MTD اپ ڈیٹس HMRC کو جمع نہیں کراتا۔ اگر MTD لاگو ہو تو جمع کرانے کے لیے HMRC سے ہم آہنگ سافٹ ویئر استعمال کریں۔','mtd.required':'{x} کی مجموعی اہل آمدنی کی بنیاد پر توقع ہے کہ MTD {d} سے لاگو ہوگا۔','mtd.notRequired':'{x} کی مجموعی اہل آمدنی کی بنیاد پر اس سال {y} کی حد عبور نہیں ہوئی۔','mtd.incomplete':'اس جائزے پر انحصار کرنے سے پہلے جائیداد کی تمام مجموعی آمدنی شامل کریں۔','mtd.unsupported':'کوئی جائزہ نہیں دکھایا گیا کیونکہ اس ٹیکس سال کی سرکاری حدوں کی نقشہ بندی شامل نہیں ہے۔','sa.future':'اس ٹیکس سال کے سرکاری مختصر فارم کی نقشہ بندی ابھی شامل نہیں ہے۔ TaxMate مستقبل کے فارم خانوں کا اندازہ نہیں لگائے گا۔','feat.mtdReady':'سہ ماہی ریکارڈ خلاصے (HMRC کو جمع کرانا شامل نہیں)','promo.redeem':'پروموشن کوڈ استعمال کریں',
+  'nb.jan':'Self Assessment کی آخری تاریخ میں {n} دن — 31 جنوری','nb.jul':'Payment on account کی آخری تاریخ میں {n} دن — 31 جولائی','nb.today_jan':'Self Assessment آج واجب الادا ہے — 31 جنوری','nb.today_jul':'Payment on account آج واجب الادا ہے — 31 جولائی','nb.days':'دن','nb.day':'دن',
+  'cc.rename':'زمروں کے نام بدلیں','cc.renameHint':'کسی زمرے کو اپنا نام دینے کے لیے اسے چھوئیں۔','cc.editName':'زمرے کا نام','cc.reset':'پہلے سے طے شدہ حالت بحال کریں','cc.renameDone':'نام بدل گیا','cc.action':'آپ کیا کرنا چاہتے ہیں؟','cc.doRename':'نام بدلیں','cc.doDelete':'فہرست سے ہٹائیں','cc.deleted':'ہٹا دیا گیا','f.catErr':'ایک زمرہ منتخب کریں','f.repeat':'ہر ماہ دہرائیں','f.repeatOff':'ایک بار',
+  'b.trade':'کام کی قسم','b.tradeHint':'ہم اخراجات کے زمرے تجویز کریں گے — آپ انہیں کسی بھی وقت تبدیل کر سکتے ہیں۔','trade.delivery':'ڈیلیوری / ڈرائیور','trade.construction':'تعمیرات / ہنرمند کام','trade.consultant':'مشاورت / آئی ٹی','trade.creative':'تخلیقی / میڈیا','trade.cleaning':'صفائی / گھریلو کام','trade.beauty':'خوبصورتی / ذاتی نگہداشت','trade.retail':'ریٹیل / آن لائن دکان','trade.other':'دیگر',
+  'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ جن زمروں کی ضرورت ہو انہیں شامل کرنے کے لیے چھوئیں۔','sug.add':'منتخب زمرے شامل کریں','sug.skip':'چھوڑ دیں','sug.added':'{n} زمرے شامل ہو گئے','ob.partnerSync':'پارٹنر سنک','rep.desc':'آپ، آپ کے اکاؤنٹنٹ یا رہن کے لیے مکمل سالانہ خلاصہ۔','tax.emptyT':'اپنا تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس صورتحال یہاں دکھائی دے گی۔'
 });
 
 function t(key, vars){
@@ -3127,7 +3166,7 @@ function planBlock(tier){
   const name = t('tier.'+tier);
   const sub = t('tier.'+tier+'Sub');
   const feats = tierFeatureList(tier).map(k=>
-    `<div class="frow" style="padding:5px 0"><span class="fl" style="font-size:13.5px">${tierTick(tier)} ${t(k)}</span></div>`
+    `<div class="frow" style="padding:4px 0;border-bottom:none"><span class="fl" style="font-size:13.5px">${tierTick(tier)} ${t(k)}</span></div>`
   ).join('');
   // "Limited-time free" badge on paid tiers while trial window is open and not yet activated
   const badge = isCurrent
@@ -3136,12 +3175,12 @@ function planBlock(tier){
   let btn = '';
   if(!isCurrent){
     btn = `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
-    if(tier==='pro') btn += `<button class="btn ghost" style="margin-top:8px;width:100%" data-tm-click="activateTrial()">Redeem promotion code</button>`;
+    if(tier==='pro') btn += `<button class="btn ghost" style="margin-top:8px;width:100%" data-tm-click="activateTrial()">${t('promo.redeem')}</button>`;
   }
-  const ring = isCurrent ? 'border:2px solid var(--brand);' : 'border:1px solid var(--line);';
+  const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<div class="card" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <div class="t" style="font-size:17px">${tierEmoji(tier)} ${name}</div>
+      <div class="t" style="font-size:17px">${name}</div>
       ${badge}
     </div>
     <div class="s" style="margin-bottom:10px">${sub}</div>
@@ -3149,16 +3188,14 @@ function planBlock(tier){
     ${btn}
   </div>`;
 }
-function tierEmoji(tier){ return tier==='free'?'🟢':(tier==='plus'?'⭐':'👑'); }
 function tierTick(tier){ return '✓'; }
 function lockGuard(key){
   // returns true if BLOCKED (and shows the upgrade sheet); false if allowed
   if(hasFeature(key)) return false;
   const need = FEATURE_TIER[key];
   const pname = t('tier.'+need);
-  const badge = need==='pro' ? 'MAX' : 'PRO';
   const badgeCls = need==='pro' ? 'max' : 'pro';
-  document.getElementById('lock-badge').textContent = badge;
+  document.getElementById('lock-badge').textContent = pname;
   document.getElementById('lock-badge').className = 'planbadge '+badgeCls;
   document.getElementById('lock-title').textContent = t('lock.title',{p:pname});
   document.getElementById('lock-body').textContent = t('lock.body',{p:pname});
@@ -3168,9 +3205,8 @@ function lockGuard(key){
 function featBadge(key){
   if(hasFeature(key)) return '';
   const need = FEATURE_TIER[key];
-  const label = need==='pro' ? 'MAX' : 'PRO';
   const cls = need==='pro' ? 'max' : 'pro';
-  return `<span class="feat-lock-badge ${cls}">${label}</span>`;
+  return `<span class="feat-lock-badge ${cls}">${t('tier.'+need)}</span>`;
 }
 function lockSeeplans(){
   trackEvent('upgrade_viewed');
@@ -3230,7 +3266,6 @@ function installCard(){
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:0 2px">
-      <div style="font-size:18px">✨</div>
       <div class="t">${t('pro.title')}</div>
     </div>
     <div class="s" style="margin:0 2px 14px">${t('pro.sub')}</div>
@@ -3500,9 +3535,7 @@ function obReopenCatchup(){
     OB._catchupBizId = S.businesses.length ? S.businesses[0].id : null;
     OB.screen = 'start';
   }
-  const r = obEnsureRoot();
-  r.classList.add('active');
-  document.body.style.overflow='hidden';
+  const r = TaxMateOnboardingRoot.open(document);
   obRender();
 }
 
@@ -3512,10 +3545,9 @@ function proBanner(){
   if(currentTier()!=='free') return '';
   // 今次 session 撳咗 ✕ → 唔出（下次開 app 又會出）
   try{ if(sessionStorage.getItem('tmProBannerHidden')==='1') return ''; }catch(e){}
-  return `<div id="pro-banner" style="display:flex;align-items:center;gap:10px;background:linear-gradient(135deg,#FFB347,#FF9500);color:#3D2800;padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:700;font-size:14px;cursor:pointer" data-tm-click="lockSeeplans()">
-    <span style="font-size:18px">✨</span>
+  return `<div id="pro-banner" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:600;font-size:14px;cursor:pointer" data-tm-click="lockSeeplans()">
     <span style="flex:1;line-height:1.35">Explore TaxMate Plus and Pro →</span>
-    <button data-tm-click="event.stopPropagation();hideProBanner()" style="background:rgba(0,0,0,.12);border:none;color:#3D2800;width:26px;height:26px;border-radius:50%;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
+    <button data-tm-click="event.stopPropagation();hideProBanner()" style="background:var(--bg);border:none;color:var(--muted);width:26px;height:26px;border-radius:50%;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
   </div>`;
 }
 function hideProBanner(){
@@ -3538,30 +3570,24 @@ function dismissCarouselCard(id){
 function carouselCards(){
   const dismissed = carouselDismissed();
   const cards = [];
-  const isPro = currentTier()!=='free';
   const canReceipt = hasFeature('receiptPhoto');
 
-  // 卡 1：限時免費 Pro（只在未升級時）
-  if(!isPro && !dismissed.includes('pro')){
-    cards.push({ id:'pro', bg:'linear-gradient(135deg,#FFB347,#FF9500)', fg:'#3D2800', emoji:'🎁',
-      title:t('car.proTitle'), body:t('car.proBody'), cta:t('car.proCta'),
-      onclick:'lockSeeplans()' });
-  }
-
-  // 卡 2：影收據 —— 有 Pro 就去批量補收據頁；未有就去 Pro 方案頁（+ 提示係 Pro 功能）
+  // 卡 1：影收據 —— 有 Pro 就去批量補收據頁；未有就去 Pro 方案頁（+ 提示係 Pro 功能）
+  //   （UI-04：主頁淨返一個克制嘅升級入口，原本嘅「限時免費 Pro」宣傳卡唔再出。
+  //     升級／促銷碼入口保留喺「設定 › 方案」同各處 lockGuard。）
   if(!dismissed.includes('receipt')){
-    cards.push({ id:'receipt', bg:'linear-gradient(135deg,#3478F6,#1F4E9C)', fg:'#EAF1FF', emoji:'📸',
+    cards.push({ id:'receipt', bg:'var(--card)', fg:'var(--ink)', accent:'var(--blue)', emoji:'📸',
       title:t('car.rcTitle'),
       body: canReceipt ? t('car.rcBody') : t('car.rcLockedBody'),
       cta:  canReceipt ? t('car.rcCta') : t('car.rcLockedCta'),
       onclick: canReceipt ? "go('receipts')" : "lockGuard('receiptPhoto')" });
   }
 
-  // 卡 3：最相關嘅一條 context tip（借用 tipsCard 嘅資料，但淨係抽一條擺喺輪播）
+  // 卡 2：最相關嘅一條 context tip（借用 tipsCard 嘅資料，但淨係抽一條擺喺輪播）
   if(!dismissed.includes('tip')){
     const tip = topContextTip();
     if(tip){
-      cards.push({ id:'tip', bg:'linear-gradient(135deg,#0AA968,#0D8C86)', fg:'#EAFBF3', emoji:tip.icon,
+      cards.push({ id:'tip', bg:'var(--card)', fg:'var(--ink)', accent:'var(--brand-deep)', emoji:tip.icon,
         title:tip.t, body:tip.b, cta:t('home.taxT'), onclick:"go('tax')" });
     }
   }
@@ -3571,14 +3597,14 @@ function homeCarousel(){
   const cards = carouselCards();
   if(!cards.length) return '';
   const slides = cards.map((c,i)=>`
-    <div class="cxr-card" style="background:${c.bg};color:${c.fg}">
-      <button class="cxr-x" style="color:${c.fg}" data-tm-click="event.stopPropagation();dismissCarouselCard('${c.id}')" aria-label="Dismiss">✕</button>
+    <div class="cxr-card" style="background:${c.bg};color:${c.fg};border:1px solid var(--line)">
+      <button class="cxr-x" data-tm-click="event.stopPropagation();dismissCarouselCard('${c.id}')" aria-label="Dismiss">✕</button>
       <div class="cxr-inner" data-tm-click="${c.onclick}">
         <div class="cxr-emoji">${c.emoji}</div>
         <div class="cxr-txt">
           <div class="cxr-title">${c.title}</div>
           <div class="cxr-body">${c.body}</div>
-          <div class="cxr-cta">${c.cta}</div>
+          <div class="cxr-cta" style="color:${c.accent}">${c.cta}</div>
         </div>
       </div>
     </div>`).join('');
@@ -3674,9 +3700,9 @@ function pageHome(){
   ${deadlineBanner()}
   ${trialBanner()}
 
-  <div style="display:flex;gap:10px;margin:14px 0">
-    <button class="btn" style="flex:1" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
-    <button class="btn danger-soft" style="flex:1" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
+  <div class="homecta">
+    <button class="btn" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
+    <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
   </div>
 
   ${obReviewCard()}
@@ -3963,7 +3989,7 @@ function pageReceipts(){
         </div>
         <label class="btn soft" style="width:auto;padding:8px 14px;flex-shrink:0;cursor:pointer;margin:0" id="rcb-btn-${e.id}">
           <span id="rcb-label-${e.id}">${t('rcb.add')}</span>
-          <input type="file" accept="image/*" capture="environment" style="display:none" data-tm-change="onBatchReceiptFile('${e.id}', this)">
+          <input type="file" accept="image/*"${canCaptureWithCamera()?' capture="environment"':''} style="display:none" data-tm-change="onBatchReceiptFile('${e.id}', this)">
         </label>
       </div>`;
     }).join('');
@@ -4023,7 +4049,7 @@ function pageMore(){
 
   const accountCard = `<div class="card" id="account-anchor">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">
-      <div style="font-size:18px">☁️</div><div class="t">${t('ac.title')}</div>
+      <div class="t">${t('ac.title')}</div>
     </div>
     ${cloudUser() ? `
       <div class="row">
@@ -4063,7 +4089,7 @@ function pageMore(){
 
   const syncCard = `<div class="card">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
-      <div style="font-size:18px">🤝</div><div class="t">${t('sy.title')}</div>
+      <div class="t">${t('sy.title')}</div>
     </div>
     <div class="s" style="margin-bottom:12px">${t('sy.join')}</div>
     <div style="display:flex;gap:8px">
@@ -4089,18 +4115,18 @@ function pageMore(){
         });
       });
       return rows.length ? `<div class="card">
-        <div class="t" style="margin-bottom:10px">🏷️ ${t('cc.manage')}</div>${rows.join('')}
+        <div class="t" style="margin-bottom:10px">${t('cc.manage')}</div>${rows.join('')}
       </div>` : '';
     })(),
     S.folders.length?`<div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-        <div class="t">📁 ${t('fd.manage')}</div>
+        <div class="t">${t('fd.manage')}</div>
         <button class="link" data-tm-click="openFolderSheet()">+ ${t('fd.add')}</button>
       </div>
       ${S.folders.map(f=>`
         <div class="frow"><span class="fl">📁 ${esc(f.name)}</span>
         <button class="link danger" data-tm-click="confirmAction('${esc(f.name).replace(/'/g,"\\'")}',t('fd.deleteM'),()=>deleteFolder('${f.id}'))">✕</button></div>`).join('')}
-    </div>`:`<button class="btn soft" data-tm-click="openFolderSheet()">📁 + ${t('fd.add')}</button>`
+    </div>`:`<button class="btn soft" data-tm-click="openFolderSheet()">+ ${t('fd.add')}</button>`
   ].join('');
 
   return `
@@ -4110,7 +4136,7 @@ function pageMore(){
   ${syncCard}
 
   <details class="sec">
-    <summary><span class="sec-emoji">🏢</span>${t('sec.biz')}</summary>
+    <summary>${t('sec.biz')}</summary>
     <div class="sec-body">
       ${bizCard}
       ${installCard()}
@@ -4118,18 +4144,18 @@ function pageMore(){
   </details>
 
   <details class="sec">
-    <summary><span class="sec-emoji">⚙️</span>${t('sec.prefs')}</summary>
+    <summary>${t('sec.prefs')}</summary>
     <div class="sec-body">
       <div class="card">
-        <div class="t" style="margin-bottom:10px">🎨 ${t('m.theme')}</div>
+        <div class="t" style="margin-bottom:10px">${t('m.theme')}</div>
         <div class="seg">
           <button class="${(S.settings.theme||'auto')==='auto'?'on':''}" data-tm-click="setTheme('auto')">${t('theme.auto')}</button>
-          <button class="${S.settings.theme==='light'?'on':''}" data-tm-click="setTheme('light')">☀️ ${t('theme.light')}</button>
-          <button class="${S.settings.theme==='dark'?'on':''}" data-tm-click="setTheme('dark')">🌙 ${t('theme.dark')}</button>
+          <button class="${S.settings.theme==='light'?'on':''}" data-tm-click="setTheme('light')">${t('theme.light')}</button>
+          <button class="${S.settings.theme==='dark'?'on':''}" data-tm-click="setTheme('dark')">${t('theme.dark')}</button>
         </div>
       </div>
       <div class="card">
-        <div class="t" style="margin-bottom:10px">🌐 ${t('m.lang')}</div>
+        <div class="t" style="margin-bottom:10px">${t('m.lang')}</div>
         <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" data-tm-click="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
         ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px">ℹ️ ${t('lang.pdfHint')}</div>`:''}
       </div>
@@ -4138,34 +4164,36 @@ function pageMore(){
   </details>
 
   <details class="sec">
-    <summary><span class="sec-emoji">📄</span>${t('sec.report')}</summary>
+    <summary>${t('sec.report')}</summary>
     <div class="sec-body">
       <div class="card">
-        <div class="t" style="margin-bottom:6px">📄 ${t('pdf.download')}${featBadge('pdfReport')}</div>
+        <div class="t" style="margin-bottom:6px">${t('pdf.download')}${featBadge('pdfReport')}</div>
         <div class="s" style="margin-bottom:12px">${t('rep.desc')}</div>
         ${S.settings.lang!=='en'?`<div class="fhint" style="margin-bottom:12px">ℹ️ ${t('pdf.enHint')}</div>`:''}
-        <button class="btn soft" style="margin-bottom:10px" data-tm-click="${hasFeature('pdfReport')?'generatePDF()':`lockGuard('pdfReport')`}">📄 ${t('pdf.download')}${hasFeature('pdfReport')?'':' 🔒'}</button>
-        <button class="btn ghost" data-tm-click="exportCalendar()">📅 ${t('cal.export')}</button>
+        <button class="btn soft" style="margin-bottom:10px" data-tm-click="${hasFeature('pdfReport')?'generatePDF()':`lockGuard('pdfReport')`}">${t('pdf.download')}${hasFeature('pdfReport')?'':' 🔒'}</button>
+        <button class="btn ghost" data-tm-click="exportCalendar()">${t('cal.export')}</button>
         <div class="s" style="margin-top:8px">${t('cal.desc')}</div>
       </div>
       <div class="card">
-        <div class="t" style="margin-bottom:6px">🧾 ${t('rp.title')}${featBadge('receiptPack')}</div>
+        <div class="t" style="margin-bottom:6px">${t('rp.title')}${featBadge('receiptPack')}</div>
         <div class="s" style="margin-bottom:12px">${t('rp.desc')}</div>
-        <button class="btn soft" data-tm-click="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">🧾 ${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
+        <button class="btn soft" data-tm-click="${hasFeature('receiptPack')?'exportReceiptPack()':`lockGuard('receiptPack')`}">${t('rp.btn')}${hasFeature('receiptPack')?'':' 🔒'}</button>
       </div>
     </div>
   </details>
 
   <details class="sec">
-    <summary><span class="sec-emoji">💾</span>${t('sec.data')}</summary>
+    <summary>${t('sec.data')}</summary>
     <div class="sec-body">
       <div class="card">
-        <div class="t" style="margin-bottom:6px">💾 ${t('m.backup')}</div>
+        <div class="t" style="margin-bottom:6px">${t('m.backup')}</div>
         <div class="s" style="margin-bottom:12px">${cloudUser()
-          ? '<span style=\"color:var(--brand-deep);font-weight:700\">☁️ '+t('ac.cloudOn')+' ✓</span> — '
+          ? '<span style=\"color:var(--brand-deep);font-weight:700\">'+t('ac.cloudOn')+' ✓</span> — '
           : ''}${t('m.backupHint')}</div>
-        <button class="btn soft" style="margin-bottom:10px" data-tm-click="exportPortableBackup()">Full backup with receipts (.zip)</button>
-        <button class="btn ghost" style="margin-bottom:10px" data-tm-click="exportJSON()">${t('m.export')} (.json)</button>
+        <button class="btn soft" data-tm-click="exportPortableBackup()">${t('m.backupFull')}</button>
+        <div class="s" style="margin:6px 2px 12px">${t('m.backupFullS')}</div>
+        <button class="btn ghost" data-tm-click="exportJSON()">${t('m.backupData')}</button>
+        <div class="s" style="margin:6px 2px 12px">${t('m.backupDataS')}</div>
         <input type="file" id="importFile" accept=".zip,.json,application/zip,application/json" style="display:none" data-tm-change="importBackupFile(event)">
         <button class="btn ghost" data-tm-click="document.getElementById('importFile').click()">${t('m.restore')}</button>
       </div>
@@ -4179,15 +4207,15 @@ function pageMore(){
   </details>
 
   <details class="sec">
-    <summary><span class="sec-emoji">⚖️</span>${t('sec.legal')}</summary>
+    <summary>${t('sec.legal')}</summary>
     <div class="sec-body">
       <div class="card">
-        <div class="t" style="margin-bottom:4px">✉️ Contact us</div>
+        <div class="t" style="margin-bottom:4px">Contact us</div>
         <div class="s" style="margin-bottom:12px">We aim to reply within 2–3 working days.</div>
-        <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">✉️ support@taxmate.uk</a>
+        <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">support@taxmate.uk</a>
       </div>
       <div class="card">
-        <div class="t" style="margin-bottom:12px">❓ FAQ</div>
+        <div class="t" style="margin-bottom:12px">FAQ</div>
         ${[
           ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
           ['Can I use TaxMate on multiple devices?', 'Yes. TaxMate merges records individually using modification time, deterministic device tie-breaking and deletion tombstones.'],
@@ -4362,10 +4390,20 @@ function paintEntry(){
   const rw = document.getElementById('en-receipt-thumb-wrap');
   if(EN.receiptUrl){
     rw.innerHTML = `<img class="receipt-thumb" src="${EN.receiptUrl}" data-tm-click="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
+  } else if(!hasFeature('receiptPhoto')){
+    rw.innerHTML = `<div class="receipt-add" data-tm-click="lockGuard('receiptPhoto')" title="${t('lock.title',{p:t('tier.plus')})}">🔒</div>`;
+  } else if(canCaptureWithCamera()){
+    // touch device — two matching buttons, camera first, no separate icon tile
+    rw.innerHTML = `<div class="rc-actions">
+        <button type="button" class="btn soft" data-tm-click="document.getElementById('en-receipt-file').click()">${t('rc.take')}</button>
+        <button type="button" class="btn ghost" data-tm-click="document.getElementById('en-receipt-pick').click()">${t('rc.chooseExisting')}</button>
+      </div>`;
   } else {
-    rw.innerHTML = hasFeature('receiptPhoto')
-      ? `<div class="receipt-add" data-tm-click="document.getElementById('en-receipt-file').click()">📷</div>`
-      : `<div class="receipt-add" data-tm-click="lockGuard('receiptPhoto')" title="${t('lock.title',{p:t('tier.plus')})}">🔒</div>`;
+    // pointer device — file upload is the primary (and only genuine) route
+    rw.innerHTML = `<div class="rc-actions">
+        <button type="button" class="btn soft" data-tm-click="document.getElementById('en-receipt-pick').click()">${t('rc.upload')}</button>
+        <div class="fhint">${t('rc.imagesOnly')}</div>
+      </div>`;
   }
   document.getElementById('en-receipt-status').textContent = '';
   const fg = document.getElementById('en-folder-group');
@@ -6054,6 +6092,16 @@ function storageBucket(){
 }
 function receiptPath(entryId){ return `receipts/${firebase.auth().currentUser.uid}/${entryId}.jpg`; }
 
+/* UI-09: presentation-only device check. Decides whether the receipt UI leads with
+   camera capture or with a file upload. Touch/coarse-pointer devices get the camera
+   first; pointer devices get the file picker. No upload, storage or sync behaviour
+   depends on this — both paths call the same onReceiptFile()/onBatchReceiptFile(). */
+function canCaptureWithCamera(){
+  try{
+    if(window.matchMedia && window.matchMedia('(any-pointer: coarse)').matches) return true;
+    return navigator.maxTouchPoints > 0;
+  }catch(e){ return false; }
+}
 async function onReceiptFile(ev){
   const file = ev.target.files[0]; if(!file) return;
   ev.target.value='';
@@ -6288,24 +6336,15 @@ function obGrandMiles(){ return obActiveMonths().reduce((s,m)=>s+(parseFloat(obM
 
 // ---- entry points ----
 function obEnsureRoot(){
-  let r = document.getElementById('ob-root');
-  if(!r){
-    r = document.createElement('div');
-    r.id = 'ob-root';
-    document.body.appendChild(r);
-  }
-  return r;
+  return TaxMateOnboardingRoot.ensure(document);
 }
 function startOnboarding(){
   OB = obDefaultState(false);
-  const r = obEnsureRoot();
-  r.classList.add('active');
-  document.body.style.overflow='hidden';
+  TaxMateOnboardingRoot.open(document);
   obRender();
 }
 function obClose(){
-  const r=document.getElementById('ob-root'); if(r){ r.classList.remove('active'); r.innerHTML=''; }
-  document.body.style.overflow='';
+  TaxMateOnboardingRoot.close(document);
   OB=null;
 }
 function obRender(){
@@ -6318,7 +6357,7 @@ function obRender(){
   OB._lastView = view;
   r.scrollTop = keep;
 }
-function obGo(s){ OB.screen=s; obRender(); }
+function obGo(s){ TaxMateOnboardingRoot.progress(OB,s,obRender); }
 function obProgress(pct,label,back){
   return `<div class="ob-progtop"><div class="ob-wrap">
     <div class="ob-prow">${back?`<button class="ob-back" data-tm-click="${back}">‹</button>`:''}<div class="ob-plabel">${label}</div></div>
@@ -6338,10 +6377,10 @@ function obScrLogin(){
     <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
     <h1>${t('ob.h1')}</h1>
     <p class="ob-lede">${t('ob.lede')}</p>
-    <button class="ob-tile solid" data-tm-click="obSignIn()"><span class="ob-emoji">✅</span><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obNoLogin()"><span class="ob-emoji">⚡</span><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
+    <button class="ob-tile solid" data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
     <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>
-    <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">🌐 ${LANG_NAMES[S.settings.lang]} ›</button></div>
+    <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
   </div></div>${obLangSheet()}`;
 }
 function obLangSheet(){
@@ -6373,10 +6412,9 @@ function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
 /* ENTRY */
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
-    <div style="font-size:40px;margin-bottom:10px">👋</div>
     <h1>${t('ob.howStart')}</h1>
-    <button class="ob-tile" data-tm-click="obGo('biz')"><span class="ob-emoji">🫶</span><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obExplore()"><span class="ob-emoji">🚀</span><span><span class="ob-tt">${t('ob.dash')}</span><span class="ob-ts">${t('ob.dashS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obExplore()"><span><span class="ob-tt">${t('ob.dash')}</span><span class="ob-ts">${t('ob.dashS')}</span></span></button>
     <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeEntry')}</div>
   </div></div>`;
 }

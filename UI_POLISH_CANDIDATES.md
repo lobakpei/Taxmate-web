@@ -1,6 +1,8 @@
 # TaxMate Optional UI Polish Candidates
 
-These are observations only. None may be implemented before Founder selection and the later Claude UI gate.
+UI-01 through UI-09 were approved by the Founder and integrated into `2.0.0-rc.1`. This table is retained as decision history; it is not an open request for another redesign.
+
+UI-08 covered responsive/desktop integrity. UI-09 established truthful touch receipt actions (`Take photo`, `Choose existing photo`) and pointer upload (`Upload receipt`). No additional optional polish was performed during final engineering integration.
 
 | ID | Screen/page | Current appearance | Screenshot/reference | Issue | Why it may feel template-like or less polished | Suggested direction | Scope | Behaviour change | Priority | Claude UI suitable |
 |---|---|---|---|---|---|---|---|---|---|---|
