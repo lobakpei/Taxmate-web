@@ -6,6 +6,7 @@
 - Storage emulator, App Check preview-domain, Google/Apple sign-in, live receipt lifecycle and real two-device tests require staging credentials/external state.
 - Scottish income tax, VAT, companies, landlord bookkeeping and HMRC MTD submission are out of scope.
 - Only published 2025-26 SA103S/SA104S mappings are bundled. Future forms are not guessed.
-- JSON backup contains a receipt manifest, not receipt binaries; a full ZIP backup remains a later enhancement.
-- Existing CDN dependencies and inline event handlers prevent an enforcing CSP today; the candidate uses report-only CSP and pinned URLs as an intermediate hardening step.
+- Full ZIP export/restore includes receipt binaries, but live receipt enumeration, upload and rollback deletion still require a signed-in isolated staging account for browser E2E. JSON-only backups remain supported and intentionally do not contain binaries.
+- CSP is enforcing with external executable scripts and `script-src-attr 'none'`. Inline styles remain permitted to preserve the Founder-approved single-file visual system. Firebase/Auth, GA4, Sentry and billing network allowlists require staging verification; blocked integration endpoints must be added explicitly rather than widened.
+- The action dispatcher intentionally accepts only the existing TaxMate declarative action grammar. Any future UI action must be added explicitly and covered by CSP/browser tests.
 - NPM dependency scans report moderate advisories requiring deliberate dependency review before release.

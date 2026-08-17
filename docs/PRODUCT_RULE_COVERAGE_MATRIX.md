@@ -22,6 +22,6 @@ The frozen W0 matrix is retained as `W0_PRODUCT_RULE_COVERAGE_MATRIX.md`. Eviden
 | TM-P1-03 | Zoom/accessibility | CONFIRMED | Accessibility | W5 | Zoom, dialog semantics, focus/Escape, RTL checks | Mobile/browser | FIXED |
 | TM-P1-04 | PWA identity/cache | CONFIRMED | Offline/update | W5 | Root identity, versioned shell, prior cache retained | True offline launch | FIXED |
 | TM-P1-05 | SEO absent | CONFIRMED | Discovery | W5 | Canonical/meta/robots/sitemap/public help/privacy | Static/browser | FIXED IN CANDIDATE |
-| TM-P1-06 | Browser/supply chain | CONFIRMED | XSS/supply chain | W5 | Pinned dependencies, headers, report-only CSP | Config review | MITIGATED |
+| TM-P1-06 | Browser/supply chain | CONFIRMED | XSS/supply chain | W5.6 | Pinned/vendored dependencies, external executable scripts, allow-listed declarative actions and enforcing CSP | Config, unit and browser review | MITIGATED |
 | TM-P1-07 | Retention UX absent | CONFIRMED | Record loss | W2/W5 | Backup receipt notice and shared/provider retention copy | Import/legal | FIXED |
 | TM-P1-08 | Version fragmentation | CONFIRMED | Rollback/support | W4/W5 | Separate app/build/state/tax/form/sync/PWA IDs | Settings/browser | FIXED |

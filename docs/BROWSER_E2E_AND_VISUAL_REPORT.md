@@ -17,3 +17,9 @@ Passed:
 Visual evidence is in `evidence/final/screenshots`. W0 frozen screenshots remain in `evidence/w0/screenshots`. The existing cards, navigation, typography, spacing, colors, light/dark styling and onboarding were preserved. Intended visible changes only: corrected MTD/SA/POA fields and copy, optional property-income inputs, secure billing/promotion controls, build identity, and required public legal/SEO pages. No optional polish was implemented; candidates remain in `UI_POLISH_CANDIDATES.md`.
 
 Not executed against external accounts: Google/Apple sign-in, live Stripe sandbox, live two-device cloud sync, App Check on a preview hostname and live receipt upload. These require configured non-production services.
+
+## W5.5/W5.6 rerun
+
+Rerun 17 August 2026 against `http://127.0.0.1:4173/` with the exact enforcing Hosting CSP served locally. The in-page audit passed 29/29 with no new CSP/app-origin console error. Onboarding, start-without-account, business creation, navigation, Settings disclosure and the full ZIP export control worked through the external declarative-action dispatcher. The ZIP generated a browser download and showed completion feedback. The service worker then relaunched the same app successfully after the preview server was stopped. A mobile-width dark Settings inspection showed no unintended layout, colour, typography or navigation drift.
+
+Receipt upload/restore, Firebase/Auth, GA4 delivery, Sentry ingestion and billing remain staging-only checks: no credential or production service was simulated.

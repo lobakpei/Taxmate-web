@@ -9,6 +9,8 @@ Source rollback options:
 3. use `evidence/w0/taxmate-baseline-745f7497.bundle` (verified complete); or
 4. restore `evidence/w0/taxmate-baseline-source.tar`.
 
-User-data rollback: import a valid schema-2 JSON backup or restore `taxmateuk_preimport_backup` locally. Tombstones prevent older cloud records from reappearing. Keep the immediately previous PWA cache during rollout so a controlled Hosting rollback can reactivate the previous shell.
+User-data rollback: import a valid schema-2 JSON backup, import a validated portable ZIP, or restore `taxmateuk_preimport_backup` locally. Portable restore first downloads a complete pre-restore ZIP; keep that file until the restored data and receipts are verified. A failed receipt restore leaves bookkeeping state untouched and attempts to delete only newly uploaded receipt objects. Tombstones prevent older cloud records from reappearing. Keep the immediately previous PWA cache during rollout so a controlled Hosting rollback can reactivate the previous shell.
+
+CSP rollback must revert the client assets and Hosting header together. Do not weaken the enforcing policy in place while retaining blocked inline architecture; switch back to the prior complete candidate commit if emergency preview rollback is needed.
 
 Future deployment rollback must treat Hosting, Functions, Firestore rules, Storage rules and Stripe webhook configuration as separate versioned operations. Never roll the client forward to schema 5 against untested production rules, and never deploy Functions/Stripe configuration without sandbox evidence.

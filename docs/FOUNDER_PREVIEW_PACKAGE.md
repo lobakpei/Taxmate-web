@@ -6,4 +6,8 @@ Candidate branch is `codex/taxmate-modernisation-20260817`. Runtime identity is 
 
 W1 replaces tax/MTD/POA/form truth with sourced, versioned modules and strict remote validation. W2 adds schema migration, portable restore validation, deterministic item sync, tombstones and auditable Firebase rules. W3 replaces fake client unlocks with Stripe/server entitlement architecture and aligns privacy/telemetry. W4 extracts only changed cores. W5 restores zoom/focus, hardens the PWA and headers, and adds the SEO/legal foundation.
 
-The supporting reports in this directory, evidence trees, full automated suite and `UI_POLISH_CANDIDATES.md` are the coherent candidate package. No production merge or deployment occurred.
+W5.5 adds a versioned portable ZIP containing validated TaxMate JSON, a SHA-256 receipt manifest and the actual linked/orphan receipt binaries. Restore validates the complete archive before mutation, previews counts, downloads a full pre-restore ZIP, uploads every receipt before replacing state and removes only newly uploaded files on failure. Existing JSON backups remain supported.
+
+W5.6 externalizes executable scripts, replaces executable HTML event attributes with inert declarative actions handled by an allow-listed external dispatcher, vendors JSZip, and moves Hosting to an enforcing CSP. `script-src` has no wildcard, `unsafe-inline` or `unsafe-eval`; `script-src-attr 'none'` is enforced. Inline styles remain allowed to preserve the frozen UI. External account and telemetry endpoints still require isolated staging verification before release.
+
+The supporting reports in this directory, evidence trees, full automated suite and `UI_POLISH_CANDIDATES.md` are the coherent candidate package. No production merge, rule deployment or production deployment occurred. Stop remains the Founder / UI Review Gate.
