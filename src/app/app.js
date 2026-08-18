@@ -495,7 +495,6 @@ en:{
  'ac.title':'Account & cloud',
  'ac.why':'Sign in and your figures follow you — new phone, same data. Free.',
  'ac.google':'Continue with Google',
- 'ac.apple':'Continue with Apple',
  'ac.signedAs':'Signed in as',
  'ac.signout':'Sign out',
  'ac.signoutM':'Your data stays on this phone and in your cloud. Sign in again anytime.',
@@ -990,7 +989,6 @@ zh:{
  'ac.title':'帳戶與雲端',
  'ac.why':'登入後數據隨你而行 — 更換新裝置，數據依然完好。免費。',
  'ac.google':'用 Google 繼續',
- 'ac.apple':'用 Apple 繼續',
  'ac.signedAs':'已登入',
  'ac.signout':'登出',
  'ac.signoutM':'數據將保留於本裝置及雲端，可隨時重新登入。',
@@ -1485,7 +1483,6 @@ pl:{
  'ac.title':'Konto i chmura',
  'ac.why':'Zaloguj się, a Twoje dane pójdą za Tobą — nowy telefon, te same dane. Za darmo.',
  'ac.google':'Kontynuuj z Google',
- 'ac.apple':'Kontynuuj z Apple',
  'ac.signedAs':'Zalogowano jako',
  'ac.signout':'Wyloguj',
  'ac.signoutM':'Dane zostają na tym telefonie i w chmurze. Zaloguj się ponownie kiedy chcesz.',
@@ -1980,7 +1977,6 @@ ro:{
  'ac.title':'Cont și cloud',
  'ac.why':'Conectează-te și datele te urmează — telefon nou, aceleași date. Gratuit.',
  'ac.google':'Continuă cu Google',
- 'ac.apple':'Continuă cu Apple',
  'ac.signedAs':'Conectat ca',
  'ac.signout':'Deconectare',
  'ac.signoutM':'Datele rămân pe acest telefon și în cloud. Reconectează-te oricând.',
@@ -2475,7 +2471,6 @@ es:{
  'ac.title':'Cuenta y nube',
  'ac.why':'Inicia sesión y tus datos te siguen — móvil nuevo, mismos datos. Gratis.',
  'ac.google':'Continuar con Google',
- 'ac.apple':'Continuar con Apple',
  'ac.signedAs':'Sesión iniciada como',
  'ac.signout':'Cerrar sesión',
  'ac.signoutM':'Tus datos se quedan en este móvil y en tu nube. Vuelve a entrar cuando quieras.',
@@ -2968,7 +2963,6 @@ ur:{
  'ac.title':'اکاؤنٹ اور کلاؤڈ',
  'ac.why':'سائن ان کریں اور ڈیٹا آپ کے ساتھ چلے گا — نیا فون، وہی ڈیٹا۔ مفت۔',
  'ac.google':'Google سے جاری رکھیں',
- 'ac.apple':'Apple سے جاری رکھیں',
  'ac.signedAs':'سائن ان بطور',
  'ac.signout':'سائن آؤٹ',
  'ac.signoutM':'ڈیٹا اس فون اور آپ کے کلاؤڈ میں محفوظ رہے گا۔ جب چاہیں دوبارہ سائن ان کریں۔',
@@ -3175,7 +3169,6 @@ function planBlock(tier){
   let btn = '';
   if(!isCurrent){
     btn = `<button class="btn ${tier==='free'?'ghost':'ink'}" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
-    if(tier==='pro') btn += `<button class="btn ghost" style="margin-top:8px;width:100%" data-tm-click="activateTrial()">${t('promo.redeem')}</button>`;
   }
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<div class="card" style="${ring}margin-bottom:12px">
@@ -3269,6 +3262,7 @@ function proPlansCard(){
       <div class="t">${t('pro.title')}</div>
     </div>
     <div class="s" style="margin:0 2px 14px">${t('pro.sub')}</div>
+    <button class="btn ghost promo-redeem" style="margin-bottom:14px;width:100%" data-tm-click="activateTrial()">${t('promo.redeem')}</button>
     ${planBlock('free')}
     ${planBlock('plus')}
     ${planBlock('pro')}
@@ -3511,7 +3505,7 @@ function obCatchupCard(){
   // show only to people who skipped onboarding (explore) — gentle re-entry
   let done=null; try{ done=localStorage.getItem('tmOnboardDone'); }catch(e){}
   if(done!=='explore') return '';
-  return `<div class="card" style="cursor:pointer" data-tm-click="obReopenCatchup()">
+  return `<div class="card catchup-card" style="cursor:pointer" data-tm-click="obReopenCatchup()">
     <div class="row">
       <div class="ico" style="background:var(--brand-soft)">🧹</div>
       <div class="grow">
@@ -3709,7 +3703,7 @@ function pageHome(){
 
   <div class="h2">${t('home.biz')}</div>
   <div class="card">${bizCards}</div>
-  <button class="btn soft" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
+  <button class="btn soft home-add-business" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
 
   ${recentHTML}
 
@@ -3802,7 +3796,7 @@ function pageList(kind){
   ${cchips}
   ${fchips}
   ${body}
-  <button class="fab" data-tm-click="openEntry('${kind}')" aria-label="Add">+</button>`;
+  <button class="fab" data-tm-click="openEntry('${kind}')" aria-label="Add"><span class="fab-plus" aria-hidden="true">+</span></button>`;
 }
 function setFilter(key,v){ S[key]=v; save(); render(); }
 
@@ -3847,7 +3841,7 @@ function pageTax(){
     : `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Vol',{x:cfg.c2SmallProfits.toLocaleString(),v:tx.class2Voluntary.toFixed(2)})}</small></span><span class="fv mut">${t('tax.opt')}</span></div>`;
 
   return `
-  <div class="hero" style="background:linear-gradient(135deg,#1B2B3C,#16202B)">
+  <div class="hero tax-hero">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
     <div class="big num">${fmt(Math.max(tx.liability,0))}</div>
     <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
@@ -4066,8 +4060,7 @@ function pageMore(){
       <button class="link danger" style="margin-top:14px;display:block" data-tm-click="confirmAction(t('ac.signout'),t('ac.signoutM'),doSignOut)">${t('ac.signout')}</button>
     ` : `
       <div class="s" style="margin-bottom:14px">${t('ac.why')}</div>
-      <button class="btn ghost" style="margin-bottom:10px;gap:10px" data-tm-click="signIn('google')">${GOOGLE_SVG}${t('ac.google')}</button>
-      <button class="btn ink" style="gap:8px" data-tm-click="signIn('apple')"> ${t('ac.apple')}</button>
+      <button class="btn ghost" style="gap:10px" data-tm-click="signIn('google')">${GOOGLE_SVG}${t('ac.google')}</button>
       <div class="s" style="margin-top:12px">${t('ac.local')}</div>
     `}
   </div>`;
@@ -4261,7 +4254,7 @@ ICO Registration Number: <strong>ZC174150</strong><br>
 Contact: support@taxmate.uk</p>
 
 <p><strong>What data we collect</strong><br>
-When you use TaxMate UK, you may provide: income and expense records, business details, mileage records, receipt photos, and account information (name and email via Google or Apple sign-in). We do not collect payment card details.</p>
+When you use TaxMate UK, you may provide: income and expense records, business details, mileage records, receipt photos, and account information (name and email via Google sign-in). We do not collect payment card details.</p>
 
 <p><strong>How we use your data</strong><br>
 Your data is used solely to provide the TaxMate UK service — to calculate your tax estimate, generate reports, and sync your records across devices. We do not sell, share, or use your data for advertising.</p>
@@ -5257,13 +5250,12 @@ function watchAuth(){
     render();
   });
 }
-async function signIn(kind){
+async function signIn(){
   const db = await ensureFB();
   if(!db){ alert(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
-  const provider = (kind==='apple') ? new firebase.auth.OAuthProvider('apple.com')
-                                    : new firebase.auth.GoogleAuthProvider();
+  const provider = new firebase.auth.GoogleAuthProvider();
   // 每次登入都畀用戶揀 Google 戶口（唔會自動入返上次嗰個）
-  if(kind!=='apple'){ provider.setCustomParameters({ prompt: 'select_account' }); }
+  provider.setCustomParameters({ prompt: 'select_account' });
   try{
     const cur = firebase.auth().currentUser;
     // 如果係匿名 session，先記低佢嘅本機資料，登入後合併（唔再用 linkWithPopup —— 嗰個會喺 OAuth handler 爆白畫面）

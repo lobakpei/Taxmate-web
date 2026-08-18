@@ -1,17 +1,17 @@
 # Rollback Instructions
 
-No production deployment or data migration occurred, so production rollback is not required.
+No production deployment, service configuration or data migration occurred, so production rollback is not required. GitHub production `main` was verified unchanged at `745f7497d374f000870c4a7a111130008f8945a7` on 18 August 2026.
 
 Source rollback options:
 
-1. return to the pre-UI engineering candidate `94b0dcbe8b55db03a94bddffbbd9db3c13522c3d`;
-2. switch back to `main` at `745f7497d374f000870c4a7a111130008f8945a7`;
-3. clone or fetch that exact production commit from `origin`;
+1. return to the committed pre-freeze RC `138efa4c891af30f9581e4e3488e4f5c1b5481e4`;
+2. return to the pre-final-UI engineering candidate `94b0dcbe8b55db03a94bddffbbd9db3c13522c3d`;
+3. switch to production `main` at `745f7497d374f000870c4a7a111130008f8945a7`;
 4. use `evidence/w0/taxmate-baseline-745f7497.bundle` (verified complete); or
 5. restore `evidence/w0/taxmate-baseline-source.tar`.
 
-User-data rollback: import a valid schema-2 JSON backup, import a validated portable ZIP, or restore `taxmateuk_preimport_backup` locally. Portable restore first downloads a complete pre-restore ZIP; keep that file until the restored data and receipts are verified. A failed receipt restore leaves bookkeeping state untouched and attempts to delete only newly uploaded receipt objects. Tombstones prevent older cloud records from reappearing. Keep the immediately previous PWA cache during rollout so a controlled Hosting rollback can reactivate the previous shell.
+User-data rollback: import a valid schema-2 JSON backup, import a validated portable ZIP, or restore `taxmateuk_preimport_backup` locally. Portable restore first downloads a complete pre-restore ZIP. A failed receipt restore leaves bookkeeping state untouched and attempts to delete only newly uploaded receipt objects. Tombstones prevent older cloud records from reappearing.
 
-CSP rollback must revert the client assets and Hosting header together. Do not weaken the enforcing policy in place while retaining blocked inline architecture; switch back to the prior complete candidate commit if emergency preview rollback is needed.
+PWA rollback must restore a coherent client/cache identity. The final-freeze cache is `taxmate-v2-rc-1-final-ui-freeze`; the service worker retains one prior TaxMate shell for controlled rollback. CSP rollback must revert client assets and Hosting headers together rather than weaken the enforcing policy around the external-script architecture.
 
-Future deployment rollback must treat Hosting, Functions, Firestore rules, Storage rules and Stripe webhook configuration as separate versioned operations. Never roll the client forward to schema 5 against untested production rules, and never deploy Functions/Stripe configuration without sandbox evidence.
+Any future release rollback must treat Hosting, Functions, Firestore rules, Storage rules, App Check and Stripe webhook configuration as separate versioned operations. Never roll schema 5 clients forward against unvalidated production services.

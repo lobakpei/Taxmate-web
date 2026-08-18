@@ -12,4 +12,4 @@ Candidate rules are tracked in `firestore.rules` and `storage.rules`:
 - receipts are owner-only, image-only and below 10 MiB;
 - unmatched paths deny access.
 
-The real Firestore emulator suite passed 5/5 for cross-user denial, member/outsider behavior, immutable config/entitlements, tombstones and malformed records. Candidate rules were not deployed. Storage enforcement is covered by static rule assertions; a deployed preview must repeat Storage emulator and App Check domain tests before release.
+The real Firestore emulator suite passed 5/5 again in the 18 August 2026 final-freeze gate for cross-user denial, member/outsider behavior, immutable config/entitlements, tombstones and malformed records. Candidate rules were not deployed. The staging readiness audit found only the production Firebase alias/config, so production was not used. Storage enforcement is covered by static rule assertions; an isolated staging project must repeat deployed Firestore/Storage behavior and App Check domain tests before release.

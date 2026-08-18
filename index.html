@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-17.final-ui-integration.1 — Founder Preview release candidate; not production -->
+<!-- build: 2026-08-18.final-ui-freeze.1 — Founder Preview release candidate; not production -->
 <html lang="en">
 <head>
 <script async src="https://www.googletagmanager.com/gtag/js?id=G-W1WWK7EVTR"></script>
@@ -153,6 +153,7 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 :root[data-theme="dark"] .btn.danger-soft{background:rgba(229,72,77,.16);color:#FF8A8E}
 .btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1px solid var(--line)}
 .btn.coral{background:var(--coral);box-shadow:0 6px 16px rgba(229,72,77,.3)}
+.home-add-business+.catchup-card{margin-top:14px}
 /* UI-08: Home add-income/add-expense pair — one line side by side when the labels fit,
    otherwise a deliberate stacked layout instead of accidental mid-label wrapping.
    Each button keeps its automatic min-content width, so a label that cannot fit at
@@ -305,6 +306,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   display:flex;align-items:center;justify-content:center;
   box-shadow:0 8px 20px rgba(10,169,104,.4);border:0;cursor:pointer;z-index:99;
   transition:transform .12s}
+.fab-plus{display:block;line-height:1;transform:translateY(-2px)}
 .fab:active{transform:scale(.88)}
 
 /* ── Dark mode (manual toggle + system) ── */
@@ -343,6 +345,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 :root[data-theme="dark"] .year-pill select{background:#1A2533;color:var(--ink)}
 :root[data-theme="dark"] nav{background:rgba(15,22,32,.95)}
 :root[data-theme="dark"] .hero::before{background:rgba(255,255,255,.06)}
+:root[data-theme="dark"] .tax-hero{background:linear-gradient(135deg,#1B2B3C,#16202B)}
 :root[data-theme="dark"] .toast{background:#EDF2F7;color:#0F1620}
 :root[data-theme="dark"] .btn.ghost{background:#1A2533;border-color:var(--line);color:var(--ink)}
 :root[data-theme="dark"] .btn.soft{background:var(--brand-soft);color:var(--brand-deep)}
@@ -377,6 +380,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   :root:not([data-theme="light"]):not([data-theme="dark"]) .year-pill select{background:#1A2533;color:#EDF2F7}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .receipt-add{background:#1A2533}
   :root:not([data-theme="light"]):not([data-theme="dark"]) .grab{background:#3A4756}
+  :root:not([data-theme="light"]):not([data-theme="dark"]) .tax-hero{background:linear-gradient(135deg,#1B2B3C,#16202B)}
 }
 
 /* ── UI-08: viewport integrity ── */

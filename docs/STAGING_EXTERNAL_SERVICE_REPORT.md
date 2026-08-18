@@ -1,16 +1,21 @@
 # Staging External-Service Report
 
-No isolated staging credentials or configuration were available. `.firebaserc` contains only the production project `taxmate-uk-2`; no staging Firebase/Stripe/GA4/Sentry environment variables were present. Production was not used as a substitute.
+## Readiness audit — 18 August 2026
 
-| Test not run | Required staging state | Release impact | Safest next action |
-|---|---|---|---|
-| Google and Apple sign-in | Isolated Firebase project with both providers and test accounts | Blocks production identity release | Configure providers only in staging and run browser sign-in/sign-out/reload |
-| Personal cloud sync and App Check | Staging Firestore, preview-domain App Check and test user | Blocks cloud production release | Deploy candidate rules/config to staging, then inspect verified requests |
-| Receipt upload/download/delete and full ZIP binary restore | Staging Auth + Storage + Plus/Pro test entitlement | Blocks receipt production release | Use synthetic receipts in staging; verify associations, orphan handling and rollback |
-| Genuine two-client sync/offline/delete flow | Two browser sessions signed into the same staging account | Blocks sync production release | Run concurrent edit, reconnect and tombstone/no-resurrection scenarios |
-| Plus/Pro checkout, promotion, expiry, cancellation and webhook truth | Stripe test prices, test keys, webhook endpoint and staging Functions | Blocks paid-plan release | Configure Stripe test mode only and exercise the full entitlement lifecycle |
-| GA4 delivery | Staging measurement property/debug access | Blocks telemetry acceptance | Verify allow-listed event names contain no financial or user values |
-| Sentry synthetic error payload | Staging DSN/project access | Blocks error-telemetry acceptance | Trigger a synthetic staging error and inspect the received scrubbed payload |
-| Actual staging Security Rules | Isolated deployed staging Firestore/Storage rules | Blocks production rule deployment | Repeat owner/outsider/malformed/size/type cases against staging services |
+Isolated external staging is **not configured**, so no external staging test is reported as passed. `.firebaserc` contains only production project `taxmate-uk-2`; the checked-in web config and App Check key also target production. No staging Firebase alias/web configuration, staging Auth test account, preview App Check site key, Stripe TEST price IDs/secrets/webhook endpoint, GA4 staging property/debug access or Sentry staging DSN/project access is present. Production was not used as a substitute.
 
-Local substitutes that did run: 5/5 real Firestore-emulator security tests, deterministic sync/migration tests, fail-closed entitlement tests, receipt ZIP integrity/rollback unit tests, and GA4/Sentry taxonomy/scrubbing unit tests. These are valid engineering evidence but are not reported as external staging success.
+Apple Sign-In has been intentionally removed by the Founder and is not part of this staging gate.
+
+| Test not run | Minimum isolated staging state required |
+|---|---|
+| Google Sign-In, personal cloud sync and App Check | Staging Firebase project; Google provider; disposable test account; staging web config; preview-domain App Check key; candidate rules/config deployed only there |
+| Receipt upload/download/delete and full ZIP binary restore | Staging Auth/Firestore/Storage plus a server-verified staging Plus/Pro entitlement and synthetic receipt files |
+| Two-client initial/concurrent/offline/tombstone/no-resurrection flow | Two isolated browser clients signed into the same disposable staging account |
+| Plus/Pro checkout, promotion tier/duration/expiry, cancellation and webhook truth | Stripe TEST secret, webhook secret, Plus/Pro test price IDs, staging Functions endpoint, and at least one disposable Plus and Pro promotion code with known expiry |
+| GA4 delivery | Staging measurement ID/property and DebugView access |
+| Sentry payload inspection | Staging DSN/project and event-inspection access |
+| Actual deployed rules behavior | Candidate Firestore and Storage rules deployed only to the isolated staging project |
+
+Minimum Founder input/setup required to continue: provide or authorize creation/configuration of the isolated staging Firebase project and its web/App Check config; provide disposable Google staging account access; provide Stripe TEST-mode price IDs, secrets/webhook and known promotion fixtures; and provide GA4/Sentry staging project access. Authentication secrets must be supplied through the relevant secure CLI/service mechanism, not committed to the repository or pasted into reports.
+
+Local evidence remains valid but is not a substitute: 5/5 real Firestore-emulator rules tests, deterministic sync/migration/tombstone tests, fail-closed entitlement tests, receipt ZIP integrity/rollback tests, GA4/Sentry taxonomy/scrubbing tests, and the final browser/PWA gate.

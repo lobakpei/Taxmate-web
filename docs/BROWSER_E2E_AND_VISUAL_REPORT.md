@@ -1,31 +1,25 @@
 # Browser E2E and Visual Preservation Report
 
-Executed 17 August 2026 against `http://127.0.0.1:5002/` in the Codex in-app browser.
+## Programme evidence
 
-Passed:
+The 17 August 2026 W0–W5.6 and final-integration passes remain valid for the committed RC lineage: dashboard/business/income/tax workflows, onboarding, English/Traditional Chinese/Urdu RTL, light/dark, focus/Escape, enforcing CSP, portable ZIP download, service-worker offline relaunch, and the full responsive matrix. Existing screenshots remain under `evidence/final/screenshots`; frozen production evidence remains under `evidence/w0/screenshots`.
 
-- fresh local user, dashboard, business creation and £60,000 income workflow;
-- 2026-27 tax estimate, official Class 2 values, gross-income MTD assessment and safe non-submission copy;
-- future SA form mapping refused rather than guessed;
-- mobile 390×844 and desktop 1280×800;
-- English, Traditional Chinese and Urdu RTL; light and dark;
-- dialog focus entry, Escape/focus-trap implementation and restored zoom policy;
-- no new app-origin warning/error after local Firebase isolation;
-- true offline relaunch after the server process was stopped;
-- build identity visible in Settings.
+## Founder final UI freeze rerun — 18 August 2026
 
-Visual evidence is in `evidence/final/screenshots`. W0 frozen screenshots remain in `evidence/w0/screenshots`. The existing cards, navigation, typography, spacing, colors, light/dark styling and onboarding were preserved. Intended visible changes only: corrected MTD/SA/POA fields and copy, optional property-income inputs, secure billing/promotion controls, build identity, and required public legal/SEO pages. No optional polish was implemented; candidates remain in `UI_POLISH_CANDIDATES.md`.
+The exact final-freeze working tree was rerun under the enforcing Hosting CSP with local Firebase intentionally disabled.
 
-Not executed against external accounts: Google/Apple sign-in, live Stripe sandbox, live two-device cloud sync, App Check on a preview hostname and live receipt upload. These require configured non-production services.
+- In-page audit: 29 pass, 0 fail, 0 warn.
+- Founder fixes: all five verified in the rendered DOM and computed layout.
+- Account UI: exactly one `Continue with Google` button; no Apple button/text/provider path.
+- Plan UI: exactly one independent `Redeem promotion code` control before Free/Plus/Pro, separated from the first plan by 14px.
+- Home UI: add-business/catch-up separation measured 14px.
+- Tax UI: approved green gradient in light mode; dark treatment retained by explicit theme rules.
+- Floating add: horizontal delta below 0.01px and a deliberate −2px optical vertical correction.
+- Languages/themes: 12 locale-theme cases and 60 page checks at 320px; no overflow; Urdu was RTL.
+- Viewports: 360, 375, 390, 430, 1280×800, 1440×900 and 1920×1080 across five pages; 35 checks, no overflow. Together with the locale pass, 320px is also covered.
+- Desktop entry dialog: 520px wide and centred at 1440×900; date field focused; Escape closed it.
+- Fresh-origin onboarding: one root; open, progress and close behavior passed at 390×844.
+- Console: no warning/error on either checked local origin.
+- PWA: after the preview server stopped, the offline shell relaunched and Settings displayed `2.0.0-rc.1 · 2026-08-18.final-ui-freeze.1`.
 
-## W5.5/W5.6 rerun
-
-Rerun 17 August 2026 against `http://127.0.0.1:4173/` with the exact enforcing Hosting CSP served locally. The in-page audit passed 29/29 with no new CSP/app-origin console error. Onboarding, start-without-account, business creation, navigation, Settings disclosure and the full ZIP export control worked through the external declarative-action dispatcher. The ZIP generated a browser download and showed completion feedback. The service worker then relaunched the same app successfully after the preview server was stopped. A mobile-width dark Settings inspection showed no unintended layout, colour, typography or navigation drift.
-
-Receipt upload/restore, Firebase/Auth, GA4 delivery, Sentry ingestion and billing remain staging-only checks: no credential or production service was simulated.
-
-## Final integrated UI rerun
-
-The `2.0.0-rc.1` candidate was rerun under enforcing CSP at the full requested viewport set: 320, 360, 375, 390, 430, 1280×800, 1440×900 and 1920×1080. All six languages were exercised at the worst-case mobile widths in light/dark, including Urdu RTL. No document/button overflow, duplicate onboarding root, visible Urdu/Spanish leak, or app-origin warning/error was observed. The 1440px entry sheet was a centred 520px dialog with focus on the date field and Escape close. Fresh-origin onboarding opened, progressed and closed with one root. The updated service worker relaunched the RC offline after the server stopped.
-
-The Founder-approved touch/pointer receipt component is additionally protected by source/unit tests. A live unlocked receipt-browser pass remains staging-only because the production-like app correctly requires a verified paid entitlement; no debug unlock was introduced.
+No optional polish was implemented. External account, cloud, receipt, payment and telemetry checks remain staging-only and are not simulated by this report.
