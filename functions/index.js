@@ -42,7 +42,8 @@ exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,ST
     else if(event.type.startsWith('customer.subscription.'))subscription=object;
     else if(event.type.startsWith('invoice.')){const id=typeof object.subscription==='string'?object.subscription:object.subscription&&object.subscription.id||object.parent&&object.parent.subscription_details&&object.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
     else if(event.type==='charge.refunded'){
-      const invoiceId=typeof object.invoice==='string'?object.invoice:object.invoice&&object.invoice.id;
+      let invoiceId=typeof object.invoice==='string'?object.invoice:object.invoice&&object.invoice.id;
+      if(!invoiceId&&object.payment_intent){const payments=await stripe().invoicePayments.list({payment:{type:'payment_intent',payment_intent:typeof object.payment_intent==='string'?object.payment_intent:object.payment_intent.id},limit:1});const invoicePayment=payments.data[0];invoiceId=invoicePayment&&(typeof invoicePayment.invoice==='string'?invoicePayment.invoice:invoicePayment.invoice&&invoicePayment.invoice.id);}
       if(invoiceId){const invoice=await stripe().invoices.retrieve(invoiceId);const id=typeof invoice.subscription==='string'?invoice.subscription:invoice.subscription&&invoice.subscription.id||invoice.parent&&invoice.parent.subscription_details&&invoice.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
       refund={full:object.refunded===true||Number(object.amount_refunded)>=Number(object.amount),amount:Number(object.amount)||0,amountRefunded:Number(object.amount_refunded)||0,currency:String(object.currency||'').toLowerCase()};
     }

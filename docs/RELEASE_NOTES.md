@@ -2,6 +2,8 @@
 
 Build `2026-08-19.seo-implementation-rc.5` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, persistent non-production staging setup, Founder-approved SEO implementation and approved GA4/Sentry receipt checks into a release candidate. It is not deployed to production.
 
+Build `2026-08-19.stripe-sandbox-rc.6` adds correct-account TaxMate Sandbox provisioning and receipts, completed £3.99 Plus and £8.49 Pro hosted TEST Checkouts, promotion fixtures and the full cancellation/refund entitlement gate. It also updates the webhook for Stripe's current Invoice Payments refund relationship. No UI was redesigned and production remains unchanged.
+
 ## Product and UI
 
 - Preserves the Founder-approved UI and final fixes.

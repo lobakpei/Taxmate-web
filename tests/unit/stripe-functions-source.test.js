@@ -2,13 +2,13 @@
 const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');
 const source=fs.readFileSync('functions/index.js','utf8');
 
-test('candidate contains no account-specific Stripe object identities',()=>{
-  const files=['functions/index.js','scripts/run-stripe-sandbox-emulator.js','tests/integration/stripe-sandbox.test.js','tests/integration/stripe-hosted-receipt.test.js',...fs.readdirSync('docs').filter(name=>name.endsWith('.md')).map(name=>'docs/'+name)];
+test('candidate contains only canonical TaxMate Sandbox Stripe object identities',()=>{
+  const files=['functions/index.js','scripts/run-stripe-sandbox-emulator.js','scripts/configure-taxmate-stripe-sandbox.js','scripts/create-stripe-hosted-test-checkout.js','tests/integration/stripe-sandbox.test.js','tests/integration/stripe-hosted-receipt.test.js','tests/integration/stripe-hosted-lifecycle.test.js',...fs.readdirSync('docs').filter(name=>name.endsWith('.md')).map(name=>'docs/'+name)];
   const candidate=files.map(file=>fs.readFileSync(file,'utf8')).join('\n');
-  assert.doesNotMatch(candidate,/acct_[A-Za-z0-9]{10,}/);
-  assert.doesNotMatch(candidate,/prod_[A-Za-z0-9]{10,}/);
-  assert.doesNotMatch(candidate,/price_[A-Za-z0-9]{10,}/);
-  assert.doesNotMatch(candidate,/promo_[A-Za-z0-9]{10,}/);
+  const canonical=new Set(['acct_1U6Gd2Q2jZLVx6pg','acct_1U6GdCL0bYJwhRlm','prod_V6UNrw0u1CiCQh','prod_V6UOvRXvg4ALAg','prod_V6UPAGq9Yx0e2f','price_1U6HOPL0bYJwhRlmvWSGdPhW','price_1U6HQBL0bYJwhRlmpOkns65Z','price_1U6HQZL0bYJwhRlm1u5hbB7w','promo_1U6HY7L0bYJwhRlmfah2RkaX','promo_1U6HY8L0bYJwhRlmdpnsEH9C','promo_1U6HY8L0bYJwhRlmaStJVQ8A']);
+  const matches=candidate.match(/(?:acct|prod|price|promo)_[A-Za-z0-9]{10,}/g)||[];
+  assert.ok(matches.length>0);
+  for(const id of matches)assert.ok(canonical.has(id),`obsolete or foreign Stripe identity: ${id}`);
 });
 
 test('Checkout is server-priced, requires Terms and blocks a second live subscription',()=>{
@@ -22,6 +22,7 @@ test('Checkout is server-priced, requires Terms and blocks a second live subscri
 
 test('refund policy is server-projected without client fake unlocks',()=>{
   assert.match(source,/event\.type==='charge\.refunded'/);
+  assert.match(source,/invoicePayments\.list/);
   assert.match(source,/refundReviewState:'full-refund-applied'/);
   assert.match(source,/refundReviewState:'manual-review'/);
   assert.match(source,/refundedSamePeriod/);
