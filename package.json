@@ -11,7 +11,8 @@
     "test:rules": "node --test tests/rules/rules-source.test.js",
     "test:rules:emulator": "node scripts/run-rules-emulator.js",
     "test:functions:emulator": "node scripts/run-functions-emulator.js",
-    "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator && npm run test:functions:emulator"
+    "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator && npm run test:functions:emulator",
+    "test:stripe:sandbox": "node scripts/run-stripe-sandbox-emulator.js"
   },
   "engines": {
     "node": ">=22"

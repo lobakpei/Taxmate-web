@@ -5,3 +5,5 @@ test-results/
 .firebase/
 .tools/
 *.log
+functions/.env.local
+functions/.secret.local

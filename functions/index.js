@@ -17,7 +17,9 @@ async function customerFor(user){
 exports.createCheckoutSession=onCall(opts,async req=>{
   const user=auth(req), tier=req.data&&req.data.tier; if(!['plus','pro'].includes(tier)) throw new HttpsError('invalid-argument','Invalid tier');
   const price=tier==='plus'?PLUS_PRICE.value():PRO_PRICE.value(); if(!price) throw new HttpsError('failed-precondition','Price not configured');
-  const customer=await customerFor(user); const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,consent_collection:{terms_of_service:'required'},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
+  const customer=await customerFor(user), subscriptions=await stripe().subscriptions.list({customer,status:'all',limit:20});
+  if(subscriptions.data.some(subscription=>!['canceled','incomplete_expired'].includes(subscription.status))) throw new HttpsError('already-exists','An existing subscription must be managed in the billing portal');
+  const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,consent_collection:{terms_of_service:'required'},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
   return {url:session.url};
 });
 exports.createBillingPortal=onCall(opts,async req=>{ const user=auth(req),customer=await customerFor(user); const s=await stripe().billingPortal.sessions.create({customer,return_url:APP_URL.value()}); return {url:s.url}; });
@@ -31,16 +33,25 @@ exports.redeemPromotion=onCall(opts,async req=>{
 });
 exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,STRIPE_WEBHOOK_SECRET]},async(req,res)=>{
   let event; try{ event=stripe().webhooks.constructEvent(req.rawBody,req.headers['stripe-signature'],STRIPE_WEBHOOK_SECRET.value()); }catch(e){ res.status(400).send('Invalid signature'); return; }
-  const object=event.data.object; let subscription=object;
-  if(event.type.startsWith('checkout.session.')){ if(!object.subscription){res.sendStatus(200);return;} subscription=await stripe().subscriptions.retrieve(object.subscription); }
-  if(event.type.startsWith('customer.subscription.')||event.type.startsWith('checkout.session.')){
-    const customer=await stripe().customers.retrieve(subscription.customer); const uid=subscription.metadata.firebaseUid||(customer.metadata&&customer.metadata.firebaseUid); if(uid){
-      const price=subscription.items.data[0]&&subscription.items.data[0].price.id; const tier=subscription.metadata.tier||(price===PRO_PRICE.value()?'pro':price===PLUS_PRICE.value()?'plus':'free');
-      const status=subscription.status, active=['active','trialing'].includes(status); const end=subscription.current_period_end*1000;
-      await db.doc(`users/${uid}/entitlements/current`).set({subscriptionStatus:status,paidTier:active?tier:'free',lastPaidTier:tier,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,serverVerifiedAt:Date.now(),updatedAt:FieldValue.serverTimestamp()},{merge:true});
+  const eventRef=db.doc(`stripeWebhookEvents/${event.id}`);
+  try{
+    const claimed=await db.runTransaction(async tx=>{const snap=await tx.get(eventRef);if(snap.exists)return false;tx.create(eventRef,{type:event.type,state:'processing',eventCreated:Number(event.created)||0,receivedAt:FieldValue.serverTimestamp()});return true;});
+    if(!claimed){res.sendStatus(200);return;}
+    const object=event.data.object; let subscription=null;
+    if(event.type.startsWith('checkout.session.')){if(object.subscription)subscription=await stripe().subscriptions.retrieve(typeof object.subscription==='string'?object.subscription:object.subscription.id);}
+    else if(event.type.startsWith('customer.subscription.'))subscription=object;
+    else if(event.type.startsWith('invoice.')){const id=typeof object.subscription==='string'?object.subscription:object.subscription&&object.subscription.id||object.parent&&object.parent.subscription_details&&object.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
+    if(subscription){
+      const customer=await stripe().customers.retrieve(subscription.customer); const uid=subscription.metadata.firebaseUid||(customer.metadata&&customer.metadata.firebaseUid); if(uid){
+        const price=subscription.items.data[0]&&subscription.items.data[0].price.id; const tier=subscription.metadata.tier||(price===PRO_PRICE.value()?'pro':price===PLUS_PRICE.value()?'plus':'free');
+        const status=subscription.status, active=['active','trialing'].includes(status), end=Number(subscription.current_period_end||0)*1000, eventCreated=Number(event.created||0)*1000;
+        const entitlement=db.doc(`users/${uid}/entitlements/current`);
+        await db.runTransaction(async tx=>{const snap=await tx.get(entitlement),previous=snap.exists?snap.data():{};if(Number(previous.lastStripeEventCreated||0)>eventCreated)return;tx.set(entitlement,{subscriptionStatus:status,paidTier:active?tier:'free',lastPaidTier:tier,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});});
+      }
     }
-  }
-  res.sendStatus(200);
+    await eventRef.set({state:'processed',processedAt:FieldValue.serverTimestamp()},{merge:true});
+    res.sendStatus(200);
+  }catch(error){await eventRef.delete().catch(()=>{});console.error('Stripe webhook failed',event.id,event.type,error);res.sendStatus(500);}
 });
 exports.joinPartnership=onCall(baseOpts,async req=>{
   const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();

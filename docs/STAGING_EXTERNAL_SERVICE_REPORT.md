@@ -1,42 +1,62 @@
-# Staging External-Service Report
+# Existing Services and Isolated Sandbox Verification
 
-## Final readiness audit — 19 August 2026
+## Verification date — 19 August 2026
 
-Production was not used as a staging substitute and no production data, Firebase configuration, Stripe LIVE object, deployment or migration was changed.
+Production was not used as a staging substitute. No Firebase, Hosting, GA4, Sentry or Stripe LIVE deployment/configuration was changed. No push or merge occurred.
 
-### Identity and access findings
+### Existing TaxMate Google/Firebase resources
 
-- Firebase CLI authentication is available. The current repository default and web/App Check configuration point to production `taxmate-uk-2`.
-- Other visible TaxMate-labelled Firebase projects have no registered web apps, but that is not sufficient evidence that they are disposable staging. They were not reused or modified.
-- Creation of a clearly named new Firebase staging project requires explicit Founder approval because it creates an external organisational resource. No project was created.
-- The available Stripe browser session is an isolated TEST sandbox belonging to another product, `toodaloop`, with zero products. It was inspected read-only and not used or modified for TaxMate.
-- The available Google session has no GA4 account/property access. No measurement property was created.
-- Sentry requires sign-in; no staging organisation/project or received-event access is available.
-- No Stripe CLI/config, TaxMate TEST secret, webhook secret, Price ID, Firebase staging web config, Google staging account, GA4 staging ID or Sentry staging DSN is present in the repository/environment.
+- Firebase CLI is authenticated as the authorised workspace account and resolves the repository default to `taxmate-uk-2`.
+- Web app `taxmate-web` exists with app ID `1:995936701479:web:ed61c51a65e61aa1d21202`; Hosting exists at the matching Firebase site.
+- Repository client configuration matches project number `995936701479`, the Web app, Storage bucket and `europe-west2` Functions URLs.
+- Firestore is Native mode in `europe-west2`. Storage is in `US-CENTRAL1` with seven-day soft delete.
+- App Check registration exists. Firestore and Storage enforcement are enabled; Auth enforcement is not enabled. No debug token was present.
+- Google is configured as an authentication provider: the Identity Toolkit provider-discovery request from `https://taxmate.uk/` returned `google.com` and an OAuth authorisation URI. Apple is absent by design.
+- The Cloud Functions API for `taxmate-uk-2` is disabled/not previously used. Therefore the candidate Functions are not deployed, despite the repository containing Functions code. Production was not enabled or deployed as part of this audit.
+- The in-app Firebase Console session is signed in as a different Google account without project access. CLI/API evidence above is authoritative for configuration; an end-to-end browser Google login was not performed.
 
-### Completed isolated emulator evidence
+### TaxMate Stripe TEST sandbox
 
-- Firestore and Storage rules: 11/11 real emulator tests.
-- Two distinct same-account Firestore clients converge after concurrent edits.
-- A genuine offline client queues a tombstone, reconnects and prevents resurrection over a later online edit.
-- Cross-user personal reads are denied; client entitlement/config writes are denied.
-- Receipt upload/read/delete, cross-user denial, MIME rejection and orphan cleanup pass against Storage Emulator.
-- Partnership outsiders cannot self-grant membership. Creator bootstrap is restricted to the creator.
-- Authenticated callable join validates the parent before membership creation.
-- Callable leave removes the departing member immediately and recursively deletes a last-member partnership.
-- Authenticated account deletion removes personal Firestore data, receipt objects, promotion redemption, Auth identity and membership while preserving shared records for another member.
-- Callable production definitions enforce App Check; emulator tests intentionally disable enforcement because they use emulator-issued authentication rather than a real reCAPTCHA token.
+An empty, isolated `TaxMate` sandbox was created under the existing provider account. The pre-existing `toodaloop sandbox` was not modified. Sandbox account: `acct_1U671tDl7HCNqvcV` (`livemode:false`).
 
-### External staging status
+| Tier | Product | Monthly Price | Amount |
+|---|---|---|---:|
+| Free | `prod_V6JfalYbsiQocA` | `price_1U672UDl7HCNqvcVlXulcEe8` | GBP 0.00 |
+| Plus | `prod_V6JgZRBvRd6EjS` | `price_1U673BDl7HCNqvcVgMV17BxO` | GBP 3.99 |
+| Pro | `prod_V6JhhSUJ2VxVIo` | `price_1U673zDl7HCNqvcVI2CIiX6w` | GBP 8.49 |
 
-| Surface | Status | Remaining minimum state |
+Only monthly recurring prices exist for launch. Checkout public URLs point to the TaxMate site, Privacy Policy, Terms and `support@taxmate.uk`; telephone display was disabled. Stripe-generated fake sandbox identity/address data remains test placeholder data and is not treated as Founder business truth.
+
+Promotion fixtures are TEST-only:
+
+- `TAXMATEPLUS30` / `promo_1U678eDl7HCNqvcVZUp8H9eh`: Plus, 30 days;
+- `TAXMATEPRO90` / `promo_1U678eDl7HCNqvcVsnI1rCJd`: Pro, 90 days;
+- `TAXMATEEXPIRED` / `promo_1U67SBDl7HCNqvcVCn5XvDLc`: inactive expiry fixture.
+
+`npm run test:stripe:sandbox` passed against real Stripe TEST APIs plus isolated local Auth/Firestore/Functions emulators. It verified server-selected Plus/Pro prices, hosted Checkout session creation, Terms acceptance requirement, cancel URL/session expiry, customer reuse, active and invalid/inactive promotion handling, one-UID redemption, real TEST subscription creation, webhook-driven Pro entitlement, duplicate-subscription blocking, period-end cancellation, immediate cancellation to Free, declined-card rejection with no unlock, signed webhook validation, duplicate event idempotency and out-of-order event protection. Generated customers/subscriptions were removed; one orphan from an earlier failed run was explicitly deleted.
+
+Stripe Tax is `pending` because `head_office` is missing, and all three prices have unspecified tax behaviour. Refund-to-entitlement handling is intentionally not invented. VAT/tax and refund policy remain Founder/accountant decisions.
+
+### Other external services
+
+- GA4 Measurement ID `G-W1WWK7EVTR` exists in the consent-gated runtime. Firebase analytics-link discovery returned no confirmed link and the available Google browser account exposes no GA4 property, so received-event/DebugView evidence is unavailable.
+- The Sentry loader resolves to an existing EU ingest project (`o4511574896541696`, project `4511574911549520`). No Sentry account session is available, so a received synthetic event and payload inspection are unavailable.
+
+### Gate classification
+
+| Surface | Status | Evidence / remaining minimum state |
 |---|---|---|
-| Google Sign-In lifecycle | BLOCKED | Explicitly approved isolated Firebase staging project, web app/OAuth setup and disposable Google test account |
-| Deployed App Check | BLOCKED | Staging reCAPTCHA Enterprise site key, staging domain and enforcement metrics |
-| Deployed Firestore/Storage/Functions | BLOCKED | Candidate deployed only to approved staging project |
-| Real cloud receipt/full-ZIP restore | BLOCKED | Staging Auth/Firestore/Storage plus disposable receipt fixtures |
-| Stripe TEST | BLOCKED | TaxMate-owned TEST/sandbox account, exact monthly Price objects, keys/webhook and promotion fixtures |
-| GA4 delivery | BLOCKED | Staging property/measurement ID and DebugView access |
-| Sentry received payload | BLOCKED | Staging DSN/project, authentication and event-inspection access |
+| Existing Firebase/Web app/Hosting | PASS | Read-only CLI/API identity match |
+| Google provider configuration | PASS | Provider discovery succeeds; full browser login NOT_TESTED |
+| App Check configuration | PASS | Registration present; Firestore/Storage enforced, Auth unenforced |
+| Candidate deployed Functions | FAIL | Cloud Functions API disabled; production deployment prohibited |
+| Rules, receipts, deletion and two-client behavior | PASS | 11/11 rules/Storage emulator plus 3/3 Auth/Functions emulator |
+| Real cloud receipt/full-ZIP restore | BLOCKED | Requires approved non-production Firebase deployment and disposable account |
+| Stripe TEST objects and server lifecycle | PASS | Isolated TaxMate sandbox and real TEST API integration pass |
+| Hosted Checkout card completion | BLOCKED_CONFIRMATION | Requires action-time approval for a TEST financial transaction in the browser |
+| VAT / Stripe Tax | BLOCKED_FOUNDER_INPUT | Head office, registration/tax behaviour and price presentation decision |
+| Refund entitlement | BLOCKED_FOUNDER_INPUT | Commercial/legal behavior not yet specified |
+| GA4 received delivery | BLOCKED_ACCESS | Correct GA4 property login plus approval to transmit one non-sensitive test event |
+| Sentry received payload | BLOCKED_ACCESS | Sentry project login plus approval to transmit one scrubbed synthetic error |
 
-Apple Sign-In is intentionally absent. Source/emulator evidence is not represented as external delivery evidence.
+No production service was changed or used as a substitute for missing staging isolation.

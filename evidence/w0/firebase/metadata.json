@@ -1,5 +1,5 @@
 {
-  "inspectedAt": "2026-08-17T13:05:06.841Z",
+  "inspectedAt": "2026-08-19T10:43:05.004Z",
   "projectId": "taxmate-uk-2",
   "projectNumber": "995936701479",
   "rules": [
@@ -39,7 +39,7 @@
     "type": "FIRESTORE_NATIVE",
     "concurrencyMode": "PESSIMISTIC",
     "versionRetentionPeriod": "3600s",
-    "earliestVersionTime": "2026-08-17T12:05:09.350122Z",
+    "earliestVersionTime": "2026-08-19T09:43:06.414528Z",
     "appEngineIntegrationMode": "DISABLED",
     "keyPrefix": "g",
     "pointInTimeRecoveryEnablement": "POINT_IN_TIME_RECOVERY_DISABLED",
@@ -47,7 +47,7 @@
     "databaseEdition": "STANDARD",
     "freeTier": true,
     "realtimeUpdatesMode": "REALTIME_UPDATES_MODE_ENABLED",
-    "etag": "IIrBhY/dp5YDMNm0o+3wsJUD"
+    "etag": "IMTnuYzBrJYDMNm0o+3wsJUD"
   },
   "storageBucket": {
     "kind": "storage#bucket",

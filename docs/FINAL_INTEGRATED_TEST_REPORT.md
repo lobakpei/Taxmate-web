@@ -16,7 +16,7 @@ The exact repository was served with the enforcing Hosting CSP at `http://127.0.
 
 Responsive checks covered 320, 360, 375, 390 and 430 mobile widths plus 1280×800, 1440×900 and 1920×1080. All six languages were exercised at 320px in light and dark across Home, Income, Expenses, Tax and Settings: 60 language/theme/page checks with no document or visible-button overflow; Urdu remained RTL. A further 35 viewport/page checks found no overflow. At 1440×900 the entry dialog was 520px, centred, focused the date field and closed with Escape. Fresh-origin onboarding had exactly one root, opened, progressed and closed deliberately. Both browser origins had zero app-origin warning/error. After the preview server stopped, the final-freeze service worker relaunched the app and displayed the new build identity offline.
 
-External Firebase, Stripe TEST, GA4 and Sentry validation is not represented as passed; the isolated-staging blocker is recorded in `STAGING_EXTERNAL_SERVICE_REPORT.md`.
+At the UI-freeze stage, external Firebase, Stripe TEST, GA4 and Sentry validation was not represented as passed; the later current status is recorded in the external-services addendum and `STAGING_EXTERNAL_SERVICE_REPORT.md`.
 
 ## Legal & Privacy Gate addendum — 19 August 2026
 
@@ -30,4 +30,8 @@ Browser checks passed for the in-app and standalone Privacy Policy and Terms, th
 
 Build `2026-08-19.production-readiness-rc.1` adds 11 real Firestore/Storage emulator tests and three Auth/Functions integration tests. Evidence covers cross-user denial, owner-only receipts, two same-account clients, concurrent convergence, actual offline reconnect, tombstone non-resurrection, server-authoritative partnership join/leave, departing-member access removal, last-member partnership deletion and authenticated account deletion across Firestore, Storage, promotions and Auth.
 
-The service worker was tested by installing the current shell, stopping the preview server, closing the active client and reopening the app. An initial run exposed fallback into an older retained cache; activation and current-cache lookup were corrected, after which the offline app displayed the exact production-readiness build identity. External Firebase/Google, TaxMate Stripe TEST, GA4 received delivery and Sentry received payload remain BLOCKED rather than simulated.
+The service worker was tested by installing the current shell, stopping the preview server, closing the active client and reopening the app. An initial run exposed fallback into an older retained cache; activation and current-cache lookup were corrected, after which the offline app displayed the exact production-readiness build identity. At that stage external services remained blocked; the later Stripe/Firebase reclassification appears below.
+
+## Existing-services and Stripe sandbox addendum — 19 August 2026
+
+Build `2026-08-19.external-services-rc.2` reclassified existing Firebase configuration from absent to verified while preserving the non-production boundary: the TaxMate Web app, Firestore, Storage, Hosting, Google provider and App Check registration exist, but candidate Functions are not deployed. An isolated TaxMate Stripe TEST sandbox was created without changing the other product sandbox or LIVE mode. The real TEST API integration passed 1/1 for Checkout construction, promotion tiers and expiry fixture, active/cancelled/declined subscription paths, signed webhook truth, duplicate-event idempotency and stale-event rejection. The repository gate increased to 94/94 after adding Stripe server invariants.

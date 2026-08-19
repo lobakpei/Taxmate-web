@@ -22,9 +22,9 @@ Do not perform these actions until Founder release approval. Complete them first
 - [ ] Decide and configure VAT/Stripe Tax treatment with Founder/accountant approval.
 - [ ] Configure Checkout Terms URL, Billing Portal and durable confirmation email.
 - [ ] Configure TEST secret and webhook secret through secure service configuration.
-- [ ] Create disposable Plus and Pro promotion fixtures with documented duration/expiry.
+- [x] Create disposable Plus and Pro TEST promotion fixtures with documented duration/expiry (TaxMate sandbox only).
 - [ ] Decide refund-to-entitlement behaviour.
-- [ ] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion and refund paths.
+- [ ] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion and refund paths. (All except hosted card completion and refund policy/operation now pass in TEST.)
 
 ## Telemetry
 
