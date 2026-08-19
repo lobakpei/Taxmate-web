@@ -19,7 +19,7 @@ exports.createCheckoutSession=onCall(opts,async req=>{
   const price=tier==='plus'?PLUS_PRICE.value():PRO_PRICE.value(); if(!price) throw new HttpsError('failed-precondition','Price not configured');
   const customer=await customerFor(user), subscriptions=await stripe().subscriptions.list({customer,status:'all',limit:20});
   if(subscriptions.data.some(subscription=>!['canceled','incomplete_expired'].includes(subscription.status))) throw new HttpsError('already-exists','An existing subscription must be managed in the billing portal');
-  const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,consent_collection:{terms_of_service:'required'},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
+  const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,automatic_tax:{enabled:false},consent_collection:{terms_of_service:'required'},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
   return {url:session.url};
 });
 exports.createBillingPortal=onCall(opts,async req=>{ const user=auth(req),customer=await customerFor(user); const s=await stripe().billingPortal.sessions.create({customer,return_url:APP_URL.value()}); return {url:s.url}; });
@@ -37,16 +37,27 @@ exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,ST
   try{
     const claimed=await db.runTransaction(async tx=>{const snap=await tx.get(eventRef);if(snap.exists)return false;tx.create(eventRef,{type:event.type,state:'processing',eventCreated:Number(event.created)||0,receivedAt:FieldValue.serverTimestamp()});return true;});
     if(!claimed){res.sendStatus(200);return;}
-    const object=event.data.object; let subscription=null;
+    const object=event.data.object; let subscription=null,refund=null;
     if(event.type.startsWith('checkout.session.')){if(object.subscription)subscription=await stripe().subscriptions.retrieve(typeof object.subscription==='string'?object.subscription:object.subscription.id);}
     else if(event.type.startsWith('customer.subscription.'))subscription=object;
     else if(event.type.startsWith('invoice.')){const id=typeof object.subscription==='string'?object.subscription:object.subscription&&object.subscription.id||object.parent&&object.parent.subscription_details&&object.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
+    else if(event.type==='charge.refunded'){
+      const invoiceId=typeof object.invoice==='string'?object.invoice:object.invoice&&object.invoice.id;
+      if(invoiceId){const invoice=await stripe().invoices.retrieve(invoiceId);const id=typeof invoice.subscription==='string'?invoice.subscription:invoice.subscription&&invoice.subscription.id||invoice.parent&&invoice.parent.subscription_details&&invoice.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
+      refund={full:object.refunded===true||Number(object.amount_refunded)>=Number(object.amount),amount:Number(object.amount)||0,amountRefunded:Number(object.amount_refunded)||0,currency:String(object.currency||'').toLowerCase()};
+    }
     if(subscription){
       const customer=await stripe().customers.retrieve(subscription.customer); const uid=subscription.metadata.firebaseUid||(customer.metadata&&customer.metadata.firebaseUid); if(uid){
         const price=subscription.items.data[0]&&subscription.items.data[0].price.id; const tier=subscription.metadata.tier||(price===PRO_PRICE.value()?'pro':price===PLUS_PRICE.value()?'plus':'free');
         const status=subscription.status, active=['active','trialing'].includes(status), end=Number(subscription.current_period_end||0)*1000, eventCreated=Number(event.created||0)*1000;
         const entitlement=db.doc(`users/${uid}/entitlements/current`);
-        await db.runTransaction(async tx=>{const snap=await tx.get(entitlement),previous=snap.exists?snap.data():{};if(Number(previous.lastStripeEventCreated||0)>eventCreated)return;tx.set(entitlement,{subscriptionStatus:status,paidTier:active?tier:'free',lastPaidTier:tier,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});});
+        await db.runTransaction(async tx=>{
+          const snap=await tx.get(entitlement),previous=snap.exists?snap.data():{};if(Number(previous.lastStripeEventCreated||0)>eventCreated)return;
+          if(refund&&refund.full){tx.set(entitlement,{subscriptionStatus:'refunded',paidTier:'free',lastPaidTier:tier,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,refundReviewState:'full-refund-applied',refundedSubscriptionId:subscription.id,refundedPeriodEnd:end,refundedAt:Date.now(),serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});return;}
+          if(refund){tx.set(entitlement,{refundReviewState:'manual-review',partialRefund:{amount:refund.amount,amountRefunded:refund.amountRefunded,currency:refund.currency,eventId:event.id},serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});return;}
+          const refundedSamePeriod=previous.refundedSubscriptionId===subscription.id&&Number(previous.refundedPeriodEnd||0)>=end;
+          tx.set(entitlement,{subscriptionStatus:refundedSamePeriod?'refunded':status,paidTier:active&&!refundedSamePeriod?tier:'free',lastPaidTier:tier,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,refundReviewState:refundedSamePeriod?'full-refund-applied':null,serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});
+        });
       }
     }
     await eventRef.set({state:'processed',processedAt:FieldValue.serverTimestamp()},{merge:true});

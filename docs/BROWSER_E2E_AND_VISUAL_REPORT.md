@@ -37,3 +37,7 @@ The current build preserves the frozen layout; changes after the prior responsiv
 ## External-services RC addendum — 19 August 2026
 
 Build `2026-08-19.external-services-rc.3` retains the same Founder-approved layout. A fresh local browser pass returned in-page audit 29/29 with zero fail/warn and no console warning/error; Sentry also loaded under the enforcing preview CSP. The frozen UI evidence remains exactly one Google button, zero Apple text, one independent promotion entry, a 14px Home control gap, the approved green Tax gradient, a floating-plus horizontal delta below 0.01px with the −2px optical correction, exact Free/Plus/Pro prices and monthly-only disclosure. The RC.3 change is limited to exact Sentry CSP hosts, their regression test, evidence reports and release identity; it does not redesign the UI.
+
+## Production-readiness RC.4 addendum — 19 August 2026
+
+Build `2026-08-19.production-readiness-rc.4` preserves the same frozen UI. The freshly deployed staging Hosting candidate reported in-page audit 29/29 with zero fail/warn and exposed the exact RC.4 build/cache identity. Browser validation found and corrected one non-visual consent-dispatch defect: the existing analytics checkbox could not previously pass `this.checked` through the CSP-safe action dispatcher. After the fix, analytics remained absent before opt-in, loaded only after opt-in, and a fresh real UI `upgrade_viewed` reached GA4 Realtime with `client_storage=none`. No approved layout, styling or UI content was redesigned.

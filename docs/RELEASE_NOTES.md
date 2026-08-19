@@ -1,6 +1,6 @@
 # TaxMate Production Readiness Candidate — Release Notes
 
-Build `2026-08-19.external-services-rc.3` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, existing-services/Stripe sandbox verification and approved GA4/Sentry receipt checks into a release candidate. It is not deployed.
+Build `2026-08-19.production-readiness-rc.4` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, persistent non-production staging setup, Stripe hosted TEST verification and approved GA4/Sentry receipt checks into a release candidate. It is not deployed to production.
 
 ## Product and UI
 
@@ -21,6 +21,7 @@ Build `2026-08-19.external-services-rc.3` consolidates the W0–W5 programme, Fo
 - Checkout now blocks duplicate live subscriptions; webhook projection is signed, idempotent and rejects stale event ordering.
 - Real Stripe TEST API integration covers promotions, cancellation, declined cards and server entitlement truth.
 - Firestore/Storage/Auth/Functions Emulator Suite covers cross-user denial, two-client convergence, offline tombstones, receipts, partnership and deletion flows.
+- Stripe Tax is explicitly off. Checkout totals remain exactly £3.99/£8.49 monthly with no VAT representation; full refunds immediately remove the refunded paid entitlement, partial refunds require manual review, and active promotion fallback remains server-derived.
 
 ## Legal, privacy and telemetry
 
@@ -35,4 +36,4 @@ Build `2026-08-19.external-services-rc.3` consolidates the W0–W5 programme, Fo
 - Restore downloads a pre-restore ZIP and rolls back newly uploaded objects if restoration fails.
 - Service-worker update now activates after the new shell is cached and offline fallback reads only the current cache identity.
 
-Existing Firebase configuration and Stripe TEST lifecycle are now verified as recorded in `STAGING_EXTERNAL_SERVICE_REPORT.md`. Candidate Functions/cloud data paths, hosted card completion, GA4 received delivery and Sentry received-payload inspection remain blocked.
+Stripe hosted TEST Checkout, signed webhook projection, cancellation, full refund and GA4/Sentry received-event inspection are verified as recorded in `STAGING_EXTERNAL_SERVICE_REPORT.md`. A persistent staging Firebase project and Hosting/Firestore/Auth/App Check configuration now exist, but deployed Functions/Storage and the real Google/App Check/receipt path remain blocked by the Founder-controlled staging Blaze billing link.

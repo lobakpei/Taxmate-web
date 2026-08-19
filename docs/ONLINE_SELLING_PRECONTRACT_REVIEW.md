@@ -20,7 +20,7 @@ Official baseline: <https://www.gov.uk/online-and-distance-selling-for-businesse
 | Geographical/correspondence address | **BLOCKED_PENDING_ICO_PROPAGATION**; do not publish the residential-looking address. Insert the verified new business address once live/provided. |
 | Service description | Present, including tax/HMRC limitations |
 | Exact price, currency and billing period | Founder-approved: Free £0, Plus £3.99/month and Pro £8.49/month; monthly only at launch. Must match Stripe TEST and production price objects exactly. |
-| VAT/tax treatment | Founder/accountant decision and Stripe TEST verification still required |
+| VAT/tax treatment | Launch configuration verified: Stripe Tax off; no VAT added or VAT invoice/amount; do not claim “includes VAT”; future registration threshold remains operational monitoring |
 | Auto-renewal and minimum term | Terms present; exact Checkout display must be verified |
 | Cancellation method | Billing Portal/support described; portal configuration and end-to-end cancellation must pass staging |
 | Cooling-off information and model form | Rights described; Founder/legal adviser must approve classification, deduction/immediate-performance mechanism and provide durable model form |

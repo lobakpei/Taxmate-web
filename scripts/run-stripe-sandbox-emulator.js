@@ -11,7 +11,9 @@ const javaHome=path.join(jdkRoot,jdkName);
 const env={...process.env,JAVA_HOME:javaHome,PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,XDG_CONFIG_HOME:path.join(root,'.tools','config'),STRIPE_PLUS_PRICE_ID:'price_1U673BDl7HCNqvcVgMV17BxO',STRIPE_PRO_PRICE_ID:'price_1U673zDl7HCNqvcVI2CIiX6w',PUBLIC_APP_URL:'http://127.0.0.1:4173'};
 const generatedEnv=path.join(root,'functions','.env.local'),generatedSecret=path.join(root,'functions','.secret.local');
 if(fs.existsSync(generatedEnv)||fs.existsSync(generatedSecret))throw new Error('Refusing to overwrite existing Functions local configuration');
-const command=`"${firebase}" emulators:exec --project demo-taxmate --only auth,functions,firestore "node --test tests/integration/stripe-sandbox.test.js"`;
+const testFile=process.argv[2]||'tests/integration/stripe-sandbox.test.js';
+if(!/^tests[\\/]integration[\\/]stripe-[a-z-]+\.test\.js$/.test(testFile))throw new Error('Invalid Stripe integration test path');
+const command=`"${firebase}" emulators:exec --project demo-taxmate --only auth,functions,firestore "node --test ${testFile}"`;
 let result;
 try{
   fs.writeFileSync(generatedEnv,`STRIPE_PLUS_PRICE_ID=${env.STRIPE_PLUS_PRICE_ID}\nSTRIPE_PRO_PRICE_ID=${env.STRIPE_PRO_PRICE_ID}\nPUBLIC_APP_URL=${env.PUBLIC_APP_URL}\n`,'utf8');

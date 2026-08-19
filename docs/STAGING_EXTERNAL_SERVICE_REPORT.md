@@ -2,7 +2,17 @@
 
 ## Verification date — 19 August 2026
 
-Production was not used as a staging substitute. No Firebase, Hosting, GA4, Sentry or Stripe LIVE deployment/configuration was changed. No push or merge occurred.
+Production was not used as a staging substitute. No production Firebase setting, Stripe LIVE object or production deployment was changed. A persistent non-production project, `taxmate-staging`, was created with test data only. No push or merge occurred.
+
+### Isolated TaxMate Firebase staging
+
+- Project `taxmate-staging` (project number `308981292791`) and Web app `TaxMate Staging Web` are retained for future releases.
+- Firestore Native/Standard was created in `europe-west2` with deletion protection. Candidate Firestore rules and indexes deployed successfully.
+- Google is the only enabled sign-in provider. Apple and all other providers remain disabled.
+- A staging-only reCAPTCHA Enterprise key restricted to the two Firebase Hosting staging domains was created and registered with App Check.
+- Candidate Hosting deployed to `https://taxmate-staging.web.app`; exact-host runtime selection prevents staging from selecting production Firebase configuration. The final deployment exposed build `2026-08-19.production-readiness-rc.4`, cache `taxmate-v2-rc-1-production-readiness-rc-4`, and passed the in-page audit 29/29 with zero fail/warn.
+- The in-app-browser Google popup returned Firebase `auth/internal-error`; Firestore then operated offline. This is not reported as a successful sign-in/cloud-sync receipt.
+- Firebase refused Functions deployment and Storage initialisation until Blaze is enabled. No billing account was linked and no paid plan was accepted. This is the minimum remaining Founder-controlled setup.
 
 ### Existing TaxMate Google/Firebase resources
 
@@ -35,12 +45,14 @@ Promotion fixtures are TEST-only:
 
 `npm run test:stripe:sandbox` passed against real Stripe TEST APIs plus isolated local Auth/Firestore/Functions emulators. It verified server-selected Plus/Pro prices, hosted Checkout session creation, Terms acceptance requirement, cancel URL/session expiry, customer reuse, active and invalid/inactive promotion handling, one-UID redemption, real TEST subscription creation, webhook-driven Pro entitlement, duplicate-subscription blocking, period-end cancellation, immediate cancellation to Free, declined-card rejection with no unlock, signed webhook validation, duplicate event idempotency and out-of-order event protection. Generated customers/subscriptions were removed; one orphan from an earlier failed run was explicitly deleted.
 
-Stripe Tax is `pending` because `head_office` is missing, and all three prices have unspecified tax behaviour. Refund-to-entitlement handling is intentionally not invented. VAT/tax and refund policy remain Founder/accountant decisions.
+Founder launch policy is encoded: Checkout sets `automatic_tax.enabled=false`; the completed hosted payment recorded GBP 849 with tax 0; no VAT registration was created. Full-refund, partial-refund and cancellation projections are server-owned and covered by signed webhook integration tests.
+
+A real hosted TEST Checkout completed with Stripe's test card for Pro at exactly £8.49. The actual `checkout.session.completed` event was retrieved from Stripe, re-signed for the local candidate webhook, accepted by the Functions emulator and projected an active Pro entitlement. The TEST payment was then fully refunded for £8.49 and its subscription cancelled; Stripe reported refund `succeeded` and subscription `canceled`. Plus and Pro server-created sessions remained exactly GBP 399/849, monthly, with Stripe Tax off and no dynamically supplied client price.
 
 ### Other external services
 
-- GA4 Measurement ID `G-W1WWK7EVTR` matches existing property `541961931`, Web stream `15084238688`. With explicit Founder approval, DebugView received one non-sensitive `upgrade_viewed` test event with `client_storage=none`, `debug_mode` and allow-listed `app_surface`. Enhanced Measurement remains enabled and URL query-parameter masking remains disabled; no provider setting was changed.
-- The existing EU Sentry project (`o4511574896541696`, project `4511574911549520`) received one synthetic exception as `TAXMATE-8`. Candidate scrubbing replaced the message with `Application error` and removed request, query, referrer, User-Agent, email, breadcrumb and bookkeeping fields. Sentry still added trace metadata and coarse provider-derived geography. An older production event predating the candidate retains request/URL-query/referrer/User-Agent/User fields, so the undeployed candidate does not remediate production yet. A missing CSP allow-list for the second-stage SDK bundle and exact EU ingestion host was corrected and regression-tested.
+- GA4 Measurement ID `G-W1WWK7EVTR` matches existing property `541961931`, Web stream `15084238688`. Enhanced Measurement is off; email and 18 query-key redactions are on; event/user retention is two months with activity reset off; all account data-sharing choices, Google Signals, user-provided data, granular location/device collection and advertising personalisation are off. A declarative consent-action defect was fixed and regression-tested. A new `upgrade_viewed` then appeared in Realtime with one count; drill-down showed `app_surface`, GA automatic fields and `client_storage=none`, with no bookkeeping values or identity fields.
+- The existing EU Sentry project (`o4511574896541696`, project `4511574911549520`) now has server/default scrubbing, raw-IP storage prevention, the defensive sensitive-field list and Enhanced Privacy enabled; anonymous shared issues are disabled. The Developer plan provides a 30-day lookback. Replay is not configured and usage is zero. Fresh issue `TAXMATE-9` stored only `Application error`, structural stack data, level and trace metadata; it had no request, URL/query, referrer, User-Agent, email, breadcrumb or bookkeeping fields. Sentry still derived coarse geography despite raw-IP storage prevention. An older production event predating the candidate retains excessive request/user fields, so the undeployed candidate does not remediate production yet.
 
 ### Gate classification
 
@@ -53,12 +65,12 @@ Stripe Tax is `pending` because `head_office` is missing, and all three prices h
 | Rules, receipts, deletion and two-client behavior | PASS | 11/11 rules/Storage emulator plus 3/3 Auth/Functions emulator |
 | Real cloud receipt/full-ZIP restore | BLOCKED | Requires approved non-production Firebase deployment and disposable account |
 | Stripe TEST objects and server lifecycle | PASS | Isolated TaxMate sandbox and real TEST API integration pass |
-| Hosted Checkout card completion | BLOCKED_CONFIRMATION | Requires action-time approval for a TEST financial transaction in the browser |
-| VAT / Stripe Tax | BLOCKED_FOUNDER_INPUT | Head office, registration/tax behaviour and price presentation decision |
-| Refund entitlement | BLOCKED_FOUNDER_INPUT | Commercial/legal behavior not yet specified |
-| GA4 received delivery | PASS | One approved `upgrade_viewed` event visible in the correct DebugView |
-| GA4 provider privacy settings | BLOCKED_REVIEW | Enhanced Measurement on; URL query masking off; retention/sharing settings still require review |
-| Sentry received payload | PASS_WITH_METADATA | `TAXMATE-8` proves scrubbed bookkeeping payload; trace and coarse geography remain provider metadata |
-| Sentry provider privacy settings | BLOCKED_REVIEW | Retention and IP/geolocation processing settings remain unverified |
+| Hosted Checkout card completion | PASS | Real hosted Pro TEST Checkout paid £8.49 and reached backend Pro entitlement |
+| VAT / Stripe Tax | PASS | Stripe Tax off; tax 0; no VAT registration; exact final monthly prices |
+| Refund entitlement | PASS | Cancellation, full refund, promotion fallback and partial-refund manual review are server-tested |
+| GA4 received delivery | PASS | Fresh Realtime `upgrade_viewed` receipt and parameter drill-down observed |
+| GA4 provider privacy settings | PASS | Enhanced Measurement, sharing/signals, granular collection and ads personalisation off; redaction and two-month retention configured |
+| Sentry received payload | PASS_WITH_METADATA | Fresh `TAXMATE-9` proves scrubbed bookkeeping payload; trace and coarse provider-derived geography remain |
+| Sentry provider privacy settings | PASS_WITH_LIMITATION | Server/default scrubbers, raw-IP prevention, sensitive fields and Enhanced Privacy on; 30-day plan lookback; coarse geography persists |
 
-No production service was changed or used as a substitute for missing staging isolation.
+No production deployment, data migration or live billing configuration was changed or used as a substitute. Remaining staging blockers are Blaze-controlled Functions/Storage and the resulting real cloud receipt/App Check callable path.

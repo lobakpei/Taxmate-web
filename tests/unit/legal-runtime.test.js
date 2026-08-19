@@ -34,6 +34,14 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/monthly only|monthly recurring|recur monthly/i);
     assert.match(text,/no annual plan/i);
   }
+  for(const text of [terms,Legal.termsHtml]){
+    assert.match(text,/Stripe Tax is off/i);
+    assert.match(text,/no VAT is added/i);
+    assert.match(text,/full Stripe refund ends the refunded paid entitlement immediately/i);
+    assert.match(text,/partial refund does not automatically change access/i);
+    assert.match(text,/do not limit any statutory consumer right/i);
+  }
+  assert.doesNotMatch(app,/\+\s*VAT|includes VAT|VAT invoice/i);
   for(const text of [privacy,Legal.privacyHtml]){
     assert.match(text,/Namecheap/);
     assert.match(text,/Microsoft Outlook/);
@@ -49,6 +57,8 @@ test('optional GA4 is off by default and cannot receive arbitrary event paramete
   assert.match(bootstrap,/send_page_view:false/);
   assert.match(app,/Share anonymous usage analytics/);
   assert.match(app,/TaxMateAnalytics\.enabled\(\)/);
+  assert.match(read('src/app/action-dispatch.js'),/'setAnalyticsConsent'/);
+  assert.match(read('src/app/action-dispatch.js'),/expr==='this\.checked'/);
 });
 
 test('Sentry minimises diagnostics and disables breadcrumbs/default PII',()=>{
@@ -71,6 +81,9 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(functions,/deleteFiles\(\{prefix:`receipts\/\$\{uid\}\//);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
   assert.match(functions,/consent_collection:\{terms_of_service:'required'\}/);
+  assert.match(app,/FIREBASE_STAGING_HOSTS/);
+  assert.match(app,/FIREBASE_IS_STAGING\?FIREBASE_STAGING_CONFIG:FIREBASE_PRODUCTION_CONFIG/);
+  assert.match(app,/europe-west2-'\+FIREBASE_CONFIG\.projectId/);
 });
 
 test('Google is the only authentication frame/provider surface',()=>{

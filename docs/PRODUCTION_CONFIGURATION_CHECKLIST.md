@@ -19,12 +19,12 @@ Do not perform these actions until Founder release approval. Complete them first
 - [ ] Create Plus at GBP £3.99 recurring monthly.
 - [ ] Create Pro at GBP £8.49 recurring monthly.
 - [ ] Confirm no annual launch Price.
-- [ ] Decide and configure VAT/Stripe Tax treatment with Founder/accountant approval.
+- [x] Configure Founder-approved launch treatment: Stripe Tax off, no VAT added/invoiced and no VAT registration created.
 - [ ] Configure Checkout Terms URL, Billing Portal and durable confirmation email.
 - [ ] Configure TEST secret and webhook secret through secure service configuration.
 - [x] Create disposable Plus and Pro TEST promotion fixtures with documented duration/expiry (TaxMate sandbox only).
-- [ ] Decide refund-to-entitlement behaviour.
-- [ ] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion and refund paths. (All except hosted card completion and refund policy/operation now pass in TEST.)
+- [x] Encode Founder-approved refund-to-entitlement behaviour.
+- [x] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion, partial-review and full-refund paths in TEST.
 
 ## Telemetry
 
@@ -37,7 +37,7 @@ Do not perform these actions until Founder release approval. Complete them first
 ## Release controls
 
 - [ ] Confirm the ICO public register shows the actioned non-residential/alternative correspondence address.
-- [ ] Confirm final consumer/business-user, VAT and refund decisions.
+- [ ] Confirm final consumer/business-user legal judgement. VAT and refund product decisions are recorded and technically verified.
 - [ ] Re-run all local and external staging gates at the exact final commit.
 - [ ] Verify production `main`, target branch, commit, tree and diff immediately before push/PR.
 - [ ] Obtain explicit Founder instruction: `批准發佈`.

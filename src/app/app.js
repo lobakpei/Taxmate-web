@@ -3239,7 +3239,7 @@ async function callSecureFunction(name,data){
     const u=cloudUser(); if(!u) throw new Error('Sign in required');
     const token=await u.getIdToken(),appCheck=await firebase.appCheck().getToken(false);
     if(!appCheck||!appCheck.token)throw new Error('App Check verification unavailable');
-    const res=await fetch('https://europe-west2-taxmate-uk-2.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});
+    const res=await fetch('https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});
     const body=await res.json(); if(!res.ok||body.error) throw new Error((body.error&&body.error.message)||'Billing is unavailable');
     return body.result||{};
 }
@@ -5018,7 +5018,7 @@ function importBackupFile(ev){
 // 一次性設定:喺 Firebase Console 開個 project,啟用 Anonymous Auth + Firestore,
 // 然後將 Web app config 貼喺下面 (Project settings → Your apps → Web)。
 // 留空 = sync 功能自動隱藏,app 其餘 100% 照常運作。
-const FIREBASE_CONFIG = {
+const FIREBASE_PRODUCTION_CONFIG = {
   apiKey: "AIzaSyCX3--xiJs3JRdD9gNND9wf-I3MERHeA90",
   authDomain: "taxmate-uk-2.firebaseapp.com",
   projectId: "taxmate-uk-2",
@@ -5026,6 +5026,18 @@ const FIREBASE_CONFIG = {
   messagingSenderId: "995936701479",
   appId: "1:995936701479:web:ed61c51a65e61aa1d21202"
 };
+const FIREBASE_STAGING_CONFIG = {
+  apiKey: "AIzaSyBHlsIkz1onRmgoQHAqGs_0qKcMRY4g1x0",
+  authDomain: "taxmate-staging.firebaseapp.com",
+  projectId: "taxmate-staging",
+  storageBucket: "taxmate-staging.firebasestorage.app",
+  messagingSenderId: "308981292791",
+  appId: "1:308981292791:web:550b795411f366864c7df2"
+};
+const FIREBASE_STAGING_HOSTS = new Set(['taxmate-staging.web.app','taxmate-staging.firebaseapp.com']);
+const FIREBASE_IS_STAGING = FIREBASE_STAGING_HOSTS.has(location.hostname)||new URLSearchParams(location.search).get('firebase')==='staging';
+const FIREBASE_CONFIG = FIREBASE_IS_STAGING?FIREBASE_STAGING_CONFIG:FIREBASE_PRODUCTION_CONFIG;
+const FIREBASE_APPCHECK_KEY = FIREBASE_IS_STAGING?'6LdFcY4tAAAAAP6hI8PCdla4GLY_Dko3UZ63j_Rv':'6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH';
 
 let FB = { db:null, uid:null, ready:false, subs:{} };
 function fbConfigured(){ return (typeof firebase!=='undefined') && !!FIREBASE_CONFIG.apiKey; }
@@ -5039,7 +5051,7 @@ async function ensureFB(){
     try{
       const appCheck = firebase.appCheck();
       appCheck.activate(
-        new firebase.appCheck.ReCaptchaEnterpriseProvider('6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH'),
+        new firebase.appCheck.ReCaptchaEnterpriseProvider(FIREBASE_APPCHECK_KEY),
         true // auto-refresh token
       );
     }catch(e){ console.warn('AppCheck init', e); }

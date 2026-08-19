@@ -12,7 +12,8 @@
     "test:rules:emulator": "node scripts/run-rules-emulator.js",
     "test:functions:emulator": "node scripts/run-functions-emulator.js",
     "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator && npm run test:functions:emulator",
-    "test:stripe:sandbox": "node scripts/run-stripe-sandbox-emulator.js"
+    "test:stripe:sandbox": "node scripts/run-stripe-sandbox-emulator.js",
+    "test:stripe:hosted-receipt": "node scripts/run-stripe-sandbox-emulator.js tests/integration/stripe-hosted-receipt.test.js"
   },
   "engines": {
     "node": ">=22"
