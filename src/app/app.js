@@ -110,7 +110,7 @@ en:{
  'tax.priorAdjS':'under/overpayment carried forward',
  'tax.poaPaid':'Payments on account already made',
  'tax.balancing':'Balancing payment due 31 Jan',
- 'tax.refund':'💚 Looks like a refund. If this stays negative after filing, HMRC owes you money back.',
+ 'tax.refund':'💚 This estimate may indicate an overpayment. HMRC decides any amount due or refundable after filing.',
  'tax.datesT':'Payment dates',
  'tax.poaWhy':'Your bill is over £1,000, so HMRC also asks for two payments on account towards next year — half each.',
  'tax.janS':'balancing payment + 1st payment on account',
@@ -468,7 +468,7 @@ en:{
  'tier.current':'Current plan','tier.choose':'Switch to {p}','tier.active':'Active','tier.freeNow':'Free for a limited time','tier.activateFree':'Start free — limited time','trial.activateTitle':'Start your free Pro access','trial.activateBody':'You\'ll get all Pro features free until {d}. After that you\'ll move back to the Free plan automatically — your data is always kept. Continue?','trial.activated':'Pro unlocked — enjoy!','trial.endingTitle':'Your free Pro ends {d}.','trial.endingDays':'{n} days left.','trial.endingBody':'To keep Pro features, add your payment details before it ends. If you do nothing, you\'ll move to the Free plan on the end date — your data stays safe.','trial.endedTitle':'Your free Pro has ended.','trial.endedBody':'You\'re now on the Free plan. Your data is safe.',
  'feat.records':'Unlimited income & expenses','feat.taxcalc':'Tax calculation','feat.onebiz':'One business','feat.mileageBasic':'Mileage logging','feat.sa103view':'SA103 box mapping','feat.sync':'Cloud sync & login',
  'feat.mileageCompare':'55p vs actual auto-compare','feat.aiTips':'Helper (tips & reminders)','feat.multiBiz':'Multiple businesses','feat.receiptPhoto':'Receipt photos','feat.pdfReport':'PDF report export','feat.sa103Pdf':'SA103 PDF export',
- 'feat.partnerSync':'Partner sync','feat.sa104':'SA104 partnership','feat.receiptPack':'Receipt Pack PDF (for HMRC checks)','feat.mtdReady':'MTD-ready quarterly export',
+ 'feat.partnerSync':'Partner sync','feat.sa104':'SA104 partnership working paper','feat.receiptPack':'Organised receipt pack PDF','feat.mtdReady':'Quarterly record summary (no HMRC submission)',
  'lock.title':'A {p} feature','lock.body':'This is part of TaxMate {p}. Upgrade to unlock it.','lock.upgrade':'See plans','home.signinTitle':'Back up your data','home.signinSub':'Sign in to save your records to the cloud and sync across devices.','home.signinBtn':'Sign in','pwa.install':'Download','pwa.installSub':'Get the app on your phone.','pwa.iosTitle':'Add to Home Screen','pwa.iosBody':'To install on iPhone, do it from Safari:','pwa.iosStep1':'Tap the Share button (the square with an arrow) at the bottom of Safari','pwa.iosStep2':'Scroll down and tap \"Add to Home Screen\"','pwa.iosStep3':'Tap \"Add\" — done! The TaxMate icon appears on your home screen','pwa.iosNote':'Note: this only works in Safari, not Chrome or other browsers on iPhone.','pwa.andTitle':'Install the app','pwa.andBody':'Your browser did not show the install button automatically. You can still install it:','pwa.andStep1':'Tap the menu (⋮) at the top-right of Chrome','pwa.andStep2':'Tap \"Install app\" or \"Add to Home screen\"','pwa.andStep3':'Confirm — the TaxMate icon appears on your home screen','pwa.andTip':'Tip: if you only see \"Add to Home screen\" (a shortcut), close this site, clear the browser cache for it, reopen and wait a few seconds — then \"Install app\" should appear for a cleaner app.','pdf.enHint':'PDF reports are generated in English. Names you type in other languages may not appear — use English for anything you want shown in the PDF.','lang.pdfHint':'Tip: PDF reports export in English only. Type business and category names in English if you need them in your PDF.','pro.titleOld':'TaxMate Pro','rp.title':'Receipt Pack','rp.desc':'Bundle every receipt photo into one PDF for HMRC — one receipt per page with its details.','rp.btn':'Export Receipt Pack','rp.none':'No receipt photos in this period yet.','rp.building':'Building Receipt Pack…','rp.page':'Receipt {i} of {n}',
  'pro.sub':'Free is full-featured forever. Pro adds convenience on top.',
  'pro.f1':'Partner sync — one partnership, every phone',
@@ -2974,7 +2974,10 @@ ur:{
  'ac.needNet':'سائن ان کے لیے انٹرنیٹ درکار ہے۔'
 }
 };;
-Object.assign(I18N.en,{'promo.redeem':'Redeem promotion code'});
+Object.assign(I18N.en,{
+  'promo.redeem':'Redeem promotion code',
+  'rp.desc':'Organise available receipt photos into a working-paper PDF. It is not an HMRC filing or proof that an expense is allowable.'
+});
 Object.assign(I18N.zh,{
   'mtd.required':'根據 {x} 的合資格總收入，預計 MTD 將由 {d} 起適用。','mtd.notRequired':'根據 {x} 的合資格總收入，本年度未超過 {y} 門檻。','mtd.incomplete':'請先加入所有物業總收入，才依賴此評估。','mtd.unsupported':'此課稅年度的官方門檻對照尚未收錄，因此不會顯示評估。','sa.future':'此課稅年度的官方短表對照尚未收錄。TaxMate 不會猜測未來表格欄位。','mtd.what':'TaxMate 協助你保存記錄和準備摘要，但不會向 HMRC 提交 MTD 更新。如 MTD 適用，請使用兼容 HMRC 的軟件提交。','feat.mtdReady':'季度記錄摘要（不會提交至 HMRC）','promo.redeem':'兌換推廣代碼'
 });
@@ -3084,6 +3087,7 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
+const TIER_PRICE = Object.freeze({free:'£0',plus:'£3.99/month',pro:'£8.49/month'});
 // Which tier each gated feature needs
 const FEATURE_TIER = {
   mileageCompare:'plus',   // 45p vs actual auto-compare
@@ -3095,7 +3099,7 @@ const FEATURE_TIER = {
   partnerSync:'pro',       // partner sync
   sa104:'pro',             // SA104 partnership
   receiptPack:'pro',       // Receipt Pack PDF
-  mtdReady:'pro'           // MTD-ready quarterly export
+  mtdReady:'pro'           // quarterly record summary; no HMRC submission
 };
 /* ═══════════ Trial Logic ═══════════ */
 const TRIAL_LAUNCH_END   = '2027-01-05'; // Fixed end for launch users
@@ -3120,7 +3124,7 @@ function trialStatus(){
 function initTrial(){
   // Legacy client trials are intentionally not created. Entitlements are server verified.
 }
-function trackEvent(name){try{const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
+function trackEvent(name){try{if(!window.TaxMateAnalytics||!TaxMateAnalytics.enabled())return;const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
 
 async function loadTrialFromCloud(uid){
   try{
@@ -3176,6 +3180,7 @@ function planBlock(tier){
       <div class="t" style="font-size:17px">${name}</div>
       ${badge}
     </div>
+    <div class="t" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${TIER_PRICE[tier]}</div>
     <div class="s" style="margin-bottom:10px">${sub}</div>
     ${feats}
     ${btn}
@@ -3266,6 +3271,7 @@ function proPlansCard(){
     ${planBlock('free')}
     ${planBlock('plus')}
     ${planBlock('pro')}
+    <div class="s" style="margin:2px 8px 14px;line-height:1.55">Launch pricing is Free £0, Plus £3.99/month and Pro £8.49/month. Plus and Pro are monthly recurring subscriptions; no annual plan is offered at launch. Stripe Checkout shows the price, renewal terms and any discount before payment. Cancel from the billing portal. A promotion redeemed here can grant time-limited access without starting a paid subscription. <button class="link" data-tm-click="openLegal('terms')">Terms</button></div>
   </div>`;
 }
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
@@ -4208,12 +4214,17 @@ function pageMore(){
         <a href="mailto:support@taxmate.uk" style="display:block;background:var(--brand-soft);color:var(--brand-deep);font-weight:700;font-size:14px;padding:13px 16px;border-radius:var(--r-sm);text-decoration:none;text-align:center">support@taxmate.uk</a>
       </div>
       <div class="card">
+        <div class="t" style="margin-bottom:4px">Optional analytics</div>
+        <div class="s" style="margin-bottom:12px">Off by default. If enabled, TaxMate sends only approved value-free usage events to Google Analytics. No bookkeeping values, business names, notes, receipts or account identity are included.</div>
+        <label style="display:flex;align-items:center;gap:10px;font-weight:700"><input type="checkbox" ${window.TaxMateAnalytics&&TaxMateAnalytics.enabled()?'checked':''} data-tm-change="setAnalyticsConsent(this.checked)"> Share anonymous usage analytics</label>
+      </div>
+      <div class="card">
         <div class="t" style="margin-bottom:12px">FAQ</div>
         ${[
-          ['Is my data safe?', 'Yes. Your data is stored securely in Google Firebase. If you sign in, it syncs to the cloud. If not, it stays on your device only.'],
+          ['How is my data protected?', 'TaxMate uses provider encryption, access rules, App Check and authenticated deletion. No online service can guarantee absolute security.'],
           ['Can I use TaxMate on multiple devices?', 'Yes. TaxMate merges records individually using modification time, deterministic device tie-breaking and deletion tombstones.'],
-          ['What happens when my trial ends?', 'You move to the Free plan automatically. Your data is never deleted — only paid features are locked.'],
-          ['Does TaxMate submit MTD updates?', 'No. TaxMate keeps records and prepares summaries. If MTD applies, use HMRC-compatible software for submission. Always confirm figures before filing.'],
+          ['What happens when promotional access ends?', 'You move to the Free plan automatically. Ending access does not itself delete your account records.'],
+          ['Does TaxMate submit MTD updates?', 'No. TaxMate keeps records and prepares summaries. If MTD applies, use software that HMRC lists for MTD submission and confirm current requirements directly with HMRC.'],
           ['How do I contact support?', 'Email support@taxmate.uk — we aim to reply within 2–3 working days.'],
         ].map(([q,a])=>`
           <div style="padding:10px 0;border-bottom:1px solid var(--line)">
@@ -4239,84 +4250,8 @@ function pageMore(){
 function openLegal(which){
   const el = document.getElementById('legal-content');
   if(!el) return;
-  const today = new Date();
-  const updated = '17 August 2026 · policy version 2026-08-17';
-  if(which==='privacy'){
-    el.innerHTML = `
-<div class="stitle" style="margin-bottom:16px">Privacy Policy</div>
-<div class="s" style="margin-bottom:20px;color:var(--muted)">Last updated: ${updated}</div>
-
-<div style="font-size:14px;line-height:1.7;color:var(--ink)">
-
-<p><strong>Who we are</strong><br>
-TaxMate UK is operated by Hau Ying Ou-Yang, a sole trader based in the United Kingdom.<br>
-ICO Registration Number: <strong>ZC174150</strong><br>
-Contact: support@taxmate.uk</p>
-
-<p><strong>What data we collect</strong><br>
-When you use TaxMate UK, you may provide: income and expense records, business details, mileage records, receipt photos, and account information (name and email via Google sign-in). We do not collect payment card details.</p>
-
-<p><strong>How we use your data</strong><br>
-Your data is used solely to provide the TaxMate UK service — to calculate your tax estimate, generate reports, and sync your records across devices. We do not sell, share, or use your data for advertising.</p>
-
-<p><strong>Where your data is stored</strong><br>
-If you sign in, Google Firebase processes account and record data. Firestore is configured in europe-west2 (London); receipt Storage is configured in US-CENTRAL1. Stripe processes subscriptions and promotions; TaxMate does not receive payment card details.</p>
-
-<p><strong>Your rights</strong><br>
-Under UK GDPR, you may access or export your data, correct inaccurate data, and use "Delete all my data" to request deletion of personal cloud records, receipts, billing customer data and your TaxMate authentication account. Shared partnership records are retained for other authorised members and your membership is removed.</p>
-
-<p><strong>Data retention</strong><br>
-We retain your data while you use the service. Provider backups and the configured Storage soft-delete period may retain recoverable copies for a limited period after deletion.</p>
-
-<p><strong>Cookies and analytics</strong><br>
-Google Analytics 4 runs without client storage for aggregate usage. Sentry receives scrubbed error diagnostics. TaxMate does not intentionally send financial values, descriptions, receipt images, account identity or URL query strings to analytics or error monitoring.</p>
-
-<p><strong>Children</strong><br>
-TaxMate UK is intended for adults (18+). We do not knowingly collect data from children.</p>
-
-<p><strong>Changes to this policy</strong><br>
-We may update this policy from time to time. Changes will be reflected in the "last updated" date above.</p>
-
-<p><strong>Contact and complaints</strong><br>
-For any data protection queries, contact support@taxmate.uk. You also have the right to lodge a complaint with the ICO at ico.org.uk.</p>
-
-</div>`;
-  } else {
-    el.innerHTML = `
-<div class="stitle" style="margin-bottom:16px">Terms of Use</div>
-<div class="s" style="margin-bottom:20px;color:var(--muted)">Last updated: ${updated}</div>
-
-<div style="font-size:14px;line-height:1.7;color:var(--ink)">
-
-<p><strong>Acceptance</strong><br>
-By using TaxMate UK, you agree to these terms. If you do not agree, please do not use the app.</p>
-
-<p><strong>What TaxMate UK does</strong><br>
-TaxMate UK is a tax-tracking tool for UK self-employed individuals. It provides estimates to help you organise your finances and prepare for Self Assessment. It is not a substitute for professional tax advice.</p>
-
-<p><strong>Tax disclaimer</strong><br>
-TaxMate UK provides estimates only. Figures are based on the information you enter and standard HMRC rates. Always verify figures with HMRC or a qualified accountant before filing. TaxMate UK accepts no liability for errors in your tax return.</p>
-
-<p><strong>Your responsibilities</strong><br>
-You are responsible for the accuracy of data you enter. You are responsible for filing your own tax return correctly and on time. TaxMate UK is a tool to assist you — final responsibility remains with you.</p>
-
-<p><strong>Service availability</strong><br>
-We aim to keep TaxMate UK available at all times but cannot guarantee uninterrupted service. We are not liable for any losses caused by downtime or data loss.</p>
-
-<p><strong>Intellectual property</strong><br>
-TaxMate UK and its content are owned by Hau Ying Ou-Yang. You may not copy, distribute, or create derivative works without permission.</p>
-
-<p><strong>Changes to the service</strong><br>
-We may update or change features of TaxMate UK at any time. We will endeavour to give notice of significant changes.</p>
-
-<p><strong>Governing law</strong><br>
-These terms are governed by the laws of England and Wales.</p>
-
-<p><strong>Contact</strong><br>
-support@taxmate.uk</p>
-
-</div>`;
-  }
+  if(!window.TaxMateLegal){alert('Legal information is unavailable. Please use privacy.html or terms.html.');return;}
+  el.innerHTML=which==='privacy'?TaxMateLegal.privacyHtml:TaxMateLegal.termsHtml;
   openSheet('legal');
 }
 
@@ -4327,6 +4262,10 @@ function applyTheme(){
 }
 function setTheme(th){
   S.settings.theme = th; save(); applyTheme(); render();
+}
+function setAnalyticsConsent(enabled){
+  if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(enabled===true);
+  render();
 }
 function setLang(l){ S.settings.lang=l; save(); render(); }
 function obSetLang(l){ S.settings.lang=l; save(); OB._langOpen=false; obRender(); }
@@ -4970,8 +4909,8 @@ async function eraseEverything(){
   let cloudOk=false;
   if(accountUser){ try{ await callSecureFunction('deleteAccountData',{}); cloudOk=true; }catch(e){ cloudOk=false; } }
   else cloudOk=await deleteCloudData();
-  // local wipe
-  localStorage.removeItem(STORE_KEY);
+  // Local wipe includes hidden recovery/cache identifiers as well as visible state.
+  clearLocalTaxMateData();
   // Delete the Auth identity only after server-side data cleanup succeeds.
   try{ if(cloudOk&&accountUser) await accountUser.delete(); else if(fbConfigured()&&firebase.auth().currentUser) await firebase.auth().signOut(); }catch(e){}
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
@@ -4981,9 +4920,13 @@ async function eraseEverything(){
 }
 
 function resetAll(){
-  localStorage.removeItem(STORE_KEY);
+  clearLocalTaxMateData();
   S = JSON.parse(JSON.stringify(DEFAULT_STATE));
   render();
+}
+function clearLocalTaxMateData(){
+  try{if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(false);}catch(_){}
+  [STORE_KEY,DEVICE_KEY,TRIAL_KEY,'taxmateuk_entitlement_cache','taxmateuk_preimport_backup','taxmateuk_analytics_consent','tmOnboardDone','tmWasSignedIn',RATES_CACHE_KEY].forEach(key=>{try{localStorage.removeItem(key);}catch(_){}});
 }
 function sheetSnapshot(sheetEl){
   if(!sheetEl) return '';

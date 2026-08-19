@@ -17,7 +17,7 @@ async function customerFor(user){
 exports.createCheckoutSession=onCall(opts,async req=>{
   const user=auth(req), tier=req.data&&req.data.tier; if(!['plus','pro'].includes(tier)) throw new HttpsError('invalid-argument','Invalid tier');
   const price=tier==='plus'?PLUS_PRICE.value():PRO_PRICE.value(); if(!price) throw new HttpsError('failed-precondition','Price not configured');
-  const customer=await customerFor(user); const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
+  const customer=await customerFor(user); const session=await stripe().checkout.sessions.create({mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,consent_collection:{terms_of_service:'required'},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier}}});
   return {url:session.url};
 });
 exports.createBillingPortal=onCall(opts,async req=>{ const user=auth(req),customer=await customerFor(user); const s=await stripe().billingPortal.sessions.create({customer,return_url:APP_URL.value()}); return {url:s.url}; });
@@ -45,11 +45,21 @@ exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,ST
 exports.deleteAccountData=onCall(opts,async req=>{
   const user=auth(req),uid=user.uid;
   const memberships=await db.collectionGroup('members').where('uid','==',uid).get();
-  for(const member of memberships.docs) await member.ref.delete();
-  await db.recursiveDelete(db.doc(`users/${uid}`));
-  try{await getStorage().bucket().deleteFiles({prefix:`receipts/${uid}/`,force:true});}catch(e){console.error('receipt cleanup',e);}
+  let partnershipRecordsRetained=0,partnershipsDeleted=0;
+  for(const member of memberships.docs){
+    const partnership=member.ref.parent.parent;
+    if(!partnership)continue;
+    const allMembers=await partnership.collection('members').get();
+    const otherMembers=allMembers.docs.filter(doc=>doc.id!==uid);
+    if(otherMembers.length){await member.ref.delete();partnershipRecordsRetained++;}
+    else{await db.recursiveDelete(partnership);partnershipsDeleted++;}
+  }
+  await getStorage().bucket().deleteFiles({prefix:`receipts/${uid}/`,force:true});
+  const redemptions=await db.collection('promotionRedemptions').where('uid','==',uid).get();
+  for(let i=0;i<redemptions.docs.length;i+=400){const batch=db.batch();for(const doc of redemptions.docs.slice(i,i+400))batch.delete(doc.ref);await batch.commit();}
   const customerRef=db.doc(`billingCustomers/${uid}`),customer=await customerRef.get();
-  if(customer.exists){try{await stripe().customers.del(customer.data().stripeCustomerId);}catch(e){console.error('stripe cleanup',e);}await customerRef.delete();}
+  if(customer.exists){try{await stripe().customers.del(customer.data().stripeCustomerId);}catch(e){if(e&&e.code!=='resource_missing')throw e;}await customerRef.delete();}
+  await db.recursiveDelete(db.doc(`users/${uid}`));
   await getAuth().deleteUser(uid);
-  return {deleted:true,partnershipRecordsRetained:true};
+  return {deleted:true,partnershipRecordsRetained,partnershipsDeleted};
 });

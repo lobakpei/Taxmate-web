@@ -23,3 +23,9 @@ The exact final-freeze working tree was rerun under the enforcing Hosting CSP wi
 - PWA: after the preview server stopped, the offline shell relaunched and Settings displayed `2.0.0-rc.1 · 2026-08-18.final-ui-freeze.1`.
 
 No optional polish was implemented. External account, cloud, receipt, payment and telemetry checks remain staging-only and are not simulated by this report.
+
+## Legal & Privacy browser addendum — 19 August 2026
+
+The legal-gate build was inspected in the local Founder Preview. Settings rendered Google-only authentication, corrected plan wording and an unchecked optional-analytics control. The in-app Privacy Policy and Terms showed version 19 August 2026 and the standalone `/privacy.html` and `/terms.html` pages rendered their matching documents. No Google Analytics script existed before consent and the inspected app/legal pages produced no console warning or error. The approved UI freeze was not redesigned.
+
+Founder commercial/support input was then verified in build `2026-08-19.legal-privacy-gate.2`: Settings rendered Free £0, Plus £3.99/month and Pro £8.49/month plus the monthly-only/no-annual launch disclosure. Standalone Terms matched those prices. Privacy identified Namecheap forwarding and Microsoft Outlook without exposing any destination mailbox; `support@taxmate.uk` was the only email address in the inspected public pages.
