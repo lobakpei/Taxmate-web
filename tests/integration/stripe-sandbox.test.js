@@ -4,11 +4,11 @@ const path=require('node:path');const {createRequire}=require('node:module');con
 const {initializeApp}=require('firebase/app');const {getAuth,connectAuthEmulator,signInAnonymously}=require('firebase/auth');const {getFunctions,connectFunctionsEmulator,httpsCallable}=require('firebase/functions');
 const {initializeApp:initializeAdmin}=requireFunctions('firebase-admin/app');const {getFirestore}=requireFunctions('firebase-admin/firestore');const Stripe=requireFunctions('stripe');
 const Ent=require('../../src/core/entitlement');
-const stripe=new Stripe(process.env.STRIPE_SECRET_KEY),plus='price_1U673BDl7HCNqvcVgMV17BxO',pro='price_1U673zDl7HCNqvcVI2CIiX6w';
+const stripe=new Stripe(process.env.STRIPE_SECRET_KEY),plus=process.env.STRIPE_PLUS_PRICE_ID,pro=process.env.STRIPE_PRO_PRICE_ID;
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function waitFor(read,predicate,label){for(let i=0;i<60;i++){const value=await read();if(predicate(value))return value;await delay(250);}throw new Error(`Timed out waiting for ${label}`);}
 test('TaxMate Stripe sandbox checkout, promotions, lifecycle and webhook truth',async()=>{
-  assert.equal(process.env.TAXMATE_STRIPE_SANDBOX,'acct_1U671tDl7HCNqvcV');
+  const account=await stripe.accounts.retrieve();assert.equal(account.id,process.env.TAXMATE_STRIPE_ACCOUNT_ID);
   const app=initializeApp({projectId:'demo-taxmate',apiKey:'emulator-api-key'},'stripe-sandbox');const auth=getAuth(app);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});const user=(await signInAnonymously(auth)).user;
   const fn=getFunctions(app,'europe-west2');connectFunctionsEmulator(fn,'127.0.0.1',5001);const checkout=httpsCallable(fn,'createCheckoutSession'),redeem=httpsCallable(fn,'redeemPromotion');
   const admin=initializeAdmin({projectId:'demo-taxmate'},'stripe-sandbox-admin');const db=getFirestore(admin);const entitlement=()=>db.doc(`users/${user.uid}/entitlements/current`).get().then(s=>s.data()||{});

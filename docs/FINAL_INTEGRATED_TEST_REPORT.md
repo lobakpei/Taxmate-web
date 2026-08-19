@@ -47,3 +47,11 @@ The final repository gate passed 96/96. The freshly deployed staging Hosting bui
 A persistent `taxmate-staging` Firebase target was created and limited to test data. Hosting, Firestore rules/indexes, Google-only Auth and App Check registration were configured without changing production. A real browser Google sign-in attempt returned `auth/internal-error`; deployed Functions/Storage could not be enabled because Firebase requires a Founder-approved Blaze billing link. Consequently the real staging Google/App Check/cloud-receipt path remains blocked and is not represented as passed.
 
 GA4 Realtime received a fresh UI-originated `upgrade_viewed` after the consent dispatcher was corrected; its custom payload contained only `app_surface` and `client_storage=none`, with no bookkeeping or identity fields. The prior minimised Sentry synthetic receipt remains valid. A final read-only ICO check still showed the old correspondence address, so publication remains blocked pending confirmed update propagation.
+
+## Stripe account refresh and SEO RC.5 addendum — 19 August 2026
+
+The Stripe Dashboard was reopened after a fresh navigation and still identified the TaxMate-named sandbox under the wrong parent account. The mandatory stop rule was applied before mutation. No Product, Price, promotion, webhook, Checkout or LIVE setting was created or changed. Earlier external Stripe evidence was invalidated, every old account-specific ID was removed from the candidate, and the harness now requires and verifies environment-injected independent-account identities.
+
+The exact Founder-approved search positioning was implemented without a marketing redesign. The homepage has one production canonical, exact title/meta/H1, crawlable explanatory copy and real public links. Robots, a production-only sitemap, an indexable Help page, crawlable non-indexed Privacy/Terms pages, Open Graph metadata, a truthful parseable `SoftwareApplication` block and a real noindex 404 are covered by regression tests. The separate staging config returned header-level noindex on every inspected response.
+
+The full repository gate passed 106/106, targeted SEO/CSP/identity checks passed 13/13, the HTTP preview gate passed 1/1 and the staging browser audit passed 29/29. Correct-account Stripe E2E remains blocked and is not represented as passed.

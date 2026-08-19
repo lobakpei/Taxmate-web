@@ -41,3 +41,7 @@ Build `2026-08-19.external-services-rc.3` retains the same Founder-approved layo
 ## Production-readiness RC.4 addendum — 19 August 2026
 
 Build `2026-08-19.production-readiness-rc.4` preserves the same frozen UI. The freshly deployed staging Hosting candidate reported in-page audit 29/29 with zero fail/warn and exposed the exact RC.4 build/cache identity. Browser validation found and corrected one non-visual consent-dispatch defect: the existing analytics checkbox could not previously pass `this.checked` through the CSP-safe action dispatcher. After the fix, analytics remained absent before opt-in, loaded only after opt-in, and a fresh real UI `upgrade_viewed` reached GA4 Realtime with `client_storage=none`. No approved layout, styling or UI content was redesigned.
+
+## SEO implementation RC.5 addendum — 19 August 2026
+
+The isolated staging build rendered the exact approved browser title and onboarding H1/supporting line, while preserving the existing onboarding structure and Founder-approved app layout. The public Help page rendered its functional guidance and genuine Home/Privacy/Terms anchors. An unknown staging URL rendered the non-indexable 404 page and returned HTTP 404. The in-page audit remained 29/29 with zero fail/warn. Header inspection confirmed staging noindex on Home, Help and 404 responses; production configuration contains no noindex header.

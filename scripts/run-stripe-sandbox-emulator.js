@@ -2,13 +2,14 @@
 const fs=require('node:fs'),path=require('node:path');
 const {spawnSync}=require('node:child_process');
 const root=path.resolve(__dirname,'..'),firebase=path.join(root,'node_modules','.bin','firebase.cmd');
-const required=['STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET'];
+const required=['STRIPE_SECRET_KEY','STRIPE_WEBHOOK_SECRET','TAXMATE_STRIPE_ACCOUNT_ID','STRIPE_PLUS_PRICE_ID','STRIPE_PRO_PRICE_ID'];
 for(const name of required)if(!process.env[name]){console.error(`${name} is required`);process.exit(2);}
-if(process.env.TAXMATE_STRIPE_SANDBOX!=='acct_1U671tDl7HCNqvcV'){console.error('Refusing to run outside the approved TaxMate sandbox');process.exit(2);}
+if(!/^acct_[A-Za-z0-9]+$/.test(process.env.TAXMATE_STRIPE_ACCOUNT_ID)){console.error('Invalid TaxMate Stripe account identity');process.exit(2);}
+if(!/^price_[A-Za-z0-9]+$/.test(process.env.STRIPE_PLUS_PRICE_ID)||!/^price_[A-Za-z0-9]+$/.test(process.env.STRIPE_PRO_PRICE_ID)||process.env.STRIPE_PLUS_PRICE_ID===process.env.STRIPE_PRO_PRICE_ID){console.error('Invalid TaxMate Stripe price identities');process.exit(2);}
 const jdkRoot=path.join(root,'.tools','jdk'),jdkName=fs.readdirSync(jdkRoot).find(name=>fs.existsSync(path.join(jdkRoot,name,'bin','java.exe')));
 if(!jdkName)throw new Error('Portable JDK not found under .tools/jdk');
 const javaHome=path.join(jdkRoot,jdkName);
-const env={...process.env,JAVA_HOME:javaHome,PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,XDG_CONFIG_HOME:path.join(root,'.tools','config'),STRIPE_PLUS_PRICE_ID:'price_1U673BDl7HCNqvcVgMV17BxO',STRIPE_PRO_PRICE_ID:'price_1U673zDl7HCNqvcVI2CIiX6w',PUBLIC_APP_URL:'http://127.0.0.1:4173'};
+const env={...process.env,JAVA_HOME:javaHome,PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,XDG_CONFIG_HOME:path.join(root,'.tools','config'),PUBLIC_APP_URL:'http://127.0.0.1:4173'};
 const generatedEnv=path.join(root,'functions','.env.local'),generatedSecret=path.join(root,'functions','.secret.local');
 if(fs.existsSync(generatedEnv)||fs.existsSync(generatedSecret))throw new Error('Refusing to overwrite existing Functions local configuration');
 const testFile=process.argv[2]||'tests/integration/stripe-sandbox.test.js';

@@ -351,9 +351,9 @@ en:{
  'f.repeatPick':'Which months? Tap to include.',
  'f.tbc':'TBC',
  'f.tbc2':'To be confirmed',
- 'ob.h1':'Know your tax<br>in seconds',
+ 'ob.h1':'Self-employed bookkeeping and tax, made simple.',
  'ob.chooseLang':'Choose your language',
- 'ob.lede':'Money in, money out, tax sorted. No accountant, no jargon.',
+ 'ob.lede':'Add your income. Add your expenses. See your estimated tax.',
  'ob.signIn':'Sign in',
  'ob.signInS':'Save your data & sync across devices',
  'ob.noAcc':'Start without an account',
@@ -3272,7 +3272,7 @@ function proPlansCard(){
     ${planBlock('free')}
     ${planBlock('plus')}
     ${planBlock('pro')}
-    <div class="s" style="margin:2px 8px 14px;line-height:1.55">Launch pricing is Free £0, Plus £3.99/month and Pro £8.49/month. Plus and Pro are monthly recurring subscriptions; no annual plan is offered at launch. Stripe Checkout shows the price, renewal terms and any discount before payment. Cancel from the billing portal. A promotion redeemed here can grant time-limited access without starting a paid subscription. <button class="link" data-tm-click="openLegal('terms')">Terms</button></div>
+    <div class="s" style="margin:2px 8px 14px;line-height:1.55">Launch pricing is Free £0, Plus £3.99/month and Pro £8.49/month. Plus and Pro are monthly recurring subscriptions; no annual plan is offered at launch. Stripe Checkout shows the price, renewal terms and any discount before payment. Cancel from the billing portal. A promotion redeemed here can grant time-limited access without starting a paid subscription. <a class="link" href="/terms.html">Terms</a></div>
   </div>`;
 }
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
@@ -4240,8 +4240,9 @@ function pageMore(){
         </div>
       </div>
       <div class="card" style="padding:6px 18px">
-        <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line)" data-tm-click="openLegal('privacy')">${t('leg.privacy')} ›</button>
-        <button class="link" style="display:block;width:100%;text-align:start;padding:13px 0" data-tm-click="openLegal('terms')">${t('leg.terms')} ›</button>
+        <a class="link" href="/help.html" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line);text-decoration:none">Help ›</a>
+        <a class="link" href="/privacy.html" style="display:block;width:100%;text-align:start;padding:13px 0;border-bottom:1px solid var(--line);text-decoration:none">${t('leg.privacy')} ›</a>
+        <a class="link" href="/terms.html" style="display:block;width:100%;text-align:start;padding:13px 0;text-decoration:none">${t('leg.terms')} ›</a>
       </div>
     </div>
   </details>

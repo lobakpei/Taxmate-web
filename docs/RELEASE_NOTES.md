@@ -1,6 +1,6 @@
 # TaxMate Production Readiness Candidate — Release Notes
 
-Build `2026-08-19.production-readiness-rc.4` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, persistent non-production staging setup, Stripe hosted TEST verification and approved GA4/Sentry receipt checks into a release candidate. It is not deployed to production.
+Build `2026-08-19.seo-implementation-rc.5` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, persistent non-production staging setup, Founder-approved SEO implementation and approved GA4/Sentry receipt checks into a release candidate. It is not deployed to production.
 
 ## Product and UI
 
@@ -17,9 +17,9 @@ Build `2026-08-19.production-readiness-rc.4` consolidates the W0–W5 programme,
 - Partnership join is server-authoritative and validates the parent before membership creation.
 - Partnership leave now revokes cloud access and deletes a last-member partnership.
 - Account deletion removes personal cloud data, receipts, promotions and identity while retaining shared records only for remaining members.
-- Isolated TaxMate Stripe TEST products/prices match Free £0, Plus £3.99/month and Pro £8.49/month.
+- Account-specific Stripe IDs and earlier external receipts were removed after the refreshed Dashboard still resolved to the wrong parent account.
 - Checkout now blocks duplicate live subscriptions; webhook projection is signed, idempotent and rejects stale event ordering.
-- Real Stripe TEST API integration covers promotions, cancellation, declined cards and server entitlement truth.
+- The Stripe integration harness now requires environment-injected account/Price identities and verifies that the TEST key resolves to the exact independent TaxMate account before running.
 - Firestore/Storage/Auth/Functions Emulator Suite covers cross-user denial, two-client convergence, offline tombstones, receipts, partnership and deletion flows.
 - Stripe Tax is explicitly off. Checkout totals remain exactly £3.99/£8.49 monthly with no VAT representation; full refunds immediately remove the refunded paid entitlement, partial refunds require manual review, and active promotion fallback remains server-derived.
 
@@ -36,4 +36,12 @@ Build `2026-08-19.production-readiness-rc.4` consolidates the W0–W5 programme,
 - Restore downloads a pre-restore ZIP and rolls back newly uploaded objects if restoration fails.
 - Service-worker update now activates after the new shell is cached and offline fallback reads only the current cache identity.
 
-Stripe hosted TEST Checkout, signed webhook projection, cancellation, full refund and GA4/Sentry received-event inspection are verified as recorded in `STAGING_EXTERNAL_SERVICE_REPORT.md`. A persistent staging Firebase project and Hosting/Firestore/Auth/App Check configuration now exist, but deployed Functions/Storage and the real Google/App Check/receipt path remain blocked by the Founder-controlled staging Blaze billing link.
+Correct-account hosted Stripe TEST remains blocked and no earlier account evidence is accepted. GA4/Sentry received-event inspection remains verified as recorded in `STAGING_EXTERNAL_SERVICE_REPORT.md`. A persistent staging Firebase project and Hosting/Firestore/Auth/App Check configuration now exist, but deployed Functions/Storage and the real Google/App Check/receipt path remain blocked by the Founder-controlled staging Blaze billing link.
+
+## Search implementation
+
+- Uses the exact Founder-approved title, meta description, H1, supporting line and concise explanatory copy.
+- Adds production canonical/Open Graph metadata and truthful `SoftwareApplication` JSON-LD without ratings, awards, company claims or HMRC certification.
+- Adds a useful public Help page, real Help/Privacy/Terms anchors, production-only robots/sitemap URLs and a real non-indexable 404 page.
+- Keeps Privacy and Terms crawlable but non-indexed; no fake hreflang is emitted.
+- Deploys staging with a separate config that applies `X-Robots-Tag: noindex, nofollow, noarchive` to every response.

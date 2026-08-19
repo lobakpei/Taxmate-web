@@ -10,7 +10,7 @@ Production was not used as a staging substitute. No production Firebase setting,
 - Firestore Native/Standard was created in `europe-west2` with deletion protection. Candidate Firestore rules and indexes deployed successfully.
 - Google is the only enabled sign-in provider. Apple and all other providers remain disabled.
 - A staging-only reCAPTCHA Enterprise key restricted to the two Firebase Hosting staging domains was created and registered with App Check.
-- Candidate Hosting deployed to `https://taxmate-staging.web.app`; exact-host runtime selection prevents staging from selecting production Firebase configuration. The final deployment exposed build `2026-08-19.production-readiness-rc.4`, cache `taxmate-v2-rc-1-production-readiness-rc-4`, and passed the in-page audit 29/29 with zero fail/warn.
+- Candidate Hosting deployed to `https://taxmate-staging.web.app`; exact-host runtime selection prevents staging from selecting production Firebase configuration. The final deployment exposed build `2026-08-19.seo-implementation-rc.5`, cache `taxmate-v2-rc-1-seo-implementation-rc-5`, passed the in-page audit 29/29 with zero fail/warn, and returned `X-Robots-Tag: noindex, nofollow, noarchive` on the homepage, Help and real 404 response.
 - The in-app-browser Google popup returned Firebase `auth/internal-error`; Firestore then operated offline. This is not reported as a successful sign-in/cloud-sync receipt.
 - Firebase refused Functions deployment and Storage initialisation until Blaze is enabled. No billing account was linked and no paid plan was accepted. This is the minimum remaining Founder-controlled setup.
 
@@ -27,27 +27,11 @@ Production was not used as a staging substitute. No production Firebase setting,
 
 ### TaxMate Stripe TEST sandbox
 
-An empty, isolated `TaxMate` sandbox was created under the existing provider account. The pre-existing `toodaloop sandbox` was not modified. Sandbox account: `acct_1U671tDl7HCNqvcV` (`livemode:false`).
+The Stripe Dashboard was reopened in a fresh browser context and hard-navigated rather than relying on the earlier page. Its account switcher still identified the sandbox as belonging to the wrong parent account. Under the Founder stop rule, no Stripe Product, Price, promotion, webhook, Checkout, payment, refund or account setting was created or changed.
 
-| Tier | Product | Monthly Price | Amount |
-|---|---|---|---:|
-| Free | `prod_V6JfalYbsiQocA` | `price_1U672UDl7HCNqvcVlXulcEe8` | GBP 0.00 |
-| Plus | `prod_V6JgZRBvRd6EjS` | `price_1U673BDl7HCNqvcVgMV17BxO` | GBP 3.99 |
-| Pro | `prod_V6JhhSUJ2VxVIo` | `price_1U673zDl7HCNqvcVI2CIiX6w` | GBP 8.49 |
+All earlier account-specific Stripe IDs and external TEST receipts are invalid for TaxMate and have been removed from source, config, tests and reports. The integration harness now requires the future independent TaxMate account ID and Plus/Pro Price IDs through environment variables, verifies the API key resolves to that exact account, and refuses malformed or missing identities. No secret is stored in the repository.
 
-Only monthly recurring prices exist for launch. Checkout public URLs point to the TaxMate site, Privacy Policy, Terms and `support@taxmate.uk`; telephone display was disabled. Stripe-generated fake sandbox identity/address data remains test placeholder data and is not treated as Founder business truth.
-
-Promotion fixtures are TEST-only:
-
-- `TAXMATEPLUS30` / `promo_1U678eDl7HCNqvcVZUp8H9eh`: Plus, 30 days;
-- `TAXMATEPRO90` / `promo_1U678eDl7HCNqvcVsnI1rCJd`: Pro, 90 days;
-- `TAXMATEEXPIRED` / `promo_1U67SBDl7HCNqvcVCn5XvDLc`: inactive expiry fixture.
-
-`npm run test:stripe:sandbox` passed against real Stripe TEST APIs plus isolated local Auth/Firestore/Functions emulators. It verified server-selected Plus/Pro prices, hosted Checkout session creation, Terms acceptance requirement, cancel URL/session expiry, customer reuse, active and invalid/inactive promotion handling, one-UID redemption, real TEST subscription creation, webhook-driven Pro entitlement, duplicate-subscription blocking, period-end cancellation, immediate cancellation to Free, declined-card rejection with no unlock, signed webhook validation, duplicate event idempotency and out-of-order event protection. Generated customers/subscriptions were removed; one orphan from an earlier failed run was explicitly deleted.
-
-Founder launch policy is encoded: Checkout sets `automatic_tax.enabled=false`; the completed hosted payment recorded GBP 849 with tax 0; no VAT registration was created. Full-refund, partial-refund and cancellation projections are server-owned and covered by signed webhook integration tests.
-
-A real hosted TEST Checkout completed with Stripe's test card for Pro at exactly £8.49. The actual `checkout.session.completed` event was retrieved from Stripe, re-signed for the local candidate webhook, accepted by the Functions emulator and projected an active Pro entitlement. The TEST payment was then fully refunded for £8.49 and its subscription cancelled; Stripe reported refund `succeeded` and subscription `canceled`. Plus and Pro server-created sessions remained exactly GBP 399/849, monthly, with Stripe Tax off and no dynamically supplied client price.
+Canonical TaxMate Product, Price, promotion and webhook IDs are therefore `BLOCKED_NOT_CREATED`. Source/emulator tests still protect the Founder-approved £3.99/£8.49 monthly pricing policy, Stripe Tax off, signed webhook truth, cancellation, promotion fallback and refund behavior, but they are not evidence of correct-account external Stripe receipt.
 
 ### Other external services
 
@@ -64,10 +48,11 @@ A real hosted TEST Checkout completed with Stripe's test card for Pro at exactly
 | Candidate deployed Functions | FAIL | Cloud Functions API disabled; production deployment prohibited |
 | Rules, receipts, deletion and two-client behavior | PASS | 11/11 rules/Storage emulator plus 3/3 Auth/Functions emulator |
 | Real cloud receipt/full-ZIP restore | BLOCKED | Requires approved non-production Firebase deployment and disposable account |
-| Stripe TEST objects and server lifecycle | PASS | Isolated TaxMate sandbox and real TEST API integration pass |
-| Hosted Checkout card completion | PASS | Real hosted Pro TEST Checkout paid £8.49 and reached backend Pro entitlement |
-| VAT / Stripe Tax | PASS | Stripe Tax off; tax 0; no VAT registration; exact final monthly prices |
-| Refund entitlement | PASS | Cancellation, full refund, promotion fallback and partial-refund manual review are server-tested |
+| Stripe account identity | FAIL | Fresh account switcher still resolved to the wrong parent account; Stripe work stopped before mutation |
+| Stripe TEST objects and server lifecycle | BLOCKED | Correct-account Product/Price/promotion/webhook objects were not created |
+| Hosted Checkout card completion | BLOCKED | Earlier account receipt invalidated; correct-account hosted TEST not run |
+| VAT / Stripe Tax | BLOCKED | Source policy is fixed off, but correct-account Checkout tax receipt is absent |
+| Refund entitlement | BLOCKED | Source/emulator behavior passes; correct-account webhook/refund lifecycle is absent |
 | GA4 received delivery | PASS | Fresh Realtime `upgrade_viewed` receipt and parameter drill-down observed |
 | GA4 provider privacy settings | PASS | Enhanced Measurement, sharing/signals, granular collection and ads personalisation off; redaction and two-month retention configured |
 | Sentry received payload | PASS_WITH_METADATA | Fresh `TAXMATE-9` proves scrubbed bookkeeping payload; trace and coarse provider-derived geography remain |

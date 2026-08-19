@@ -22,9 +22,9 @@ Do not perform these actions until Founder release approval. Complete them first
 - [x] Configure Founder-approved launch treatment: Stripe Tax off, no VAT added/invoiced and no VAT registration created.
 - [ ] Configure Checkout Terms URL, Billing Portal and durable confirmation email.
 - [ ] Configure TEST secret and webhook secret through secure service configuration.
-- [x] Create disposable Plus and Pro TEST promotion fixtures with documented duration/expiry (TaxMate sandbox only).
+- [ ] Create disposable Plus and Pro TEST promotion fixtures with documented duration/expiry in the independent TaxMate account only.
 - [x] Encode Founder-approved refund-to-entitlement behaviour.
-- [x] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion, partial-review and full-refund paths in TEST.
+- [ ] Verify checkout, failure, duplicate webhook, cancellation, period end, expiry, downgrade, promotion, partial-review and full-refund paths in the correct-account TEST environment.
 
 ## Telemetry
 

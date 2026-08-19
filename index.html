@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-19.production-readiness-rc.4 — Founder Preview release candidate; not production -->
-<html lang="en">
+<!-- build: 2026-08-19.seo-implementation-rc.5 — Founder Preview release candidate; not production -->
+<html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
 <script src="src/core/telemetry.js"></script>
@@ -13,24 +13,26 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
 <meta name="theme-color" content="#0F1620" media="(prefers-color-scheme: dark)">
-<title>TaxMate UK</title>
-<meta name="description" content="Track income, expenses, mileage and estimated UK Self Assessment tax with TaxMate UK.">
+<title>Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK</title>
+<meta name="description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
 <link rel="canonical" href="https://taxmate.uk/">
 <meta name="robots" content="index,follow,max-image-preview:large">
-<meta property="og:title" content="TaxMate UK">
-<meta property="og:description" content="Track income, expenses and tax in seconds. Built for UK sole traders and gig workers.">
+<meta property="og:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
+<meta property="og:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
 <meta property="og:image" content="https://taxmate.uk/og-image.png">
 <meta property="og:image:secure_url" content="https://taxmate.uk/og-image.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TaxMate UK — Just did it.">
-<meta property="og:url" content="https://taxmate.uk">
+<meta property="og:image:alt" content="TaxMate UK bookkeeping and estimated tax app">
+<meta property="og:url" content="https://taxmate.uk/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
+<meta name="twitter:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
 <meta name="twitter:image" content="https://taxmate.uk/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web","url":"https://taxmate.uk/","description":"Income, expense, mileage and estimated Self Assessment tracking for UK self-employed people.","offers":{"@type":"Offer","price":"0","priceCurrency":"GBP"}}</script>
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://taxmate.uk/","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
 <link rel="manifest" href="manifest.json">
 <link rel="icon" type="image/png" href="icon-192.png">
 <link rel="apple-touch-icon" href="icon-192.png">
@@ -400,6 +402,11 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .sheet{max-width:520px;max-height:86vh;border-radius:22px;
     padding:10px 22px 24px;box-shadow:0 24px 64px rgba(16,24,32,.28)}
 }
+.seo-intro{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow-sm);padding:22px;margin-top:8px}
+.seo-intro h1{font-size:24px;line-height:1.2;letter-spacing:-.5px;margin-bottom:10px}
+.seo-intro p{color:var(--muted);font-size:14px;margin-top:8px}
+.seo-intro nav{display:flex;flex-wrap:wrap;gap:14px;margin-top:14px}
+.seo-intro a{color:var(--brand-deep);font-size:13px;font-weight:700}
 </style>
 </head>
 <body>
@@ -410,7 +417,13 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="year-pill"><select id="yearSel" data-tm-change="setYear(this.value)"></select></div>
 </div>
 
-<main id="page"></main>
+<main id="page"><section class="seo-intro">
+  <h1>Self-employed bookkeeping and tax, made simple.</h1>
+  <p><strong>Add your income. Add your expenses. See your estimated tax.</strong></p>
+  <p>TaxMate is a simple bookkeeping and tax-planning app for UK sole traders and self-employed people. Record your income and expenses, keep your digital records together and see an estimated tax bill as you go.</p>
+  <p>TaxMate helps you keep records and understand your figures. It does not submit your tax return or MTD updates to HMRC.</p>
+  <nav aria-label="Public information"><a href="/help.html">Help</a><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></nav>
+</section></main>
 <nav id="nav"></nav>
 
 <!-- entry sheet -->
