@@ -7,10 +7,11 @@
     "test": "node --test",
     "test:characterization": "node --test tests/characterization/*.test.js",
     "test:unit": "node --test tests/unit/*.test.js",
-    "test:integration": "node --test tests/integration/*.test.js",
+    "test:integration": "node --test tests/integration/programme.test.js",
     "test:rules": "node --test tests/rules/rules-source.test.js",
     "test:rules:emulator": "node scripts/run-rules-emulator.js",
-    "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator"
+    "test:functions:emulator": "node scripts/run-functions-emulator.js",
+    "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator && npm run test:functions:emulator"
   },
   "engines": {
     "node": ">=22"

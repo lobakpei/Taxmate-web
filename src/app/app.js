@@ -136,7 +136,7 @@ en:{
  'm.backupData':'Data-only backup','m.backupDataS':'TaxMate records only; receipt files are not included (JSON)',
  'm.csv':'Export entries (CSV)',
  'm.restore':'Restore from backup',
- 'm.danger':'Danger zone','m.eraseCloud':'Delete all my data (incl. cloud)','m.eraseCloudT':'Erase everything everywhere?','m.eraseCloudM':'This permanently deletes all your businesses, entries, receipts and settings from this device AND from the cloud. This cannot be undone. Export a backup first if unsure.','m.erasing':'Erasing your data…','m.erasedAll':'All your data has been deleted from this device and the cloud.','m.erasedLocal':'Local data deleted. Cloud data could not be reached — try again when online.',
+ 'm.danger':'Danger zone','m.eraseCloud':'Delete all my data (incl. cloud)','m.eraseCloudT':'Delete your TaxMate account data?','m.eraseCloudM':'This permanently deletes your personal businesses, entries, receipts and settings from this device and TaxMate cloud. Your membership is removed from shared partnerships; records remain for other members. Provider backups and legally required billing records may remain for limited periods. Export a backup first.','m.erasing':'Erasing your data…','m.erasedAll':'Your personal TaxMate account data has been deleted from this device and cloud. Shared partnership records may remain for other members.','m.erasedLocal':'Local data deleted. Cloud data could not be reached — try again when online.',
  'm.reset':'Delete all data on this device',
  'm.resetT':'Delete everything?',
  'm.resetM':'This wipes all businesses, entries and settings from this device. There is no undo. Export a backup first if in doubt.',
@@ -635,7 +635,7 @@ zh:{
  'm.backupData':'只備份數據','m.backupDataS':'只有 TaxMate 記錄；不包含收據檔案（JSON）',
  'm.csv':'匯出記錄 (CSV 可開 Excel)',
  'm.restore':'由備份還原',
- 'm.danger':'危險地帶','m.eraseCloud':'刪除我所有資料（包括雲端）','m.eraseCloudT':'徹底刪除所有地方嘅資料？','m.eraseCloudM':'呢個會永久刪除你喺呢部裝置「同埋」雲端上嘅所有生意、記錄、收據同設定，無法復原。如有疑問請先匯出備份。','m.erasing':'正在刪除你嘅資料…','m.erasedAll':'你嘅所有資料已從呢部裝置同雲端刪除。','m.erasedLocal':'本機資料已刪除。雲端資料無法連接 — 請喺有網絡時再試。',
+ 'm.danger':'危險地帶','m.eraseCloud':'刪除我所有資料（包括雲端）','m.eraseCloudT':'刪除你嘅 TaxMate 帳戶資料？','m.eraseCloudM':'呢個會永久刪除你喺本機同 TaxMate 雲端嘅個人生意、記錄、收據同設定。你會退出共享合夥；其他成員仍會保留共享記錄。供應商備份及法例要求嘅付款記錄可能有限期保留。請先匯出備份。','m.erasing':'正在刪除你嘅資料…','m.erasedAll':'你嘅個人 TaxMate 帳戶資料已從本機同雲端刪除；共享合夥記錄可能仍由其他成員保留。','m.erasedLocal':'本機資料已刪除。雲端資料無法連接 — 請喺有網絡時再試。',
  'm.reset':'刪除此裝置所有數據',
  'm.resetT':'刪除所有數據?',
  'm.resetM':'將清除此裝置上所有生意、記錄及設定,無法復原。如有疑問請先匯出備份。',
@@ -962,7 +962,7 @@ zh:{
  'tier.current':'目前方案','tier.choose':'切換至{p}','tier.active':'使用中','tier.freeNow':'限時免費','tier.activateFree':'限時免費開啟','trial.activateTitle':'開啟你的免費 Pro','trial.activateBody':'你會免費使用所有 Pro 功能,直到 {d}。之後會自動變返免費版 —— 你嘅資料一直會保留。繼續?','trial.activated':'Pro 已開啟,盡情用!','trial.endingTitle':'你嘅免費 Pro 將於 {d} 完結。','trial.endingDays':'仲有 {n} 日。','trial.endingBody':'想繼續用 Pro 功能,請喺完結前加入付費資料。如果唔加,完結日會自動變返免費版 —— 你嘅資料會保留。','trial.endedTitle':'你嘅免費 Pro 已完結。','trial.endedBody':'你而家係免費版。你嘅資料安全保留。',
  'feat.records':'無限收入與支出','feat.taxcalc':'稅務計算','feat.onebiz':'一個業務','feat.mileageBasic':'里程記錄','feat.sa103view':'SA103 欄位對應','feat.sync':'雲端同步與登入',
  'feat.mileageCompare':'55p 與實報自動比較','feat.aiTips':'小幫手(提示)','feat.multiBiz':'多個業務','feat.receiptPhoto':'收據相片','feat.pdfReport':'PDF 報告匯出','feat.sa103Pdf':'SA103 PDF 匯出',
- 'feat.partnerSync':'拍檔同步','feat.sa104':'SA104 合夥','feat.receiptPack':'收據包 PDF（供稅局審查）','feat.mtdReady':'MTD 季度匯出',
+ 'feat.partnerSync':'拍檔同步','feat.sa104':'SA104 合夥','feat.receiptPack':'整理收據 PDF','feat.mtdReady':'季度記錄摘要（不提交 HMRC）',
  'lock.title':'{p}功能','lock.body':'這是 TaxMate {p} 的功能，升級即可解鎖。','lock.upgrade':'查看方案','home.signinTitle':'備份你的資料','home.signinSub':'登入即可將記錄儲存到雲端，並跨裝置同步。','home.signinBtn':'登入','pwa.install':'下載','pwa.installSub':'將 app 安裝到手機。','pwa.iosTitle':'加到主畫面','pwa.iosBody':'喺 iPhone 安裝，要用 Safari 做：','pwa.iosStep1':'撳 Safari 底部嘅「分享」按鈕（一個方框加向上箭嘴 ⬆️）','pwa.iosStep2':'向下捲，撳「加入主畫面」','pwa.iosStep3':'撳「加入」— 搞掂！TaxMate 圖示會出現喺主畫面','pwa.iosNote':'注意：只可以喺 Safari 做，iPhone 上嘅 Chrome 或其他瀏覽器唔得。','pwa.andTitle':'安裝 app','pwa.andBody':'你個瀏覽器冇自動彈安裝掣。你仍然可以咁安裝：','pwa.andStep1':'撳 Chrome 右上角嘅選單（⋮）','pwa.andStep2':'撳「安裝應用程式」或「加到主畫面」','pwa.andStep3':'確認 — TaxMate 圖示會出現喺主畫面','pwa.andTip':'貼士：如果只見到「加到主畫面」（即係捷徑，icon 會有 Chrome 細圖），請關閉呢個網站、清除佢嘅瀏覽器快取、重新開啟並等幾秒 — 之後應該會出現「安裝應用程式」，裝出嚟先似真 app。','pdf.enHint':'PDF 報告以英文生成。你用中文輸入的名稱可能無法顯示 — 想在 PDF 中顯示的內容請用英文輸入。','lang.pdfHint':'提示：PDF 報告只以英文匯出。若需在 PDF 顯示業務或類別名稱，請用英文輸入。','rp.title':'收據包','rp.desc':'把所有收據相片整合成一個 PDF，供稅局查核 — 每頁一張收據連詳情。','rp.btn':'匯出收據包','rp.none':'此時段尚未有收據相片。','rp.building':'正在製作收據包…','rp.page':'收據 {i} / {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'免費版永遠齊全功能,Pro 只係錦上添花。',
  'pro.f1':'拍檔同步 — 一盤合夥生意,部部電話睇到',
@@ -1129,7 +1129,7 @@ pl:{
  'm.backupData':'Kopia tylko z danymi','m.backupDataS':'Tylko zapisy TaxMate; pliki paragonów nie są dołączone (JSON)',
  'm.csv':'Eksport wpisów (CSV do Excela)',
  'm.restore':'Przywróć z kopii',
- 'm.danger':'Strefa ryzyka','m.eraseCloud':'Usuń wszystkie moje dane (też w chmurze)','m.eraseCloudT':'Usunąć wszystko wszędzie?','m.eraseCloudM':'To trwale usunie wszystkie Twoje firmy, wpisy, paragony i ustawienia z tego urządzenia ORAZ z chmury. Nie można tego cofnąć. Najpierw wyeksportuj kopię, jeśli nie masz pewności.','m.erasing':'Usuwanie danych…','m.erasedAll':'Wszystkie Twoje dane zostały usunięte z urządzenia i chmury.','m.erasedLocal':'Dane lokalne usunięte. Nie można połączyć z chmurą — spróbuj ponownie online.',
+ 'm.danger':'Strefa ryzyka','m.eraseCloud':'Usuń wszystkie moje dane (też w chmurze)','m.eraseCloudT':'Usunąć dane konta TaxMate?','m.eraseCloudM':'To trwale usuwa Twoje osobiste firmy, wpisy, paragony i ustawienia z urządzenia i chmury TaxMate. Członkostwo we wspólnych spółkach zostanie usunięte, ale dane pozostaną dla innych członków. Kopie dostawców i wymagane prawem dane płatnicze mogą pozostać przez ograniczony czas. Najpierw wyeksportuj kopię.','m.erasing':'Usuwanie danych…','m.erasedAll':'Twoje osobiste dane konta TaxMate zostały usunięte z urządzenia i chmury; wspólne dane spółki mogą pozostać dla innych członków.','m.erasedLocal':'Dane lokalne usunięte. Nie można połączyć z chmurą — spróbuj ponownie online.',
  'm.reset':'Usuń wszystkie dane z urządzenia',
  'm.resetT':'Usunąć wszystko?',
  'm.resetM':'Usunie wszystkie firmy, wpisy i ustawienia z tego urządzenia. Nie da się tego cofnąć. W razie wątpliwości najpierw zrób kopię.',
@@ -1456,7 +1456,7 @@ pl:{
  'tier.current':'Obecny plan','tier.choose':'Przełącz na {p}','tier.active':'Aktywny','tier.freeNow':'Za darmo przez ograniczony czas','tier.activateFree':'Zacznij za darmo','trial.activateTitle':'Rozpocznij darmowy dostęp Pro','trial.activateBody':'Otrzymasz wszystkie funkcje Pro za darmo do {d}. Potem automatycznie wrócisz do planu Darmowego — Twoje dane są zawsze zachowane. Kontynuować?','trial.activated':'Pro odblokowane!','trial.endingTitle':'Twój darmowy Pro kończy się {d}.','trial.endingDays':'Pozostało {n} dni.','trial.endingBody':'Aby zachować funkcje Pro, dodaj dane płatności przed końcem. Jeśli nic nie zrobisz, wrócisz do planu Darmowego w dniu zakończenia — dane pozostaną.','trial.endedTitle':'Twój darmowy Pro zakończył się.','trial.endedBody':'Jesteś teraz na planie Darmowym. Twoje dane są bezpieczne.',
  'feat.records':'Nielimitowane przychody i wydatki','feat.taxcalc':'Obliczanie podatku','feat.onebiz':'Jedna firma','feat.mileageBasic':'Rejestr przebiegu','feat.sa103view':'Mapowanie SA103','feat.sync':'Synchronizacja i logowanie',
  'feat.mileageCompare':'55p vs rzeczywiste','feat.aiTips':'Pomocnik','feat.multiBiz':'Wiele firm','feat.receiptPhoto':'Zdjęcia paragonów','feat.pdfReport':'Eksport PDF','feat.sa103Pdf':'Eksport SA103 PDF',
- 'feat.partnerSync':'Synchronizacja partnera','feat.sa104':'SA104 spółka','feat.receiptPack':'Pakiet paragonów PDF','feat.mtdReady':'Eksport kwartalny MTD',
+ 'feat.partnerSync':'Synchronizacja partnera','feat.sa104':'SA104 spółka','feat.receiptPack':'Uporządkowany pakiet paragonów PDF','feat.mtdReady':'Kwartalne podsumowanie ewidencji (bez wysyłki do HMRC)',
  'lock.title':'Funkcja {p}','lock.body':'To część TaxMate {p}. Ulepsz, aby odblokować.','lock.upgrade':'Zobacz plany','home.signinTitle':'Utwórz kopię zapasową','home.signinSub':'Zaloguj się, aby zapisać dane w chmurze i synchronizować.','home.signinBtn':'Zaloguj się','pwa.install':'Pobierz','pwa.installSub':'Zainstaluj aplikację na telefonie.','pwa.iosTitle':'Dodaj do ekranu głównego','pwa.iosBody':'Na iPhonie zainstaluj z Safari:','pwa.iosStep1':'Dotknij przycisku Udostępnij (kwadrat ze strzałką) na dole Safari','pwa.iosStep2':'Przewiń w dół i dotknij „Do ekranu głównego”','pwa.iosStep3':'Dotknij „Dodaj” — gotowe! Ikona TaxMate pojawi się na ekranie','pwa.iosNote':'Uwaga: działa tylko w Safari, nie w Chrome.','pwa.andTitle':'Zainstaluj aplikację','pwa.andBody':'Przeglądarka nie pokazała przycisku instalacji. Nadal możesz zainstalować:','pwa.andStep1':'Dotknij menu (⋮) w prawym górnym rogu Chrome','pwa.andStep2':'Dotknij „Zainstaluj aplikację” lub „Dodaj do ekranu”','pwa.andStep3':'Potwierdź — ikona TaxMate pojawi się na ekranie','pwa.andTip':'Wskazówka: jeśli widzisz tylko „Dodaj do ekranu” (skrót), zamknij stronę, wyczyść pamięć podręczną, otwórz ponownie i poczekaj.','pdf.enHint':'Raporty PDF są generowane po angielsku. Nazwy wpisane w innych językach mogą się nie pojawić.','lang.pdfHint':'Wskazówka: raporty PDF eksportują się tylko po angielsku.','rp.title':'Pakiet paragonów','rp.desc':'Połącz wszystkie zdjęcia paragonów w jeden plik PDF dla HMRC.','rp.btn':'Eksportuj pakiet','rp.none':'Brak zdjęć paragonów w tym okresie.','rp.building':'Tworzenie pakietu…','rp.page':'Paragon {i} z {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Wersja darmowa zawsze będzie pełna. Pro dodaje wygodę.',
  'pro.f1':'Synchronizacja z partnerem — jedna spółka, każdy telefon',
@@ -1623,7 +1623,7 @@ ro:{
  'm.backupData':'Backup doar cu date','m.backupDataS':'Doar înregistrările TaxMate; fișierele bonurilor nu sunt incluse (JSON)',
  'm.csv':'Exportă înregistrări (CSV pentru Excel)',
  'm.restore':'Restaurează din backup',
- 'm.danger':'Zonă periculoasă','m.eraseCloud':'Șterge toate datele mele (inclusiv cloud)','m.eraseCloudT':'Ștergi tot, peste tot?','m.eraseCloudM':'Aceasta șterge permanent toate afacerile, înregistrările, chitanțele și setările de pe acest dispozitiv ȘI din cloud. Nu poate fi anulată. Exportă o copie mai întâi dacă nu ești sigur.','m.erasing':'Se șterg datele…','m.erasedAll':'Toate datele tale au fost șterse de pe dispozitiv și din cloud.','m.erasedLocal':'Date locale șterse. Cloud-ul nu a putut fi accesat — încearcă din nou online.',
+ 'm.danger':'Zonă periculoasă','m.eraseCloud':'Șterge toate datele mele (inclusiv cloud)','m.eraseCloudT':'Ștergi datele contului TaxMate?','m.eraseCloudM':'Aceasta șterge permanent afacerile, înregistrările, chitanțele și setările tale personale de pe dispozitiv și din cloudul TaxMate. Calitatea de membru în parteneriate comune este eliminată, dar datele rămân pentru ceilalți membri. Copiile furnizorilor și evidențele de plată cerute de lege pot rămâne o perioadă limitată. Exportă mai întâi o copie.','m.erasing':'Se șterg datele…','m.erasedAll':'Datele personale ale contului TaxMate au fost șterse de pe dispozitiv și din cloud; datele comune pot rămâne pentru ceilalți membri.','m.erasedLocal':'Date locale șterse. Cloud-ul nu a putut fi accesat — încearcă din nou online.',
  'm.reset':'Șterge toate datele de pe dispozitiv',
  'm.resetT':'Ștergi totul?',
  'm.resetM':'Șterge toate afacerile, înregistrările și setările de pe acest dispozitiv. Nu se poate anula. Fă un backup mai întâi dacă ai dubii.',
@@ -1950,7 +1950,7 @@ ro:{
  'tier.current':'Plan curent','tier.choose':'Schimbă la {p}','tier.active':'Activ','tier.freeNow':'Gratuit pe timp limitat','tier.activateFree':'Începe gratuit','trial.activateTitle':'Începe accesul Pro gratuit','trial.activateBody':'Vei primi toate funcțiile Pro gratuit până la {d}. După aceea vei reveni automat la planul Gratuit — datele tale sunt mereu păstrate. Continui?','trial.activated':'Pro deblocat!','trial.endingTitle':'Pro-ul gratuit se termină {d}.','trial.endingDays':'{n} zile rămase.','trial.endingBody':'Pentru a păstra funcțiile Pro, adaugă datele de plată înainte de final. Dacă nu faci nimic, vei reveni la planul Gratuit la data de încheiere — datele rămân.','trial.endedTitle':'Pro-ul gratuit s-a încheiat.','trial.endedBody':'Ești acum pe planul Gratuit. Datele tale sunt în siguranță.',
  'feat.records':'Venituri și cheltuieli nelimitate','feat.taxcalc':'Calcul fiscal','feat.onebiz':'O afacere','feat.mileageBasic':'Înregistrare kilometraj','feat.sa103view':'Mapare SA103','feat.sync':'Sincronizare și autentificare',
  'feat.mileageCompare':'55p vs real','feat.aiTips':'Asistent','feat.multiBiz':'Mai multe afaceri','feat.receiptPhoto':'Foto bonuri','feat.pdfReport':'Export PDF','feat.sa103Pdf':'Export SA103 PDF',
- 'feat.partnerSync':'Sincronizare partener','feat.sa104':'SA104 parteneriat','feat.receiptPack':'Pachet bonuri PDF','feat.mtdReady':'Export trimestrial MTD',
+ 'feat.partnerSync':'Sincronizare partener','feat.sa104':'SA104 parteneriat','feat.receiptPack':'Pachet PDF organizat de bonuri','feat.mtdReady':'Rezumat trimestrial al evidențelor (fără trimitere HMRC)',
  'lock.title':'Funcție {p}','lock.body':'Face parte din TaxMate {p}. Fă upgrade pentru a debloca.','lock.upgrade':'Vezi planuri','home.signinTitle':'Salvează-ți datele','home.signinSub':'Conectează-te pentru a salva în cloud și a sincroniza.','home.signinBtn':'Conectare','pwa.install':'Descarcă','pwa.installSub':'Instalează aplicația pe telefon.','pwa.iosTitle':'Adaugă pe ecranul principal','pwa.iosBody':'Pe iPhone, instalează din Safari:','pwa.iosStep1':'Atinge butonul Partajare (pătrat cu săgeată) jos în Safari','pwa.iosStep2':'Derulează și atinge „Adaugă la ecran principal”','pwa.iosStep3':'Atinge „Adaugă” — gata! Iconița TaxMate apare pe ecran','pwa.iosNote':'Notă: funcționează doar în Safari, nu în Chrome.','pwa.andTitle':'Instalează aplicația','pwa.andBody':'Browserul nu a afișat butonul de instalare. Poți instala totuși:','pwa.andStep1':'Atinge meniul (⋮) din dreapta sus în Chrome','pwa.andStep2':'Atinge „Instalează aplicația” sau „Adaugă la ecran”','pwa.andStep3':'Confirmă — iconița TaxMate apare pe ecran','pwa.andTip':'Sfat: dacă vezi doar „Adaugă la ecran” (scurtătură), închide site-ul, șterge cache-ul, redeschide și așteaptă.','pdf.enHint':'Rapoartele PDF sunt generate în engleză. Numele scrise în alte limbi pot să nu apară.','lang.pdfHint':'Sfat: rapoartele PDF se exportă doar în engleză.','rp.title':'Pachet bonuri','rp.desc':'Combină toate fotografiile bonurilor într-un PDF pentru HMRC.','rp.btn':'Exportă pachetul','rp.none':'Nicio fotografie de bon în această perioadă.','rp.building':'Se creează pachetul…','rp.page':'Bon {i} din {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'Versiunea gratuită rămâne mereu completă. Pro adaugă confort.',
  'pro.f1':'Sincronizare cu partenerul — un parteneriat, fiecare telefon',
@@ -2117,7 +2117,7 @@ es:{
  'm.backupData':'Copia solo de datos','m.backupDataS':'Solo los registros de TaxMate; los archivos de recibos no se incluyen (JSON)',
  'm.csv':'Exportar entradas (CSV para Excel)',
  'm.restore':'Restaurar desde copia',
- 'm.danger':'Zona de peligro','m.eraseCloud':'Borrar todos mis datos (incl. la nube)','m.eraseCloudT':'¿Borrar todo en todas partes?','m.eraseCloudM':'Esto elimina permanentemente todos tus negocios, entradas, recibos y ajustes de este dispositivo Y de la nube. No se puede deshacer. Exporta una copia primero si no estás seguro.','m.erasing':'Borrando tus datos…','m.erasedAll':'Todos tus datos se han borrado de este dispositivo y de la nube.','m.erasedLocal':'Datos locales borrados. No se pudo acceder a la nube — inténtalo de nuevo en línea.',
+ 'm.danger':'Zona de peligro','m.eraseCloud':'Borrar todos mis datos (incl. la nube)','m.eraseCloudT':'¿Borrar los datos de tu cuenta TaxMate?','m.eraseCloudM':'Esto elimina permanentemente tus negocios, entradas, recibos y ajustes personales del dispositivo y de la nube de TaxMate. Se elimina tu membresía en sociedades compartidas, pero los registros permanecen para otros miembros. Las copias del proveedor y los registros de pago exigidos por ley pueden conservarse durante un tiempo limitado. Exporta antes una copia.','m.erasing':'Borrando tus datos…','m.erasedAll':'Los datos personales de tu cuenta TaxMate se han borrado del dispositivo y de la nube; los registros compartidos pueden permanecer para otros miembros.','m.erasedLocal':'Datos locales borrados. No se pudo acceder a la nube — inténtalo de nuevo en línea.',
  'm.reset':'Borrar todos los datos del dispositivo',
  'm.resetT':'¿Borrar todo?',
  'm.resetM':'Borra todos los negocios, entradas y ajustes de este dispositivo. No se puede deshacer. Exporta una copia antes si tienes dudas.',
@@ -2444,7 +2444,7 @@ es:{
  'tier.current':'Plan actual','tier.choose':'Cambiar a {p}','tier.active':'Activo','tier.freeNow':'Gratis por tiempo limitado','tier.activateFree':'Empieza gratis','trial.activateTitle':'Empieza tu acceso Pro gratis','trial.activateBody':'Tendrás todas las funciones Pro gratis hasta el {d}. Después volverás automáticamente al plan Gratis — tus datos siempre se conservan. ¿Continuar?','trial.activated':'¡Pro activado!','trial.endingTitle':'Tu Pro gratis termina el {d}.','trial.endingDays':'Quedan {n} días.','trial.endingBody':'Para mantener las funciones Pro, añade tus datos de pago antes de que termine. Si no haces nada, volverás al plan Gratis en la fecha de fin — tus datos se conservan.','trial.endedTitle':'Tu Pro gratis ha terminado.','trial.endedBody':'Ahora estás en el plan Gratis. Tus datos están seguros.',
  'feat.records':'Ingresos y gastos ilimitados','feat.taxcalc':'Cálculo de impuestos','feat.onebiz':'Un negocio','feat.mileageBasic':'Registro de kilometraje','feat.sa103view':'Mapeo SA103','feat.sync':'Sincronización e inicio de sesión',
  'feat.mileageCompare':'55p vs real','feat.aiTips':'Asistente','feat.multiBiz':'Múltiples negocios','feat.receiptPhoto':'Fotos de recibos','feat.pdfReport':'Exportar PDF','feat.sa103Pdf':'Exportar SA103 PDF',
- 'feat.partnerSync':'Sincronización de socio','feat.sa104':'SA104 sociedad','feat.receiptPack':'Pack de recibos PDF','feat.mtdReady':'Exportación trimestral MTD',
+ 'feat.partnerSync':'Sincronización de socio','feat.sa104':'SA104 sociedad','feat.receiptPack':'Paquete PDF organizado de recibos','feat.mtdReady':'Resumen trimestral de registros (sin envío a HMRC)',
  'lock.title':'Función {p}','lock.body':'Es parte de TaxMate {p}. Mejora para desbloquear.','lock.upgrade':'Ver planes','home.signinTitle':'Haz copia de seguridad','home.signinSub':'Inicia sesión para guardar en la nube y sincronizar.','home.signinBtn':'Iniciar sesión','pwa.install':'Descargar','pwa.installSub':'Instala la app en tu teléfono.','pwa.iosTitle':'Añadir a pantalla de inicio','pwa.iosBody':'En iPhone, instala desde Safari:','pwa.iosStep1':'Toca el botón Compartir (cuadrado con flecha) abajo en Safari','pwa.iosStep2':'Desplázate y toca „Añadir a pantalla de inicio”','pwa.iosStep3':'Toca „Añadir” — ¡listo! El icono de TaxMate aparece en tu pantalla','pwa.iosNote':'Nota: solo funciona en Safari, no en Chrome.','pwa.andTitle':'Instala la app','pwa.andBody':'Tu navegador no mostró el botón de instalación. Aún puedes instalarla:','pwa.andStep1':'Toca el menú (⋮) arriba a la derecha en Chrome','pwa.andStep2':'Toca „Instalar aplicación” o „Añadir a pantalla”','pwa.andStep3':'Confirma — el icono de TaxMate aparece en tu pantalla','pwa.andTip':'Consejo: si solo ves „Añadir a pantalla” (acceso directo), cierra el sitio, borra la caché, vuelve a abrir y espera.','pdf.enHint':'Los informes PDF se generan en inglés. Los nombres en otros idiomas pueden no aparecer.','lang.pdfHint':'Consejo: los informes PDF se exportan solo en inglés.','rp.title':'Pack de recibos','rp.desc':'Reúne todas las fotos de recibos en un PDF para HMRC.','rp.btn':'Exportar pack','rp.none':'No hay fotos de recibos en este periodo.','rp.building':'Creando pack…','rp.page':'Recibo {i} de {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'La versión gratis siempre será completa. Pro añade comodidad.',
  'pro.f1':'Sincronización con tu socio — una sociedad, todos los móviles',
@@ -2611,7 +2611,7 @@ ur:{
  'm.backupData':'صرف ڈیٹا کا بیک اپ','m.backupDataS':'صرف TaxMate ریکارڈ؛ رسیدوں کی فائلیں شامل نہیں (JSON)',
  'm.csv':'اندراجات ایکسپورٹ کریں (Excel کے لیے CSV)',
  'm.restore':'بیک اپ سے بحال کریں',
- 'm.danger':'خطرے کا علاقہ','m.eraseCloud':'میرا تمام ڈیٹا حذف کریں (کلاؤڈ سمیت)','m.eraseCloudT':'ہر جگہ سے سب کچھ حذف کریں؟','m.eraseCloudM':'یہ آپ کے تمام کاروبار، اندراجات، رسیدیں اور ترتیبات اس ڈیوائس سے اور کلاؤڈ سے مستقل طور پر حذف کر دے گا۔ اسے واپس نہیں کیا جا سکتا۔ اگر یقین نہ ہو تو پہلے بیک اپ ایکسپورٹ کریں۔','m.erasing':'آپ کا ڈیٹا حذف ہو رہا ہے…','m.erasedAll':'آپ کا تمام ڈیٹا اس ڈیوائس اور کلاؤڈ سے حذف کر دیا گیا ہے۔','m.erasedLocal':'مقامی ڈیٹا حذف ہو گیا۔ کلاؤڈ تک رسائی نہیں ہو سکی — آن لائن ہونے پر دوبارہ کوشش کریں۔',
+ 'm.danger':'خطرے کا علاقہ','m.eraseCloud':'میرا تمام ڈیٹا حذف کریں (کلاؤڈ سمیت)','m.eraseCloudT':'اپنے TaxMate اکاؤنٹ کا ڈیٹا حذف کریں؟','m.eraseCloudM':'یہ آپ کے ذاتی کاروبار، اندراجات، رسیدیں اور ترتیبات ڈیوائس اور TaxMate کلاؤڈ سے مستقل طور پر حذف کرتا ہے۔ مشترکہ شراکت سے آپ کی رکنیت ہٹتی ہے، مگر ریکارڈ دوسرے ارکان کے لیے باقی رہتے ہیں۔ فراہم کنندہ بیک اپ اور قانونی ادائیگی ریکارڈ محدود مدت تک رہ سکتے ہیں۔ پہلے بیک اپ ایکسپورٹ کریں۔','m.erasing':'آپ کا ڈیٹا حذف ہو رہا ہے…','m.erasedAll':'آپ کے ذاتی TaxMate اکاؤنٹ کا ڈیٹا ڈیوائس اور کلاؤڈ سے حذف ہو گیا؛ مشترکہ ریکارڈ دوسرے ارکان کے لیے باقی رہ سکتے ہیں۔','m.erasedLocal':'مقامی ڈیٹا حذف ہو گیا۔ کلاؤڈ تک رسائی نہیں ہو سکی — آن لائن ہونے پر دوبارہ کوشش کریں۔',
  'm.reset':'اس ڈیوائس کا تمام ڈیٹا حذف کریں',
  'm.resetT':'سب کچھ حذف کریں؟',
  'm.resetM':'اس ڈیوائس کے تمام کاروبار، اندراجات اور ترتیبات مٹ جائیں گی۔ واپسی ممکن نہیں۔ شک ہو تو پہلے بیک اپ نکال لیں۔',
@@ -2936,7 +2936,7 @@ ur:{
  'tier.current':'موجودہ پلان','tier.choose':'{p} پر سوئچ کریں','tier.active':'فعال','tier.freeNow':'محدود وقت کے لیے مفت','tier.activateFree':'مفت شروع کریں','trial.activateTitle':'اپنی مفت Pro رسائی شروع کریں','trial.activateBody':'آپ کو {d} تک تمام Pro خصوصیات مفت ملیں گی۔ اس کے بعد آپ خود بخود مفت پلان پر واپس آ جائیں گے — آپ کا ڈیٹا ہمیشہ محفوظ رہتا ہے۔ جاری رکھیں؟','trial.activated':'Pro کھل گیا!','trial.endingTitle':'آپ کا مفت Pro {d} کو ختم ہو رہا ہے۔','trial.endingDays':'{n} دن باقی۔','trial.endingBody':'Pro خصوصیات برقرار رکھنے کے لیے، ختم ہونے سے پہلے ادائیگی کی تفصیلات شامل کریں۔ اگر آپ کچھ نہیں کرتے، تو اختتامی تاریخ پر آپ مفت پلان پر آ جائیں گے — ڈیٹا محفوظ رہے گا۔','trial.endedTitle':'آپ کا مفت Pro ختم ہو گیا۔','trial.endedBody':'اب آپ مفت پلان پر ہیں۔ آپ کا ڈیٹا محفوظ ہے۔',
  'feat.records':'لامحدود آمدنی و اخراجات','feat.taxcalc':'ٹیکس کیلکولیشن','feat.onebiz':'ایک کاروبار','feat.mileageBasic':'مائلیج ریکارڈنگ','feat.sa103view':'SA103 میپنگ','feat.sync':'کلاؤڈ سنک اور لاگ ان',
  'feat.mileageCompare':'55p بمقابلہ اصل','feat.aiTips':'مددگار','feat.multiBiz':'متعدد کاروبار','feat.receiptPhoto':'رسید کی تصاویر','feat.pdfReport':'PDF رپورٹ','feat.sa103Pdf':'SA103 PDF',
- 'feat.partnerSync':'پارٹنر سنک','feat.sa104':'SA104 شراکت','feat.receiptPack':'رسید پیک PDF','feat.mtdReady':'MTD سہ ماہی ایکسپورٹ',
+ 'feat.partnerSync':'پارٹنر سنک','feat.sa104':'SA104 شراکت','feat.receiptPack':'منظم رسید پیک PDF','feat.mtdReady':'سہ ماہی ریکارڈ خلاصہ (HMRC کو جمع نہیں ہوتا)',
  'lock.title':'{p} فیچر','lock.body':'یہ TaxMate {p} کا حصہ ہے۔ اَن لاک کرنے کے لیے اپ گریڈ کریں۔','lock.upgrade':'پلانز دیکھیں','home.signinTitle':'اپنا ڈیٹا بیک اپ کریں','home.signinSub':'کلاؤڈ میں محفوظ کرنے اور سنک کے لیے سائن ان کریں۔','home.signinBtn':'سائن ان','pwa.install':'ڈاؤن لوڈ','pwa.installSub':'ایپ کو اپنے فون پر انسٹال کریں۔','pwa.iosTitle':'ہوم اسکرین پر شامل کریں','pwa.iosBody':'iPhone پر، Safari سے انسٹال کریں:','pwa.iosStep1':'Safari کے نیچے شیئر بٹن (تیر والا مربع) دبائیں','pwa.iosStep2':'نیچے سکرول کریں اور „ہوم اسکرین پر شامل کریں” دبائیں','pwa.iosStep3':'„شامل کریں” دبائیں — ہو گیا! TaxMate آئیکن آپ کی اسکرین پر آ جائے گا','pwa.iosNote':'نوٹ: یہ صرف Safari میں کام کرتا ہے، Chrome میں نہیں۔','pwa.andTitle':'ایپ انسٹال کریں','pwa.andBody':'آپ کے براؤزر نے انسٹال بٹن خود نہیں دکھایا۔ آپ پھر بھی انسٹال کر سکتے ہیں:','pwa.andStep1':'Chrome کے اوپر دائیں مینو (⋮) دبائیں','pwa.andStep2':'„ایپ انسٹال کریں” یا „ہوم اسکرین پر شامل کریں” دبائیں','pwa.andStep3':'تصدیق کریں — TaxMate آئیکن آپ کی اسکرین پر آ جائے گا','pwa.andTip':'تجویز: اگر صرف „ہوم اسکرین پر شامل کریں” (شارٹ کٹ) نظر آئے تو سائٹ بند کریں، کیش صاف کریں، دوبارہ کھولیں اور انتظار کریں۔','pdf.enHint':'PDF رپورٹس انگریزی میں بنتی ہیں۔ دیگر زبانوں میں ٹائپ کیے نام ظاہر نہیں ہو سکتے۔','lang.pdfHint':'تجویز: PDF رپورٹس صرف انگریزی میں ایکسپورٹ ہوتی ہیں۔','rp.title':'رسید پیک','rp.desc':'تمام رسید کی تصاویر کو HMRC کے لیے ایک PDF میں جمع کریں۔','rp.btn':'رسید پیک ایکسپورٹ کریں','rp.none':'اس مدت میں کوئی رسید تصویر نہیں۔','rp.building':'رسید پیک بن رہا ہے…','rp.page':'رسید {i} از {n}','pro.titleOld':'TaxMate Pro',
  'pro.sub':'مفت ورژن ہمیشہ مکمل رہے گا۔ Pro صرف سہولت بڑھاتا ہے۔',
  'pro.f1':'پارٹنر سنک — ایک پارٹنرشپ، ہر فون پر',
@@ -3237,8 +3237,9 @@ function activateTrial(){
 }
 async function callSecureFunction(name,data){
     const u=cloudUser(); if(!u) throw new Error('Sign in required');
-    const token=await u.getIdToken();
-    const res=await fetch('https://europe-west2-taxmate-uk-2.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token},body:JSON.stringify({data})});
+    const token=await u.getIdToken(),appCheck=await firebase.appCheck().getToken(false);
+    if(!appCheck||!appCheck.token)throw new Error('App Check verification unavailable');
+    const res=await fetch('https://europe-west2-taxmate-uk-2.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});
     const body=await res.json(); if(!res.ok||body.error) throw new Error((body.error&&body.error.message)||'Billing is unavailable');
     return body.result||{};
 }
@@ -5034,7 +5035,7 @@ async function ensureFB(){
   if(FB.ready) return FB.db;
   try{
     if(!firebase.apps.length) firebase.initializeApp(FIREBASE_CONFIG);
-    // App Check — reCAPTCHA Enterprise (Monitoring mode; switch to Enforce after metrics show verified)
+    // App Check — reCAPTCHA Enterprise token source. Callable Functions enforce valid tokens server-side.
     try{
       const appCheck = firebase.appCheck();
       appCheck.activate(
@@ -5123,23 +5124,23 @@ async function joinPartnership(){
   const u = await ensureAuth();
   if(!u){ if(msg) msg.textContent = t('sy.needNet'); return; }
   try{
-    await db.collection('partnerships').doc(code).collection('members').doc(u.uid).set({uid:u.uid,role:'member',joinedAt:Date.now()});
-    const doc = await db.collection('partnerships').doc(code).get();
-    if(!doc.exists){ if(msg) msg.textContent = t('sy.badCode'); return; }
-    const d = doc.data();
-    const existing = bizById(d.bizId);
-    if(!existing) S.businesses.push({id:d.bizId, name:d.name, structure:'partnership', share:50, syncCode:code});
+    const joined=await callSecureFunction('joinPartnership',{code});
+    const existing = bizById(joined.bizId);
+    if(!existing) S.businesses.push({id:joined.bizId, name:joined.name, structure:'partnership', share:50, syncCode:code});
     else existing.syncCode = code;
     save();
-    subscribeSync(code, d.bizId);
+    subscribeSync(code, joined.bizId);
     go('home');
-  }catch(e){ console.warn(e); if(msg) msg.textContent = t('sy.needNet'); }
+  }catch(e){ console.warn(e); if(msg) msg.textContent = /not found/i.test(e&&e.message||'')?t('sy.badCode'):t('sy.needNet'); }
 }
-function leaveSync(bizId){
+async function leaveSync(bizId){
   const b = bizById(bizId); if(!b || !b.syncCode) return;
-  const subs = FB.subs[b.syncCode];
+  const code=b.syncCode;
+  try{await callSecureFunction('leavePartnership',{code});}
+  catch(e){console.warn(e);alert(t('sy.needNet'));return;}
+  const subs = FB.subs[code];
   if(Array.isArray(subs)) subs.forEach(u=>{ try{u();}catch(e){} });
-  delete FB.subs[b.syncCode];
+  delete FB.subs[code];
   delete b.syncCode;
   save(); paintSync(); render();
 }

@@ -25,3 +25,9 @@ Build `2026-08-19.legal-privacy-gate.1` passed the complete `npm run test:all` c
 Founder pricing and support-routing input produced build `2026-08-19.legal-privacy-gate.2`: Free £0, Plus £3.99/month, Pro £8.49/month, monthly-only launch billing, and public support routed through Namecheap to a private Microsoft Outlook destination. The destination address is not present in public source or reports. The complete gate was rerun after these changes; see `AUTOMATED_TEST_REPORT.md` for the latest result.
 
 Browser checks passed for the in-app and standalone Privacy Policy and Terms, the analytics control remained unchecked, no Google Analytics script was loaded before consent, Google remained the only sign-in provider, and all checked pages had zero console warning/error. External service receipt, sync, Stripe, GA4 delivery and Sentry-receipt testing remains isolated-staging work and is not represented as passed.
+
+## Production-readiness addendum — 19 August 2026
+
+Build `2026-08-19.production-readiness-rc.1` adds 11 real Firestore/Storage emulator tests and three Auth/Functions integration tests. Evidence covers cross-user denial, owner-only receipts, two same-account clients, concurrent convergence, actual offline reconnect, tombstone non-resurrection, server-authoritative partnership join/leave, departing-member access removal, last-member partnership deletion and authenticated account deletion across Firestore, Storage, promotions and Auth.
+
+The service worker was tested by installing the current shell, stopping the preview server, closing the active client and reopening the app. An initial run exposed fallback into an older retained cache; activation and current-cache lookup were corrected, after which the offline app displayed the exact production-readiness build identity. External Firebase/Google, TaxMate Stripe TEST, GA4 received delivery and Sentry received payload remain BLOCKED rather than simulated.

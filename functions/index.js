@@ -5,9 +5,9 @@ const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldVa
 const {getAuth}=require('firebase-admin/auth');
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET');
-const PLUS_PRICE=defineString('STRIPE_PLUS_PRICE_ID'), PRO_PRICE=defineString('STRIPE_PRO_PRICE_ID');
+const PLUS_PRICE=defineString('STRIPE_PLUS_PRICE_ID',{default:''}), PRO_PRICE=defineString('STRIPE_PRO_PRICE_ID',{default:''});
 const APP_URL=defineString('PUBLIC_APP_URL',{default:'https://taxmate.uk'});
-const opts={region:'europe-west2',secrets:[STRIPE_SECRET]};
+const baseOpts={region:'europe-west2',enforceAppCheck:process.env.FUNCTIONS_EMULATOR!=='true'},opts={...baseOpts,secrets:[STRIPE_SECRET]};
 const stripe=()=>new Stripe(STRIPE_SECRET.value());
 function auth(req){ if(!req.auth) throw new HttpsError('unauthenticated','Sign in required'); return req.auth; }
 async function customerFor(user){
@@ -41,6 +41,23 @@ exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,ST
     }
   }
   res.sendStatus(200);
+});
+exports.joinPartnership=onCall(baseOpts,async req=>{
+  const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();
+  if(!/^[A-Z0-9]{6}([A-Z0-9]{2})?$/.test(code))throw new HttpsError('invalid-argument','Invalid partnership code');
+  const partnership=db.doc(`partnerships/${code}`),snap=await partnership.get();
+  if(!snap.exists)throw new HttpsError('not-found','Partnership not found');
+  await partnership.collection('members').doc(user.uid).set({uid:user.uid,role:'member',joinedAt:FieldValue.serverTimestamp()},{merge:true});
+  const data=snap.data()||{};return{bizId:data.bizId,name:data.name||'Partnership'};
+});
+exports.leavePartnership=onCall(baseOpts,async req=>{
+  const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();
+  if(!/^[A-Z0-9]{6}([A-Z0-9]{2})?$/.test(code))throw new HttpsError('invalid-argument','Invalid partnership code');
+  const partnership=db.doc(`partnerships/${code}`),member=partnership.collection('members').doc(user.uid),memberSnap=await member.get();
+  if(!memberSnap.exists)throw new HttpsError('permission-denied','Not a partnership member');
+  const allMembers=await partnership.collection('members').get(),others=allMembers.docs.filter(doc=>doc.id!==user.uid);
+  if(others.length)await member.delete();else await db.recursiveDelete(partnership);
+  return{left:true,partnershipDeleted:others.length===0};
 });
 exports.deleteAccountData=onCall(opts,async req=>{
   const user=auth(req),uid=user.uid;

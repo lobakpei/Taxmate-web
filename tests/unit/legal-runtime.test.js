@@ -61,6 +61,13 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(functions,/collection\('promotionRedemptions'\)\.where\('uid','==',uid\)/);
   assert.match(functions,/otherMembers\.length/);
   assert.match(functions,/recursiveDelete\(partnership\)/);
+  assert.match(functions,/exports\.joinPartnership=onCall\(baseOpts/);
+  assert.match(functions,/exports\.leavePartnership=onCall\(baseOpts/);
+  assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==\'true\'/);
+  assert.match(app,/firebase\.appCheck\(\)\.getToken\(false\)/);
+  assert.match(app,/'X-Firebase-AppCheck':appCheck\.token/);
+  assert.match(app,/callSecureFunction\('joinPartnership',\{code\}\)/);
+  assert.match(app,/callSecureFunction\('leavePartnership',\{code\}\)/);
   assert.match(functions,/deleteFiles\(\{prefix:`receipts\/\$\{uid\}\//);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
   assert.match(functions,/consent_collection:\{terms_of_service:'required'\}/);
@@ -74,7 +81,7 @@ test('Google is the only authentication frame/provider surface',()=>{
 
 test('stale unsupported legal, deletion and HMRC marketing claims are absent',()=>{
   const current=[app,privacy,terms,read('help.html'),Legal.privacyHtml,Legal.termsHtml].join('\n');
-  for(const claim of [/MTD-ready quarterly export/i,/for HMRC checks/i,/accepts no liability/i,/not liable for any losses/i,/data is never deleted/i,/Google Analytics 4 runs without client storage for aggregate usage/i])assert.doesNotMatch(current,claim);
+  for(const claim of [/MTD-ready quarterly export/i,/for HMRC checks/i,/供稅局審查/i,/MTD 季度匯出/i,/Eksport kwartalny MTD/i,/Export trimestrial MTD/i,/Exportación trimestral MTD/i,/MTD سہ ماہی ایکسپورٹ/i,/Erase everything everywhere/i,/all your data has been deleted from this device and the cloud/i,/accepts no liability/i,/not liable for any losses/i,/data is never deleted/i,/Google Analytics 4 runs without client storage for aggregate usage/i])assert.doesNotMatch(current,claim);
 });
 
 test('public runtime files contain no private contact details or secret credentials',()=>{
