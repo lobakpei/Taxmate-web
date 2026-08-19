@@ -14,7 +14,7 @@ Source rollback options:
 
 User-data rollback: import a valid schema-2 JSON backup, import a validated portable ZIP, or restore `taxmateuk_preimport_backup` locally. Portable restore first downloads a complete pre-restore ZIP. A failed receipt restore leaves bookkeeping state untouched and attempts to delete only newly uploaded receipt objects. Tombstones prevent older cloud records from reappearing.
 
-PWA rollback must restore a coherent client/cache identity. The current cache is `taxmate-v2-rc-1-external-services-rc-2`; the service worker retains one prior TaxMate shell for controlled rollback but reads offline fallbacks only from the current cache. CSP rollback must revert client assets and Hosting headers together rather than weaken the enforcing policy around the external-script architecture.
+PWA rollback must restore a coherent client/cache identity. The current cache is `taxmate-v2-rc-1-external-services-rc-3`; the service worker retains one prior TaxMate shell for controlled rollback but reads offline fallbacks only from the current cache. CSP rollback must revert client assets and Hosting headers together; the exact Sentry SDK and EU ingestion hosts are required for error delivery and must not be replaced with broad wildcards.
 
 Stripe rollback is TEST-only: archive/deactivate the TaxMate sandbox products, prices and promotion codes only after confirming their exact IDs in `STAGING_EXTERNAL_SERVICE_REPORT.md`. Never delete or alter the separate `toodaloop` sandbox. No Stripe LIVE rollback is required because LIVE was untouched.
 

@@ -39,8 +39,8 @@ Stripe Tax is `pending` because `head_office` is missing, and all three prices h
 
 ### Other external services
 
-- GA4 Measurement ID `G-W1WWK7EVTR` exists in the consent-gated runtime. Firebase analytics-link discovery returned no confirmed link and the available Google browser account exposes no GA4 property, so received-event/DebugView evidence is unavailable.
-- The Sentry loader resolves to an existing EU ingest project (`o4511574896541696`, project `4511574911549520`). No Sentry account session is available, so a received synthetic event and payload inspection are unavailable.
+- GA4 Measurement ID `G-W1WWK7EVTR` matches existing property `541961931`, Web stream `15084238688`. With explicit Founder approval, DebugView received one non-sensitive `upgrade_viewed` test event with `client_storage=none`, `debug_mode` and allow-listed `app_surface`. Enhanced Measurement remains enabled and URL query-parameter masking remains disabled; no provider setting was changed.
+- The existing EU Sentry project (`o4511574896541696`, project `4511574911549520`) received one synthetic exception as `TAXMATE-8`. Candidate scrubbing replaced the message with `Application error` and removed request, query, referrer, User-Agent, email, breadcrumb and bookkeeping fields. Sentry still added trace metadata and coarse provider-derived geography. An older production event predating the candidate retains request/URL-query/referrer/User-Agent/User fields, so the undeployed candidate does not remediate production yet. A missing CSP allow-list for the second-stage SDK bundle and exact EU ingestion host was corrected and regression-tested.
 
 ### Gate classification
 
@@ -56,7 +56,9 @@ Stripe Tax is `pending` because `head_office` is missing, and all three prices h
 | Hosted Checkout card completion | BLOCKED_CONFIRMATION | Requires action-time approval for a TEST financial transaction in the browser |
 | VAT / Stripe Tax | BLOCKED_FOUNDER_INPUT | Head office, registration/tax behaviour and price presentation decision |
 | Refund entitlement | BLOCKED_FOUNDER_INPUT | Commercial/legal behavior not yet specified |
-| GA4 received delivery | BLOCKED_ACCESS | Correct GA4 property login plus approval to transmit one non-sensitive test event |
-| Sentry received payload | BLOCKED_ACCESS | Sentry project login plus approval to transmit one scrubbed synthetic error |
+| GA4 received delivery | PASS | One approved `upgrade_viewed` event visible in the correct DebugView |
+| GA4 provider privacy settings | BLOCKED_REVIEW | Enhanced Measurement on; URL query masking off; retention/sharing settings still require review |
+| Sentry received payload | PASS_WITH_METADATA | `TAXMATE-8` proves scrubbed bookkeeping payload; trace and coarse geography remain provider metadata |
+| Sentry provider privacy settings | BLOCKED_REVIEW | Retention and IP/geolocation processing settings remain unverified |
 
 No production service was changed or used as a substitute for missing staging isolation.

@@ -1,6 +1,6 @@
 # TaxMate Production Readiness Candidate — Release Notes
 
-Build `2026-08-19.external-services-rc.2` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate and existing-services/Stripe sandbox verification into a release candidate. It is not deployed.
+Build `2026-08-19.external-services-rc.3` consolidates the W0–W5 programme, Founder UI freeze, Legal & Privacy Gate, existing-services/Stripe sandbox verification and approved GA4/Sentry receipt checks into a release candidate. It is not deployed.
 
 ## Product and UI
 

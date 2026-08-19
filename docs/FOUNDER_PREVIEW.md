@@ -2,7 +2,7 @@
 
 Branch: `codex/taxmate-modernisation-20260817`.
 
-Runtime identity: app `2.0.0-rc.1`, build `2026-08-19.external-services-rc.2`, PWA cache `taxmate-v2-rc-1-external-services-rc-2`.
+Runtime identity: app `2.0.0-rc.1`, build `2026-08-19.external-services-rc.3`, PWA cache `taxmate-v2-rc-1-external-services-rc-3`.
 
 Run from the repository root:
 
