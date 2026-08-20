@@ -462,7 +462,7 @@ en:{
  'cc.emoji':'Icon',
  'cc.manage':'My categories',
  'cc.deleteM':'Entries using it will show as "Other".',
- 'pro.title':'TaxMate plans','pro.sub':'Free does the basics forever. Upgrade for smarter, fuller features.',
+ 'pro.title':'TaxMate plans','pro.sub':'Free does the basics forever. Upgrade for smarter, fuller features.','billing.monthly':'Monthly','billing.yearly':'Yearly','billing.billedYearly':'Billed yearly',
  'tier.free':'Free','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Everything to track and file it yourself','tier.plusSub':'Save more, work smarter','tier.proSub':'For partnerships & serious traders',
  'tier.current':'Current plan','tier.choose':'Switch to {p}','tier.active':'Active','tier.freeNow':'Free for a limited time','tier.activateFree':'Start free — limited time','trial.activateTitle':'Start your free Pro access','trial.activateBody':'You\'ll get all Pro features free until {d}. After that you\'ll move back to the Free plan automatically — your data is always kept. Continue?','trial.activated':'Pro unlocked — enjoy!','trial.endingTitle':'Your free Pro ends {d}.','trial.endingDays':'{n} days left.','trial.endingBody':'To keep Pro features, add your payment details before it ends. If you do nothing, you\'ll move to the Free plan on the end date — your data stays safe.','trial.endedTitle':'Your free Pro has ended.','trial.endedBody':'You\'re now on the Free plan. Your data is safe.',
@@ -956,7 +956,7 @@ zh:{
  'cc.emoji':'圖示',
  'cc.manage':'我的類別',
  'cc.deleteM':'使用中的記錄將顯示為「其他」。',
- 'pro.title':'TaxMate 方案','pro.sub':'免費版永遠夠用。升級可享更智能、更全面的功能。',
+ 'pro.title':'TaxMate 方案','pro.sub':'免費版永遠夠用。升級可享更智能、更全面的功能。','billing.monthly':'每月','billing.yearly':'每年','billing.billedYearly':'按年收費',
  'tier.free':'免費版','tier.plus':'進階版','tier.pro':'完整版',
  'tier.freeSub':'自己報稅所需的一切','tier.plusSub':'慳更多、做得更精明','tier.proSub':'為合夥與認真經營者而設',
  'tier.current':'目前方案','tier.choose':'切換至{p}','tier.active':'使用中','tier.freeNow':'限時免費','tier.activateFree':'限時免費開啟','trial.activateTitle':'開啟你的免費 Pro','trial.activateBody':'你會免費使用所有 Pro 功能,直到 {d}。之後會自動變返免費版 —— 你嘅資料一直會保留。繼續?','trial.activated':'Pro 已開啟,盡情用!','trial.endingTitle':'你嘅免費 Pro 將於 {d} 完結。','trial.endingDays':'仲有 {n} 日。','trial.endingBody':'想繼續用 Pro 功能,請喺完結前加入付費資料。如果唔加,完結日會自動變返免費版 —— 你嘅資料會保留。','trial.endedTitle':'你嘅免費 Pro 已完結。','trial.endedBody':'你而家係免費版。你嘅資料安全保留。',
@@ -1450,7 +1450,7 @@ pl:{
  'cc.emoji':'Ikona',
  'cc.manage':'Moje kategorie',
  'cc.deleteM':'Wpisy z tą kategorią pokażą się jako „Inne".',
- 'pro.title':'Plany TaxMate','pro.sub':'Wersja darmowa wystarcza na zawsze. Ulepsz, by uzyskać więcej.',
+ 'pro.title':'Plany TaxMate','pro.sub':'Wersja darmowa wystarcza na zawsze. Ulepsz, by uzyskać więcej.','billing.monthly':'Miesięcznie','billing.yearly':'Rocznie','billing.billedYearly':'Rozliczane rocznie',
  'tier.free':'Darmowy','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Wszystko, by rozliczyć się samodzielnie','tier.plusSub':'Oszczędzaj więcej, pracuj sprytniej','tier.proSub':'Dla spółek i poważnych przedsiębiorców',
  'tier.current':'Obecny plan','tier.choose':'Przełącz na {p}','tier.active':'Aktywny','tier.freeNow':'Za darmo przez ograniczony czas','tier.activateFree':'Zacznij za darmo','trial.activateTitle':'Rozpocznij darmowy dostęp Pro','trial.activateBody':'Otrzymasz wszystkie funkcje Pro za darmo do {d}. Potem automatycznie wrócisz do planu Darmowego — Twoje dane są zawsze zachowane. Kontynuować?','trial.activated':'Pro odblokowane!','trial.endingTitle':'Twój darmowy Pro kończy się {d}.','trial.endingDays':'Pozostało {n} dni.','trial.endingBody':'Aby zachować funkcje Pro, dodaj dane płatności przed końcem. Jeśli nic nie zrobisz, wrócisz do planu Darmowego w dniu zakończenia — dane pozostaną.','trial.endedTitle':'Twój darmowy Pro zakończył się.','trial.endedBody':'Jesteś teraz na planie Darmowym. Twoje dane są bezpieczne.',
@@ -1944,7 +1944,7 @@ ro:{
  'cc.emoji':'Pictogramă',
  'cc.manage':'Categoriile mele',
  'cc.deleteM':'Înregistrările cu această categorie vor apărea ca „Altele".',
- 'pro.title':'Planuri TaxMate','pro.sub':'Versiunea gratuită face elementele de bază pentru totdeauna.',
+ 'pro.title':'Planuri TaxMate','pro.sub':'Versiunea gratuită face elementele de bază pentru totdeauna.','billing.monthly':'Lunar','billing.yearly':'Anual','billing.billedYearly':'Facturat anual',
  'tier.free':'Gratuit','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Tot ce trebuie pentru a declara singur','tier.plusSub':'Economisește mai mult, lucrează mai inteligent','tier.proSub':'Pentru parteneriate și comercianți serioși',
  'tier.current':'Plan curent','tier.choose':'Schimbă la {p}','tier.active':'Activ','tier.freeNow':'Gratuit pe timp limitat','tier.activateFree':'Începe gratuit','trial.activateTitle':'Începe accesul Pro gratuit','trial.activateBody':'Vei primi toate funcțiile Pro gratuit până la {d}. După aceea vei reveni automat la planul Gratuit — datele tale sunt mereu păstrate. Continui?','trial.activated':'Pro deblocat!','trial.endingTitle':'Pro-ul gratuit se termină {d}.','trial.endingDays':'{n} zile rămase.','trial.endingBody':'Pentru a păstra funcțiile Pro, adaugă datele de plată înainte de final. Dacă nu faci nimic, vei reveni la planul Gratuit la data de încheiere — datele rămân.','trial.endedTitle':'Pro-ul gratuit s-a încheiat.','trial.endedBody':'Ești acum pe planul Gratuit. Datele tale sunt în siguranță.',
@@ -2438,7 +2438,7 @@ es:{
  'cc.emoji':'Icono',
  'cc.manage':'Mis categorías',
  'cc.deleteM':'Las entradas que la usan aparecerán como «Otro».',
- 'pro.title':'Planes TaxMate','pro.sub':'La versión gratuita hace lo básico para siempre.',
+ 'pro.title':'Planes TaxMate','pro.sub':'La versión gratuita hace lo básico para siempre.','billing.monthly':'Mensual','billing.yearly':'Anual','billing.billedYearly':'Facturado anualmente',
  'tier.free':'Gratis','tier.plus':'Plus','tier.pro':'Pro',
  'tier.freeSub':'Todo para declarar tú mismo','tier.plusSub':'Ahorra más, trabaja mejor','tier.proSub':'Para sociedades y autónomos serios',
  'tier.current':'Plan actual','tier.choose':'Cambiar a {p}','tier.active':'Activo','tier.freeNow':'Gratis por tiempo limitado','tier.activateFree':'Empieza gratis','trial.activateTitle':'Empieza tu acceso Pro gratis','trial.activateBody':'Tendrás todas las funciones Pro gratis hasta el {d}. Después volverás automáticamente al plan Gratis — tus datos siempre se conservan. ¿Continuar?','trial.activated':'¡Pro activado!','trial.endingTitle':'Tu Pro gratis termina el {d}.','trial.endingDays':'Quedan {n} días.','trial.endingBody':'Para mantener las funciones Pro, añade tus datos de pago antes de que termine. Si no haces nada, volverás al plan Gratis en la fecha de fin — tus datos se conservan.','trial.endedTitle':'Tu Pro gratis ha terminado.','trial.endedBody':'Ahora estás en el plan Gratis. Tus datos están seguros.',
@@ -2930,7 +2930,7 @@ ur:{
  'cc.emoji':'آئیکن',
  'cc.manage':'میرے زمرے',
  'cc.deleteM':'اس زمرے والے اندراجات «دیگر» میں دکھیں گے۔',
- 'pro.title':'TaxMate پلانز','pro.sub':'مفت ورژن ہمیشہ بنیادی کام کرتا ہے۔ مزید کے لیے اپ گریڈ کریں۔',
+ 'pro.title':'TaxMate پلانز','pro.sub':'مفت ورژن ہمیشہ بنیادی کام کرتا ہے۔ مزید کے لیے اپ گریڈ کریں۔','billing.monthly':'ماہانہ','billing.yearly':'سالانہ','billing.billedYearly':'سالانہ بلنگ',
  'tier.free':'مفت','tier.plus':'پلس','tier.pro':'پرو',
  'tier.freeSub':'خود فائل کرنے کے لیے سب کچھ','tier.plusSub':'زیادہ بچائیں، سمجھداری سے کام کریں','tier.proSub':'شراکت اور سنجیدہ تاجروں کے لیے',
  'tier.current':'موجودہ پلان','tier.choose':'{p} پر سوئچ کریں','tier.active':'فعال','tier.freeNow':'محدود وقت کے لیے مفت','tier.activateFree':'مفت شروع کریں','trial.activateTitle':'اپنی مفت Pro رسائی شروع کریں','trial.activateBody':'آپ کو {d} تک تمام Pro خصوصیات مفت ملیں گی۔ اس کے بعد آپ خود بخود مفت پلان پر واپس آ جائیں گے — آپ کا ڈیٹا ہمیشہ محفوظ رہتا ہے۔ جاری رکھیں؟','trial.activated':'Pro کھل گیا!','trial.endingTitle':'آپ کا مفت Pro {d} کو ختم ہو رہا ہے۔','trial.endingDays':'{n} دن باقی۔','trial.endingBody':'Pro خصوصیات برقرار رکھنے کے لیے، ختم ہونے سے پہلے ادائیگی کی تفصیلات شامل کریں۔ اگر آپ کچھ نہیں کرتے، تو اختتامی تاریخ پر آپ مفت پلان پر آ جائیں گے — ڈیٹا محفوظ رہے گا۔','trial.endedTitle':'آپ کا مفت Pro ختم ہو گیا۔','trial.endedBody':'اب آپ مفت پلان پر ہیں۔ آپ کا ڈیٹا محفوظ ہے۔',
@@ -3087,7 +3087,16 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
-const TIER_PRICE = Object.freeze({free:'£0',plus:'£3.99/month',pro:'£8.49/month'});
+const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'£7.99 / month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£59.99 / year'}});
+let BILLING_CADENCE='monthly';
+function tierPrice(tier){return TIER_PRICE[BILLING_CADENCE][tier];}
+function setBillingCadence(cadence){
+  if(!['monthly','yearly'].includes(cadence)||cadence===BILLING_CADENCE)return;
+  BILLING_CADENCE=cadence;
+  document.querySelectorAll('[data-billing-cadence]').forEach(button=>{const on=button.dataset.billingCadence===cadence;button.classList.toggle('on',on);button.setAttribute('aria-pressed',String(on));});
+  document.querySelectorAll('[data-plan-price]').forEach(node=>{node.textContent=tierPrice(node.dataset.planPrice);});
+  const note=document.querySelector('[data-billing-yearly]');if(note){note.textContent=cadence==='yearly'?t('billing.billedYearly'):'';note.style.visibility=cadence==='yearly'?'visible':'hidden';note.setAttribute('aria-hidden',String(cadence!=='yearly'));}
+}
 // Which tier each gated feature needs
 const FEATURE_TIER = {
   mileageCompare:'plus',   // 45p vs actual auto-compare
@@ -3180,7 +3189,7 @@ function planBlock(tier){
       <div class="t" style="font-size:17px">${name}</div>
       ${badge}
     </div>
-    <div class="t" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${TIER_PRICE[tier]}</div>
+    <div class="t" data-plan-price="${tier}" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${tierPrice(tier)}</div>
     <div class="s" style="margin-bottom:10px">${sub}</div>
     ${feats}
     ${btn}
@@ -3226,7 +3235,7 @@ function requireLoginForTier(){
 function setTier(tier){
   if(tier!=='free' && !requireLoginForTier()) return;
   if(tier==='free'){ openBillingPortal(); return; }
-  startBillingAction('createCheckoutSession',{tier});
+  startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});
 }
 function activateTrial(){
   if(!requireLoginForTier()) return;
@@ -3268,11 +3277,16 @@ function proPlansCard(){
       <div class="t">${t('pro.title')}</div>
     </div>
     <div class="s" style="margin:0 2px 14px">${t('pro.sub')}</div>
+    <div class="seg" role="group" aria-label="Billing cadence" style="margin-bottom:8px">
+      <button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button>
+      <button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button>
+    </div>
+    <div class="s" data-billing-yearly aria-hidden="${BILLING_CADENCE!=='yearly'}" style="text-align:center;margin:0 2px 10px;min-height:19px;visibility:${BILLING_CADENCE==='yearly'?'visible':'hidden'}">${BILLING_CADENCE==='yearly'?t('billing.billedYearly'):''}</div>
     <button class="btn ghost promo-redeem" style="margin-bottom:14px;width:100%" data-tm-click="activateTrial()">${t('promo.redeem')}</button>
     ${planBlock('free')}
     ${planBlock('plus')}
     ${planBlock('pro')}
-    <div class="s" style="margin:2px 8px 14px;line-height:1.55">Launch pricing is Free £0, Plus £3.99/month and Pro £8.49/month. Plus and Pro are monthly recurring subscriptions; no annual plan is offered at launch. Stripe Checkout shows the price, renewal terms and any discount before payment. Cancel from the billing portal. A promotion redeemed here can grant time-limited access without starting a paid subscription. <a class="link" href="/terms.html">Terms</a></div>
+    <div class="s" style="margin:2px 8px 14px;line-height:1.55">Launch pricing is Free £0; Plus £3.99/month or £29.99/year; Pro £7.99/month or £59.99/year. Monthly and yearly options are recurring subscriptions. Stripe Checkout shows the selected price, renewal interval, terms and any discount before payment. Cancel from the billing portal; access continues until the paid period ends. A promotion redeemed here can grant time-limited access without starting a paid subscription. <a class="link" href="/terms.html">Terms</a></div>
   </div>`;
 }
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
@@ -5653,8 +5667,8 @@ function mtdCard(){
 // ── Trial reminder banner ──────────────────────────────────
 function trialBanner(){
   const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine);
-  if(access.source==='promotion'&&ENTITLEMENT.snapshot&&ENTITLEMENT.snapshot.promotion){
-    const end=new Date(Number(ENTITLEMENT.snapshot.promotion.expiresAt)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});
+  if(access.source==='promotion'&&access.expiresAt){
+    const end=new Date(Number(access.expiresAt)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});
     return `<div class="notice amber" style="margin-bottom:14px">⏳ Promotional ${access.tier} access ends ${end}. You will return to Free automatically; your data is retained.</div>`;
   }
   return '';

@@ -1,5 +1,9 @@
 # Final Integrated Test Report
 
+## Annual billing RC.9 addendum — 20 August 2026
+
+The final repository gate passed 120/120 and the current in-page browser audit passed 29/29 with zero fail/warn. Four genuine correct-account Stripe-hosted TEST Checkouts verified Plus £3.99/month and £29.99/year and Pro £7.99/month and £59.99/year, exact GBP amounts, zero tax, recurring intervals and server entitlement. Annual cancel-at-period-end, period-end promo fallback and the affected shared cancellation/refund/webhook lifecycle also passed. Matching LIVE Price objects were created without real customers, cards, payments or subscriptions; production Functions and Hosting remain unchanged.
+
 ## Final UI freeze identity
 
 Validated 18 August 2026 on branch `codex/taxmate-modernisation-20260817`, starting from committed RC `138efa4c891af30f9581e4e3488e4f5c1b5481e4`. Runtime identity is app `2.0.0-rc.1`, build `2026-08-18.final-ui-freeze.1`, PWA cache `taxmate-v2-rc-1-final-ui-freeze`. The final commit and tree are recorded at handoff because a commit cannot contain its own hash.

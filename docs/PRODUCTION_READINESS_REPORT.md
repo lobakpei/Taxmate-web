@@ -6,10 +6,10 @@ Founder-facing closeout — 20 August 2026. This records engineering evidence an
 |---|---|---|
 | Branch | PASS | `codex/taxmate-modernisation-20260817` |
 | Commit / tree | PASS | Exact identities are recorded in the final Founder handoff |
-| Build | PASS | `2026-08-19.stripe-sandbox-rc.6` |
+| Build | PASS | `2026-08-20.annual-billing-rc.9` |
 | Working tree | PASS | Clean after the final coherent candidate commit |
 | Production Google Auth invariant | PASS | Candidate production path matches the current `taxmate-uk-2` Google-only popup implementation; no staging workaround remains |
-| Stripe TEST | PASS | Independent TaxMate Sandbox, £3.99 Plus, £8.49 Pro, hosted Checkout, persistent TEST webhook, promotions, cancellation, expiry and refund entitlement |
+| Stripe TEST | PASS | Independent TaxMate Sandbox, Plus £3.99/month and £29.99/year, Pro £7.99/month and £59.99/year, four hosted Checkouts, signed webhook, annual period end, promotions, cancellation, expiry and refund entitlement |
 | SEO | PASS | Approved title, description, H1, canonical, robots, sitemap, structured data and staging noindex regression |
 | Legal / Privacy | PASS | Privacy, Terms, lawful-basis, processor, transfer, retention and deletion consistency engineering gate |
 | GA4 | PASS | Fresh allow-listed staging event receipt with privacy controls and no bookkeeping payload |

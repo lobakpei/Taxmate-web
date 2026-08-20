@@ -26,9 +26,14 @@ test('hosted TEST subscriptions cover promotion, cancellation, refund and webhoo
   await waitFor(()=>state(plusUid),x=>x.paidTier==='plus','Plus entitlement');await waitFor(()=>state(proUid),x=>x.paidTier==='pro','Pro entitlement');
   await db.doc(`users/${plusUid}/entries/keep-after-refund`).set({id:'keep-after-refund',amount:123,updatedAt:Date.now()});
   await db.doc(`users/${plusUid}/entitlements/current`).set({promotion:{status:'active',tier:'pro',expiresAt:Date.now()+90*86400000,promotionCodeId:'promo_fixture'}},{merge:true});
+  await Promise.all([
+    db.doc('founderPromotions/TAXMATEPLUS30').set({code:'TAXMATEPLUS30',tier:'plus',durationDays:30,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEPRO90').set({code:'TAXMATEPRO90',tier:'pro',durationDays:90,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEEXPIRED').set({code:'TAXMATEEXPIRED',tier:'pro',expiresAt:Date.now()-1,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()})
+  ]);
 
   const promoApp=initializeApp({projectId:'demo-taxmate',apiKey:'emulator-api-key'},'stripe-hosted-promo');const auth=getAuth(promoApp);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});const promoUser=(await signInAnonymously(auth)).user;const fn=getFunctions(promoApp,'europe-west2');connectFunctionsEmulator(fn,'127.0.0.1',5001);const redeem=httpsCallable(fn,'redeemPromotion');
-  assert.equal((await redeem({code:'TAXMATEPLUS30'})).data.tier,'plus');await assert.rejects(()=>redeem({code:'TAXMATEPLUS30'}),/already redeemed/i);assert.equal((await redeem({code:'TAXMATEPRO90'})).data.tier,'pro');await assert.rejects(()=>redeem({code:'TAXMATEEXPIRED'}),/not found/i);
+  assert.equal((await redeem({code:'TAXMATEPLUS30'})).data.tier,'plus');await assert.rejects(()=>redeem({code:'TAXMATEPLUS30'}),/already redeemed/i);assert.equal((await redeem({code:'TAXMATEPRO90'})).data.tier,'pro');await assert.rejects(()=>redeem({code:'TAXMATEEXPIRED'}),/not currently redeemable/i);
 
   if(!plusSub.cancel_at_period_end)await stripe.subscriptions.update(plusSub.id,{cancel_at_period_end:true});const cancelEvent=await findEvent('customer.subscription.updated',e=>e.data.object.id===plusSub.id&&e.data.object.cancel_at_period_end===true);assert.equal((await signed(cancelEvent)).status,200);let current=await waitFor(()=>state(plusUid),x=>x.cancelAtPeriodEnd===true,'period-end cancellation');assert.equal(current.paidTier,'plus');
   const invoicePayment=plusSub.latest_invoice.payments.data.find(item=>item.payment&&item.payment.type==='payment_intent');assert.ok(invoicePayment);const paymentIntent=invoicePayment.payment.payment_intent;

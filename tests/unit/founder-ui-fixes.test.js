@@ -38,3 +38,17 @@ test('promotion redemption is independent and appears before every plan card', (
   assert.equal((app.match(/data-tm-click="activateTrial\(\)"/g) || []).length, 1);
   assert.doesNotMatch(app, /if\(tier==='pro'\)[^\n]*promo\.redeem/);
 });
+
+test('monthly and yearly cadence extends the approved Plans UI without changing plan structure',()=>{
+  assert.match(app,/data-billing-cadence="monthly"/);
+  assert.match(app,/data-billing-cadence="yearly"/);
+  assert.match(app,/min-height:19px/);
+  assert.match(app,/style\.visibility=cadence==='yearly'\?'visible':'hidden'/);
+  assert.match(app,/£3\.99 \/ month/);
+  assert.match(app,/£29\.99 \/ year/);
+  assert.match(app,/£7\.99 \/ month/);
+  assert.match(app,/£59\.99 \/ year/);
+  assert.match(app,/BILLING_CADENCE/);
+  assert.match(app,/createCheckoutSession',\{tier,cadence:BILLING_CADENCE\}/);
+  assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year/i);
+});

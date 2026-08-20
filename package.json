@@ -12,7 +12,9 @@
     "test:rules:emulator": "node scripts/run-rules-emulator.js",
     "test:functions:emulator": "node scripts/run-functions-emulator.js",
     "test:all": "npm run test:characterization && npm run test:unit && npm run test:integration && npm run test:rules && npm run test:rules:emulator && npm run test:functions:emulator",
-    "stripe:configure:sandbox": "node scripts/configure-taxmate-stripe-sandbox.js",
+    "stripe:configure:sandbox": "node scripts/configure-stripe-billing-delta.js",
+    "stripe:configure:billing-delta": "node scripts/configure-stripe-billing-delta.js",
+    "promo:admin": "node scripts/manage-founder-promo.js",
     "test:stripe:sandbox": "node scripts/run-stripe-sandbox-emulator.js",
     "test:stripe:hosted-receipt": "node scripts/run-stripe-sandbox-emulator.js tests/integration/stripe-hosted-receipt.test.js",
     "test:stripe:hosted-lifecycle": "node scripts/run-stripe-sandbox-emulator.js tests/integration/stripe-hosted-lifecycle.test.js"

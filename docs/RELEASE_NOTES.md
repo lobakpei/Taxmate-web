@@ -8,7 +8,7 @@ Build `2026-08-19.stripe-sandbox-rc.6` adds correct-account TaxMate Sandbox prov
 
 - Preserves the Founder-approved UI and final fixes.
 - Google Sign-In only; Apple Sign-In is absent.
-- Free £0, Plus £3.99/month and Pro £8.49/month; monthly launch billing only.
+- Free £0; Plus £3.99/month or £29.99/year; Pro £7.99/month or £59.99/year.
 - One independent promotion-code entry above all plan cards.
 - Quarterly summary and receipt-pack wording no longer claims MTD submission/HMRC approval in any supported language.
 
@@ -23,7 +23,7 @@ Build `2026-08-19.stripe-sandbox-rc.6` adds correct-account TaxMate Sandbox prov
 - Checkout now blocks duplicate live subscriptions; webhook projection is signed, idempotent and rejects stale event ordering.
 - The Stripe integration harness now requires environment-injected account/Price identities and verifies that the TEST key resolves to the exact independent TaxMate account before running.
 - Firestore/Storage/Auth/Functions Emulator Suite covers cross-user denial, two-client convergence, offline tombstones, receipts, partnership and deletion flows.
-- Stripe Tax is explicitly off. Checkout totals remain exactly £3.99/£8.49 monthly with no VAT representation; full refunds immediately remove the refunded paid entitlement, partial refunds require manual review, and active promotion fallback remains server-derived.
+- Stripe Tax is explicitly off. Checkout totals are exactly £3.99/£29.99 for Plus and £7.99/£59.99 for Pro at the selected monthly/yearly cadence, with no VAT representation; full refunds immediately remove the refunded paid entitlement, partial refunds require manual review, and active promotion fallback remains server-derived.
 
 ## Legal, privacy and telemetry
 
