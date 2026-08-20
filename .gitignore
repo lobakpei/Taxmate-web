@@ -6,4 +6,5 @@ test-results/
 .tools/
 *.log
 functions/.env.local
+functions/.env.taxmate-staging
 functions/.secret.local

@@ -1,7 +1,7 @@
 {
   "hosting": {
     "public": ".",
-    "ignore": ["firebase.json", "firebase.staging.json", "firestore.rules", "storage.rules", "firestore.indexes.json", "package.json", "package-lock.json", "*.md", "**/.*", "**/node_modules/**", "tests/**", "evidence/**", "docs/**", "scripts/**", "functions/**", ".tools/**"],
+    "ignore": ["firebase.json", "firebase.staging.json", "firestore.rules", "storage.rules", "firestore.indexes.json", "package.json", "package-lock.json", "*.md", "*-debug.log", ".git/**", ".firebase/**", "**/.*", "**/node_modules/**", "tests/**", "evidence/**", "docs/**", "scripts/**", "functions/**", ".tools/**"],
     "headers": [
       {"source": "**", "headers": [
         {"key": "X-Robots-Tag", "value": "noindex, nofollow, noarchive"},

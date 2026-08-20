@@ -57,3 +57,11 @@ Build `2026-08-19.stripe-sandbox-rc.6` supersedes that stop after the Founder re
 The exact Founder-approved search positioning was implemented without a marketing redesign. The homepage has one production canonical, exact title/meta/H1, crawlable explanatory copy and real public links. Robots, a production-only sitemap, an indexable Help page, crawlable non-indexed Privacy/Terms pages, Open Graph metadata, a truthful parseable `SoftwareApplication` block and a real noindex 404 are covered by regression tests. The separate staging config returned header-level noindex on every inspected response.
 
 The full repository gate passed 106/106, targeted SEO/CSP/identity checks passed 13/13, the HTTP preview gate passed 1/1 and the deployed staging browser audit passed 29/29. Correct-account Stripe external gates separately passed hosted receipt 1/1 for Plus, hosted receipt 1/1 for Pro and hosted lifecycle 1/1.
+
+## Final closeout — 20 August 2026
+
+All unproven staging OAuth recovery experiments were removed. Candidate production Auth is byte-identical to committed RC.6 and retains the current live Google-only `taxmate-uk-2` popup path as `KNOWN_GOOD_RELEASE_INVARIANT`. The isolated staging callback result is recorded as `STAGING_ONLY_OAUTH_LIMITATION`; it is not a production release blocker and no further staging OAuth work is planned.
+
+The complete repository gate passed again at 106/106. The focused Stripe/SEO/CSP/legal/privacy/security gate passed 30/30. Existing correct-account hosted Stripe TEST receipts and lifecycle evidence remain frozen and valid; the external mutation-capable harness was not rerun because no Stripe secret was present in the local closeout environment. No Stripe object or LIVE setting changed.
+
+Staging Hosting packaging now explicitly excludes root Git metadata, Firebase CLI cache and debug logs. This independent security correction changes no application or Auth runtime behavior. The final preview remains available through the repository preview server. No push, merge or production deployment occurred.

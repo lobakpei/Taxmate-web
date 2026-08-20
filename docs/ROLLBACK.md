@@ -1,25 +1,25 @@
-# Rollback Instructions
+# TaxMate Release Rollback Instructions
 
-No production deployment, service configuration or data migration occurred, so production rollback is not required. GitHub production `main` remains anchored at `745f7497d374f000870c4a7a111130008f8945a7`; the final read-only remote recheck is recorded in the Founder handoff.
+Production is unchanged at pre-release commit `745f7497d374f000870c4a7a111130008f8945a7`, tree `4726b48f89150782f50e6227226c227c13765212`.
 
-Source rollback options:
+## Before release
 
-1. return to the pre-external-services candidate `71083c6765cf8d624b30ead3ddca69b7b046c3c4`;
-2. return to the Legal & Privacy Gate commit `ceb1bb759cb78228ebcae5625a63a19978f22895`;
-3. return to committed Founder UI freeze `35d4ad974cbc7c71be16332a41204b3647ed52a9`;
-4. return to the pre-freeze RC `138efa4c891af30f9581e4e3488e4f5c1b5481e4`;
-5. switch to production `main` at `745f7497d374f000870c4a7a111130008f8945a7`;
-6. use `evidence/w0/taxmate-baseline-745f7497.bundle` (verified complete); or
-7. restore `evidence/w0/taxmate-baseline-source.tar`.
+No rollback action is required because no push, merge, production Hosting/Functions/rules deployment, Stripe LIVE change, migration or DNS change has occurred.
 
-User-data rollback: import a valid schema-2 JSON backup, import a validated portable ZIP, or restore `taxmateuk_preimport_backup` locally. Portable restore first downloads a complete pre-restore ZIP. A failed receipt restore leaves bookkeeping state untouched and attempts to delete only newly uploaded receipt objects. Tombstones prevent older cloud records from reappearing.
+## Approved release sequence
 
-PWA rollback must restore a coherent client/cache identity. The current local candidate cache is `taxmate-v2-rc-1-stripe-sandbox-rc-6`; the service worker retains one prior TaxMate shell for controlled rollback but reads offline fallbacks only from the current cache. CSP rollback must revert client assets and Hosting headers together; the exact inline JSON-LD hash, Sentry SDK, EU ingestion and staging Functions hosts are required and must not be replaced with broad wildcards. Staging Hosting must continue using `firebase.staging.json` so its `X-Robots-Tag` noindex header cannot be lost.
+After explicit Founder approval only: push candidate, merge through the approved release path, deploy production, then immediately run the live smoke test.
 
-Stripe rollback is TEST-only and configuration-led: restore the previous candidate Functions code and environment Price IDs together, never copy these Sandbox IDs to LIVE, and do not delete the retained TaxMate Sandbox evidence automatically. The RC.6 webhook change may be reverted locally by restoring the prior Charge invoice lookup, but doing so reintroduces the verified current-API refund failure. No production Stripe rollback is required because no LIVE setting or object changed.
+The first live smoke test is Google Sign-In: account selection → Firebase callback → non-null current user → session restore → logout.
 
-Stripe rollback is TEST-only. The candidate contains no account-specific Stripe IDs and the latest account refresh created or changed no Stripe object. Any artifacts in the wrong parent account are outside this repository and must not be altered from the TaxMate programme. No Stripe LIVE rollback is required because LIVE was untouched.
+If any Google Sign-In step fails, stop testing and immediately restore the pre-release production commit. Do not debug Auth in production.
 
-The non-production `taxmate-staging` project is persistent release infrastructure. Its Hosting site, Firestore rules/indexes, Google-only Auth and App Check registration may be rolled back independently; Functions and Storage were not deployed because the project is not linked to Blaze. Do not delete or repurpose this project, and never copy production user data into it.
+## Coherent rollback
 
-Any future release rollback must treat Hosting, Functions, Firestore rules, Storage rules, App Check and Stripe webhook configuration as separate versioned operations. Never roll schema 5 clients forward against unvalidated production services.
+- Roll back Hosting client assets, build identity, service-worker cache and CSP headers together.
+- Roll back Functions, Firestore rules, Storage rules, App Check and Stripe webhook configuration as separate versioned operations where they were changed by the release.
+- Do not delete bookkeeping data during a downgrade, cancellation, refund or source rollback.
+- Stripe rollback never creates or changes VAT registration and must not touch unrelated accounts or LIVE objects outside the approved TaxMate release.
+- `taxmate-staging` is not deleted as part of production rollback; the Founder will decide its later retention separately.
+
+Offline/source recovery remains available from the production baseline bundle and source archive under `evidence/w0/`, or by checking out commit `745f7497d374f000870c4a7a111130008f8945a7`.
