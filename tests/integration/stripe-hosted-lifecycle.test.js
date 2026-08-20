@@ -27,9 +27,9 @@ test('hosted TEST subscriptions cover promotion, cancellation, refund and webhoo
   await db.doc(`users/${plusUid}/entries/keep-after-refund`).set({id:'keep-after-refund',amount:123,updatedAt:Date.now()});
   await db.doc(`users/${plusUid}/entitlements/current`).set({promotion:{status:'active',tier:'pro',expiresAt:Date.now()+90*86400000,promotionCodeId:'promo_fixture'}},{merge:true});
   await Promise.all([
-    db.doc('founderPromotions/TAXMATEPLUS30').set({code:'TAXMATEPLUS30',tier:'plus',durationDays:30,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
-    db.doc('founderPromotions/TAXMATEPRO90').set({code:'TAXMATEPRO90',tier:'pro',durationDays:90,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
-    db.doc('founderPromotions/TAXMATEEXPIRED').set({code:'TAXMATEEXPIRED',tier:'pro',expiresAt:Date.now()-1,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()})
+    db.doc('founderPromotions/TAXMATEPLUS30').set({code:'TAXMATEPLUS30',tier:'plus',startsAt:Date.now()-1000,durationDays:30,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEPRO90').set({code:'TAXMATEPRO90',tier:'pro',startsAt:Date.now()-1000,durationDays:90,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEEXPIRED').set({code:'TAXMATEEXPIRED',tier:'pro',startsAt:Date.now()-2000,expiresAt:Date.now()-1,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()})
   ]);
 
   const promoApp=initializeApp({projectId:'demo-taxmate',apiKey:'emulator-api-key'},'stripe-hosted-promo');const auth=getAuth(promoApp);connectAuthEmulator(auth,'http://127.0.0.1:9099',{disableWarnings:true});const promoUser=(await signInAnonymously(auth)).user;const fn=getFunctions(promoApp,'europe-west2');connectFunctionsEmulator(fn,'127.0.0.1',5001);const redeem=httpsCallable(fn,'redeemPromotion');

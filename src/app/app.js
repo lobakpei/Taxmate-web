@@ -3235,6 +3235,7 @@ function requireLoginForTier(){
 function setTier(tier){
   if(tier!=='free' && !requireLoginForTier()) return;
   if(tier==='free'){ openBillingPortal(); return; }
+  if(TaxMateEntitlement.hasPermanentPro(ENTITLEMENT.snapshot,Date.now())){ toast('You already have permanent Pro access.'); return; }
   startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});
 }
 function activateTrial(){
@@ -3255,7 +3256,7 @@ async function callSecureFunction(name,data){
 async function startBillingAction(name,data){
   try{
     const u=cloudUser(), result=await callSecureFunction(name,data);
-    if(result.url) location.assign(result.url); else { await loadTrialFromCloud(u.uid); render(); toast('Access updated'); }
+    if(result.url) location.assign(result.url); else { await loadTrialFromCloud(u.uid); render(); toast(result.message||'Access updated'); }
   }catch(e){ alert('Secure billing is not configured in this preview. No plan was changed.'); }
 }
 function openBillingPortal(){ if(requireLoginForTier()) startBillingAction('createBillingPortal',{}); }
@@ -5666,12 +5667,10 @@ function mtdCard(){
 // Deadline banner (shown on Home + Tax pages if within 7 days)
 // ── Trial reminder banner ──────────────────────────────────
 function trialBanner(){
-  const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine);
-  if(access.source==='promotion'&&access.expiresAt){
-    const end=new Date(Number(access.expiresAt)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});
-    return `<div class="notice amber" style="margin-bottom:14px">⏳ Promotional ${access.tier} access ends ${end}. You will return to Free automatically; your data is retained.</div>`;
-  }
-  return '';
+  const notice=TaxMateEntitlement.notification(ENTITLEMENT.snapshot,Date.now());if(!notice)return'';
+  const seenKey='taxmateuk_notice_'+notice.id;try{if(localStorage.getItem(seenKey))return'';localStorage.setItem(seenKey,'1');}catch(e){}
+  const action=notice.cta==='Manage subscription'?'openBillingPortal()':'lockSeeplans()';
+  return `<div class="notice amber" style="margin-bottom:14px">${notice.message} <button class="link" data-tm-click="${action}">${notice.cta}</button></div>`;
 }
 
 function deadlineBanner(){

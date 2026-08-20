@@ -13,9 +13,9 @@ test('TaxMate Stripe sandbox checkout, promotions, lifecycle and webhook truth',
   const fn=getFunctions(app,'europe-west2');connectFunctionsEmulator(fn,'127.0.0.1',5001);const checkout=httpsCallable(fn,'createCheckoutSession'),redeem=httpsCallable(fn,'redeemPromotion');
   const admin=initializeAdmin({projectId:'demo-taxmate'},'stripe-sandbox-admin');const db=getFirestore(admin);const entitlement=()=>db.doc(`users/${user.uid}/entitlements/current`).get().then(s=>s.data()||{});
   await Promise.all([
-    db.doc('founderPromotions/TAXMATEPLUS30').set({code:'TAXMATEPLUS30',tier:'plus',durationDays:30,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
-    db.doc('founderPromotions/TAXMATEPRO90').set({code:'TAXMATEPRO90',tier:'pro',durationDays:90,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
-    db.doc('founderPromotions/TAXMATEEXPIRED').set({code:'TAXMATEEXPIRED',tier:'pro',expiresAt:Date.now()-1,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()})
+    db.doc('founderPromotions/TAXMATEPLUS30').set({code:'TAXMATEPLUS30',tier:'plus',startsAt:Date.now()-1000,durationDays:30,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEPRO90').set({code:'TAXMATEPRO90',tier:'pro',startsAt:Date.now()-1000,durationDays:90,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()}),
+    db.doc('founderPromotions/TAXMATEEXPIRED').set({code:'TAXMATEEXPIRED',tier:'pro',startsAt:Date.now()-2000,expiresAt:Date.now()-1,maxRedemptions:20,active:true,redemptionCount:0,createdAt:Date.now()})
   ]);
   async function signed(event){const payload=JSON.stringify(event),signature=stripe.webhooks.generateTestHeaderString({payload,secret:process.env.STRIPE_WEBHOOK_SECRET});return fetch('http://127.0.0.1:5001/demo-taxmate/europe-west2/stripeWebhook',{method:'POST',headers:{'content-type':'application/json','stripe-signature':signature},body:payload});}
   let customerId,subscription;

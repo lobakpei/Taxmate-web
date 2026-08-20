@@ -52,4 +52,8 @@ test('Founder promotions use canonical Firestore truth and one transactional UID
   assert.match(source,/promotionRedemptions\/\$\{FounderPromotions\.redemptionId\(code,user\.uid\)\}/);
   assert.doesNotMatch(source,/promotionCodes\.list/);
   assert.match(source,/db\.runTransaction/);
+  assert.match(source,/startsAt:configuration\.startsAt/);
+  assert.match(source,/source:'founder_promo'/);
+  assert.match(source,/hasPermanentPro/);
+  assert.match(source,/You already have permanent Pro access\./);
 });

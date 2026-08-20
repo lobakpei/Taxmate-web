@@ -1,5 +1,13 @@
 # Final Integrated Test Report
 
+## Live billing secret and Founder promo RC.10 addendum — 20 August 2026
+
+Build `2026-08-20.billing-promo-rc.10` passed the complete repository gate at 127/127: characterization 4/4, unit 97/97, integration 5/5, static Firestore/Storage rules 5/5, Firestore/Storage Emulator Suite 11/11 and Auth/Functions Emulator Suite 5/5. The in-page browser audit passed 29/29 with zero fail/warn. `git diff --check`, production/staging separation, public secret/private-information checks and the repository scan for the four Founder codes passed.
+
+The TaxMate LIVE restricted key was rotated without expanding its six permissions and stored only as enabled Secret Manager secret `STRIPE_SECRET_KEY` in `taxmate-uk-2`; the existing enabled `STRIPE_WEBHOOK_SECRET` was not rotated. A read-only API receipt confirmed the replacement key can read subscriptions, invoices and promotion codes. The four canonical LIVE Price IDs are now deterministic production Functions configuration, while TEST IDs remain confined to the Sandbox harness. Production has no deployed candidate Functions, so the Functions-runtime binding and paid Checkout smoke remain release-time checks after explicit deployment approval.
+
+The four Founder campaigns are backend-only Firestore configuration, not Stripe coupons. Fixed campaign expiry, permanent Pro, exact caps, same-UID uniqueness, concurrent final-slot safety, success copy, 30/7/1/expired notices, annual renewal/end notices, paid/promo priority, permanent-Pro payment protection, disable/revoke separation and downgrade-without-deletion behavior are protected by the current regression suite. Exact campaign codes are absent from public repository source.
+
 ## Annual billing RC.9 addendum — 20 August 2026
 
 The final repository gate passed 120/120 and the current in-page browser audit passed 29/29 with zero fail/warn. Four genuine correct-account Stripe-hosted TEST Checkouts verified Plus £3.99/month and £29.99/year and Pro £7.99/month and £59.99/year, exact GBP amounts, zero tax, recurring intervals and server entitlement. Annual cancel-at-period-end, period-end promo fallback and the affected shared cancellation/refund/webhook lifecycle also passed. Matching LIVE Price objects were created without real customers, cards, payments or subscriptions; production Functions and Hosting remain unchanged.

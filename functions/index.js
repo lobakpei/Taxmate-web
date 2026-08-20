@@ -32,6 +32,8 @@ async function customerFor(user){
 }
 exports.createCheckoutSession=onCall(opts,async req=>{
   const user=auth(req),tier=req.data&&req.data.tier,cadence=req.data&&req.data.cadence||'monthly';if(!['plus','pro'].includes(tier))throw new HttpsError('invalid-argument','Invalid tier');if(!['monthly','yearly'].includes(cadence))throw new HttpsError('invalid-argument','Invalid billing cadence');
+  const entitlementSnap=await db.doc(`users/${user.uid}/entitlements/current`).get();
+  if(entitlementSnap.exists&&FounderPromotions.hasPermanentPro(entitlementSnap.data().promotions,Date.now()))throw new HttpsError('already-exists','You already have permanent Pro access.');
   const price=({plus:{monthly:PLUS_MONTHLY_PRICE.value(),yearly:PLUS_ANNUAL_PRICE.value()},pro:{monthly:PRO_MONTHLY_PRICE.value(),yearly:PRO_ANNUAL_PRICE.value()}})[tier][cadence];if(!price)throw new HttpsError('failed-precondition','Price not configured');
   const customer=await customerFor(user), subscriptions=await stripe().subscriptions.list({customer,status:'all',limit:20});
   if(subscriptions.data.some(subscription=>!['canceled','incomplete_expired'].includes(subscription.status))) throw new HttpsError('already-exists','An existing subscription must be managed in the billing portal');
@@ -52,12 +54,13 @@ exports.redeemPromotion=onCall(baseOpts,async req=>{
     const now=Date.now(),configuration=FounderPromotions.validateConfiguration(promotionSnap.data(),now);
     if(!configuration.ok)throw new HttpsError('failed-precondition','Promotion code is not currently redeemable');
     const entitlementExpiresAt=FounderPromotions.entitlementExpiry(configuration,now),previous=entitlementSnap.exists?entitlementSnap.data():{};
-    const promotions={...(previous.promotions||{}),[code]:{status:'active',tier:configuration.tier,expiresAt:entitlementExpiresAt}};
+    const grant={status:'active',tier:configuration.tier,startsAt:configuration.startsAt,expiresAt:entitlementExpiresAt,permanent:configuration.permanent===true,source:'founder_promo'};
+    const promotions={...(previous.promotions||{}),[code]:grant};
     const effective=FounderPromotions.selectEffective(promotions,now);
     tx.update(promotion,{redemptionCount:configuration.redemptionCount+1,updatedAt:FieldValue.serverTimestamp()});
-    tx.create(redemption,{uid:user.uid,promoCode:code,grantedTier:configuration.tier,redeemedAt:FieldValue.serverTimestamp(),entitlementExpiresAt});
+    tx.create(redemption,{uid:user.uid,code,promoCode:code,grantedTier:configuration.tier,redeemedAt:FieldValue.serverTimestamp(),startsAt:configuration.startsAt,entitlementExpiresAt,source:'founder_promo',status:'active'});
     tx.set(entitlement,{promotions,promotion:effective?{status:'active',tier:effective.tier,expiresAt:effective.expiresAt,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:FieldValue.serverTimestamp()},{merge:true});
-    result={tier:configuration.tier,expiresAt:entitlementExpiresAt};
+    result={tier:configuration.tier,expiresAt:entitlementExpiresAt,permanent:configuration.permanent===true,message:FounderPromotions.successMessage({...configuration,expiresAt:entitlementExpiresAt})};
   });
   return result;
 });
