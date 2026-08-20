@@ -5,7 +5,7 @@ const jdkName=fs.readdirSync(jdkRoot).find(name=>fs.existsSync(path.join(jdkRoot
 if(!jdkName)throw new Error('Portable JDK not found under .tools/jdk');
 const javaHome=path.join(jdkRoot,jdkName),firebase=path.join(root,'node_modules','.bin','firebase.cmd');
 const generatedEnv=path.join(root,'functions','.env.local'),hadEnv=fs.existsSync(generatedEnv);
-const env={...process.env,JAVA_HOME:javaHome,PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,XDG_CONFIG_HOME:path.join(root,'.tools','config'),STRIPE_SECRET_KEY:'emulator-placeholder',STRIPE_WEBHOOK_SECRET:'emulator-placeholder',STRIPE_PLUS_PRICE_ID:'price_plus_emulator',STRIPE_PRO_PRICE_ID:'price_pro_emulator',PUBLIC_APP_URL:'http://127.0.0.1:4173'};
+const env={...process.env,JAVA_HOME:javaHome,PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,XDG_CONFIG_HOME:path.join(root,'.tools','config'),STRIPE_SECRET_KEY:'emulator-placeholder',STRIPE_WEBHOOK_SECRET:'emulator-placeholder',STRIPE_PLUS_MONTHLY_PRICE_ID:'price_plus_monthly_emulator',STRIPE_PLUS_ANNUAL_PRICE_ID:'price_plus_annual_emulator',STRIPE_PRO_MONTHLY_PRICE_ID:'price_pro_monthly_emulator',STRIPE_PRO_ANNUAL_PRICE_ID:'price_pro_annual_emulator',STRIPE_PLUS_LEGACY_PRICE_IDS:'',STRIPE_PRO_LEGACY_PRICE_IDS:'price_pro_legacy_emulator',PUBLIC_APP_URL:'http://127.0.0.1:4173'};
 const command=`"${firebase}" emulators:exec --project demo-taxmate --only auth,firestore,storage,functions "node --test tests/integration/functions-emulator.test.js"`;
 const child=spawnSync(command,{cwd:root,env,stdio:'inherit',shell:true});
 if(!hadEnv&&fs.existsSync(generatedEnv))fs.unlinkSync(generatedEnv);

@@ -16,9 +16,9 @@ Do not perform these actions until Founder release approval. Complete them first
 ## Stripe TEST
 
 - [ ] Use a TaxMate-owned TEST/sandbox account, not another product's sandbox.
-- [ ] Create Plus at GBP £3.99 recurring monthly.
-- [ ] Create Pro at GBP £8.49 recurring monthly.
-- [ ] Confirm no annual launch Price.
+- [x] Confirm Plus at GBP £3.99 recurring monthly and £29.99 recurring yearly.
+- [x] Confirm Pro at GBP £7.99 recurring monthly and £59.99 recurring yearly.
+- [x] Archive the former Pro £8.49 monthly Price from new sales while recognising it for historical subscriber entitlement.
 - [x] Configure Founder-approved launch treatment: Stripe Tax off, no VAT added/invoiced and no VAT registration created.
 - [ ] Configure Checkout Terms URL, Billing Portal and durable confirmation email.
 - [ ] Configure TEST secret and webhook secret through secure service configuration.
@@ -33,6 +33,19 @@ Do not perform these actions until Founder release approval. Complete them first
 - [ ] Verify no script/request before consent, approved events after consent and stop after withdrawal.
 - [ ] Create/access staging-only Sentry project and DSN.
 - [ ] Select a short Sentry retention period and inspect an actual received synthetic event.
+
+## Stripe LIVE and Founder promo
+
+- [x] Verify the independent TaxMate LIVE account identity.
+- [x] Create Free £0; Plus £3.99/month and £29.99/year; Pro £7.99/month and £59.99/year; keep Stripe Tax off.
+- [x] Create the production webhook for the seven required billing lifecycle events.
+- [x] Store the webhook signing secret only as `STRIPE_WEBHOOK_SECRET` in `taxmate-uk-2` Secret Manager.
+- [x] Rotate the exact never-used restricted key after Founder confirmation and store its replacement only as enabled `STRIPE_SECRET_KEY` version 1.
+- [x] Supply the four non-secret LIVE Price IDs and legacy Pro Price allowlist in the deterministic `functions/.env.taxmate-uk-2` production configuration.
+- [ ] Deploy the exact newly approved Functions candidate and run fail-closed LIVE API smoke checks without a real card or charge.
+- [x] Atomically migrate the three unused pending placeholders and create the fourth campaign so production contains exactly the four Founder-approved fixed/permanent configurations.
+- [x] Verify authorised LIST/VIEW/CREATE/DISABLE/specific-REVOKE admin paths and transactional capacity accounting in automated tests.
+- [x] Verify normal clients cannot enumerate promo definitions or write entitlement truth.
 
 ## Release controls
 

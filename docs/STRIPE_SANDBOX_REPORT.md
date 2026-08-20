@@ -1,5 +1,17 @@
 # TaxMate Correct-Account Stripe Sandbox Report
 
+## Annual billing delta — 20 August 2026
+
+Canonical TaxMate Sandbox Prices:
+
+- Plus monthly: `price_1U6HQBL0bYJwhRlmpOkns65Z`, GBP £3.99/month.
+- Plus yearly: `price_1U6ZEqL0bYJwhRlmu3DBbLiG`, GBP £29.99/year.
+- Pro monthly: `price_1U6ZErL0bYJwhRlm4P8aOWzy`, GBP £7.99/month.
+- Pro yearly: `price_1U6ZErL0bYJwhRlmEjbDgo3i`, GBP £59.99/year.
+- Legacy Pro monthly `price_1U6HQZL0bYJwhRlm1u5hbB7w` remains recognised for existing TEST subscribers only.
+
+All four completed a genuine Stripe-hosted TEST Checkout in the correct TaxMate Sandbox. API evidence confirmed exact GBP amount, recurring month/year interval, Stripe Tax off, tax £0, active subscription and correct server entitlement. The annual delta additionally passed immediate entitlement, cancel-at-period-end retention, yearly period-end recomputation and paid-over-Founder-promo priority. The affected shared billing lifecycle gate was rerun and passed cancellation, decline, webhook signature, duplicate/idempotency, out-of-order safety, partial/full refund and data preservation.
+
 Verification date: 19 August 2026. Build: `2026-08-19.stripe-sandbox-rc.6`.
 
 ## Identity and isolation

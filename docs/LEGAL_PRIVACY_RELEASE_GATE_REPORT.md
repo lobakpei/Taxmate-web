@@ -19,7 +19,7 @@ This report describes engineering evidence, not a statement that TaxMate is full
 - Stopped swallowing receipt/Stripe cleanup errors so server deletion cannot be represented as complete when critical cleanup failed.
 - Required Stripe Checkout terms consent. Paid access remains server-verified.
 - Added pre-contract plan wording covering recurring billing, Checkout disclosure, cancellation and the distinction between a free-access promotion and a Checkout discount.
-- Recorded Founder-approved launch pricing: Free £0, Plus £3.99/month and Pro £8.49/month, with monthly billing only and no annual launch plan.
+- Recorded Founder-approved pricing: Free £0; Plus £3.99/month or £29.99/year; Pro £7.99/month or £59.99/year. Monthly and yearly plans renew until cancelled.
 - Recorded the support path as public `support@taxmate.uk`, routed by Namecheap email forwarding to a private Microsoft Outlook mailbox without publishing the destination address.
 - Removed the Apple identity-provider CSP allowance. Google remains the sole authentication provider.
 - Replaced unsupported “MTD-ready”, “for HMRC checks”, guaranteed-refund, blanket-security, blanket-deletion and blanket-liability wording.
@@ -39,7 +39,7 @@ This report describes engineering evidence, not a statement that TaxMate is full
 
 1. The ICO live register must display the non-residential/PO Box/alternative correspondence address. Only then may the verified address be inserted where the distance-selling rules require a geographical/contact address.
 2. The Founder or UK adviser must approve the final Privacy Policy, Terms, lawful bases, legitimate-interest balancing and whether purchasers contract as consumers, business users, or both.
-3. Before paid release, configure and verify Stripe price objects matching Plus £3.99/month and Pro £8.49/month, VAT/tax treatment, renewal disclosures, model cancellation form, immediate-performance wording, Stripe terms URL, Billing Portal cancellation and durable email confirmation. No annual price is required for launch.
+3. Before paid release, configure and verify Stripe price objects matching Plus £3.99/month or £29.99/year and Pro £7.99/month or £59.99/year, VAT/tax treatment, renewal disclosures, model cancellation form, immediate-performance wording, Stripe terms URL, Billing Portal cancellation and durable email confirmation.
 4. Execute/confirm current provider DPAs/terms and transfer safeguards, including Namecheap forwarding and Microsoft Outlook; document mailbox access controls, forwarding-log/copy behaviour and retention.
 5. Set and evidence GA4 user/event retention to two months and a fixed Sentry event-retention period. Verify data-sharing, Google Signals, granular location/device and ad-linking settings in isolated staging.
 6. Decide how to handle the pre-existing personal Gmail address in Git author metadata before publishing this candidate. No history was rewritten here.

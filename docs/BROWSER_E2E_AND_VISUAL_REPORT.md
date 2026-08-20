@@ -1,5 +1,13 @@
 # Browser E2E and Visual Preservation Report
 
+## Billing and Founder promo RC.10 addendum — 20 August 2026
+
+The local enforcing preview rendered build `2026-08-20.billing-promo-rc.10` and passed the in-page audit at 29/29 with zero fail/warn. Settings retained the approved Monthly/Yearly plan layout, one independent promotion-code entry, Google-only sign-in, exact current prices and the existing notice design language. No UI redesign was introduced. Notification copy and CTA branching are covered by deterministic unit tests because production entitlements were not mutated for visual testing.
+
+## Annual billing RC.9 addendum — 20 August 2026
+
+The approved Plans UI now reuses its existing segmented-control language for `Monthly | Yearly`; the Free/Plus/Pro cards, promotion entry, spacing, typography, colours and hierarchy remain unchanged. Mobile 390×844 and desktop 1280×720 were inspected in light and dark modes. Monthly rendered £0 / £3.99 / £7.99; yearly rendered £0 / £29.99 / £59.99 plus exactly one `Billed yearly` note. No element overflowed horizontally, the cadence controls exposed the correct pressed state, and a reserved note row kept the Plans document height identical across cadence changes. The in-page browser audit passed 29/29 with zero fail/warn on build `2026-08-20.annual-billing-rc.9`.
+
 ## Programme evidence
 
 The 17 August 2026 W0–W5.6 and final-integration passes remain valid for the committed RC lineage: dashboard/business/income/tax workflows, onboarding, English/Traditional Chinese/Urdu RTL, light/dark, focus/Escape, enforcing CSP, portable ZIP download, service-worker offline relaunch, and the full responsive matrix. Existing screenshots remain under `evidence/final/screenshots`; frozen production evidence remains under `evidence/w0/screenshots`.

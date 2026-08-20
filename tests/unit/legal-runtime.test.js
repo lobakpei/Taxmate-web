@@ -30,10 +30,13 @@ test('public and in-app legal surfaces share the current policy identity and cor
   assert.match(terms,/Consumer Rights Act 2015/i);
   for(const text of [app,terms,Legal.termsHtml]){
     assert.match(text,/£3\.99\/month|£3\.99 per month/);
-    assert.match(text,/£8\.49\/month|£8\.49 per month/);
-    assert.match(text,/monthly only|monthly recurring|recur monthly/i);
-    assert.match(text,/no annual plan/i);
+    assert.match(text,/£29\.99\/year|£29\.99 per year/);
+    assert.match(text,/£7\.99\/month|£7\.99 per month/);
+    assert.match(text,/£59\.99\/year|£59\.99 per year/);
+    assert.match(text,/monthly and yearly|monthly or yearly/i);
   }
+  assert.match(app,/Billed yearly/);
+  assert.doesNotMatch(app,/Pay once for the year/i);
   for(const text of [terms,Legal.termsHtml]){
     assert.match(text,/Stripe Tax is off/i);
     assert.match(text,/no VAT is added/i);
@@ -80,7 +83,8 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(app,/callSecureFunction\('leavePartnership',\{code\}\)/);
   assert.match(functions,/deleteFiles\(\{prefix:`receipts\/\$\{uid\}\//);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
-  assert.match(functions,/consent_collection:\{terms_of_service:'required'\}/);
+  assert.match(functions,/checkout\.consent_collection=\{terms_of_service:'required'\}/);
+  assert.match(functions,/FUNCTIONS_EMULATOR!=='true'/);
   assert.match(app,/window\.TAXMATE_FIREBASE_ENVIRONMENT/);
   assert.doesNotMatch(app,/FIREBASE_STAGING_CONFIG|FIREBASE_STAGING_HOSTS|firebase=staging/);
   assert.match(app,/europe-west2-'\+FIREBASE_CONFIG\.projectId/);

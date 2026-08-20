@@ -88,3 +88,10 @@ test('application consumes injected environment without changing the Google Auth
   assert.match(app, /firebase\.auth\(\)\.setPersistence\(firebase\.auth\.Auth\.Persistence\.LOCAL\)/);
   assert.doesNotMatch(app, /taxmate-staging|FIREBASE_STAGING|firebase=staging/i);
 });
+
+test('production Functions billing config contains only canonical LIVE prices',()=>{
+  const env=fs.readFileSync(path.join(root,'functions/.env.taxmate-uk-2'),'utf8');
+  for(const id of ['price_1U6Wi4Q2jZLVx6pgFbTCmjV3','price_1U6ZfnQ2jZLVx6pgNCCfs5Cg','price_1U6ZgaQ2jZLVx6pgi7dHPBeO','price_1U6ZgtQ2jZLVx6pgOeS7cRYl'])assert.match(env,new RegExp(id));
+  assert.doesNotMatch(env,/price_1U6(?:HQ|ZE)[A-Za-z0-9]+|taxmate-staging|sk_test_|rk_test_|whsec_/);
+  assert.match(env,/STRIPE_PRO_LEGACY_PRICE_IDS=price_1U6WiHQ2jZLVx6pgJWYXlwHv/);
+});
