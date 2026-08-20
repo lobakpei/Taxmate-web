@@ -1,6 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /evidence/
-Disallow: /tests/
-Disallow: /docs/
-Sitemap: https://taxmate.uk/sitemap.xml

@@ -2,8 +2,8 @@
   "name": "TaxMate UK",
   "short_name": "TaxMate",
   "description": "Simple tax tracking for UK self-employed — income, expenses, mileage and your Self Assessment estimate.",
-  "start_url": "/",
-  "scope": "/",
+  "start_url": ".",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#0AA968",
@@ -34,5 +34,5 @@
       "purpose": "maskable"
     }
   ],
-  "id": "/"
+  "id": "/Taxmate-web/"
 }
