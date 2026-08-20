@@ -5016,34 +5016,16 @@ function importBackupFile(ev){
 }
 
 /* ═══════════ Firebase partner sync ═══════════ */
-// 一次性設定:喺 Firebase Console 開個 project,啟用 Anonymous Auth + Firestore,
-// 然後將 Web app config 貼喺下面 (Project settings → Your apps → Web)。
-// 留空 = sync 功能自動隱藏,app 其餘 100% 照常運作。
-const FIREBASE_PRODUCTION_CONFIG = {
-  apiKey: "AIzaSyCX3--xiJs3JRdD9gNND9wf-I3MERHeA90",
-  authDomain: "taxmate-uk-2.firebaseapp.com",
-  projectId: "taxmate-uk-2",
-  storageBucket: "taxmate-uk-2.firebasestorage.app",
-  messagingSenderId: "995936701479",
-  appId: "1:995936701479:web:ed61c51a65e61aa1d21202"
-};
-const FIREBASE_STAGING_CONFIG = {
-  apiKey: "AIzaSyBHlsIkz1onRmgoQHAqGs_0qKcMRY4g1x0",
-  authDomain: "taxmate-staging.firebaseapp.com",
-  projectId: "taxmate-staging",
-  storageBucket: "taxmate-staging.firebasestorage.app",
-  messagingSenderId: "308981292791",
-  appId: "1:308981292791:web:550b795411f366864c7df2"
-};
-const FIREBASE_STAGING_HOSTS = new Set(['taxmate-staging.web.app','taxmate-staging.firebaseapp.com']);
-const FIREBASE_IS_STAGING = FIREBASE_STAGING_HOSTS.has(location.hostname)||new URLSearchParams(location.search).get('firebase')==='staging';
-const FIREBASE_CONFIG = FIREBASE_IS_STAGING?FIREBASE_STAGING_CONFIG:FIREBASE_PRODUCTION_CONFIG;
-const FIREBASE_APPCHECK_KEY = FIREBASE_IS_STAGING?'6LdFcY4tAAAAAP6hI8PCdla4GLY_Dko3UZ63j_Rv':'6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH';
+// Hosting build injects the project-specific Firebase environment before this runtime loads.
+// Missing or wrong-host config keeps cloud features disabled while local bookkeeping remains available.
+const FIREBASE_ENVIRONMENT = window.TAXMATE_FIREBASE_ENVIRONMENT || {};
+const FIREBASE_CONFIG = FIREBASE_ENVIRONMENT.firebaseConfig || {};
+const FIREBASE_APPCHECK_KEY = FIREBASE_ENVIRONMENT.appCheckKey || '';
+const FIREBASE_HOSTS = new Set(FIREBASE_ENVIRONMENT.hosts || []);
 
 let FB = { db:null, uid:null, ready:false, subs:{} };
-function fbConfigured(){ return (typeof firebase!=='undefined') && !!FIREBASE_CONFIG.apiKey; }
+function fbConfigured(){ return (typeof firebase!=='undefined') && !!FIREBASE_CONFIG.apiKey && FIREBASE_HOSTS.has(location.hostname); }
 async function ensureFB(){
-  if((location.hostname==='127.0.0.1'||location.hostname==='localhost')&&!new URLSearchParams(location.search).has('firebase')) return null;
   if(!fbConfigured()) return null;
   if(FB.ready) return FB.db;
   try{

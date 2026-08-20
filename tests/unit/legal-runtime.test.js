@@ -81,8 +81,8 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(functions,/deleteFiles\(\{prefix:`receipts\/\$\{uid\}\//);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
   assert.match(functions,/consent_collection:\{terms_of_service:'required'\}/);
-  assert.match(app,/FIREBASE_STAGING_HOSTS/);
-  assert.match(app,/FIREBASE_IS_STAGING\?FIREBASE_STAGING_CONFIG:FIREBASE_PRODUCTION_CONFIG/);
+  assert.match(app,/window\.TAXMATE_FIREBASE_ENVIRONMENT/);
+  assert.doesNotMatch(app,/FIREBASE_STAGING_CONFIG|FIREBASE_STAGING_HOSTS|firebase=staging/);
   assert.match(app,/europe-west2-'\+FIREBASE_CONFIG\.projectId/);
 });
 
