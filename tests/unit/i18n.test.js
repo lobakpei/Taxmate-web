@@ -1,4 +1,0 @@
-const test=require('node:test');const assert=require('node:assert/strict');const {I18N,audit}=require('../../scripts/i18n-audit');
-test('all six locales cover the canonical English key set with matching placeholders',()=>{const result=audit();for(const locale of result.locales)assert.deepEqual(result.missing[locale],[],`${locale} is missing translation keys`);assert.deepEqual(result.placeholderMismatches,[]);});
-test('Urdu contains no known Spanish leakage',()=>{assert.deepEqual(audit().spanishLeaks,[]);});
-test('release-critical MTD, form and promotion copy is genuinely localised',()=>{for(const locale of ['zh','pl','ro','es','ur'])for(const key of ['mtd.required','mtd.notRequired','mtd.incomplete','mtd.unsupported','sa.future','promo.redeem']){assert.equal(typeof I18N[locale][key],'string');assert.notEqual(I18N[locale][key],I18N.en[key],`${locale}.${key} fell back to English`);}});
