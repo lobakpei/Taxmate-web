@@ -1,0 +1,2 @@
+const test=require('node:test');const assert=require('node:assert/strict');const fs=require('node:fs');const {VERSIONS}=require('../../src/core/versions');
+test('final integrated Founder Preview has one coherent release identity',()=>{const pkg=require('../../package.json'),sw=fs.readFileSync('sw.js','utf8'),html=fs.readFileSync('index.html','utf8');assert.equal(pkg.version,VERSIONS.APP_VERSION);assert.ok(sw.includes(`const CACHE = '${VERSIONS.PWA_CACHE_VERSION}'`));assert.ok(html.includes(VERSIONS.BUILD_ID));assert.equal(VERSIONS.APP_VERSION,'2.0.0-rc.1');});

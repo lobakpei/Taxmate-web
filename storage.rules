@@ -1,0 +1,12 @@
+rules_version = '2';
+service firebase.storage {
+  match /b/{bucket}/o {
+    function imageUnderLimit() { return request.resource.size < 10 * 1024 * 1024 && request.resource.contentType.matches('image/.*'); }
+    match /receipts/{uid}/{fileName} {
+      allow read: if request.auth != null && request.auth.uid == uid;
+      allow create, update: if request.auth != null && request.auth.uid == uid && imageUnderLimit();
+      allow delete: if request.auth != null && request.auth.uid == uid;
+    }
+    match /{allPaths=**} { allow read, write: if false; }
+  }
+}
