@@ -1,0 +1,4 @@
+{
+  "name":"taxmate-functions","private":true,"main":"index.js","engines":{"node":"22"},
+  "dependencies":{"firebase-admin":"^13.4.0","firebase-functions":"^6.4.0","stripe":"^18.5.0"}
+}

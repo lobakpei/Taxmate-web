@@ -1,0 +1,46 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    function signedIn() { return request.auth != null; }
+    function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function member(partnershipId) {
+      return signedIn() && exists(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid));
+    }
+    function validRecord() {
+      return request.resource.data.id is string
+        && request.resource.data.createdAt is number
+        && request.resource.data.updatedAt is number
+        && request.resource.data.deviceId is string
+        && request.resource.data.schemaVersion == 5;
+    }
+
+    match /users/{uid} {
+      allow read, write: if owner(uid);
+      match /entries/{entryId} { allow read: if owner(uid); allow create, update: if owner(uid) && validRecord() && request.resource.data.id == entryId; allow delete: if false; }
+      match /app/{document=**} { allow read, write: if owner(uid); }
+      match /entitlements/{document=**} { allow read: if owner(uid); allow write: if false; }
+    }
+
+    match /partnerships/{partnershipId} {
+      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow read: if member(partnershipId);
+      allow update: if member(partnershipId) && request.resource.data.createdBy == resource.data.createdBy;
+      allow delete: if false;
+      match /members/{uid} {
+        allow read: if member(partnershipId);
+        allow create: if signedIn() && request.auth.uid == uid
+          && get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid;
+        allow update, delete: if request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid;
+      }
+      match /entries/{entryId} {
+        allow read: if member(partnershipId);
+        allow create, update: if member(partnershipId) && validRecord() && request.resource.data.id == entryId;
+        allow delete: if false;
+      }
+    }
+
+    match /appConfig/{document=**} { allow read: if true; allow write: if false; }
+    match /billing/{document=**} { allow read, write: if false; }
+    match /{document=**} { allow read, write: if false; }
+  }
+}

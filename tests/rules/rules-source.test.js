@@ -1,0 +1,6 @@
+const test=require('node:test'); const assert=require('node:assert/strict'); const fs=require('node:fs'); const path=require('node:path');
+const root=path.join(__dirname,'../..'); const fire=fs.readFileSync(path.join(root,'firestore.rules'),'utf8'); const storage=fs.readFileSync(path.join(root,'storage.rules'),'utf8');
+test('normal clients cannot write appConfig, billing, or entitlement truth',()=>{ assert.match(fire,/appConfig[\s\S]*allow write: if false/); assert.match(fire,/entitlements[\s\S]*allow write: if false/); assert.match(fire,/billing[\s\S]*allow read, write: if false/); });
+test('personal records are UID isolated and physical deletes are denied',()=>{ assert.match(fire,/request\.auth\.uid == uid/); assert.match(fire,/entries\/\{entryId\}[\s\S]*allow delete: if false/); });
+test('partnership access requires explicit membership',()=>{ assert.match(fire,/members\/\$\(request\.auth\.uid\)/); assert.match(fire,/allow read: if member\(partnershipId\)/); });
+test('receipt storage is owner-only, image-only and size limited',()=>{ assert.match(storage,/request\.auth\.uid == uid/); assert.match(storage,/contentType\.matches\('image\/\.\*'\)/); assert.match(storage,/10 \* 1024 \* 1024/); });
