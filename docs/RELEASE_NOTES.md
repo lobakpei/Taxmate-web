@@ -1,6 +1,6 @@
 # TaxMate Production Readiness Candidate — Release Notes
 
-Build `2026-08-20.google-only-auth-recovery-rc.11` is a minimum Google-only Auth recovery over RC.10. It leaves the Google SDK flow unchanged, keeps Apple Sign-In absent, and prevents the TaxMate service worker from intercepting Firebase Hosting's reserved `/__/` Auth callback namespace. All RC.10 billing, Founder-promotion, SEO, legal, telemetry, tax and approved UI behavior is preserved. The full gate passed 131/131 and the browser audit passed 29/29.
+Build `2026-08-20.live-auth-restored-rc.12` restores the install, activation and fetch semantics of Founder-confirmed known-good live production. Google Auth application behavior is unchanged from live, Apple Sign-In remains absent, and all approved billing, Founder-promotion, SEO, legal, telemetry, tax and UI behavior is preserved. Verification deliberately excludes popup/staging OAuth testing.
 
 Build `2026-08-20.billing-promo-rc.10` closes LIVE billing-secret wiring and Founder promotions on top of approved RC.9. It preserves the approved billing UI and pricing, isolates all four canonical LIVE Price IDs from TEST, stores no Stripe secret in the repository, and adds backend-only fixed/permanent promotion lifecycle, entitlement priority, notifications, payment protection and Founder admin controls. The full gate passed 127/127 and the browser audit passed 29/29. Production remains undeployed pending Founder approval and release-time Functions secret-binding verification.
 

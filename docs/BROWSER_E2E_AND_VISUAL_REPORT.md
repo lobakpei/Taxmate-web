@@ -1,8 +1,8 @@
 # Browser E2E and Visual Preservation Report
 
-## Google-only Auth recovery RC.11 addendum — 20 August 2026
+## Live Auth restoration RC.12 addendum — 20 August 2026
 
-The local preview rendered build `2026-08-20.google-only-auth-recovery-rc.11`, exposed exactly one `Continue with Google` button and zero Apple sign-in controls, and passed the in-page audit at 29/29 with zero fail/warn and no console errors. The Google SDK path, local persistence, auth-state callback and logout implementation are unchanged from RC.10; the fix is confined to bypassing Firebase Hosting's reserved `/__/` namespace in the production service worker.
+Build `2026-08-20.live-auth-restored-rc.12` restores the service-worker behavior of Founder-confirmed known-good live production. A fresh local browser pass returned 29/29 with zero fail/warn and no console errors; it retained exactly one Google control, zero Apple sign-in controls/runtime paths, and the exact monthly/yearly price display. Per Founder instruction, no Google popup or staging OAuth test was performed.
 
 ## Billing and Founder promo RC.10 addendum — 20 August 2026
 
