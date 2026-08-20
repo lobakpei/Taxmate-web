@@ -1,5 +1,9 @@
 # Browser E2E and Visual Preservation Report
 
+## Google-only Auth recovery RC.11 addendum — 20 August 2026
+
+The local preview rendered build `2026-08-20.google-only-auth-recovery-rc.11`, exposed exactly one `Continue with Google` button and zero Apple sign-in controls, and passed the in-page audit at 29/29 with zero fail/warn and no console errors. The Google SDK path, local persistence, auth-state callback and logout implementation are unchanged from RC.10; the fix is confined to bypassing Firebase Hosting's reserved `/__/` namespace in the production service worker.
+
 ## Billing and Founder promo RC.10 addendum — 20 August 2026
 
 The local enforcing preview rendered build `2026-08-20.billing-promo-rc.10` and passed the in-page audit at 29/29 with zero fail/warn. Settings retained the approved Monthly/Yearly plan layout, one independent promotion-code entry, Google-only sign-in, exact current prices and the existing notice design language. No UI redesign was introduced. Notification copy and CTA branching are covered by deterministic unit tests because production entitlements were not mutated for visual testing.

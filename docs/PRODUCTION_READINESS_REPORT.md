@@ -6,9 +6,9 @@ Founder-facing closeout — 20 August 2026. This records engineering evidence an
 |---|---|---|
 | Branch | PASS | `codex/taxmate-modernisation-20260817` |
 | Commit / tree | PASS | Exact identities are recorded in the final Founder handoff |
-| Build | PASS | `2026-08-20.billing-promo-rc.10` |
+| Build | PASS | `2026-08-20.google-only-auth-recovery-rc.11` |
 | Working tree | PASS | Clean after the final coherent candidate commit |
-| Production Google Auth invariant | PASS | Candidate production path matches the current `taxmate-uk-2` Google-only popup implementation; no staging workaround remains |
+| Production Google Auth invariant | PASS | Google popup/persistence/callback/logout path is unchanged; the service worker bypasses Firebase's reserved `/__/` Auth callback namespace before app-shell handling; Apple is absent |
 | Stripe TEST | PASS | Independent TaxMate Sandbox, Plus £3.99/month and £29.99/year, Pro £7.99/month and £59.99/year, four hosted Checkouts, signed webhook, annual period end, promotions, cancellation, expiry and refund entitlement |
 | Stripe LIVE wiring | PASS WITH RELEASE-TIME CHECK | Canonical four LIVE Price IDs are isolated in the production Functions environment; the replacement restricted LIVE key and unchanged webhook secret are enabled in `taxmate-uk-2` Secret Manager. No production Functions are currently deployed, so runtime binding is verified immediately after an approved deployment. |
 | Founder promotions | PASS | Four backend-only fixed/permanent configurations are active with exact start, expiry and capacity; client source contains none of the codes. Transactional redemption, priority, notices, disable/revoke and data-retention behavior are covered by regression. |

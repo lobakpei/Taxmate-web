@@ -1,5 +1,9 @@
 # Final Integrated Test Report
 
+## Google-only Auth recovery RC.11 addendum — 20 August 2026
+
+Build `2026-08-20.google-only-auth-recovery-rc.11` passed the complete repository gate at 131/131: characterization 4/4, unit 101/101, integration 5/5, static Firestore/Storage rules 5/5, Firestore/Storage Emulator Suite 11/11 and Auth/Functions Emulator Suite 5/5. The in-page browser audit passed 29/29 with zero fail/warn and no console errors. The only runtime behavior change is an early service-worker bypass for Firebase Hosting's reserved `/__/` namespace; production Firebase identity remains `taxmate-uk-2`, Apple Sign-In remains absent and RC.10 billing/promotion/SEO/legal/telemetry behavior is unchanged.
+
 ## Live billing secret and Founder promo RC.10 addendum — 20 August 2026
 
 Build `2026-08-20.billing-promo-rc.10` passed the complete repository gate at 127/127: characterization 4/4, unit 97/97, integration 5/5, static Firestore/Storage rules 5/5, Firestore/Storage Emulator Suite 11/11 and Auth/Functions Emulator Suite 5/5. The in-page browser audit passed 29/29 with zero fail/warn. `git diff --check`, production/staging separation, public secret/private-information checks and the repository scan for the four Founder codes passed.

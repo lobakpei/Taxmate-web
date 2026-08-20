@@ -1,5 +1,5 @@
 /* TaxMate UK — service worker (resilient install for PWA installability) */
-const CACHE = 'taxmate-v2-rc-1-billing-promo-rc-10';
+const CACHE = 'taxmate-v2-rc-1-google-only-auth-recovery-rc-11';
 const CACHE_PREFIX = 'taxmate-';
 const SHELL = ['/', '/index.html', '/help.html', '/privacy.html', '/terms.html', '/manifest.json', '/icon-192.png', '/icon-512.png', '/icon-512-maskable.png',
   '/src/core/versions.js','/src/core/tax-rules.js','/src/core/tax-engine.js','/src/core/mtd.js','/src/core/form-mappings.js','/src/core/state-schema.js','/src/core/portable-backup.js','/src/core/onboarding-root.js','/src/core/sync.js','/src/core/entitlement.js','/src/core/telemetry.js','/src/core/legal.js',
@@ -27,6 +27,9 @@ self.addEventListener('activate', e => {
 
 self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
+  // Firebase Hosting owns /__/ (including the Google Auth popup callback).
+  // It must reach Firebase directly and must never be handled by the app shell.
+  if (url.origin === self.location.origin && url.pathname.startsWith('/__/')) return;
   // Only handle same-origin GET; let Firebase/CDN pass straight through
   if (e.request.method !== 'GET' || url.origin !== self.location.origin) return;
 
