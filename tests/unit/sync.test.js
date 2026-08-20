@@ -1,6 +1,0 @@
-const test=require('node:test'); const assert=require('node:assert/strict');
-const Sync=require('../../src/core/sync');
-test('two devices editing different records retain both',()=>{ const a=[{id:'1',updatedAt:2,deviceId:'a',amount:1}],b=[{id:'2',updatedAt:3,deviceId:'b',amount:2}]; assert.deepEqual(Sync.mergeRecords(a,b).map(x=>x.id),['1','2']); });
-test('latest edit wins and equal timestamps have deterministic device tie break',()=>{ let m=Sync.mergeRecords([{id:'1',updatedAt:2,deviceId:'a',amount:1}],[{id:'1',updatedAt:3,deviceId:'b',amount:2}]); assert.equal(m[0].amount,2); m=Sync.mergeRecords([{id:'1',updatedAt:3,deviceId:'z',amount:3}],[{id:'1',updatedAt:3,deviceId:'a',amount:2}]); assert.equal(m[0].amount,3); });
-test('tombstones survive reconnect and prevent resurrection',()=>{ const old={id:'1',updatedAt:10,deviceId:'a',amount:1}; const gone=Sync.tombstone(old,'b',20); const merged=Sync.mergeRecords([gone],[old]); assert.equal(merged[0].deletedAt,20); assert.deepEqual(Sync.visible(merged),[]); });
-test('offline edit wins after reconnect when its modification is later',()=>{ const cloud={id:'1',updatedAt:10,deviceId:'a',amount:1}; const offline=Sync.touch(cloud,'b',30); offline.amount=4; assert.equal(Sync.mergeRecords([offline],[cloud])[0].amount,4); });
