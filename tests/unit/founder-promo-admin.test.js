@@ -22,9 +22,11 @@ test('Firestore REST encoding uses timestamps for audit fields and integers for 
   assert.equal(fields.maxRedemptions.integerValue,'20');
 });
 
-test('Founder admin exposes LIST, VIEW, CREATE, pending migration, DISABLE and specific redemption REVOKE',()=>{
+test('Founder admin exposes safe zero-redemption reschedule and the other lifecycle controls',()=>{
   const source=require('node:fs').readFileSync(require('node:path').join(__dirname,'../../scripts/manage-founder-promo.js'),'utf8');
-  for(const command of ['listPromotions','promotionStatus','createPromotion','migratePending','disablePromotion','revokeRedemption'])assert.match(source,new RegExp(command));
+  for(const command of ['listPromotions','promotionStatus','createPromotion','migratePending','reschedulePromotion','disablePromotion','revokeRedemption'])assert.match(source,new RegExp(command));
   assert.match(source,/delete:source\.name,currentDocument:\{updateTime:source\.updateTime\}/);
   assert.match(source,/currentDocument:\{updateTime:redemption\.updateTime\}/);
+  assert.match(source,/Number\(current\.redemptionCount\)!==0/);
+  assert.match(source,/patchPromotion\(code,\{startsAt,updatedAt:new Date\(now\)\.toISOString\(\)\},token,existing\.updateTime\)/);
 });

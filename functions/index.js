@@ -13,6 +13,25 @@ const APP_URL=defineString('PUBLIC_APP_URL',{default:'https://taxmate.uk'});
 const baseOpts={region:'europe-west2',enforceAppCheck:process.env.FUNCTIONS_EMULATOR!=='true'},opts={...baseOpts,secrets:[STRIPE_SECRET]};
 const stripe=()=>new Stripe(STRIPE_SECRET.value());
 function auth(req){ if(!req.auth) throw new HttpsError('unauthenticated','Sign in required'); return req.auth; }
+const TIER_WEIGHT=Object.freeze({free:0,plus:1,pro:2}),ACTIVE_SUBSCRIPTIONS=new Set(['active','trialing']);
+function effectiveTier(entitlement,now=Date.now()){
+  const data=entitlement&&typeof entitlement==='object'?entitlement:{};
+  const paid=ACTIVE_SUBSCRIPTIONS.has(data.subscriptionStatus)&&TIER_WEIGHT[data.paidTier]>0&&(!data.currentPeriodEnd||Number(now)<Number(data.currentPeriodEnd))?data.paidTier:'free';
+  const promotion=FounderPromotions.selectEffective(data.promotions,now)||(data.promotion&&FounderPromotions.activeGrant(data.promotion,now)?data.promotion:null);
+  const promoted=promotion&&TIER_WEIGHT[promotion.tier]>0?promotion.tier:'free';
+  return TIER_WEIGHT[promoted]>TIER_WEIGHT[paid]?promoted:paid;
+}
+async function requireTier(uid,required){
+  const snap=await db.doc(`users/${uid}/entitlements/current`).get(),tier=effectiveTier(snap.exists?snap.data():null,Date.now());
+  if(TIER_WEIGHT[tier]<TIER_WEIGHT[required])throw new HttpsError('permission-denied',`${required==='pro'?'Pro':'Plus'} access required`,{reason:'tier-required',required});
+  return tier;
+}
+function promotionError(reason){
+  if(reason==='not-started')return new HttpsError('failed-precondition','Promotion is not available yet',{reason});
+  if(reason==='expired')return new HttpsError('failed-precondition','Promotion has ended',{reason});
+  if(reason==='redemption-limit-reached')return new HttpsError('resource-exhausted','Promotion redemption limit reached',{reason});
+  return new HttpsError('not-found','Promotion code not found',{reason:'invalid'});
+}
 function priceDescriptor(priceId){
   const configured=[
     [PLUS_MONTHLY_PRICE.value(),'plus','monthly'],[PLUS_ANNUAL_PRICE.value(),'plus','yearly'],
@@ -50,16 +69,16 @@ exports.redeemPromotion=onCall(baseOpts,async req=>{
   await db.runTransaction(async tx=>{
     const [promotionSnap,redemptionSnap,entitlementSnap]=await Promise.all([tx.get(promotion),tx.get(redemption),tx.get(entitlement)]);
     if(!promotionSnap.exists)throw new HttpsError('not-found','Promotion code not found');
-    if(redemptionSnap.exists)throw new HttpsError('already-exists','Code already redeemed');
+    if(redemptionSnap.exists)throw new HttpsError('already-exists','Code already redeemed',{reason:'duplicate'});
     const now=Date.now(),configuration=FounderPromotions.validateConfiguration(promotionSnap.data(),now);
-    if(!configuration.ok)throw new HttpsError('failed-precondition','Promotion code is not currently redeemable');
+    if(!configuration.ok)throw promotionError(configuration.reason);
     const entitlementExpiresAt=FounderPromotions.entitlementExpiry(configuration,now),previous=entitlementSnap.exists?entitlementSnap.data():{};
     const grant={status:'active',tier:configuration.tier,startsAt:configuration.startsAt,expiresAt:entitlementExpiresAt,permanent:configuration.permanent===true,source:'founder_promo'};
     const promotions={...(previous.promotions||{}),[code]:grant};
-    const effective=FounderPromotions.selectEffective(promotions,now);
+    const effective=FounderPromotions.selectEffective(promotions,now),promotionAccess=FounderPromotions.accessProjection(promotions,now);
     tx.update(promotion,{redemptionCount:configuration.redemptionCount+1,updatedAt:FieldValue.serverTimestamp()});
     tx.create(redemption,{uid:user.uid,code,promoCode:code,grantedTier:configuration.tier,redeemedAt:FieldValue.serverTimestamp(),startsAt:configuration.startsAt,entitlementExpiresAt,source:'founder_promo',status:'active'});
-    tx.set(entitlement,{promotions,promotion:effective?{status:'active',tier:effective.tier,expiresAt:effective.expiresAt,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:FieldValue.serverTimestamp()},{merge:true});
+    tx.set(entitlement,{promotions,promotionAccess,promotion:effective?{status:'active',tier:effective.tier,expiresAt:effective.expiresAt,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:FieldValue.serverTimestamp()},{merge:true});
     result={tier:configuration.tier,expiresAt:entitlementExpiresAt,permanent:configuration.permanent===true,message:FounderPromotions.successMessage({...configuration,expiresAt:entitlementExpiresAt})};
   });
   return result;
@@ -98,9 +117,18 @@ exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,ST
     res.sendStatus(200);
   }catch(error){await eventRef.delete().catch(()=>{});console.error('Stripe webhook failed',event.id,event.type,error);res.sendStatus(500);}
 });
+exports.createPartnership=onCall(baseOpts,async req=>{
+  const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase(),bizId=String(req.data&&req.data.bizId||'').trim(),name=String(req.data&&req.data.name||'').trim();
+  if(!/^[A-Z0-9]{8}$/.test(code)||!bizId||bizId.length>128||!name||name.length>120)throw new HttpsError('invalid-argument','Invalid partnership details');
+  await requireTier(user.uid,'pro');
+  const partnership=db.doc(`partnerships/${code}`),member=partnership.collection('members').doc(user.uid);
+  await db.runTransaction(async tx=>{const existing=await tx.get(partnership);if(existing.exists)throw new HttpsError('already-exists','Partnership code already exists');tx.create(partnership,{bizId,name,structure:'partnership',createdBy:user.uid,createdAt:FieldValue.serverTimestamp(),v:1});tx.create(member,{uid:user.uid,role:'owner',joinedAt:FieldValue.serverTimestamp()});});
+  return{bizId,name,code};
+});
 exports.joinPartnership=onCall(baseOpts,async req=>{
   const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();
   if(!/^[A-Z0-9]{6}([A-Z0-9]{2})?$/.test(code))throw new HttpsError('invalid-argument','Invalid partnership code');
+  await requireTier(user.uid,'pro');
   const partnership=db.doc(`partnerships/${code}`),snap=await partnership.get();
   if(!snap.exists)throw new HttpsError('not-found','Partnership not found');
   await partnership.collection('members').doc(user.uid).set({uid:user.uid,role:'member',joinedAt:FieldValue.serverTimestamp()},{merge:true});

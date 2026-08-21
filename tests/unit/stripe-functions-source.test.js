@@ -23,6 +23,18 @@ test('Checkout is server-priced, requires Terms and blocks a second live subscri
   assert.doesNotMatch(source,/price_data|unit_amount/);
 });
 
+test('LIVE Checkout smoke creates only unpaid customerless sessions and supports cleanup',()=>{
+  const smoke=fs.readFileSync('scripts/smoke-live-checkout-sessions.js','utf8');
+  for(const amount of [399,2999,799,5999])assert.match(smoke,new RegExp(`amount:${amount}`));
+  assert.match(smoke,/\^rk_live_/);
+  assert.match(smoke,/consent_collection:\{terms_of_service:'required'\}/);
+  assert.match(smoke,/assert\.equal\(session\.customer,null\)/);
+  assert.match(smoke,/assert\.equal\(session\.subscription,null\)/);
+  assert.match(smoke,/assert\.equal\(session\.payment_status,'unpaid'\)/);
+  assert.match(smoke,/checkout\.sessions\.expire/);
+  assert.doesNotMatch(smoke,/customers\.create|payment_methods|card/);
+});
+
 test('refund policy is server-projected without client fake unlocks',()=>{
   assert.match(source,/event\.type==='charge\.refunded'/);
   assert.match(source,/invoicePayments\.list/);
@@ -55,5 +67,7 @@ test('Founder promotions use canonical Firestore truth and one transactional UID
   assert.match(source,/startsAt:configuration\.startsAt/);
   assert.match(source,/source:'founder_promo'/);
   assert.match(source,/hasPermanentPro/);
+  assert.match(source,/accessProjection/);
+  assert.match(source,/promotionAccess/);
   assert.match(source,/You already have permanent Pro access\./);
 });

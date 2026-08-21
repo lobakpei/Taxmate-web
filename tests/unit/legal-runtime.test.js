@@ -2,7 +2,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const path=require('node:path');
-const Legal=require('../../src/core/legal');
+const Legal=require('../../src/core/product-content');
 
 const read=file=>fs.readFileSync(path.join(__dirname,'../..',file),'utf8');
 const app=read('src/app/app.js');
@@ -15,41 +15,46 @@ const functions=read('functions/index.js');
 const hosting=read('firebase.json');
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
-  assert.equal(Legal.POLICY_VERSION,'2026-08-19');
+  assert.equal(Legal.POLICY_VERSION,'2026-08-20');
+  assert.equal(privacy,Legal.publicPage('privacy'));
+  assert.equal(terms,Legal.publicPage('terms'));
+  assert.equal(read('help.html'),Legal.publicPage('help'));
   for(const text of [privacy,terms,Legal.privacyHtml,Legal.termsHtml]){
     assert.match(text,/Hau Ying Ou-Yang/);
     assert.match(text,/support@taxmate\.uk/);
     assert.match(text,/Google/);
     assert.doesNotMatch(text,/Apple Sign-In|Continue with Apple|sign in with Apple/i);
   }
-  assert.match(privacy,/lawful bases/i);
+  assert.match(privacy,/lawful basis/i);
   assert.match(privacy,/international transfers/i);
-  assert.match(privacy,/right to object/i);
-  assert.match(terms,/Free, Plus, Pro and promotions/i);
+  assert.match(privacy,/objection/i);
+  assert.match(terms,/Free, Plus (?:&|&amp;) Pro/i);
   assert.match(terms,/14 days/i);
-  assert.match(terms,/Consumer Rights Act 2015/i);
+  assert.match(terms,/mandatory statutory rights/i);
   for(const text of [app,terms,Legal.termsHtml]){
-    assert.match(text,/£3\.99\/month|£3\.99 per month/);
-    assert.match(text,/£29\.99\/year|£29\.99 per year/);
-    assert.match(text,/£7\.99\/month|£7\.99 per month/);
-    assert.match(text,/£59\.99\/year|£59\.99 per year/);
+    assert.match(text,/£3\.99\s*\/\s*month|£3\.99 per month/);
+    assert.match(text,/£29\.99\s*\/\s*year|£29\.99 per year/);
+    assert.match(text,/£7\.99\s*\/\s*month|£7\.99 per month/);
+    assert.match(text,/£59\.99\s*\/\s*year|£59\.99 per year/);
     assert.match(text,/monthly and yearly|monthly or yearly/i);
   }
   assert.match(app,/Billed yearly/);
   assert.doesNotMatch(app,/Pay once for the year/i);
   for(const text of [terms,Legal.termsHtml]){
     assert.match(text,/Stripe Tax is off/i);
-    assert.match(text,/no VAT is added/i);
-    assert.match(text,/full Stripe refund ends the refunded paid entitlement immediately/i);
-    assert.match(text,/partial refund does not automatically change access/i);
-    assert.match(text,/do not limit any statutory consumer right/i);
+    assert.match(text,/no VAT amount is added/i);
+    assert.match(text,/successful full refund ends the refunded paid entitlement/i);
+    assert.match(text,/partial refund is marked for manual review/i);
+    assert.match(text,/Nothing removes mandatory statutory rights/i);
   }
   assert.doesNotMatch(app,/\+\s*VAT|includes VAT|VAT invoice/i);
   for(const text of [privacy,Legal.privacyHtml]){
     assert.match(text,/Namecheap/);
     assert.match(text,/Microsoft Outlook/);
   }
+  assert.match(app,/TaxMateLegal\.helpHtml/);
   assert.match(app,/TaxMateLegal\.privacyHtml/);
+  assert.match(app,/TaxMateLegal\.termsHtml/);
 });
 
 test('optional GA4 is off by default and cannot receive arbitrary event parameters',()=>{
@@ -75,6 +80,8 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(functions,/otherMembers\.length/);
   assert.match(functions,/recursiveDelete\(partnership\)/);
   assert.match(functions,/exports\.joinPartnership=onCall\(baseOpts/);
+  assert.match(functions,/exports\.createPartnership=onCall\(baseOpts/);
+  assert.match(functions,/await requireTier\(user\.uid,'pro'\)/);
   assert.match(functions,/exports\.leavePartnership=onCall\(baseOpts/);
   assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==\'true\'/);
   assert.match(app,/firebase\.appCheck\(\)\.getToken\(false\)/);
@@ -97,12 +104,12 @@ test('Google is the only authentication frame/provider surface',()=>{
 });
 
 test('stale unsupported legal, deletion and HMRC marketing claims are absent',()=>{
-  const current=[app,privacy,terms,read('help.html'),Legal.privacyHtml,Legal.termsHtml].join('\n');
+  const current=[app,privacy,terms,read('help.html'),Legal.helpHtml,Legal.privacyHtml,Legal.termsHtml].join('\n');
   for(const claim of [/MTD-ready quarterly export/i,/for HMRC checks/i,/供稅局審查/i,/MTD 季度匯出/i,/Eksport kwartalny MTD/i,/Export trimestrial MTD/i,/Exportación trimestral MTD/i,/MTD سہ ماہی ایکسپورٹ/i,/Erase everything everywhere/i,/all your data has been deleted from this device and the cloud/i,/accepts no liability/i,/not liable for any losses/i,/data is never deleted/i,/Google Analytics 4 runs without client storage for aggregate usage/i])assert.doesNotMatch(current,claim);
 });
 
 test('public runtime files contain no private contact details or secret credentials',()=>{
-  const files=['index.html','privacy.html','terms.html','help.html','src/app/app.js','src/core/legal.js','src/app/bootstrap.js','src/app/sentry-bootstrap.js'];
+  const files=['index.html','privacy.html','terms.html','help.html','src/app/app.js','src/core/product-content.js','src/app/bootstrap.js','src/app/sentry-bootstrap.js'];
   const publicText=files.map(read).join('\n');
   const emails=publicText.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)||[];
   assert.deepEqual([...new Set(emails.map(x=>x.toLowerCase()))],['support@taxmate.uk']);

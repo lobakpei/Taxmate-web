@@ -114,6 +114,19 @@ async function disablePromotion(codeValue,token,now=Date.now()){
   return{code,status:'DISABLED'};
 }
 
+async function reschedulePromotion(values,token,now=Date.now()){
+  const code=Promotions.normalizeCode(values.code);if(!code)throw new Error('A valid --code is required');
+  const startsAt=timestampMillis(values['starts-at'],'--starts-at'),existing=await getPromotion(code,token);
+  if(!existing)throw new Error('Promotion not found');
+  const current=decodeDocument(existing);
+  if(Number(current.redemptionCount)!==0)throw new Error('Promotion already has redemptions and cannot be rescheduled');
+  const configuration={...current,code,startsAt};
+  const validated=Promotions.validateConfiguration(configuration,Math.max(now,startsAt));
+  if(!validated.ok)throw new Error(`Invalid promotion configuration: ${validated.reason}`);
+  await patchPromotion(code,{startsAt,updatedAt:new Date(now).toISOString()},token,existing.updateTime);
+  return{code,status:'ACTIVE',tier:current.tier,startsAt,expiresAt:current.expiresAt||null,permanent:current.permanent===true,maxRedemptions:current.maxRedemptions,redemptionCount:0};
+}
+
 async function promotionStatus(codeValue,token){
   const code=Promotions.normalizeCode(codeValue);if(!code)throw new Error('A valid --code is required');
   const existing=await getPromotion(code,token);if(!existing)return{code,status:'NOT_FOUND'};
@@ -130,10 +143,10 @@ async function revokeRedemption(values,token,now=Date.now()){
   const redemptionValue=decodeDocument(redemption);if(redemptionValue.uid!==uid||redemptionValue.promoCode!==code)throw new Error('Redemption identity mismatch');
   const entitlementUrl=`${DATABASE_ROOT}/documents/users/${encodeURIComponent(uid)}/entitlements/current`,entitlement=await request(entitlementUrl,token),entitlementValue=decodeDocument(entitlement);
   const promotions={...(entitlementValue.promotions||{})};if(!promotions[code])throw new Error('Promo entitlement not found');delete promotions[code];
-  const effective=Promotions.selectEffective(promotions,now),iso=new Date(now).toISOString();
+  const effective=Promotions.selectEffective(promotions,now),promotionAccess=Promotions.accessProjection(promotions,now),iso=new Date(now).toISOString();
   const writes=[
     {update:{name:redemption.name,fields:encodeFields({status:'revoked',revokedAt:iso})},updateMask:{fieldPaths:['status','revokedAt']},currentDocument:{updateTime:redemption.updateTime}},
-    {update:{name:entitlement.name,fields:encodeFields({promotions,promotion:effective?{status:'active',tier:effective.tier,startsAt:effective.startsAt||0,expiresAt:effective.expiresAt??null,permanent:effective.permanent===true,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:iso})},updateMask:{fieldPaths:['promotions','promotion','serverVerifiedAt','updatedAt']},currentDocument:{updateTime:entitlement.updateTime}}
+    {update:{name:entitlement.name,fields:encodeFields({promotions,promotionAccess,promotion:effective?{status:'active',tier:effective.tier,startsAt:effective.startsAt||0,expiresAt:effective.expiresAt??null,permanent:effective.permanent===true,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:iso})},updateMask:{fieldPaths:['promotions','promotionAccess','promotion','serverVerifiedAt','updatedAt']},currentDocument:{updateTime:entitlement.updateTime}}
   ];
   await request(`${DATABASE_ROOT}/documents:commit`,token,{method:'POST',body:JSON.stringify({writes})});return{code,uid,status:'REVOKED'};
 }
@@ -143,13 +156,14 @@ async function main(argv=process.argv.slice(2)){
   if(values.command==='init-pending')result=await initializePending(token);
   else if(values.command==='create')result=await createPromotion(values,token);
   else if(values.command==='migrate')result=await migratePending(values,token);
+  else if(values.command==='reschedule')result=await reschedulePromotion(values,token);
   else if(values.command==='disable')result=await disablePromotion(values.code,token);
   else if(values.command==='status'||values.command==='view')result=await promotionStatus(values.code,token);
   else if(values.command==='list')result=await listPromotions(token);
   else if(values.command==='revoke')result=await revokeRedemption(values,token);
-  else throw new Error('Usage: promo:admin <init-pending|create|migrate|disable|status|view|list|revoke> [--from PLACEHOLDER --code CODE --tier plus|pro --starts-at ISO --duration-days N|--expires-at ISO|--permanent true --max-redemptions N --uid UID]');
+  else throw new Error('Usage: promo:admin <init-pending|create|migrate|reschedule|disable|status|view|list|revoke> [--from PLACEHOLDER --code CODE --tier plus|pro --starts-at ISO --duration-days N|--expires-at ISO|--permanent true --max-redemptions N --uid UID]');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
 }
 
 if(require.main===module)main().catch(error=>{process.stderr.write(`${error.message}\n`);process.exitCode=1;});
-module.exports={PROJECT_ID,PENDING_CODES,argumentsMap,createConfiguration,encodeFields,decodeDocument,initializePending,createPromotion,migratePending,disablePromotion,promotionStatus,listPromotions,revokeRedemption};
+module.exports={PROJECT_ID,PENDING_CODES,argumentsMap,createConfiguration,encodeFields,decodeDocument,initializePending,createPromotion,migratePending,reschedulePromotion,disablePromotion,promotionStatus,listPromotions,revokeRedemption};

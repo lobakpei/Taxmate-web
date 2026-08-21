@@ -1,4 +1,12 @@
-# TaxMate Production Readiness Candidate — Release Notes
+# TaxMate Release Notes
+
+Build `2026-08-20.healthy-production.1` implements the Healthy Operating App Master Pack without redesigning the Founder-approved UI. Every audited visible function is classified in the Product Function Health Matrix: 85 are real and durable, six obsolete functions are intentionally hidden, and broken, shell, dead-visible, duplicate-visible, misplaced and mislabelled counts are all zero. The exact Free/Plus/Pro contract is enforced in client, Functions, Firestore rules and Storage rules; downgrade keeps data while closing premium create/write actions.
+
+Help, Privacy and Terms now use one canonical content source with 37 Help answers, layered legal disclosure, independent public URLs and coherent light/dark behavior. Native browser dialogs, trial/fake unlocks, SA103 PDF, global partnership controls, debug/candidate copy and stale legal implementation language are absent from the production artifact. Google Sign-In remains frozen and Apple Sign-In remains absent.
+
+The four customerless LIVE Stripe smoke sessions displayed £3.99/month, £29.99/year, £7.99/month and £59.99/year with TaxMate Terms consent; no email, card, customer, payment or subscription was created, and all four sessions were expired after inspection. The three public Founder campaigns retain their 1 September 2026 schedules. The private permanent Founder configuration is effective from 20 August 2026, remains limited to three redemptions and has not consumed a slot.
+
+Production dependency audit is zero after pinning the transitive `uuid` security fix. The release remains gated only by the separate pre-contract geographic business-address verification recorded in `PRODUCTION_READINESS_REPORT.md`; ICO public-register propagation is not that gate.
 
 Build `2026-08-20.live-auth-restored-rc.12` restores the install, activation and fetch semantics of Founder-confirmed known-good live production. Google Auth application behavior is unchanged from live, Apple Sign-In remains absent, and all approved billing, Founder-promotion, SEO, legal, telemetry, tax and UI behavior is preserved. Verification deliberately excludes popup/staging OAuth testing.
 

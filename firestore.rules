@@ -3,6 +3,35 @@ service cloud.firestore {
   match /databases/{database}/documents {
     function signedIn() { return request.auth != null; }
     function owner(uid) { return signedIn() && request.auth.uid == uid; }
+    function entitlementPath(uid) { return /databases/$(database)/documents/users/$(uid)/entitlements/current; }
+    function hasEntitlement(uid) { return exists(entitlementPath(uid)); }
+    function paidTierAtLeast(uid, minimum) {
+      return hasEntitlement(uid)
+        && get(entitlementPath(uid)).data.subscriptionStatus in ['active', 'trialing']
+        && get(entitlementPath(uid)).data.paidTier in minimum
+        && (!('currentPeriodEnd' in get(entitlementPath(uid)).data)
+          || get(entitlementPath(uid)).data.currentPeriodEnd > request.time.toMillis());
+    }
+    function promotionTierAtLeast(uid, minimum) {
+      return hasEntitlement(uid)
+        && ('promotion' in get(entitlementPath(uid)).data)
+        && get(entitlementPath(uid)).data.promotion != null
+        && get(entitlementPath(uid)).data.promotion.status == 'active'
+        && get(entitlementPath(uid)).data.promotion.tier in minimum
+        && (get(entitlementPath(uid)).data.promotion.expiresAt == null
+          || get(entitlementPath(uid)).data.promotion.expiresAt > request.time.toMillis());
+    }
+    function projectedPromotionAccess(uid, tier) {
+      return hasEntitlement(uid)
+        && ('promotionAccess' in get(entitlementPath(uid)).data)
+        && ((tier == 'pro'
+            && (get(entitlementPath(uid)).data.promotionAccess.proPermanent == true
+              || get(entitlementPath(uid)).data.promotionAccess.proExpiresAt > request.time.toMillis()))
+          || (tier == 'plus'
+            && (get(entitlementPath(uid)).data.promotionAccess.plusPermanent == true
+              || get(entitlementPath(uid)).data.promotionAccess.plusExpiresAt > request.time.toMillis())));
+    }
+    function pro(uid) { return paidTierAtLeast(uid, ['pro']) || projectedPromotionAccess(uid, 'pro') || promotionTierAtLeast(uid, ['pro']); }
     function member(partnershipId) {
       return signedIn() && exists(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid));
     }
@@ -22,19 +51,18 @@ service cloud.firestore {
     }
 
     match /partnerships/{partnershipId} {
-      allow create: if signedIn() && request.resource.data.createdBy == request.auth.uid;
+      allow create: if false;
       allow read: if member(partnershipId);
-      allow update: if member(partnershipId) && request.resource.data.createdBy == resource.data.createdBy;
+      allow update: if member(partnershipId) && pro(request.auth.uid) && request.resource.data.createdBy == resource.data.createdBy;
       allow delete: if false;
       match /members/{uid} {
         allow read: if member(partnershipId);
-        allow create: if signedIn() && request.auth.uid == uid
-          && get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid;
+        allow create: if false;
         allow update, delete: if request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid;
       }
       match /entries/{entryId} {
         allow read: if member(partnershipId);
-        allow create, update: if member(partnershipId) && validRecord() && request.resource.data.id == entryId;
+        allow create, update: if member(partnershipId) && pro(request.auth.uid) && validRecord() && request.resource.data.id == entryId;
         allow delete: if false;
       }
     }

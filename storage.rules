@@ -2,9 +2,32 @@ rules_version = '2';
 service firebase.storage {
   match /b/{bucket}/o {
     function imageUnderLimit() { return request.resource.size < 10 * 1024 * 1024 && request.resource.contentType.matches('image/.*'); }
+    function entitlement(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/entitlements/current).data; }
+    function hasEntitlement(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/entitlements/current); }
+    function paidReceiptAccess(uid) {
+      return hasEntitlement(uid)
+        && entitlement(uid).subscriptionStatus in ['active', 'trialing']
+        && entitlement(uid).paidTier in ['plus', 'pro']
+        && (!('currentPeriodEnd' in entitlement(uid)) || entitlement(uid).currentPeriodEnd > request.time.toMillis());
+    }
+    function promotionReceiptAccess(uid) {
+      return hasEntitlement(uid)
+        && ('promotion' in entitlement(uid))
+        && entitlement(uid).promotion != null
+        && entitlement(uid).promotion.status == 'active'
+        && entitlement(uid).promotion.tier in ['plus', 'pro']
+        && (entitlement(uid).promotion.expiresAt == null || entitlement(uid).promotion.expiresAt > request.time.toMillis());
+    }
+    function projectedPromotionReceiptAccess(uid) {
+      return hasEntitlement(uid)
+        && ('promotionAccess' in entitlement(uid))
+        && (entitlement(uid).promotionAccess.plusPermanent == true
+          || entitlement(uid).promotionAccess.plusExpiresAt > request.time.toMillis());
+    }
+    function receiptAccess(uid) { return paidReceiptAccess(uid) || projectedPromotionReceiptAccess(uid) || promotionReceiptAccess(uid); }
     match /receipts/{uid}/{fileName} {
       allow read: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid && imageUnderLimit();
+      allow create, update: if request.auth != null && request.auth.uid == uid && receiptAccess(uid) && imageUnderLimit();
       allow delete: if request.auth != null && request.auth.uid == uid;
     }
     match /{allPaths=**} { allow read, write: if false; }
