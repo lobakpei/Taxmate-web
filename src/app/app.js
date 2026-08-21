@@ -3188,13 +3188,16 @@ function openPromotionSheet(){
   const input=document.getElementById('promo-code'),error=document.getElementById('promo-error');
   input.value='';error.textContent='';error.classList.remove('show');openSheet('promo');
 }
+const SAFE_BILLING_FAILURES=new Set(['app-check-unavailable','app-check-rejected','auth-required','billing-config','stripe-customer','stripe-checkout','network']);
+function secureFunctionError(category,code='UNKNOWN',reason=null){const error=new Error('Service unavailable');error.code=code;error.reason=reason;error.billingCategory=category;return error;}
 async function callSecureFunction(name,data){
-    const u=cloudUser(); if(!u) throw new Error('Sign in required');
-    const token=await u.getIdToken(),appCheck=await firebase.appCheck().getToken(false);
-    if(!appCheck||!appCheck.token)throw new Error('App Check verification unavailable');
-    const res=await fetch('https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});
-    const body=await res.json();
-    if(!res.ok||body.error){const error=new Error('Service unavailable');error.code=body.error&&body.error.status||'UNKNOWN';error.reason=body.error&&body.error.details&&body.error.details.reason||null;throw error;}
+    const u=cloudUser(); if(!u) throw secureFunctionError('auth-required','UNAUTHENTICATED');
+    let token;try{token=await u.getIdToken();}catch(_){throw secureFunctionError('auth-required','UNAUTHENTICATED');}
+    let appCheck;try{appCheck=await firebase.appCheck().getToken(false);}catch(_){throw secureFunctionError('app-check-unavailable');}
+    if(!appCheck||!appCheck.token)throw secureFunctionError('app-check-unavailable');
+    let res;try{res=await fetch('https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});}catch(_){throw secureFunctionError('network');}
+    let body;try{body=await res.json();}catch(_){throw secureFunctionError('network');}
+    if(!res.ok||body.error){const code=body.error&&body.error.status||'UNKNOWN',reason=body.error&&body.error.details&&body.error.details.reason||null,category=SAFE_BILLING_FAILURES.has(reason)?reason:code==='UNAUTHENTICATED'?'app-check-rejected':code==='FAILED_PRECONDITION'?'billing-config':'network';throw secureFunctionError(category,code,reason);}
     return body.result||{};
 }
 async function startBillingAction(name,data){
@@ -3207,6 +3210,8 @@ async function startBillingAction(name,data){
       else openBillingPortal();
       return;
     }
+    const category=SAFE_BILLING_FAILURES.has(e&&e.billingCategory)?e.billingCategory:'network';
+    console.warn('billing-failure',{category});
     showNotice(t('pro.title'),t('billing.unavailable'));
   }
 }

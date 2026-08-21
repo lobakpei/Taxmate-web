@@ -3,4 +3,4 @@ Allow: /
 Disallow: /evidence/
 Disallow: /tests/
 Disallow: /docs/
-Sitemap: https://taxmate.uk/sitemap.xml
+Sitemap: https://www.taxmate.uk/sitemap.xml

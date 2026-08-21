@@ -94,4 +94,5 @@ test('production Functions billing config contains only canonical LIVE prices',(
   for(const id of ['price_1U6Wi4Q2jZLVx6pgFbTCmjV3','price_1U6ZfnQ2jZLVx6pgNCCfs5Cg','price_1U6ZgaQ2jZLVx6pgi7dHPBeO','price_1U6ZgtQ2jZLVx6pgOeS7cRYl'])assert.match(env,new RegExp(id));
   assert.doesNotMatch(env,/price_1U6(?:HQ|ZE)[A-Za-z0-9]+|taxmate-staging|sk_test_|rk_test_|whsec_/);
   assert.match(env,/STRIPE_PRO_LEGACY_PRICE_IDS=price_1U6WiHQ2jZLVx6pgJWYXlwHv/);
+  assert.match(env,/^PUBLIC_APP_URL=https:\/\/www\.taxmate\.uk$/m);
 });

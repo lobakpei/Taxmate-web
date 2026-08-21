@@ -38,8 +38,8 @@ async function create(){
         allow_promotion_codes:true,
         automatic_tax:{enabled:false},
         consent_collection:{terms_of_service:'required'},
-        success_url:`https://taxmate.uk/?billing=success&tier=${spec.tier}&cadence=${spec.cadence}&session_id={CHECKOUT_SESSION_ID}`,
-        cancel_url:`https://taxmate.uk/?billing=cancelled&tier=${spec.tier}&cadence=${spec.cadence}`,
+        success_url:`https://www.taxmate.uk/?billing=success&tier=${spec.tier}&cadence=${spec.cadence}&session_id={CHECKOUT_SESSION_ID}`,
+        cancel_url:`https://www.taxmate.uk/?billing=cancelled&tier=${spec.tier}&cadence=${spec.cadence}`,
         metadata:{taxmate_health_smoke:'true',tier:spec.tier,billingCadence:spec.cadence},
         subscription_data:{metadata:{taxmate_health_smoke:'true',tier:spec.tier,billingCadence:spec.cadence}},
         expand:['line_items']

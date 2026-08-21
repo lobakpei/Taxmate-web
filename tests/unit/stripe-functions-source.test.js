@@ -23,7 +23,7 @@ test('Checkout is server-priced, requires Terms and blocks a second live subscri
   assert.doesNotMatch(source,/price_data|unit_amount/);
 });
 
-test('LIVE Checkout smoke creates only unpaid customerless sessions and supports cleanup',()=>{
+test('synthetic customerless smoke is cleanup-only and is not production UI acceptance',()=>{
   const smoke=fs.readFileSync('scripts/smoke-live-checkout-sessions.js','utf8');
   for(const amount of [399,2999,799,5999])assert.match(smoke,new RegExp(`amount:${amount}`));
   assert.match(smoke,/\^rk_live_/);
@@ -33,6 +33,34 @@ test('LIVE Checkout smoke creates only unpaid customerless sessions and supports
   assert.match(smoke,/assert\.equal\(session\.payment_status,'unpaid'\)/);
   assert.match(smoke,/checkout\.sessions\.expire/);
   assert.doesNotMatch(smoke,/customers\.create|payment_methods|card/);
+  const scripts=require('../../package.json').scripts;
+  assert.doesNotMatch(scripts['test:all'],/stripe:smoke:live/);
+});
+
+test('visible Plans UI uses the production Auth and App Check secured Checkout path',()=>{
+  const app=fs.readFileSync('src/app/app.js','utf8');
+  assert.match(app,/data-tm-click="setTier\('\$\{tier\}'\)"/);
+  assert.match(app,/startBillingAction\('createCheckoutSession',\{tier,cadence:BILLING_CADENCE\}\)/);
+  assert.match(app,/u\.getIdToken\(\)/);
+  assert.match(app,/firebase\.appCheck\(\)\.getToken\(false\)/);
+  assert.match(app,/'authorization':'Bearer '\+token/);
+  assert.match(app,/'X-Firebase-AppCheck':appCheck\.token/);
+  assert.ok(app.includes("'https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name"));
+  assert.match(app,/location\.assign\(result\.url\)/);
+  assert.doesNotMatch(app,/smoke-live-checkout-sessions/);
+});
+
+test('billing failures have safe client and server classifications',()=>{
+  const app=fs.readFileSync('src/app/app.js','utf8');
+  for(const category of ['app-check-unavailable','app-check-rejected','auth-required','billing-config','stripe-customer','stripe-checkout','network']){
+    assert.match(app,new RegExp(category));
+  }
+  assert.match(app,/console\.warn\('billing-failure',\{category\}\)/);
+  assert.match(source,/key!==key\.trim\(\)\|\|\/\[\\r\\n\]\//);
+  assert.match(source,/console\.error\('billing-failure',\{category\}\)/);
+  assert.match(source,/billingFailure\('stripe-customer'\)/);
+  assert.match(source,/billingFailure\('stripe-checkout'\)/);
+  assert.doesNotMatch(source,/billingFailure\([^)]*,\s*(?:error|e)\b/);
 });
 
 test('refund policy is server-projected without client fake unlocks',()=>{
