@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-21.payment-seo-hotfix.2 -->
+<!-- build: 2026-08-21.pwa-install-promotion.1 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -605,6 +605,20 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <button class="btn ghost" data-tm-click="closeSheet('iosinstall')" data-i18n="c.cancel"></button>
 </div></div>
 
+<!-- restrained install suggestion after the first meaningful bookkeeping action -->
+<div class="sb" id="sb-pwainstall"><div class="sheet">
+  <div class="grab" data-tm-click="dismissInstallPromotion()"></div>
+  <div style="text-align:center;padding:6px 0 4px">
+    <div style="font-size:38px;margin-bottom:6px">📲</div>
+    <div class="stitle" style="text-align:center;margin-bottom:8px" data-i18n="pwa.homeTitle"></div>
+    <div class="s" style="margin:0 16px 20px;text-align:center" data-i18n="pwa.homeBody"></div>
+  </div>
+  <div class="sact">
+    <button class="btn ink" data-tm-click="doInstall()" data-i18n="pwa.installCta"></button>
+    <button class="btn ghost" data-tm-click="dismissInstallPromotion()" data-i18n="pwa.notNow"></button>
+  </div>
+</div></div>
+
 <!-- Android manual install instructions sheet -->
 <div class="sb" id="sb-andinstall"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
@@ -765,6 +779,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/onboarding-root.js"></script>
 <script src="src/core/sync.js"></script>
 <script src="src/core/entitlement.js"></script>
+<script src="src/core/pwa-install.js"></script>
 <script src="src/core/product-content.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>

@@ -2965,6 +2965,61 @@ Object.assign(I18N.ro,{'promo.signIn':'Conectează-te mai întâi cu Google, apo
 Object.assign(I18N.es,{'promo.signIn':'Primero inicia sesión con Google y luego canjea el código.'});
 Object.assign(I18N.ur,{'promo.signIn':'پہلے Google سے سائن ان کریں، پھر یہ کوڈ استعمال کریں۔'});
 
+Object.assign(I18N.en,{
+  'pwa.homeTitle':'Install TaxMate',
+  'pwa.homeBody':'Keep TaxMate on your Home Screen for faster access and core bookkeeping offline.',
+  'pwa.installCta':'Install',
+  'pwa.notNow':'Not now',
+  'pwa.iosStep1':'Tap Share',
+  'pwa.iosStep2':'Tap “Add to Home Screen”',
+  'pwa.iosStep3':'Tap “Add”'
+});
+Object.assign(I18N.zh,{
+  'pwa.homeTitle':'安裝 TaxMate',
+  'pwa.homeBody':'將 TaxMate 放到主畫面，更快開啟，核心簿記功能亦可離線使用。',
+  'pwa.installCta':'安裝',
+  'pwa.notNow':'稍後先',
+  'pwa.iosStep1':'撳「分享」',
+  'pwa.iosStep2':'撳「加到主畫面」',
+  'pwa.iosStep3':'撳「加入」'
+});
+Object.assign(I18N.pl,{
+  'pwa.homeTitle':'Zainstaluj TaxMate',
+  'pwa.homeBody':'Dodaj TaxMate do ekranu głównego, aby szybciej otwierać aplikację i korzystać offline z podstawowej księgowości.',
+  'pwa.installCta':'Zainstaluj',
+  'pwa.notNow':'Nie teraz',
+  'pwa.iosStep1':'Dotknij Udostępnij',
+  'pwa.iosStep2':'Dotknij „Dodaj do ekranu głównego”',
+  'pwa.iosStep3':'Dotknij „Dodaj”'
+});
+Object.assign(I18N.ro,{
+  'pwa.homeTitle':'Instalează TaxMate',
+  'pwa.homeBody':'Păstrează TaxMate pe ecranul principal pentru acces mai rapid și evidența contabilă de bază offline.',
+  'pwa.installCta':'Instalează',
+  'pwa.notNow':'Nu acum',
+  'pwa.iosStep1':'Atinge Partajare',
+  'pwa.iosStep2':'Atinge „Adaugă pe ecranul principal”',
+  'pwa.iosStep3':'Atinge „Adaugă”'
+});
+Object.assign(I18N.es,{
+  'pwa.homeTitle':'Instala TaxMate',
+  'pwa.homeBody':'Añade TaxMate a tu pantalla de inicio para acceder más rápido y usar la contabilidad básica sin conexión.',
+  'pwa.installCta':'Instalar',
+  'pwa.notNow':'Ahora no',
+  'pwa.iosStep1':'Toca Compartir',
+  'pwa.iosStep2':'Toca “Añadir a pantalla de inicio”',
+  'pwa.iosStep3':'Toca “Añadir”'
+});
+Object.assign(I18N.ur,{
+  'pwa.homeTitle':'TaxMate انسٹال کریں',
+  'pwa.homeBody':'تیز رسائی اور بنیادی حساب کتاب آف لائن استعمال کرنے کے لیے TaxMate کو ہوم اسکرین پر رکھیں۔',
+  'pwa.installCta':'انسٹال کریں',
+  'pwa.notNow':'ابھی نہیں',
+  'pwa.iosStep1':'شیئر دبائیں',
+  'pwa.iosStep2':'”ہوم اسکرین پر شامل کریں“ دبائیں',
+  'pwa.iosStep3':'”شامل کریں“ دبائیں'
+});
+
 function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
   if(vars) for(const k in vars) s = s.split('{'+k+'}').join(vars[k]);
@@ -3232,9 +3287,64 @@ async function redeemPromotionCode(){
   catch(e){const message=e.reason==='not-started'?t('promo.notStarted'):e.reason==='expired'?t('promo.expired'):e.reason==='redemption-limit-reached'?t('promo.full'):e.reason==='duplicate'||e.code==='ALREADY_EXISTS'?t('promo.duplicate'):e.reason==='invalid'||e.code==='NOT_FOUND'?t('promo.invalid'):t('promo.service');fail(message);}
   finally{button.disabled=false;}
 }
+const PWA_KEYS=TaxMatePwaInstall.KEYS;
+let deferredInstall=null;
+let installing=false;
+let pwaHomeViewTracked=false;
+let pwaProactivePending=false;
+function pwaLocalGet(key){try{return localStorage.getItem(key);}catch(_){return null;}}
+function pwaLocalSet(key,value){try{localStorage.setItem(key,String(value));}catch(_){}}
+function isStandalone(){
+  return window.matchMedia('(display-mode: standalone)').matches||window.navigator.standalone===true;
+}
+function isIOS(){
+  return /iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+}
+function isIOSSafari(){
+  return isIOS()&&/Safari/i.test(navigator.userAgent)&&!/CriOS|FxiOS|EdgiOS|OPiOS/i.test(navigator.userAgent);
+}
+function pwaInstallOptions(){
+  const displayModeStandalone=window.matchMedia('(display-mode: standalone)').matches;
+  const navigatorStandalone=window.navigator.standalone===true;
+  if(displayModeStandalone||navigatorStandalone)pwaLocalSet(PWA_KEYS.installed,'1');
+  return {
+    state:S,
+    now:Date.now(),
+    dismissedAt:pwaLocalGet(PWA_KEYS.dismissedAt),
+    displayModeStandalone,
+    navigatorStandalone,
+    persistedInstalled:pwaLocalGet(PWA_KEYS.installed)==='1',
+    hasDeferredPrompt:!!deferredInstall,
+    isIOSSafari:isIOSSafari(),
+    proactiveShown:pwaLocalGet(PWA_KEYS.proactiveShown)==='1'
+  };
+}
+function isPwaInstalled(){return TaxMatePwaInstall.isInstalled(pwaInstallOptions());}
+function canShowHomeInstallPromotion(){return TaxMatePwaInstall.canPromote(pwaInstallOptions());}
+function recordPwaPromptViewed(){
+  if(pwaHomeViewTracked)return;
+  pwaHomeViewTracked=true;
+  trackEvent('pwa_install_prompt_viewed');
+}
+function homeInstallCard(){
+  if(!canShowHomeInstallPromotion())return '';
+  recordPwaPromptViewed();
+  return `<div class="card pwa-home-install" data-pwa-install-promotion="home">
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <span style="font-size:22px;line-height:1.2">📲</span>
+      <div class="grow">
+        <div class="t" style="font-size:15px;margin-bottom:4px">${t('pwa.homeTitle')}</div>
+        <div class="s">${t('pwa.homeBody')}</div>
+      </div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button class="btn ink" style="flex:1;padding:11px 14px" data-tm-click="doInstall()">${t('pwa.installCta')}</button>
+      <button class="btn ghost" style="flex:1;padding:11px 14px" data-tm-click="dismissInstallPromotion()">${t('pwa.notNow')}</button>
+    </div>
+  </div>`;
+}
 function installCard(){
-  // Hide entirely if already running as an installed app
-  if(typeof isStandalone==='function' && isStandalone()) return '';
+  if(isPwaInstalled()) return '';
   return `<div class="card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
       <span style="font-size:20px">📲</span>
@@ -3243,6 +3353,41 @@ function installCard(){
     <div class="s" style="margin-bottom:14px">${t('pwa.installSub')}</div>
     <button class="btn ink" data-tm-click="doInstall()">${t('pwa.install')}</button>
   </div>`;
+}
+function closePwaInstallSurfaces(){
+  ['pwainstall','iosinstall','andinstall'].forEach(id=>{
+    const surface=document.getElementById('sb-'+id);
+    if(surface)surface.classList.remove('open');
+  });
+  if(!document.querySelector('.sb.open'))document.body.classList.remove('sheet-open');
+}
+function dismissInstallPromotion(){
+  pwaLocalSet(PWA_KEYS.dismissedAt,Date.now());
+  trackEvent('pwa_install_dismissed');
+  closePwaInstallSurfaces();
+  render();
+}
+function markPwaInstalled(){
+  const already=pwaLocalGet(PWA_KEYS.installed)==='1';
+  pwaLocalSet(PWA_KEYS.installed,'1');
+  deferredInstall=null;
+  closePwaInstallSurfaces();
+  if(!already)trackEvent('pwa_install_completed');
+  render();
+}
+function maybeOpenPendingPwaSuggestion(){
+  if(!pwaProactivePending||anySheetOpen())return;
+  pwaProactivePending=false;
+  const options=pwaInstallOptions();
+  if(!TaxMatePwaInstall.canPromptProactively(options))return;
+  pwaLocalSet(PWA_KEYS.proactiveShown,'1');
+  trackEvent('pwa_install_prompt_viewed');
+  openSheet('pwainstall');
+}
+function schedulePwaInstallSuggestion(firstMeaningfulAction){
+  if(!firstMeaningfulAction)return;
+  pwaProactivePending=true;
+  setTimeout(maybeOpenPendingPwaSuggestion,650);
 }
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
@@ -3691,6 +3836,8 @@ function pageHome(){
     <button class="btn" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
     <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
   </div>
+
+  ${homeInstallCard()}
 
   ${obReviewCard()}
 
@@ -4614,6 +4761,8 @@ function saveEntry(){
     toast(t('f.catErr'));
     return;
   }
+  const existingEntryIndex=EN.id?S.entries.findIndex(entry=>entry.id===EN.id):-1;
+  const firstMeaningfulEntry=existingEntryIndex<0&&!S.entries.some(entry=>entry&&(entry.kind==='income'||entry.kind==='expense'));
   const rec = {
     id:EN.id||uid(),
     bizId:document.getElementById('en-biz').value||(S.businesses[0]&&S.businesses[0].id),
@@ -4654,6 +4803,7 @@ function saveEntry(){
       // EN.id 係由 onReceiptFile 生成嘅，唔係 existing entry → 當新 entry 處理
       S.entries.push(rec);
       save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+      schedulePwaInstallSuggestion(firstMeaningfulEntry);
     }
   } else if(EN.repeat && EN.kind==='expense'){
     // Add for all 12 months of the current tax year
@@ -4677,9 +4827,11 @@ function saveEntry(){
     });
     if(!count){ S.entries.push(rec); pushEntryRemote(rec); count=1; } // safety: nothing picked => single entry
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
+    schedulePwaInstallSuggestion(firstMeaningfulEntry);
   } else {
     S.entries.push(rec);
     save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
+    schedulePwaInstallSuggestion(firstMeaningfulEntry);
   }
 }
 function deleteEntry(){
@@ -4769,6 +4921,7 @@ function saveBiz(){
   let share = parseInt(document.getElementById('bz-share').value,10);
   if(!(share>=1&&share<=100)) share=50;
   let newId = null;
+  const firstMeaningfulBusiness=!BZ.id&&S.businesses.length===0;
   if(BZ.id){
     const b = bizById(BZ.id);
     b.name=name; b.structure=BZ.structure; b.share=BZ.structure==='partnership'?share:100;
@@ -4785,6 +4938,7 @@ function saveBiz(){
     trackEvent('business_created');
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
+  schedulePwaInstallSuggestion(firstMeaningfulBusiness);
   if(newId&&BZ.pendingCode&&hasFeature('partnerSync')&&fbConfigured()){
     enableSync(newId,BZ.pendingCode);
   } else if(newId && BZ.structure==='partnership'){
@@ -4913,7 +5067,7 @@ let sheetOpener=null;
 function openSheet(id){ const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
-  if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); }
+  if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); setTimeout(maybeOpenPendingPwaSuggestion,0); }
 }
 // Drag-to-dismiss on grab handles
 function initSheetDrag(){
@@ -4924,7 +5078,7 @@ function initSheetDrag(){
     let startY=0, curY=0, dragging=false;
     const onStart=e=>{ dragging=true; startY=(e.touches?e.touches[0].clientY:e.clientY); sheet.style.transition='none'; };
     const onMove=e=>{ if(!dragging)return; curY=(e.touches?e.touches[0].clientY:e.clientY); const dy=Math.max(0,curY-startY); sheet.style.transform='translateY('+dy+'px)'; };
-    const onEnd=()=>{ if(!dragging)return; dragging=false; sheet.style.transition=''; const dy=curY-startY; if(dy>100){ const sb=sheet.closest('.sb'); if(sb){sb.classList.remove('open');document.body.classList.remove('sheet-open');} } sheet.style.transform=''; };
+    const onEnd=()=>{ if(!dragging)return; dragging=false; sheet.style.transition=''; const dy=curY-startY; if(dy>100){ const sb=sheet.closest('.sb'); if(sb){sb.classList.remove('open');document.body.classList.remove('sheet-open');setTimeout(maybeOpenPendingPwaSuggestion,0);} } sheet.style.transform=''; };
     grab.addEventListener('touchstart',onStart,{passive:true});
     grab.addEventListener('touchmove',onMove,{passive:true});
     grab.addEventListener('touchend',onEnd);
@@ -4933,7 +5087,7 @@ function initSheetDrag(){
     document.addEventListener('mouseup',onEnd);
   });
 }
-function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); if(sheetOpener&&sheetOpener.focus)sheetOpener.focus(); }
+function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); if(sheetOpener&&sheetOpener.focus)sheetOpener.focus(); setTimeout(maybeOpenPendingPwaSuggestion,0); }
 
 /* Toast feedback */
 let _toastTimer=null;
@@ -6124,6 +6278,7 @@ function anySheetOpen(){
 function closeAllSheets(){
   document.querySelectorAll('.sb.open').forEach(o=>o.classList.remove('open'));
   document.body.classList.remove('sheet-open');
+  setTimeout(maybeOpenPendingPwaSuggestion,0);
 }
 function setupBackButton(){
   // Seed two states: one base + one buffer the back button consumes first.
@@ -6767,6 +6922,7 @@ function obFinish(){
   obClose();
   S.tab='home'; render(); window.scrollTo(0,0);
   if(typeof toast==='function') toast(wasCatchup ? 'Months added ✓' : 'All caught up — welcome to TaxMate!');
+  schedulePwaInstallSuggestion(!wasCatchup);
 }
 
 /* ═══════════ boot ═══════════ */
@@ -6791,29 +6947,36 @@ if(fbConfigured()){
 S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
 
 // ── PWA install prompt capture ──
-let deferredInstall = null;
 window.addEventListener('beforeinstallprompt', e=>{
   e.preventDefault();
   deferredInstall = e;
-  if(typeof render==='function' && S.tab==='more') render();
+  if(typeof render==='function' && (S.tab==='home'||S.tab==='more')) render();
 });
 window.addEventListener('appinstalled', ()=>{
-  deferredInstall = null;
-  if(typeof render==='function' && S.tab==='more') render();
+  markPwaInstalled();
 });
-function isStandalone(){
-  return window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone===true;
-}
-function isIOS(){ return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream; }
-let installing = false;
-function doInstall(){
-  if(isIOS()){ openSheet('iosinstall'); return; }
+async function doInstall(){
+  trackEvent('pwa_install_clicked');
+  if(isIOS()){
+    const proactive=document.getElementById('sb-pwainstall');
+    if(proactive&&proactive.classList.contains('open'))closeSheet('pwainstall');
+    openSheet('iosinstall');
+    return;
+  }
   if(deferredInstall && !installing){
     installing = true;
     const dp = deferredInstall;
     deferredInstall = null;            // consume immediately so it can't fire twice
-    dp.prompt();
-    dp.userChoice.finally(()=>{ installing = false; render(); });
+    try{
+      await dp.prompt();
+      const choice=await dp.userChoice;
+      if(choice&&choice.outcome==='accepted')markPwaInstalled();
+      else dismissInstallPromotion();
+    }catch(_){
+      render();
+    }finally{
+      installing = false;
+    }
   } else {
     // No native prompt available → guide user to Chrome menu (avoids the
     // shortcut-style "Add to Home screen" double-popup some devices show)
