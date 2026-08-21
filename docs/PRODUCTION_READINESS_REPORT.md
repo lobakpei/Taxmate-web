@@ -1,30 +1,30 @@
-# TaxMate Final Production Readiness Report
+# TaxMate Healthy Operating App Production Readiness
 
-Founder-facing closeout — 20 August 2026. This records engineering evidence and does not claim full legal compliance.
+Founder-facing release gate — 21 August 2026. This report supersedes earlier candidate-readiness verdicts.
 
-| Item | Status | Final evidence |
+| Item | Status | Current evidence |
 |---|---|---|
-| Branch | PASS | `codex/taxmate-modernisation-20260817` |
-| Commit / tree | PASS | Exact identities are recorded in the final Founder handoff |
-| Build | PASS | `2026-08-20.live-auth-restored-rc.12` |
-| Working tree | PASS | Clean after the final coherent candidate commit |
-| Production Google Auth invariant | PASS | Google provider/popup/persistence/callback/logout path remains behavior-equivalent to Founder-confirmed live production; service-worker Auth-relevant behavior is restored to live; Apple is absent |
-| Stripe TEST | PASS | Independent TaxMate Sandbox, Plus £3.99/month and £29.99/year, Pro £7.99/month and £59.99/year, four hosted Checkouts, signed webhook, annual period end, promotions, cancellation, expiry and refund entitlement |
-| Stripe LIVE wiring | PASS WITH RELEASE-TIME CHECK | Canonical four LIVE Price IDs are isolated in the production Functions environment; the replacement restricted LIVE key and unchanged webhook secret are enabled in `taxmate-uk-2` Secret Manager. No production Functions are currently deployed, so runtime binding is verified immediately after an approved deployment. |
-| Founder promotions | PASS | Four backend-only fixed/permanent configurations are active with exact start, expiry and capacity; client source contains none of the codes. Transactional redemption, priority, notices, disable/revoke and data-retention behavior are covered by regression. |
-| SEO | PASS | Approved title, description, H1, canonical, robots, sitemap, structured data and staging noindex regression |
-| Legal / Privacy | PASS | Privacy, Terms, lawful-basis, processor, transfer, retention and deletion consistency engineering gate |
-| GA4 | PASS | Fresh allow-listed staging event receipt with privacy controls and no bookkeeping payload |
-| Sentry | PASS | Synthetic receipt and scrubbed payload inspection; documented provider-derived metadata limitation |
-| Firebase data / security | PASS | Functions, Firestore/Storage rules, receipt lifecycle, ZIP receipt restore, cross-user denial, App Check token infrastructure and IAM cleanup |
-| Backup / restore | PASS | Deterministic JSON and receipt-binary ZIP round trip, validation and rollback behavior |
-| UI / tax logic | PASS | Founder-approved UI freeze and versioned tax/form regressions preserved |
-| Staging Google OAuth | LIMITATION | `STAGING_ONLY_OAUTH_LIMITATION`; not a production release blocker and no longer under investigation |
-| Rollback | PASS | Pre-release production commit `745f7497d374f000870c4a7a111130008f8945a7`; live Google Auth failure triggers immediate rollback |
-| Remaining blocker | NONE BEFORE CONTROLLED RELEASE | Founder has authorised release of the exact frozen candidate. Deployment must still verify Functions secret binding and LIVE Checkout creation before closeout. |
+| Branch | PASS | `codex/taxmate-healthy-production-20260820`, isolated from the preserved owner checkout |
+| Authorized baseline | PASS | `main@41252f319d6c695dcb96105f524282a4e916145c`, tree `b5a7d00f4333bd17ee3e41e592c4972a7d5a98a9` |
+| Build | PASS | App `2.0.0`, build `2026-08-20.healthy-production.1` |
+| Product health | PASS | 85 real/durable; 6 intentionally hidden; every unhealthy visible classification is 0 |
+| Plan contract | PASS | 20 canonical features; exact Free/Plus/Pro UI and server enforcement |
+| Durability | PASS | 13 Master Pack personas, reload/backup/restore, sync/tombstone and downgrade-retention coverage |
+| Security rules | PASS | Receipts require Plus/Pro to create; partnership create is server-only; Pro is required to collaborate; historical reads and owner cleanup survive downgrade |
+| Founder promotions | PASS | Exact four backend-only configurations; private permanent offer is effective immediately; public schedules/capacities unchanged; zero real slots consumed during testing |
+| Stripe LIVE | PASS | Four LIVE unpaid/customerless hosted sessions verified exact GBP amount, month/year interval and Terms consent, then expired |
+| Provider facts | PASS | Firestore and Functions `europe-west2`; receipt bucket `US-CENTRAL1`; public Privacy copy matches |
+| Dependency audit | PASS | Root and Functions production audits both report 0 vulnerabilities |
+| Google / Apple invariant | PASS | Frozen production-confirmed Google path is unchanged; Apple is absent; no OAuth investigation was reopened |
+| Browser QA | PASS | Founder-approved app UI, Plans, promotion sheet, Help, Privacy, Terms, light/dark, desktop/mobile and no native dialog regressions |
+| Final regression | PASS | 138/138 automated tests: 4 characterization, 101 unit, 7 integration, 5 source-rule, 15 Firestore/Storage emulator and 6 Functions emulator |
+| Public correspondence address | PASS | Founder-authorised UK Postbox correspondence/contact address is present in canonical Privacy and Terms content: `Unit 170198, PO Box 7169, Poole, BH15 9EL`. It is not represented as an establishment or trading location. |
+| ICO register propagation | NON-BLOCKING | The Founder has submitted a new non-residential correspondence address and ICO processing is confirmed; public-register propagation is tracked separately. |
+
+## Release gate
+
+Engineering, product health, LIVE billing and promotion configuration are complete. The Founder has authorised the exact UK Postbox address above for TaxMate's public correspondence, contact and complaints use, has removed the separate address gate and has authorised PR #8 merge and production deployment once the final regression passes. No further address evidence or legal research is required for this release.
 
 ## Verdict
 
-`APPROVED_FOR_CONTROLLED_PRODUCTION_RELEASE`
-
-The Founder has given exact release approval. Any candidate SHA/tree drift invalidates that approval.
+`RELEASE_AUTHORISED`

@@ -1,25 +1,18 @@
 # TaxMate Release Rollback Instructions
 
-Production is unchanged at pre-release commit `745f7497d374f000870c4a7a111130008f8945a7`, tree `4726b48f89150782f50e6227226c227c13765212`.
+The Healthy Operating App work started from `main@41252f319d6c695dcb96105f524282a4e916145c`, tree `b5a7d00f4333bd17ee3e41e592c4972a7d5a98a9`. Local annotated rollback tag `taxmate-pre-healthy-production-20260820` identifies that baseline.
 
-## Before release
+## Current state
 
-No rollback action is required because no push, merge, production Hosting/Functions/rules deployment, Stripe LIVE change, migration or DNS change has occurred.
+The Founder-authorised public correspondence address has cleared the release gate. PR #8 merge and production deployment are authorised after the final regression. The private Founder promo start correction is an intentional standalone production configuration change; rollback would disable future redemptions only if a separately authorised emergency required it and must not revoke an existing grant.
 
-## Approved release sequence
+## Coherent rollback after any future deployment
 
-After explicit Founder approval only: push candidate, merge through the approved release path, deploy production, then immediately run the live smoke test.
+- Restore Hosting client assets, build identity, service-worker cache and CSP headers together to the tagged baseline.
+- Restore Functions, Firestore rules and Storage rules from the same tagged source revision.
+- Verify server-written paid/promotion entitlement documents before reopening premium writes.
+- Do not delete bookkeeping data during downgrade, cancellation, refund or source rollback.
+- Stripe rollback must not create a charge, change prices or touch unrelated accounts or LIVE objects.
+- If the Founder reports a live Google Sign-In regression, restore the tagged release immediately; do not debug OAuth in production.
 
-The first live smoke test is Google Sign-In: account selection → Firebase callback → non-null current user → session restore → logout.
-
-If any Google Sign-In step fails, stop testing and immediately restore the pre-release production commit. Do not debug Auth in production.
-
-## Coherent rollback
-
-- Roll back Hosting client assets, build identity, service-worker cache and CSP headers together.
-- Roll back Functions, Firestore rules, Storage rules, App Check and Stripe webhook configuration as separate versioned operations where they were changed by the release.
-- Do not delete bookkeeping data during a downgrade, cancellation, refund or source rollback.
-- Stripe rollback never creates or changes VAT registration and must not touch unrelated accounts or LIVE objects outside the approved TaxMate release.
-- `taxmate-staging` is not deleted as part of production rollback; the Founder will decide its later retention separately.
-
-Offline/source recovery remains available from the production baseline bundle and source archive under `evidence/w0/`, or by checking out commit `745f7497d374f000870c4a7a111130008f8945a7`.
+All four LIVE smoke Checkout sessions created during this programme were expired and created no customer, payment or subscription.

@@ -1,0 +1,1 @@
+(function(){'use strict';try{const requested=new URLSearchParams(location.search).get('theme'),stored=JSON.parse(localStorage.getItem('taxmateuk_v1')||'null'),theme=requested||(stored&&stored.settings&&stored.settings.theme)||'auto';if(theme==='light'||theme==='dark')document.documentElement.setAttribute('data-theme',theme);}catch(_){}})();

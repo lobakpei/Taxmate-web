@@ -35,7 +35,8 @@ test('promotion redemption is independent and appears before every plan card', (
   assert.ok(redeemAt < plans.indexOf("planBlock('free')"));
   assert.ok(redeemAt < plans.indexOf("planBlock('plus')"));
   assert.ok(redeemAt < plans.indexOf("planBlock('pro')"));
-  assert.equal((app.match(/data-tm-click="activateTrial\(\)"/g) || []).length, 1);
+  assert.equal((app.match(/data-tm-click="openPromotionSheet\(\)"/g) || []).length, 1);
+  assert.equal((app.match(/data-tm-click="activateTrial\(\)"/g) || []).length, 0);
   assert.doesNotMatch(app, /if\(tier==='pro'\)[^\n]*promo\.redeem/);
 });
 

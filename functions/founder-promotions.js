@@ -27,6 +27,7 @@ function validateConfiguration(data,now=Date.now()){
   if(startsAt===null)return{ok:false,reason:'invalid-start'};
   if(Number(now)<startsAt)return{ok:false,reason:'not-started'};
   const duration=finiteInteger(data.durationDays),fixedExpiry=finiteInteger(data.expiresAt);
+  if(fixedExpiry!==null&&fixedExpiry<=Number(now)&&duration===null&&data.permanent!==true)return{ok:false,reason:'expired'};
   const validDuration=duration!==null&&duration>=1&&duration<=MAX_DURATION_DAYS;
   const validFixedExpiry=fixedExpiry!==null&&fixedExpiry>Number(now);
   const permanent=data.permanent===true;
@@ -61,6 +62,21 @@ function hasPermanentPro(promotions,now=Date.now()){
   return Object.values(promotions&&typeof promotions==='object'?promotions:{}).some(p=>p&&p.tier==='pro'&&p.permanent===true&&activeGrant(p,now));
 }
 
+function accessProjection(promotions,now=Date.now()){
+  const access={plusPermanent:false,proPermanent:false,plusExpiresAt:0,proExpiresAt:0};
+  for(const promotion of Object.values(promotions&&typeof promotions==='object'?promotions:{})){
+    if(!activeGrant(promotion,now))continue;
+    const permanent=promotion.permanent===true||promotion.expiresAt===null,expiresAt=permanent?0:Number(promotion.expiresAt||0);
+    if(promotion.tier==='pro'){
+      if(permanent)access.proPermanent=true;else access.proExpiresAt=Math.max(access.proExpiresAt,expiresAt);
+    }
+    if(promotion.tier==='plus'||promotion.tier==='pro'){
+      if(permanent)access.plusPermanent=true;else access.plusExpiresAt=Math.max(access.plusExpiresAt,expiresAt);
+    }
+  }
+  return access;
+}
+
 function successMessage(configuration){
   const tier=configuration.tier==='pro'?'Pro':'Plus';
   if(configuration.permanent)return'Permanent Pro access unlocked.';
@@ -70,4 +86,4 @@ function successMessage(configuration){
 
 function redemptionId(code,uid){return`${code}__${uid}`;}
 
-module.exports={CODE_PATTERN,TIER_WEIGHT,MAX_DURATION_DAYS,MAX_REDEMPTIONS,normalizeCode,validateConfiguration,entitlementExpiry,activeGrant,selectEffective,hasPermanentPro,successMessage,redemptionId};
+module.exports={CODE_PATTERN,TIER_WEIGHT,MAX_DURATION_DAYS,MAX_REDEMPTIONS,normalizeCode,validateConfiguration,entitlementExpiry,activeGrant,selectEffective,hasPermanentPro,accessProjection,successMessage,redemptionId};

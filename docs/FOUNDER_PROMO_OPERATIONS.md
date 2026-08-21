@@ -30,6 +30,14 @@ View one exact code without enumerating the collection:
 npm run promo:admin -- status --code SAMPLECODE
 ```
 
+Correct the start time of an unused configured code with an update-time precondition:
+
+```powershell
+npm run promo:admin -- reschedule --code SAMPLECODE --starts-at 2026-08-20T00:00:00+01:00
+```
+
+`reschedule` is rejected after the first redemption. It changes only `startsAt` and the audit timestamp; tier, expiry model, capacity and existing grants cannot be altered by this command.
+
 Disable future redemption without removing entitlements already granted:
 
 ```powershell
