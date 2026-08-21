@@ -50,6 +50,15 @@ test('visible Plans UI uses the production Auth and App Check secured Checkout p
   assert.doesNotMatch(app,/smoke-live-checkout-sessions/);
 });
 
+test('rapid Plans activation cannot split one user across Stripe customers',()=>{
+  const app=fs.readFileSync('src/app/app.js','utf8');
+  assert.match(source,/idempotencyKey:`taxmate-customer-\$\{user\.uid\}`/);
+  assert.match(app,/let BILLING_ACTION_PENDING=false/);
+  assert.match(app,/if\(BILLING_ACTION_PENDING\)return/);
+  assert.match(app,/BILLING_ACTION_PENDING=true/);
+  assert.match(app,/finally\{\s*BILLING_ACTION_PENDING=false/);
+});
+
 test('billing failures have safe client and server classifications',()=>{
   const app=fs.readFileSync('src/app/app.js','utf8');
   for(const category of ['app-check-unavailable','app-check-rejected','auth-required','billing-config','stripe-customer','stripe-checkout','network']){

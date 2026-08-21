@@ -55,7 +55,7 @@ function subscriptionPeriodEnd(subscription){
 }
 async function customerFor(user,client=stripe()){
   const ref=db.doc(`billingCustomers/${user.uid}`), snap=await ref.get(); if(snap.exists) return snap.data().stripeCustomerId;
-  const c=await client.customers.create({email:user.token.email,metadata:{firebaseUid:user.uid}}); await ref.set({stripeCustomerId:c.id,createdAt:FieldValue.serverTimestamp()}); return c.id;
+  const c=await client.customers.create({email:user.token.email,metadata:{firebaseUid:user.uid}},{idempotencyKey:`taxmate-customer-${user.uid}`}); await ref.set({stripeCustomerId:c.id,createdAt:FieldValue.serverTimestamp()}); return c.id;
 }
 exports.createCheckoutSession=onCall(opts,async req=>{
   const user=auth(req),tier=req.data&&req.data.tier,cadence=req.data&&req.data.cadence||'monthly';if(!['plus','pro'].includes(tier))throw new HttpsError('invalid-argument','Invalid tier');if(!['monthly','yearly'].includes(cadence))throw new HttpsError('invalid-argument','Invalid billing cadence');
