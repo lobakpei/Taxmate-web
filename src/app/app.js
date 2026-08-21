@@ -3200,7 +3200,10 @@ async function callSecureFunction(name,data){
     if(!res.ok||body.error){const code=body.error&&body.error.status||'UNKNOWN',reason=body.error&&body.error.details&&body.error.details.reason||null,category=SAFE_BILLING_FAILURES.has(reason)?reason:code==='UNAUTHENTICATED'?'app-check-rejected':code==='FAILED_PRECONDITION'?'billing-config':'network';throw secureFunctionError(category,code,reason);}
     return body.result||{};
 }
+let BILLING_ACTION_PENDING=false;
 async function startBillingAction(name,data){
+  if(BILLING_ACTION_PENDING)return;
+  BILLING_ACTION_PENDING=true;
   try{
     const result=await callSecureFunction(name,data);
     if(result.url)location.assign(result.url);
@@ -3213,6 +3216,8 @@ async function startBillingAction(name,data){
     const category=SAFE_BILLING_FAILURES.has(e&&e.billingCategory)?e.billingCategory:'network';
     console.warn('billing-failure',{category});
     showNotice(t('pro.title'),t('billing.unavailable'));
+  }finally{
+    BILLING_ACTION_PENDING=false;
   }
 }
 function openBillingPortal(){ if(requireLoginForTier()) startBillingAction('createBillingPortal',{}); }
