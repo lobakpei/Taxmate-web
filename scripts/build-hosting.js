@@ -17,6 +17,8 @@ if (!destination.startsWith(buildRoot + path.sep)) throw new Error('Unsafe Hosti
 
 const rootFiles = [
   '404.html',
+  'favicon-48x48.png',
+  'favicon.ico',
   'icon-192.png',
   'icon-512-maskable.png',
   'icon-512.png',

@@ -9,10 +9,18 @@ const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=def
 const PLUS_MONTHLY_PRICE=defineString('STRIPE_PLUS_MONTHLY_PRICE_ID',{default:''}),PLUS_ANNUAL_PRICE=defineString('STRIPE_PLUS_ANNUAL_PRICE_ID',{default:''});
 const PRO_MONTHLY_PRICE=defineString('STRIPE_PRO_MONTHLY_PRICE_ID',{default:''}),PRO_ANNUAL_PRICE=defineString('STRIPE_PRO_ANNUAL_PRICE_ID',{default:''});
 const LEGACY_PLUS_PRICES=defineString('STRIPE_PLUS_LEGACY_PRICE_IDS',{default:''}),LEGACY_PRO_PRICES=defineString('STRIPE_PRO_LEGACY_PRICE_IDS',{default:''});
-const APP_URL=defineString('PUBLIC_APP_URL',{default:'https://taxmate.uk'});
+const APP_URL=defineString('PUBLIC_APP_URL',{default:'https://www.taxmate.uk'});
 const baseOpts={region:'europe-west2',enforceAppCheck:process.env.FUNCTIONS_EMULATOR!=='true'},opts={...baseOpts,secrets:[STRIPE_SECRET]};
-const stripe=()=>new Stripe(STRIPE_SECRET.value());
-function auth(req){ if(!req.auth) throw new HttpsError('unauthenticated','Sign in required'); return req.auth; }
+function stripe(){
+  const key=STRIPE_SECRET.value();
+  if(!key||key!==key.trim()||/[\r\n]/.test(key))throw new HttpsError('failed-precondition','Billing configuration unavailable',{reason:'billing-config'});
+  return new Stripe(key);
+}
+function billingFailure(category){
+  console.error('billing-failure',{category});
+  return new HttpsError('internal','Payments are temporarily unavailable',{reason:category});
+}
+function auth(req){ if(!req.auth) throw new HttpsError('unauthenticated','Sign in required',{reason:'auth-required'}); return req.auth; }
 const TIER_WEIGHT=Object.freeze({free:0,plus:1,pro:2}),ACTIVE_SUBSCRIPTIONS=new Set(['active','trialing']);
 function effectiveTier(entitlement,now=Date.now()){
   const data=entitlement&&typeof entitlement==='object'?entitlement:{};
@@ -45,20 +53,22 @@ function subscriptionPeriodEnd(subscription){
   const itemEnds=(subscription.items&&subscription.items.data||[]).map(item=>Number(item.current_period_end||0));
   return Math.max(Number(subscription.current_period_end||0),...itemEnds,0)*1000;
 }
-async function customerFor(user){
+async function customerFor(user,client=stripe()){
   const ref=db.doc(`billingCustomers/${user.uid}`), snap=await ref.get(); if(snap.exists) return snap.data().stripeCustomerId;
-  const c=await stripe().customers.create({email:user.token.email,metadata:{firebaseUid:user.uid}}); await ref.set({stripeCustomerId:c.id,createdAt:FieldValue.serverTimestamp()}); return c.id;
+  const c=await client.customers.create({email:user.token.email,metadata:{firebaseUid:user.uid}}); await ref.set({stripeCustomerId:c.id,createdAt:FieldValue.serverTimestamp()}); return c.id;
 }
 exports.createCheckoutSession=onCall(opts,async req=>{
   const user=auth(req),tier=req.data&&req.data.tier,cadence=req.data&&req.data.cadence||'monthly';if(!['plus','pro'].includes(tier))throw new HttpsError('invalid-argument','Invalid tier');if(!['monthly','yearly'].includes(cadence))throw new HttpsError('invalid-argument','Invalid billing cadence');
   const entitlementSnap=await db.doc(`users/${user.uid}/entitlements/current`).get();
   if(entitlementSnap.exists&&FounderPromotions.hasPermanentPro(entitlementSnap.data().promotions,Date.now()))throw new HttpsError('already-exists','You already have permanent Pro access.');
-  const price=({plus:{monthly:PLUS_MONTHLY_PRICE.value(),yearly:PLUS_ANNUAL_PRICE.value()},pro:{monthly:PRO_MONTHLY_PRICE.value(),yearly:PRO_ANNUAL_PRICE.value()}})[tier][cadence];if(!price)throw new HttpsError('failed-precondition','Price not configured');
-  const customer=await customerFor(user), subscriptions=await stripe().subscriptions.list({customer,status:'all',limit:20});
+  const price=({plus:{monthly:PLUS_MONTHLY_PRICE.value(),yearly:PLUS_ANNUAL_PRICE.value()},pro:{monthly:PRO_MONTHLY_PRICE.value(),yearly:PRO_ANNUAL_PRICE.value()}})[tier][cadence];if(!price)throw billingFailure('billing-config');
+  let client;try{client=stripe();}catch(_){throw billingFailure('billing-config');}
+  let customer;try{customer=await customerFor(user,client);}catch(_){throw billingFailure('stripe-customer');}
+  let subscriptions;try{subscriptions=await client.subscriptions.list({customer,status:'all',limit:20});}catch(_){throw billingFailure('stripe-checkout');}
   if(subscriptions.data.some(subscription=>!['canceled','incomplete_expired'].includes(subscription.status))) throw new HttpsError('already-exists','An existing subscription must be managed in the billing portal');
   const checkout={mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,automatic_tax:{enabled:false},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier,billingCadence:cadence}}};
   if(process.env.FUNCTIONS_EMULATOR!=='true')checkout.consent_collection={terms_of_service:'required'};
-  const session=await stripe().checkout.sessions.create(checkout);
+  let session;try{session=await client.checkout.sessions.create(checkout);}catch(_){throw billingFailure('stripe-checkout');}
   return {url:session.url};
 });
 exports.createBillingPortal=onCall(opts,async req=>{ const user=auth(req),customer=await customerFor(user); const s=await stripe().billingPortal.sessions.create({customer,return_url:APP_URL.value()}); return {url:s.url}; });
