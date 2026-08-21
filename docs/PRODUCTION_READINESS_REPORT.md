@@ -17,13 +17,14 @@ Founder-facing release gate — 21 August 2026. This report supersedes earlier c
 | Dependency audit | PASS | Root and Functions production audits both report 0 vulnerabilities |
 | Google / Apple invariant | PASS | Frozen production-confirmed Google path is unchanged; Apple is absent; no OAuth investigation was reopened |
 | Browser QA | PASS | Founder-approved app UI, Plans, promotion sheet, Help, Privacy, Terms, light/dark, desktop/mobile and no native dialog regressions |
-| Pre-contract geographic address | BLOCKED | No verifiable artifact containing the Founder-approved non-residential geographic business address is available in the release workspace. It therefore cannot safely be inserted into Privacy/Terms or confirmed as the trader establishment/complaints address. No residential or invented address may be used. |
+| Final regression | PASS | 138/138 automated tests: 4 characterization, 101 unit, 7 integration, 5 source-rule, 15 Firestore/Storage emulator and 6 Functions emulator |
+| Public correspondence address | PASS | Founder-authorised UK Postbox correspondence/contact address is present in canonical Privacy and Terms content: `Unit 170198, PO Box 7169, Poole, BH15 9EL`. It is not represented as an establishment or trading location. |
 | ICO register propagation | NON-BLOCKING | The Founder has submitted a new non-residential correspondence address and ICO processing is confirmed; public-register propagation is tracked separately. |
 
 ## Release gate
 
-Engineering, product health, tests, LIVE billing and promotion configuration are complete. Commit, push and PR preparation may proceed. Merge and production deployment must not proceed until the approved non-residential address itself and evidence that it is usable as TaxMate's geographic business/complaints address are available, after which the same address must be added to the canonical legal content and the final gates rerun.
+Engineering, product health, LIVE billing and promotion configuration are complete. The Founder has authorised the exact UK Postbox address above for TaxMate's public correspondence, contact and complaints use, has removed the separate address gate and has authorised PR #8 merge and production deployment once the final regression passes. No further address evidence or legal research is required for this release.
 
 ## Verdict
 
-`PRODUCTION_BLOCKED`
+`RELEASE_AUTHORISED`

@@ -13,9 +13,11 @@ const bootstrap=read('src/app/bootstrap.js');
 const sentry=read('src/app/sentry-bootstrap.js');
 const functions=read('functions/index.js');
 const hosting=read('firebase.json');
+const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, BH15 9EL';
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
   assert.equal(Legal.POLICY_VERSION,'2026-08-20');
+  assert.equal(Legal.PUBLIC_CORRESPONDENCE_ADDRESS,APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS);
   assert.equal(privacy,Legal.publicPage('privacy'));
   assert.equal(terms,Legal.publicPage('terms'));
   assert.equal(read('help.html'),Legal.publicPage('help'));
@@ -24,6 +26,7 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/support@taxmate\.uk/);
     assert.match(text,/Google/);
     assert.doesNotMatch(text,/Apple Sign-In|Continue with Apple|sign in with Apple/i);
+    assert.ok(text.includes(APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS));
   }
   assert.match(privacy,/lawful basis/i);
   assert.match(privacy,/international transfers/i);
@@ -114,6 +117,8 @@ test('public runtime files contain no private contact details or secret credenti
   const emails=publicText.match(/[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/gi)||[];
   assert.deepEqual([...new Set(emails.map(x=>x.toLowerCase()))],['support@taxmate.uk']);
   assert.doesNotMatch(publicText,/\+44\s?\d|\b0[1-9]\d{8,10}\b/);
-  assert.doesNotMatch(publicText,/\b[A-Z]{1,2}\d[A-Z\d]?\s+\d[A-Z]{2}\b/i);
+  const withoutApprovedAddress=publicText.split(APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS).join('');
+  assert.doesNotMatch(withoutApprovedAddress,/\b[A-Z]{1,2}\d[A-Z\d]?\s+\d[A-Z]{2}\b/i);
+  assert.doesNotMatch(publicText,/Courier\s+Point/i);
   assert.doesNotMatch(publicText,/sk_(?:live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/i);
 });

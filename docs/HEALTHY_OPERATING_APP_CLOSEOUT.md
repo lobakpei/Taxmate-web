@@ -18,7 +18,7 @@ The Master Pack implementation is complete. The Founder-approved UI language is 
 
 ## Verification outcome
 
-- Baseline characterization, unit, integration, source-rule, Firestore/Storage emulator and Functions emulator gates pass.
+- Final regression passes 138/138 automated tests: 4 characterization, 101 unit, 7 integration, 5 source-rule, 15 Firestore/Storage emulator and 6 Functions emulator.
 - Thirteen Master Pack personas pass truthful control, persistence, downgrade and billing/promotion-state assertions.
 - App and public pages pass mobile/desktop, light/dark, overflow, content-count and native-dialog checks.
 - Root and Functions production dependency audits report zero vulnerabilities.
@@ -26,10 +26,10 @@ The Master Pack implementation is complete. The Founder-approved UI language is 
 - Four LIVE Stripe Checkout pages displayed exact Plus/Pro monthly/yearly prices and Terms consent. They remained unpaid and customerless and were expired after inspection.
 - Production promo configuration matches the three public schedules. The private permanent Founder offer is effective from the Master Pack date, capacity three, with zero redemptions.
 
-## Outstanding single release gate
+## Address release gate
 
-ICO public-register propagation is non-blocking and separate. The blocking fact is narrower: this workspace contains no verifiable copy of the Founder-approved non-residential address itself or evidence that it is the geographic address where the sole-trader business is established / accepts complaints for paid TaxMate contracts. Consumer pre-contract rules require that geographic business information. Publishing the old residential address, a guessed address or an unverified PO Box is prohibited.
+ICO public-register propagation remains a separate, non-blocking follow-up. The Founder has authorised `Unit 170198, PO Box 7169, Poole, BH15 9EL` as TaxMate's public correspondence, contact and complaints address. Canonical Privacy and Terms content uses it only in those roles and does not represent it as an establishment or trading location.
 
-The branch may be committed, pushed and reviewed. It must not be merged or deployed until the exact approved address and suitability evidence are available, the canonical Privacy/Terms item is updated and the final regression is rerun.
+The address gate is cleared. PR #8 merge and production deployment are Founder-authorised after the final regression passes.
 
-Verdict: `PRODUCTION_BLOCKED`
+Release state: `ADDRESS_GATE_CLEARED`

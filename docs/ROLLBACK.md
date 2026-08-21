@@ -4,7 +4,7 @@ The Healthy Operating App work started from `main@41252f319d6c695dcb96105f524282
 
 ## Current state
 
-Production deployment is blocked at the pre-contract geographic-address gate. Product/source rollback is not required while the branch remains unmerged and undeployed. The private Founder promo start correction is an intentional standalone production configuration change; rollback would disable future redemptions only if a separately authorised emergency required it and must not revoke an existing grant.
+The Founder-authorised public correspondence address has cleared the release gate. PR #8 merge and production deployment are authorised after the final regression. The private Founder promo start correction is an intentional standalone production configuration change; rollback would disable future redemptions only if a separately authorised emergency required it and must not revoke an existing grant.
 
 ## Coherent rollback after any future deployment
 
