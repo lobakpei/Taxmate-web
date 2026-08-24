@@ -3434,9 +3434,10 @@ const DEVICE_KEY = 'taxmateuk_device_v1';
 const DEVICE_ID = (()=>{ try{ let id=localStorage.getItem(DEVICE_KEY); if(!id){ id='dev-'+crypto.getRandomValues(new Uint32Array(2)).join('-'); localStorage.setItem(DEVICE_KEY,id); } return id; }catch(e){ return 'dev-local'; } })();
 const DEFAULT_STATE = {
   v:5, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all', incCat:'all', expCat:'all',
-  businesses:[], entries:[], tombstones:[], yearData:{}, customCats:{}, folders:[], expFolder:'all', catRenames:{}, activeCats:{}, settings:{lang:'en', tier:'free', theme:'auto'}
+  businesses:[], businessTombstones:[], entries:[], tombstones:[], yearData:{}, customCats:{}, folders:[], folderTombstones:[], expFolder:'all', catRenames:{}, activeCats:{}, metaVersions:{}, metaUpdatedAt:0, settings:{lang:'en', tier:'free', theme:'auto'}
 };
 let S = load();
+let META_SYNC_SHADOW = metaSyncSnapshot(S);
 function load(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
@@ -3482,7 +3483,43 @@ function load(){
     return TaxMateState.migrate(merged,Date.now(),DEVICE_ID);
   }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
 }
-function save(){ S=TaxMateState.migrate(S,Date.now(),DEVICE_ID); try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){} CLOUD.localEditAt = Date.now(); if(typeof scheduleCloudPush==='function') scheduleCloudPush(); }
+function metaSyncSnapshot(state){
+  return {
+    customCats:JSON.parse(JSON.stringify(state&&state.customCats||{})),
+    activeCats:JSON.parse(JSON.stringify(state&&state.activeCats||{})),
+    yearData:JSON.parse(JSON.stringify(state&&state.yearData||{})),
+    settings:{lang:state&&state.settings&&state.settings.lang||'en',theme:state&&state.settings&&state.settings.theme||'auto'}
+  };
+}
+function stampVersionedMetaChanges(now){
+  const at=Number(now)||Date.now(),before=META_SYNC_SHADOW||metaSyncSnapshot({}),after=metaSyncSnapshot(S);
+  if(!S.metaVersions||typeof S.metaVersions!=='object') S.metaVersions={};
+  let changed=false;
+  [['customCats','customCats:'],['activeCats','activeCats:'],['yearData','yearData:']].forEach(pair=>{
+    const field=pair[0],prefix=pair[1],keys=new Set([...Object.keys(before[field]||{}),...Object.keys(after[field]||{})]);
+    keys.forEach(key=>{
+      if(JSON.stringify((before[field]||{})[key])===JSON.stringify((after[field]||{})[key])) return;
+      const deleted=!Object.prototype.hasOwnProperty.call(after[field]||{},key);
+      S.metaVersions[prefix+key]={updatedAt:at,deviceId:DEVICE_ID,deletedAt:deleted?at:null}; changed=true;
+    });
+  });
+  if(JSON.stringify(before.settings)!==JSON.stringify(after.settings)){
+    S.metaVersions['settings:account']={updatedAt:at,deviceId:DEVICE_ID,deletedAt:null}; changed=true;
+  }
+  if(changed) S.metaUpdatedAt=at;
+  META_SYNC_SHADOW=after;
+}
+function persistRemoteState(){
+  S=TaxMateState.migrate(S,Date.now(),DEVICE_ID);
+  META_SYNC_SHADOW=metaSyncSnapshot(S);
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+}
+function save(){
+  const now=Date.now(); stampVersionedMetaChanges(now); S=TaxMateState.migrate(S,now,DEVICE_ID);
+  try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+  CLOUD.localEditAt=now;
+  if(typeof scheduleCloudPush==='function') scheduleCloudPush();
+}
 function yd(){
   if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};
   return S.yearData[S.year];
@@ -3608,6 +3645,7 @@ function render(){
   else if(S.tab==='tax') page.innerHTML = pageTax();
   else if(S.tab==='receipts') page.innerHTML = pageReceipts();
   else page.innerHTML = pageMore();
+  renderSyncStatus();
 }
 
 /* ═══════════ welcome ═══════════ */
@@ -4165,6 +4203,7 @@ async function onBatchReceiptFile(entryId, inputEl){
     const url = await ref.getDownloadURL();
     e.receiptUrl = url;
     e.receiptPath = path;
+    Object.assign(e,TaxMateSync.touch(e,DEVICE_ID,Date.now()));
     pushEntryRemote(e);  // partnership sync（如有）
     save();              // 個人雲端 sync 由 save() 自動觸發
     render();            // 補完該筆會由未補清單消失
@@ -4192,11 +4231,11 @@ function pageMore(){
         <div class="grow">
           <div class="t" style="font-size:14.5px">${esc(cloudUser().displayName||t('ac.signedAs'))}</div>
           <div class="s">${esc(cloudUser().email||'')}</div>
-          <div class="s pos" style="font-weight:700;margin-top:2px">${t('ac.cloudOn')} ✓</div>
+          <div class="s" id="cloud-sync-status" style="font-weight:700;margin-top:2px">${esc(syncStatus().message)}</div>
         </div>
       </div>
-      <div class="notice amber" style="margin-top:12px;font-size:12.5px">
-        ⚠️ <strong>Edit on one device at a time</strong> to avoid overwriting data.
+      <div class="notice green" style="margin-top:12px;font-size:12.5px">
+        Changes are kept on this device until the server confirms them. Pending changes retry when TaxMate reopens or comes back online.
       </div>
       <button class="link danger" style="margin-top:14px;display:block" data-tm-click="confirmAction(t('ac.signout'),t('ac.signoutM'),doSignOut)">${t('ac.signout')}</button>
     ` : `
@@ -4317,7 +4356,7 @@ function pageMore(){
       <div class="card">
         <div class="t" style="margin-bottom:6px">${t('m.backup')}</div>
         <div class="s" style="margin-bottom:12px">${cloudUser()
-          ? '<span style=\"color:var(--brand-deep);font-weight:700\">'+t('ac.cloudOn')+' ✓</span> — '
+          ? '<span data-cloud-sync-status style=\"font-weight:700\">'+esc(syncStatus().message)+'</span> — '
           : ''}${t('m.backupHint')}</div>
         <button class="btn soft" data-tm-click="exportPortableBackup()">${t('m.backupFull')}</button>
         <div class="s" style="margin:6px 2px 12px">${t('m.backupFullS')}</div>
@@ -4643,14 +4682,16 @@ function saveFolder(){
     document.getElementById('fd-name-err').classList.add('show');
     return;
   }
-  const f = {id:'f_'+uid(), name};
+  const f = TaxMateSync.touch({id:'f_'+uid(),name,recordType:'folder'},DEVICE_ID,Date.now());
   S.folders.push(f); save(); closeSheet('folder');
   if(document.getElementById('sb-entry').classList.contains('open')){ EN.folderId=f.id; paintEntry(); }
   else render();
 }
 function deleteFolder(id){
+  const folder=S.folders.find(f=>f.id===id);
+  if(folder) S.folderTombstones.push(TaxMateSync.tombstone(folder,DEVICE_ID,Date.now()));
   S.folders = S.folders.filter(f=>f.id!==id);
-  S.entries.forEach(e=>{ if(e.folderId===id) e.folderId=null; });
+  S.entries.forEach(e=>{if(e.folderId===id){e.folderId=null;Object.assign(e,TaxMateSync.touch(e,DEVICE_ID,Date.now()));pushEntryRemote(e);}});
   if(S.expFolder===id) S.expFolder='all';
   save(); render();
 }
@@ -4948,8 +4989,10 @@ function saveBiz(){
 }
 function deleteBiz(){
   confirmAction(t('d.bizT'), t('d.bizM'), ()=>{
+    const business=bizById(BZ.id);
     const doomed=S.entries.filter(e=>e.bizId===BZ.id);
-    doomed.forEach(e=>S.tombstones.push(TaxMateSync.tombstone(e,DEVICE_ID,Date.now())));
+    doomed.forEach(e=>{const tomb=TaxMateSync.tombstone(e,DEVICE_ID,Date.now());S.tombstones.push(tomb);pushEntryRemote(tomb);});
+    if(business) S.businessTombstones.push(TaxMateSync.tombstone(business,DEVICE_ID,Date.now()));
     S.entries = S.entries.filter(e=>e.bizId!==BZ.id);
     S.businesses = S.businesses.filter(b=>b.id!==BZ.id);
     delete S.customCats[BZ.id];
@@ -5196,12 +5239,10 @@ async function enableSync(bizId,requestedCode){
   try{
     try{await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name});}
     catch(error){if(error.code!=='ALREADY_EXISTS'||requestedCode)throw error;code=genCode();await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name});}
-    const batch = db.batch();
-    S.entries.filter(e=>e.bizId===b.id).forEach(e=>{
-      batch.set(db.collection('partnerships').doc(code).collection('entries').doc(e.id), e);
-    });
-    await batch.commit();
-    b.syncCode = code; save();
+    b.syncCode=code;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
+    S.entries.filter(e=>e.bizId===b.id).forEach(pushEntryRemote);
+    pushBizRemote(b);save();
+    await flushSyncOutbox('enable-partnership');
     subscribeSync(code, b.id);
     paintSync(); render();
   }catch(e){ console.warn(e); showNotice(t('sy.title'),e&&e.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet')); }
@@ -5216,8 +5257,11 @@ function subscribeSync(code, bizId){
     unsubs.push(db.collection('partnerships').doc(code).onSnapshot(doc=>{
       const d = doc.data(); if(!d) return;
       const b = bizById(bizId);
-      if(b && d.name && b.name !== d.name){ b.name = d.name; save(); render(); }
-    }, ()=>{}));
+      const remoteVersion={updatedAt:d.businessUpdatedAt,deviceId:d.businessDeviceId};
+      if(b&&d.name&&TaxMateSync.compare(b,remoteVersion)<0){
+        b.name=d.name;b.updatedAt=remoteVersion.updatedAt;b.deviceId=remoteVersion.deviceId;persistRemoteState();render();
+      }
+    }, handleSyncListenerError));
     unsubs.push(db.collection('partnerships').doc(code).collection('entries').onSnapshot(snap=>{
       const remote = [];
       snap.forEach(x=>remote.push(x.data()));
@@ -5225,8 +5269,8 @@ function subscribeSync(code, bizId){
       const merged=TaxMateSync.mergeRecords(current,remote);
       S.entries=S.entries.filter(e=>e.bizId!==bizId).concat(TaxMateSync.visible(merged));
       S.tombstones=(S.tombstones||[]).filter(e=>e.bizId!==bizId).concat(merged.filter(e=>e.deletedAt!=null));
-      save(); render();
-    }, ()=>{}));
+      persistRemoteState();render();
+    }, handleSyncListenerError));
     FB.subs[code] = unsubs;
   });
 }
@@ -5249,8 +5293,8 @@ async function joinPartnership(){
   try{
     const joined=await callSecureFunction('joinPartnership',{code});
     const existing = bizById(joined.bizId);
-    if(!existing) S.businesses.push({id:joined.bizId, name:joined.name, structure:'partnership', share:50, syncCode:code});
-    else existing.syncCode = code;
+    if(!existing) S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
+    else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
     save();
     subscribeSync(code, joined.bizId);
     closeSheet('partner');render();toast(t('sy.synced'));
@@ -5264,7 +5308,7 @@ async function leaveSync(bizId){
   const subs = FB.subs[code];
   if(Array.isArray(subs)) subs.forEach(u=>{ try{u();}catch(e){} });
   delete FB.subs[code];
-  delete b.syncCode;
+  delete b.syncCode;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
   save(); paintSync(); render();
 }
 function invitePartner(bizId){
@@ -5276,10 +5320,12 @@ function invitePartner(bizId){
 }
 function pushEntryRemote(rec){
   const b = bizById(rec.bizId);
-  if(!b || !b.syncCode || !FB.ready || !hasFeature('partnerSync')) return;
+  if(!b || !b.syncCode || !hasFeature('partnerSync')) return;
   const ready=TaxMateSync.touch(Object.assign({},rec,{businessId:rec.businessId||rec.bizId,recordType:'entry'}),rec.deviceId||DEVICE_ID,rec.updatedAt||Date.now());
   if(rec.deletedAt!=null){ ready.deletedAt=rec.deletedAt; ready.updatedAt=rec.updatedAt; }
-  FB.db.collection('partnerships').doc(b.syncCode).collection('entries').doc(rec.id).set(ready).catch(()=>{});
+  const owner=cloudUser();
+  enqueueSyncOperation({kind:'partnership-entry',ownerUid:owner&&owner.uid||null,code:b.syncCode,bizId:b.id,record:ready,updatedAt:ready.updatedAt,deviceId:ready.deviceId});
+  scheduleOutboxFlush(0,'partnership-entry');
 }
 function deleteEntryRemote(bizId, id){
   const b = bizById(bizId);
@@ -5288,12 +5334,37 @@ function deleteEntryRemote(bizId, id){
   pushEntryRemote(TaxMateSync.tombstone(old,DEVICE_ID,Date.now()));
 }
 function pushBizRemote(b){
-  if(!b || !b.syncCode || !FB.ready || !hasFeature('partnerSync')) return;
-  FB.db.collection('partnerships').doc(b.syncCode).set({name:b.name},{merge:true}).catch(()=>{});
+  if(!b || !b.syncCode || !hasFeature('partnerSync')) return;
+  const ready=TaxMateSync.touch(Object.assign({},b,{recordType:'business'}),b.deviceId||DEVICE_ID,b.updatedAt||Date.now());
+  const owner=cloudUser();
+  enqueueSyncOperation({kind:'partnership-business',ownerUid:owner&&owner.uid||null,code:b.syncCode,bizId:b.id,record:ready,updatedAt:ready.updatedAt,deviceId:ready.deviceId});
+  scheduleOutboxFlush(0,'partnership-business');
 }
 
 /* ═══════════ Account & personal cloud sync ═══════════ */
-let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, lastPushed:'', localEditAt:0 };
+const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';
+function loadSyncOutbox(){try{return TaxMateSync.normalizeOutbox(JSON.parse(localStorage.getItem(SYNC_OUTBOX_KEY)||'null'));}catch(_){return TaxMateSync.emptyOutbox();}}
+let SYNC_OUTBOX=loadSyncOutbox();
+let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, listenerError:null };
+function persistSyncOutbox(){
+  try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
+  catch(e){CLOUD.listenerError='outbox-storage';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
+}
+function enqueueSyncOperation(operation){SYNC_OUTBOX=TaxMateSync.enqueue(loadSyncOutbox(),operation,Date.now());persistSyncOutbox();renderSyncStatus();}
+function syncStatus(){
+  const user=cloudUser(),box=TaxMateSync.normalizeOutbox(SYNC_OUTBOX);
+  if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
+  return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,error:CLOUD.listenerError});
+}
+function renderSyncStatus(){
+  const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'?'var(--coral)':'var(--muted)';
+  const elements=Array.from(document.querySelectorAll('#cloud-sync-status,[data-cloud-sync-status]'));
+  elements.forEach(el=>{el.textContent=current.message;el.style.color=col;el.dataset.state=current.state;});
+}
+function scheduleOutboxFlush(delay,reason){
+  clearTimeout(CLOUD.retryTimer);
+  CLOUD.retryTimer=setTimeout(()=>flushSyncOutbox(reason||'scheduled'),Math.max(0,Number(delay)||0));
+}
 function cloudUser(){
   try{
     if(typeof firebase==='undefined' || !firebase.apps || !firebase.apps.length) return null;
@@ -5342,59 +5413,131 @@ function doSignOut(){
 }
 function userRoot(uid){ return FB.db.collection('users').doc(uid); }
 
+function cloudMetaFromState(){
+  return {
+    businesses:S.businesses||[],businessTombstones:S.businessTombstones||[],folders:S.folders||[],folderTombstones:S.folderTombstones||[],
+    customCats:S.customCats||{},activeCats:S.activeCats||{},yearData:S.yearData||{},
+    settings:{lang:S.settings.lang,theme:S.settings.theme},metaVersions:S.metaVersions||{},
+    updatedAt:Number(S.metaUpdatedAt)||0,deviceId:DEVICE_ID
+  };
+}
+function applyCloudMeta(remote){
+  const merged=TaxMateSync.mergeMeta(cloudMetaFromState(),remote||{});
+  S.businesses=merged.businesses;S.businessTombstones=merged.businessTombstones;
+  S.folders=merged.folders;S.folderTombstones=merged.folderTombstones;
+  S.customCats=merged.customCats;S.activeCats=merged.activeCats;S.yearData=merged.yearData;
+  S.metaVersions=merged.metaVersions;S.metaUpdatedAt=merged.updatedAt;
+  S.settings=Object.assign({},S.settings,merged.settings||{});
+  persistRemoteState();
+  return merged;
+}
+function personalRecordsFromState(){
+  const partnerBiz=new Set(S.businesses.concat(S.businessTombstones||[]).filter(b=>b.syncCode).map(b=>b.id));
+  return S.entries.concat(S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId));
+}
+function queuePersonalState(uid){
+  if(!uid){const cu=cloudUser();if(!cu)return null;uid=cu.uid;}
+  const meta=cloudMetaFromState(),records=personalRecordsFromState();
+  const updatedAt=Math.max(Number(meta.updatedAt)||0,...records.map(x=>Number(x.updatedAt)||0));
+  // The durable operation is deliberately a small marker. The canonical payload already lives
+  // in STORE_KEY, so duplicating every record in localStorage would waste quota on larger books.
+  enqueueSyncOperation({kind:'personal-state',uid,updatedAt,deviceId:DEVICE_ID});
+  return uid;
+}
+async function writeRecordIfNewer(ref,record){
+  return FB.db.runTransaction(async tx=>{
+    const snap=await tx.get(ref),remote=snap.exists?snap.data():null;
+    if(!remote||TaxMateSync.compare(remote,record)<0) tx.set(ref,record);
+  });
+}
+async function sendSyncOperation(operation){
+  if(operation.kind==='partnership-entry'){
+    const ref=FB.db.collection('partnerships').doc(operation.code).collection('entries').doc(operation.record.id);
+    await writeRecordIfNewer(ref,operation.record);return;
+  }
+  if(operation.kind==='partnership-business'){
+    const ref=FB.db.collection('partnerships').doc(operation.code);
+    await FB.db.runTransaction(async tx=>{
+      const snap=await tx.get(ref);if(!snap.exists)throw new Error('partnership-not-found');
+      const current=snap.data()||{},remoteVersion={updatedAt:current.businessUpdatedAt,deviceId:current.businessDeviceId};
+      if(TaxMateSync.compare(remoteVersion,operation.record)<0){
+        tx.set(ref,{name:operation.record.name,businessUpdatedAt:operation.record.updatedAt,businessDeviceId:operation.record.deviceId},{merge:true});
+      }
+    });
+    return;
+  }
+  if(operation.kind==='personal-state'){
+    const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState();
+    const metaRef=userRoot(operation.uid).collection('app').doc('meta');let serverMeta=operationMeta;
+    await FB.db.runTransaction(async tx=>{
+      const snap=await tx.get(metaRef),remote=snap.exists?snap.data():{};
+      serverMeta=TaxMateSync.mergeMeta(operationMeta,remote);tx.set(metaRef,serverMeta);
+    });
+    for(let i=0;i<operationRecords.length;i+=12){
+      await Promise.all(operationRecords.slice(i,i+12).map(record=>writeRecordIfNewer(userRoot(operation.uid).collection('entries').doc(record.id),record)));
+    }
+    applyCloudMeta(serverMeta);return;
+  }
+  throw new Error('unsupported-sync-operation');
+}
+async function flushSyncOutbox(reason){
+  if(CLOUD.flushPromise)return CLOUD.flushPromise;
+  CLOUD.flushPromise=(async()=>{
+    if(typeof navigator!=='undefined'&&navigator.onLine===false){renderSyncStatus();return;}
+    const db=await ensureFB();const user=cloudUser();
+    if(!db||!user){renderSyncStatus();return;}
+    SYNC_OUTBOX=loadSyncOutbox();
+    const pending=TaxMateSync.due(SYNC_OUTBOX,Date.now()).filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
+    for(const operation of pending){
+      SYNC_OUTBOX=TaxMateSync.markAttempt(loadSyncOutbox(),operation.key,Date.now());persistSyncOutbox();renderSyncStatus();
+      try{
+        await user.getIdToken();await sendSyncOperation(operation);
+        SYNC_OUTBOX=TaxMateSync.acknowledge(loadSyncOutbox(),operation.key,Date.now(),operation);CLOUD.listenerError=null;
+      }catch(error){
+        console.warn('sync operation failed',operation.kind,TaxMateSync.classifyError(error));
+        SYNC_OUTBOX=TaxMateSync.markFailure(loadSyncOutbox(),operation.key,error,Date.now(),operation);
+        const code=TaxMateSync.classifyError(error);if(code==='unauthenticated'||code==='permission-denied')break;
+      }
+      persistSyncOutbox();renderSyncStatus();
+    }
+    const remaining=TaxMateSync.normalizeOutbox(SYNC_OUTBOX).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
+    if(remaining.length){const next=Math.min(...remaining.map(x=>Number(x.nextAttemptAt)||Date.now()+5000));scheduleOutboxFlush(Math.max(500,next-Date.now()),'retry');}
+  })().finally(()=>{CLOUD.flushPromise=null;renderSyncStatus();});
+  return CLOUD.flushPromise;
+}
+function handleSyncListenerError(error){
+  CLOUD.listenerError=TaxMateSync.classifyError(error);console.warn('sync listener failed',CLOUD.listenerError);renderSyncStatus();scheduleOutboxFlush(5000,'listener-retry');
+}
+
 async function startUserSync(u){
   if(CLOUD.metaUnsub) return;
   const uid = u.uid;
   await loadEntitlementFromCloud(uid);
   try{
-    /* 1 ── 初次合併:雲端有嘅補入本地(以 id 去重) */
+    /* 1 ── Initial merge is versioned per item; stale whole snapshots never replace newer local records. */
     const metaDoc = await userRoot(uid).collection('app').doc('meta').get();
     const entSnap = await userRoot(uid).collection('entries').get();
-    if(metaDoc.exists){
-      const m = metaDoc.data();
-      (m.businesses||[]).forEach(rb=>{ if(!bizById(rb.id)) S.businesses.push(rb); });
-      (m.folders||[]).forEach(rf=>{ if(!folderById(rf.id)) S.folders.push(rf); });
-      // per-business custom + active categories (merge by business id)
-      if(m.customCats && typeof m.customCats==='object'){
-        Object.keys(m.customCats).forEach(bid=>{
-          if(!S.customCats[bid]) S.customCats[bid] = m.customCats[bid];
-        });
-      }
-      if(m.activeCats && typeof m.activeCats==='object'){
-        Object.keys(m.activeCats).forEach(bid=>{
-          if(!S.activeCats[bid]) S.activeCats[bid] = m.activeCats[bid];
-        });
-      }
-      Object.keys(m.yearData||{}).forEach(y=>{ S.yearData[y] = Object.assign({}, S.yearData[y]||{}, m.yearData[y]); });
-    }
+    if(metaDoc.exists) applyCloudMeta(metaDoc.data());
     const remote=[]; entSnap.forEach(d=>{ const re=d.data(); if(re) remote.push(re); });
     const mergedEntries=TaxMateSync.mergeRecords(S.entries.concat(S.tombstones||[]),remote);
     S.entries=TaxMateSync.visible(mergedEntries);
     S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
-    try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+    persistRemoteState();
 
-    /* 2 ── 推合併結果上雲 */
+    /* 2 ── Queue the merged result durably before the first server push. */
     await pushUserState(uid, true);
 
-    /* 3 ── 實時訂閱(其他裝置改嘢即時反映) */
+    /* 3 ── Live listeners always merge by record version; there is no timed ignore window. */
     CLOUD.metaUnsub = userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
       const m = doc.data(); if(!m || CLOUD.applying) return;
-      if(Date.now() - CLOUD.localEditAt < 15000) return;  // 本機啱啱改過 → 唔好俾雲端覆蓋
       CLOUD.applying = true;
-      if(Array.isArray(m.businesses)) S.businesses = m.businesses;
-      if(Array.isArray(m.folders)) S.folders = m.folders;
-      if(m.customCats && typeof m.customCats==='object' && !Array.isArray(m.customCats.income)) S.customCats = m.customCats;
-      if(m.activeCats && typeof m.activeCats==='object' && !Array.isArray(m.activeCats.income)) S.activeCats = m.activeCats;
-      if(m.yearData) S.yearData = m.yearData;
-      try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      applyCloudMeta(m);
       CLOUD.applying = false;
       render();
       S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
-    }, ()=>{});
+    }, handleSyncListenerError);
     CLOUD.entUnsub = userRoot(uid).collection('entries').onSnapshot(snap=>{
       if(CLOUD.applying) return;
-      // 本機 15 秒內啱啱改過嘢 → 唔好俾雲端快照覆蓋
-      if(Date.now() - CLOUD.localEditAt < 15000) return;
       CLOUD.applying = true;
       const remote = []; snap.forEach(d=>remote.push(d.data()));
       const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
@@ -5403,54 +5546,31 @@ async function startUserSync(u){
       const merged=TaxMateSync.mergeRecords(personal,remote);
       S.entries=TaxMateSync.visible(merged).filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
       S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
-      try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+      persistRemoteState();
       CLOUD.applying = false;
       render();
-    }, ()=>{});
+    }, handleSyncListenerError);
 
     S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
-    render();
+    scheduleOutboxFlush(0,'auth-ready');render();
   }catch(e){ console.warn('user sync failed', e); }
 }
 function stopUserSync(){
   if(CLOUD.metaUnsub){ try{CLOUD.metaUnsub();}catch(e){} CLOUD.metaUnsub=null; }
   if(CLOUD.entUnsub){ try{CLOUD.entUnsub();}catch(e){} CLOUD.entUnsub=null; }
   CLOUD.lastPushed='';
+  renderSyncStatus();
 }
 async function pushUserState(uid, force){
-  if(!FB.ready) return;
-  if(!uid){ const cu = cloudUser(); if(!cu) return; uid = cu.uid; }
-  const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
-  const meta = { businesses:S.businesses, folders:S.folders, customCats:S.customCats, activeCats:S.activeCats,
-                 yearData:S.yearData, settings:{lang:S.settings.lang,theme:S.settings.theme}, updatedAt:Date.now() };
-  const mine = S.entries.concat(S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId));
-  const payload = JSON.stringify([meta.businesses,meta.folders,meta.customCats,meta.activeCats,meta.yearData,meta.settings]) + '|' + JSON.stringify(mine);
-  if(!force && payload === CLOUD.lastPushed) return;
-  try{
-    await userRoot(uid).collection('app').doc('meta').set(meta);
-    const batch = FB.db.batch();
-    mine.forEach(e=>batch.set(userRoot(uid).collection('entries').doc(e.id), e));
-    await batch.commit();
-    CLOUD.lastPushed = payload;   // 只喺成功後先記低，失敗會重試
-  }catch(e){
-    console.warn('cloud push failed', e);
-    const code = (e && e.code) || '';
-    // 權限錯誤（多數係舊 partnership / syncCode 殘留）→ 靜靜哋停，唔好叫用戶登出
-    if(code==='permission-denied' || code==='unauthenticated' || /unauth/i.test(code)){
-      CLOUD.lastPushed='__AUTH_ERR__';
-      return;
-    }
-    // 其他（網絡等暫時性）錯誤 → 清空並 3 秒後重試一次
-    CLOUD.lastPushed = '';
-    clearTimeout(CLOUD.pushTimer);
-    CLOUD.pushTimer = setTimeout(()=>pushUserState(uid, true), 5000);
-  }
+  uid=queuePersonalState(uid);if(!uid)return;
+  if(force) return flushSyncOutbox('personal-state');
 }
 function scheduleCloudPush(){
   if(!cloudUser() || CLOUD.applying) return;
-  CLOUD.localEditAt = Date.now();   // 記錄本機啱啱改咗嘢
+  CLOUD.localEditAt = Date.now();
+  queuePersonalState();
   clearTimeout(CLOUD.pushTimer);
-  CLOUD.pushTimer = setTimeout(()=>pushUserState(), 1200);
+  CLOUD.pushTimer = setTimeout(()=>flushSyncOutbox('local-edit'), 1200);
 }
 
 /* ═══════════ Cloud tax rates (免重新上架嘅年度更新) ═══════════ */
@@ -6265,7 +6385,7 @@ function confirmDeleteReceipt(){
     if(LB.path) await deleteReceiptFromStorage(LB.path);
     // 更新 entry
     const e = S.entries.find(x=>x.receiptPath===LB.path||x.receiptUrl===LB.url);
-    if(e){ e.receiptUrl=null; e.receiptPath=null; pushEntryRemote(e); }
+    if(e){e.receiptUrl=null;e.receiptPath=null;Object.assign(e,TaxMateSync.touch(e,DEVICE_ID,Date.now()));pushEntryRemote(e);}
     if(EN.receiptPath===LB.path){ EN.receiptUrl=null; EN.receiptPath=null; paintEntry(); }
     save(); render();
   });
@@ -6850,7 +6970,7 @@ function obFinish(){
   if(!existingBiz){
     const isPart = OB.structure==='partnership';
     const shareVal = isPart ? Math.max(1,Math.min(100, OB.share||50)) : 100;
-    const newBiz = {id:newId, name:(OB.bizName||'My work').trim(), structure:isPart?'partnership':'sole', share:shareVal};
+    const newBiz = TaxMateSync.touch({id:newId,name:(OB.bizName||'My work').trim(),structure:isPart?'partnership':'sole',share:shareVal,recordType:'business'},DEVICE_ID,Date.now());
     if(isPart && OB.partnerCode && OB.loggedIn) newBiz.syncCode = OB.partnerCode;
     S.businesses.push(newBiz);
     OB._newBiz = newBiz; // 記低畀後面 sync 用
@@ -6916,7 +7036,9 @@ function obFinish(){
   if((OB.loggedIn||cloudUser()) && typeof scheduleCloudPush==='function'){ try{ scheduleCloudPush(); }catch(e){} }
   // 7) if a NEW partnership with a code was just created, start syncing
   const nb = OB._newBiz;
-  if(nb && nb.syncCode && typeof subscribeSync==='function'){ try{ subscribeSync(nb.syncCode, newId); }catch(e){} }
+  if(nb&&nb.syncCode&&typeof subscribeSync==='function'){
+    try{S.entries.filter(e=>e.bizId===newId).forEach(pushEntryRemote);pushBizRemote(nb);subscribeSync(nb.syncCode,newId);}catch(e){console.warn('onboarding partnership sync queued',e);}
+  }
 
   const wasCatchup = catchup;
   obClose();
@@ -6941,7 +7063,7 @@ setupBackButton();
   if(!S.businesses.length && !done && !signedInOrRestoring){ startOnboarding(); }
 })();
 if(fbConfigured()){
-  ensureFB().then(db=>{ if(db) loadCloudRates(); });
+  ensureFB().then(db=>{if(db){loadCloudRates();scheduleOutboxFlush(0,'app-open');}});
 }
 // 重啟時自動重新訂閱所有已同步嘅合夥生意
 S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
@@ -6955,6 +7077,12 @@ window.addEventListener('beforeinstallprompt', e=>{
 window.addEventListener('appinstalled', ()=>{
   markPwaInstalled();
 });
+window.addEventListener('online',()=>{renderSyncStatus();scheduleOutboxFlush(0,'online');});
+window.addEventListener('offline',renderSyncStatus);
+window.addEventListener('storage',event=>{if(event.key===SYNC_OUTBOX_KEY){SYNC_OUTBOX=loadSyncOutbox();renderSyncStatus();scheduleOutboxFlush(0,'other-tab');}});
+window.addEventListener('pageshow',()=>scheduleOutboxFlush(0,'pageshow'));
+window.addEventListener('focus',()=>scheduleOutboxFlush(0,'focus'));
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleOutboxFlush(0,'foreground');});
 async function doInstall(){
   trackEvent('pwa_install_clicked');
   if(isIOS()){

@@ -30,6 +30,8 @@
     source.entries=Array.isArray(source.entries)?source.entries:[];
     source.folders=Array.isArray(source.folders)?source.folders:[];
     source.tombstones=Array.isArray(source.tombstones)?source.tombstones:[];
+    source.businessTombstones=Array.isArray(source.businessTombstones)?source.businessTombstones:[];
+    source.folderTombstones=Array.isArray(source.folderTombstones)?source.folderTombstones:[];
     if(source.entries.length>MAX_RECORDS) throw new Error('Too many entries');
     const stamp=Number(now)||Date.now(), dev=deviceId||'legacy-migration';
     const meta=(r,type)=>Object.assign({},r,{id:r.id,createdAt:Number(r.createdAt)||stamp,updatedAt:Number(r.updatedAt)||Number(r.createdAt)||stamp,deletedAt:r.deletedAt==null?null:Number(r.deletedAt),deviceId:r.deviceId||dev,schemaVersion:STATE_SCHEMA_VERSION,recordType:type});
@@ -37,10 +39,14 @@
     source.entries=source.entries.map(e=>meta(Object.assign({},e,{businessId:e.businessId||e.bizId,bizId:e.bizId||e.businessId,taxYear:e.taxYear||null,source:e.source||'user'}),'entry'));
     source.folders=source.folders.map(f=>meta(f,'folder'));
     source.tombstones=source.tombstones.map(t=>meta(t,t.recordType||'entry'));
+    source.businessTombstones=source.businessTombstones.map(t=>meta(t,'business'));
+    source.folderTombstones=source.folderTombstones.map(t=>meta(t,'folder'));
     source.yearData=plain(source.yearData)?source.yearData:{};
     source.customCats=plain(source.customCats)?source.customCats:{};
     source.activeCats=plain(source.activeCats)?source.activeCats:{};
     source.catRenames=plain(source.catRenames)?source.catRenames:{};
+    source.metaVersions=plain(source.metaVersions)?source.metaVersions:{};
+    source.metaUpdatedAt=Number(source.metaUpdatedAt)||0;
     source.settings=plain(source.settings)?source.settings:{};
     source.v=STATE_SCHEMA_VERSION;
     return source;
