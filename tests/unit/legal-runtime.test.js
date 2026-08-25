@@ -4,7 +4,7 @@ const fs=require('node:fs');
 const path=require('node:path');
 const Legal=require('../../src/core/product-content');
 
-const read=file=>fs.readFileSync(path.join(__dirname,'../..',file),'utf8');
+const read=file=>fs.readFileSync(path.join(__dirname,'../..',file),'utf8').replace(/\r\n/g,'\n');
 const app=read('src/app/app.js');
 const index=read('index.html');
 const privacy=read('privacy.html');
