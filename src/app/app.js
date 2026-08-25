@@ -5277,11 +5277,14 @@ function subscribeSync(code, bizId){
       const remote = [];
       snap.forEach(x=>remote.push(x.data()));
       const current=S.entries.filter(e=>e.bizId===bizId).concat((S.tombstones||[]).filter(e=>e.bizId===bizId));
-      const merged=TaxMateSync.mergeRecords(current,remote);
+      const reconciliation=TaxMateSync.reconcileRecords(current,remote),merged=reconciliation.merged;
       S.entries=S.entries.filter(e=>e.bizId!==bizId).concat(TaxMateSync.visible(merged));
       S.tombstones=(S.tombstones||[]).filter(e=>e.bizId!==bizId).concat(merged.filter(e=>e.deletedAt!=null));
       persistRemoteState();render();
-      subscription.entryCount=remote.length;subscription.entriesReady=true;finish();
+      const owner=cloudUser();
+      reconciliation.uploads.forEach(record=>enqueueSyncOperation({kind:'partnership-entry',ownerUid:owner&&owner.uid||null,code,bizId,record,updatedAt:record.updatedAt,deviceId:record.deviceId}));
+      subscription.entryCount=remote.length;subscription.reconciliationCount=reconciliation.uploads.length;subscription.entriesReady=true;finish();
+      if(reconciliation.uploads.length&&CLOUD.hydrationState!=='loading')scheduleOutboxFlush(0,'partnership-reconciliation');
     }, fail));
   }).catch(fail);
   return subscription.ready;
@@ -5332,7 +5335,7 @@ function invitePartner(bizId){
 }
 function pushEntryRemote(rec){
   const b = bizById(rec.bizId);
-  if(!b || !b.syncCode || !hasFeature('partnerSync')) return;
+  if(!b || !b.syncCode) return;
   const ready=TaxMateSync.touch(Object.assign({},rec,{businessId:rec.businessId||rec.bizId,recordType:'entry'}),rec.deviceId||DEVICE_ID,rec.updatedAt||Date.now());
   if(rec.deletedAt!=null){ ready.deletedAt=rec.deletedAt; ready.updatedAt=rec.updatedAt; }
   const owner=cloudUser();
@@ -5346,7 +5349,7 @@ function deleteEntryRemote(bizId, id){
   pushEntryRemote(TaxMateSync.tombstone(old,DEVICE_ID,Date.now()));
 }
 function pushBizRemote(b){
-  if(!b || !b.syncCode || !hasFeature('partnerSync')) return;
+  if(!b || !b.syncCode) return;
   const ready=TaxMateSync.touch(Object.assign({},b,{recordType:'business'}),b.deviceId||DEVICE_ID,b.updatedAt||Date.now());
   const owner=cloudUser();
   enqueueSyncOperation({kind:'partnership-business',ownerUid:owner&&owner.uid||null,code:b.syncCode,bizId:b.id,record:ready,updatedAt:ready.updatedAt,deviceId:ready.deviceId});
@@ -5470,7 +5473,7 @@ function queuePersonalState(uid){
 async function writeRecordIfNewer(ref,record){
   return FB.db.runTransaction(async tx=>{
     const snap=await tx.get(ref),remote=snap.exists?snap.data():null;
-    if(!remote||TaxMateSync.compare(remote,record)<0) tx.set(ref,record);
+    if(TaxMateSync.shouldWriteRecord(remote,record)) tx.set(ref,record);
   });
 }
 async function sendSyncOperation(operation){
@@ -5533,6 +5536,16 @@ function handleSyncListenerError(error){
 }
 
 function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
+function syncOperationsForUser(uid){return TaxMateSync.normalizeOutbox(loadSyncOutbox()).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));}
+async function flushSyncForConvergence(uid){
+  for(let pass=0;pass<4;pass++){
+    await flushSyncOutbox('account-convergence');
+    const remaining=syncOperationsForUser(uid);
+    if(!remaining.length)return;
+    if(!remaining.some(operation=>!operation.nextAttemptAt||Number(operation.nextAttemptAt)<=Date.now()))break;
+  }
+  throw new Error('sync-convergence-pending');
+}
 function clearUserSyncListeners(){
   if(CLOUD.metaUnsub){try{CLOUD.metaUnsub();}catch(e){}CLOUD.metaUnsub=null;}
   if(CLOUD.entUnsub){try{CLOUD.entUnsub();}catch(e){}CLOUD.entUnsub=null;}
@@ -5592,6 +5605,7 @@ function startUserSync(u){
       /* 3 ── Only the fully merged state may enter the durable outbound queue. */
       await pushUserState(uid,true);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
+      if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending');
       const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length};
       CLOUD.hydrationState='converged';CLOUD.hydrationResult=result;CLOUD.hydrationPromise=null;CLOUD.listenerError=null;
       scheduleOutboxFlush(0,'auth-ready');renderSyncStatus();render();return result;
@@ -5616,7 +5630,7 @@ function stopUserSync(){
 }
 async function pushUserState(uid, force){
   uid=queuePersonalState(uid);if(!uid)return;
-  if(force) return flushSyncOutbox('personal-state');
+  if(force) return flushSyncForConvergence(uid);
 }
 function scheduleCloudPush(){
   if(!cloudUser() || CLOUD.applying) return;

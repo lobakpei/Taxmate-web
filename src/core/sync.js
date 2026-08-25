@@ -11,10 +11,43 @@
     if(ad!==bd) return ad<bd?-1:1;
     return JSON.stringify(a).localeCompare(JSON.stringify(b));
   }
+  function isTombstone(record){ return !!record&&record.deletedAt!=null; }
+  function preferredRecord(a,b){
+    if(!a)return b;
+    if(!b)return a;
+    const ad=isTombstone(a),bd=isTombstone(b);
+    if(ad!==bd)return ad?a:b;
+    return compare(a,b)<0?b:a;
+  }
   function mergeRecords(local,remote){
     const map=new Map();
-    [...(local||[]),...(remote||[])].forEach(r=>{ if(!r||!r.id)return; const old=map.get(r.id); if(!old||compare(old,r)<0) map.set(r.id,clone(r)); });
+    [...(local||[]),...(remote||[])].forEach(r=>{ if(!r||!r.id)return; const old=map.get(r.id),winner=preferredRecord(old,r); if(!old||winner===r) map.set(r.id,clone(r)); });
     return Array.from(map.values()).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
+  }
+  const RECORD_METADATA_KEYS=new Set(['businessId','createdAt','deviceId','recordType','schemaVersion','source','taxYear','updatedAt']);
+  function canonicalRecordPayload(record){
+    if(!plain(record))return record;
+    const out={};
+    Object.keys(record).sort().forEach(key=>{
+      if(RECORD_METADATA_KEYS.has(key))return;
+      const value=record[key];
+      if(value==null)return;
+      out[key]=Array.isArray(value)?value.map(item=>plain(item)?canonicalRecordPayload(item):item):plain(value)?canonicalRecordPayload(value):value;
+    });
+    return out;
+  }
+  function sameRecordPayload(a,b){ return JSON.stringify(canonicalRecordPayload(a))===JSON.stringify(canonicalRecordPayload(b)); }
+  function shouldWriteRecord(remote,local){
+    if(!local||!local.id)return false;
+    if(!remote)return true;
+    if(sameRecordPayload(remote,local))return false;
+    return preferredRecord(remote,local)===local;
+  }
+  function reconcileRecords(local,remote){
+    const localRecords=mergeRecords(local||[],[]),remoteRecords=mergeRecords(remote||[],[]);
+    const remoteById=new Map(remoteRecords.map(record=>[record.id,record]));
+    const uploads=localRecords.filter(record=>shouldWriteRecord(remoteById.get(record.id),record)).map(clone);
+    return {merged:mergeRecords(localRecords,remoteRecords),uploads,localCount:localRecords.length,remoteCount:remoteRecords.length};
   }
   function visible(records){ return (records||[]).filter(r=>r.deletedAt==null); }
   function touch(record,deviceId,now){ const t=Number(now)||Date.now(); return Object.assign({},record,{createdAt:Number(record.createdAt)||t,updatedAt:t,deletedAt:null,deviceId,schemaVersion:5}); }
@@ -118,10 +151,16 @@
     if(op&&op.record) return op.record;
     return {updatedAt:Number(op&&op.updatedAt)||0,deviceId:String(op&&op.deviceId||'')};
   }
+  function operationSupersedes(a,b){
+    if(a&&a.record&&b&&b.record){
+      if(isTombstone(a.record)!==isTombstone(b.record))return isTombstone(a.record);
+    }
+    return compare(operationVersion(a),operationVersion(b))>0;
+  }
   function enqueue(outbox,operation,now){
     const next=normalizeOutbox(outbox),op=clone(operation||{}),key=operationKey(op),at=Number(now)||Date.now();
     const index=next.items.findIndex(x=>x.key===key);
-    if(index>=0&&compare(operationVersion(next.items[index]),operationVersion(op))>0) return next;
+    if(index>=0&&operationSupersedes(next.items[index],op)) return next;
     const previous=index>=0?next.items[index]:null;
     const item=Object.assign({},op,{key,createdAt:Number(previous&&previous.createdAt)||at,queuedAt:at,attempts:0,lastAttemptAt:0,nextAttemptAt:0,lastError:null,status:'waiting'});
     if(index>=0) next.items[index]=item; else next.items.push(item);
@@ -142,13 +181,13 @@
   }
   function markFailure(outbox,key,error,now,attempted){
     const next=normalizeOutbox(outbox),item=next.items.find(x=>x.key===key); if(!item)return next;
-    if(attempted&&compare(operationVersion(item),operationVersion(attempted))>0)return next;
+    if(attempted&&operationSupersedes(item,attempted))return next;
     const at=Number(now)||Date.now(),attempts=Math.max(1,Number(item.attempts)||1);
     item.lastError=classifyError(error); item.status='failed'; item.nextAttemptAt=at+Math.min(60000,1000*Math.pow(2,Math.min(attempts,6))); return next;
   }
   function acknowledge(outbox,key,now,attempted){
     const next=normalizeOutbox(outbox);
-    next.items=next.items.filter(x=>x.key!==key||(attempted&&compare(operationVersion(x),operationVersion(attempted))>0));
+    next.items=next.items.filter(x=>x.key!==key||(attempted&&operationSupersedes(x,attempted)));
     next.lastSuccessAt=Number(now)||Date.now(); return next;
   }
   function due(outbox,now){ const at=Number(now)||Date.now(); return normalizeOutbox(outbox).items.filter(x=>!x.nextAttemptAt||Number(x.nextAttemptAt)<=at); }
@@ -164,5 +203,5 @@
     if(pending) return {state:'waiting',pending,message:'Waiting to sync — '+pending+' change'+(pending===1?'':'s')};
     return {state:'synced',pending:0,message:'Synced'};
   }
-  return {compare,mergeRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
+  return {compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
 });

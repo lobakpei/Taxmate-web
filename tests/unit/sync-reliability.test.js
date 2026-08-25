@@ -53,6 +53,55 @@ test('fresh-client flow waits for cloud convergence before closing onboarding or
   assert.match(app,/clearUserSyncListeners\(\);CLOUD\.hydrationState='failed'[\s\S]*setTimeout\(\(\)=>\{const current=cloudUser\(\)/);
   assert.ok(app.indexOf('const metaDoc=await')<app.indexOf('await pushUserState(uid,true)'));
   assert.ok(app.indexOf('Promise.all(partnershipSubscriptions)')<app.indexOf('await pushUserState(uid,true)'));
+  assert.match(app,/TaxMateSync\.reconcileRecords\(current,remote\)/);
+  assert.match(app,/reconciliation\.uploads\.forEach\(record=>enqueueSyncOperation/);
+  assert.match(app,/async function flushSyncForConvergence\(uid\)/);
+  assert.match(app,/if\(force\) return flushSyncForConvergence\(uid\)/);
+  assert.ok(app.indexOf('await pushUserState(uid,true)')<app.indexOf("if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending')"));
+  assert.ok(app.indexOf("if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending')")<app.indexOf("CLOUD.hydrationState='converged'"));
+});
+
+test('initial partnership reconciliation queues local-only records and is idempotent after ACK',()=>{
+  const local=entry('local-only',500,'phone',{desc:'Local history'});
+  const first=Sync.reconcileRecords([local],[]);
+  assert.deepEqual(first.uploads.map(record=>record.id),['local-only']);
+  assert.deepEqual(first.merged.map(record=>record.id),['local-only']);
+  let box=Sync.emptyOutbox();
+  box=Sync.enqueue(box,{kind:'partnership-entry',ownerUid:'owner-a',code:'PARTNER1',record:first.uploads[0]},600);
+  box=Sync.enqueue(box,{kind:'partnership-entry',ownerUid:'owner-a',code:'PARTNER1',record:first.uploads[0]},700);
+  assert.equal(box.items.length,1);
+  box=Sync.acknowledge(box,box.items[0].key,800,box.items[0]);
+  assert.equal(box.items.length,0);
+  const reopened=Sync.reconcileRecords([local],[local]);
+  assert.equal(reopened.uploads.length,0);
+  assert.equal(reopened.merged.length,1);
+});
+
+test('reconciliation does not overwrite newer remote records or metadata-only legacy matches',()=>{
+  const local=entry('shared',500,'phone',{amount:42,desc:'Same ledger fact',taxYear:'2026-27',source:'local'});
+  const newerRemote=entry('shared',700,'laptop',{amount:84,desc:'Newer remote edit'});
+  const conflict=Sync.reconcileRecords([local],[newerRemote]);
+  assert.equal(conflict.uploads.length,0);
+  assert.equal(conflict.merged[0].amount,84);
+  const legacyRemote={id:'shared',bizId:'biz-p',kind:'expense',date:'2026-08-24',amount:42,desc:'Same ledger fact'};
+  const legacy=Sync.reconcileRecords([local],[legacyRemote]);
+  assert.equal(Sync.sameRecordPayload(local,legacyRemote),true);
+  assert.equal(legacy.uploads.length,0);
+});
+
+test('tombstones are authoritative throughout merge, reconciliation and durable outbox replacement',()=>{
+  const live=entry('deleted',900,'newer-live');
+  const deleted=Sync.tombstone(entry('deleted',500,'old-live'),'delete-device',600);
+  const remoteDelete=Sync.reconcileRecords([live],[deleted]);
+  assert.equal(remoteDelete.uploads.length,0);
+  assert.equal(Sync.visible(remoteDelete.merged).length,0);
+  const localDelete=Sync.reconcileRecords([deleted],[live]);
+  assert.equal(localDelete.uploads.length,1);
+  assert.equal(localDelete.uploads[0].deletedAt,600);
+  let box=Sync.enqueue(Sync.emptyOutbox(),{kind:'partnership-entry',code:'PARTNER1',record:deleted},600);
+  box=Sync.enqueue(box,{kind:'partnership-entry',code:'PARTNER1',record:live},900);
+  assert.equal(box.items.length,1);
+  assert.equal(box.items[0].record.deletedAt,600);
 });
 
 test('a later partnership entry supersedes stale pending data and a tombstone cannot be resurrected',()=>{
@@ -112,6 +161,8 @@ test('Android PWA lifecycle and auth-ready hooks retry the durable outbox withou
   assert.ok(app.includes("const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1'"));
   assert.ok(app.includes("SYNC_OUTBOX=TaxMateSync.acknowledge"));
   assert.ok(app.includes('data-cloud-sync-status'));
+  assert.doesNotMatch(app,/function pushEntryRemote\(rec\)\{[\s\S]{0,180}hasFeature\('partnerSync'\)/);
+  assert.doesNotMatch(app,/function pushBizRemote\(b\)\{[\s\S]{0,160}hasFeature\('partnerSync'\)/);
   assert.doesNotMatch(app,/cloudUser\(\)[\s\S]{0,100}ac\.cloudOn/);
   assert.doesNotMatch(app,/collection\('entries'\)[\s\S]{0,180}\.set\([^;]+\)\.catch\(\(\)=>\{\}\)/);
 });
