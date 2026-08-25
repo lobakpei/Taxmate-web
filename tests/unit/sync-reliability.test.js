@@ -28,9 +28,31 @@ test('offline, waiting, failed and synced states are truthful',()=>{
   assert.equal(Sync.status({outbox:box,online:true,authReady:false}).state,'waiting');
   box=Sync.markAttempt(box,box.items[0].key,210);
   box=Sync.markFailure(box,box.items[0].key,{code:'unauthenticated'},220);
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true}).state,'failed');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged'}).state,'failed');
   box=Sync.acknowledge(box,box.items[0].key,300);
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true}).state,'synced');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'loading'}).message,'Restoring cloud data…');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'failed'}).state,'failed');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged'}).state,'synced');
+});
+
+test('returning account detection uses durable cloud facts rather than sign-in alone',()=>{
+  assert.equal(Sync.cloudAccountState({metaExists:false,meta:{},personalRecords:[],partnershipRecords:0}).established,false);
+  assert.equal(Sync.cloudAccountState({metaExists:true,meta:{businesses:[]},personalRecords:[],partnershipRecords:0}).established,false);
+  assert.equal(Sync.cloudAccountState({metaExists:true,meta:{businesses:[business('existing','Existing',100)]},personalRecords:[],partnershipRecords:0}).established,true);
+  assert.equal(Sync.cloudAccountState({metaExists:true,meta:{businesses:[],businessTombstones:[Sync.tombstone(business('old','Old',100),'phone',200)]},personalRecords:[],partnershipRecords:0}).established,true);
+  assert.equal(Sync.cloudAccountState({metaExists:false,meta:{},personalRecords:[entry('personal',100)],partnershipRecords:0}).established,true);
+  assert.equal(Sync.cloudAccountState({metaExists:false,meta:{},personalRecords:[],partnershipRecords:90}).established,true);
+});
+
+test('fresh-client flow waits for cloud convergence before closing onboarding or claiming Synced',()=>{
+  const app=fs.readFileSync(path.join(__dirname,'../../src/app/app.js'),'utf8');
+  assert.doesNotMatch(app,/if\(OB\s*&&\s*!OB\._signingInFlow\)\{\s*try\{\s*obClose/);
+  assert.match(app,/const result=await startUserSync\(u\);\s*applyHydratedAccountResult\(result\)/);
+  assert.match(app,/if\(result\.existingCloudAccount\)\{applyHydratedAccountResult\(result\);return;\}/);
+  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='converged'/);
+  assert.match(app,/clearUserSyncListeners\(\);CLOUD\.hydrationState='failed'[\s\S]*setTimeout\(\(\)=>\{const current=cloudUser\(\)/);
+  assert.ok(app.indexOf('const metaDoc=await')<app.indexOf('await pushUserState(uid,true)'));
+  assert.ok(app.indexOf('Promise.all(partnershipSubscriptions)')<app.indexOf('await pushUserState(uid,true)'));
 });
 
 test('a later partnership entry supersedes stale pending data and a tombstone cannot be resurrected',()=>{

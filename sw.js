@@ -1,5 +1,5 @@
 /* TaxMate UK — service worker (resilient install for PWA installability) */
-const CACHE = 'taxmate-v2-cloud-sync-reliability-1';
+const CACHE = 'taxmate-v2-fresh-device-hydration-1';
 const SHELL = ['/', '/index.html', '/help.html', '/privacy.html', '/terms.html', '/manifest.json', '/favicon.ico', '/favicon-48x48.png', '/icon-192.png', '/icon-512.png', '/icon-512-maskable.png',
   '/src/core/versions.js','/src/core/tax-rules.js','/src/core/tax-engine.js','/src/core/mtd.js','/src/core/form-mappings.js','/src/core/state-schema.js','/src/core/portable-backup.js','/src/core/onboarding-root.js','/src/core/sync.js','/src/core/entitlement.js','/src/core/telemetry.js','/src/core/legal.js',
   '/src/core/pwa-install.js','/firebase-environment.js','/src/app/bootstrap.js','/src/app/sentry-bootstrap.js','/src/app/action-dispatch.js','/src/app/app.js','/src/app/audit.js','/vendor/jszip-3.10.1.min.js'];
