@@ -5243,26 +5243,37 @@ async function enableSync(bizId,requestedCode){
     S.entries.filter(e=>e.bizId===b.id).forEach(pushEntryRemote);
     pushBizRemote(b);save();
     await flushSyncOutbox('enable-partnership');
-    subscribeSync(code, b.id);
+    await subscribeSync(code, b.id);
     paintSync(); render();
   }catch(e){ console.warn(e); showNotice(t('sy.title'),e&&e.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet')); }
 }
 function subscribeSync(code, bizId){
-  if(FB.subs[code]) return;
-  FB.subs[code] = true; // 鎖住避免重複訂閱
+  if(FB.subs[code]) return FB.subs[code].ready||Promise.resolve({code,bizId,reused:true});
+  let resolveReady,rejectReady;
+  const subscription={code,bizId,unsubs:[],businessReady:false,entriesReady:false,settled:false,ready:new Promise((resolve,reject)=>{resolveReady=resolve;rejectReady=reject;})};
+  FB.subs[code]=subscription;
+  const finish=()=>{
+    if(subscription.settled||!subscription.businessReady||!subscription.entriesReady)return;
+    subscription.settled=true;resolveReady({code,bizId,entries:subscription.entryCount||0});
+  };
+  const fail=error=>{
+    handleSyncListenerError(error);
+    if(!subscription.settled){subscription.settled=true;rejectReady(error instanceof Error?error:new Error(String(error||'partnership-sync-failed')));}
+  };
   ensureAuth().then(u=>{
     const db = FB.db;
-    if(!u || !db){ delete FB.subs[code]; return; }
-    const unsubs = [];
-    unsubs.push(db.collection('partnerships').doc(code).onSnapshot(doc=>{
-      const d = doc.data(); if(!d) return;
+    if(!u || !db)throw new Error('partnership-auth-unavailable');
+    subscription.unsubs.push(db.collection('partnerships').doc(code).onSnapshot(doc=>{
+      const d = doc.data();
+      if(!d){fail(new Error('partnership-not-found'));return;}
       const b = bizById(bizId);
       const remoteVersion={updatedAt:d.businessUpdatedAt,deviceId:d.businessDeviceId};
       if(b&&d.name&&TaxMateSync.compare(b,remoteVersion)<0){
         b.name=d.name;b.updatedAt=remoteVersion.updatedAt;b.deviceId=remoteVersion.deviceId;persistRemoteState();render();
       }
-    }, handleSyncListenerError));
-    unsubs.push(db.collection('partnerships').doc(code).collection('entries').onSnapshot(snap=>{
+      subscription.businessReady=true;finish();
+    }, fail));
+    subscription.unsubs.push(db.collection('partnerships').doc(code).collection('entries').onSnapshot(snap=>{
       const remote = [];
       snap.forEach(x=>remote.push(x.data()));
       const current=S.entries.filter(e=>e.bizId===bizId).concat((S.tombstones||[]).filter(e=>e.bizId===bizId));
@@ -5270,9 +5281,10 @@ function subscribeSync(code, bizId){
       S.entries=S.entries.filter(e=>e.bizId!==bizId).concat(TaxMateSync.visible(merged));
       S.tombstones=(S.tombstones||[]).filter(e=>e.bizId!==bizId).concat(merged.filter(e=>e.deletedAt!=null));
       persistRemoteState();render();
-    }, handleSyncListenerError));
-    FB.subs[code] = unsubs;
-  });
+      subscription.entryCount=remote.length;subscription.entriesReady=true;finish();
+    }, fail));
+  }).catch(fail);
+  return subscription.ready;
 }
 function openJoinPartnership(){
   if(lockGuard('partnerSync')||!requireLoginForTier())return;
@@ -5296,7 +5308,7 @@ async function joinPartnership(){
     if(!existing) S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
     else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
     save();
-    subscribeSync(code, joined.bizId);
+    await subscribeSync(code, joined.bizId);
     closeSheet('partner');render();toast(t('sy.synced'));
   }catch(e){console.warn(e);fail(e&&e.code==='NOT_FOUND'?t('sy.badCode'):e&&e.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet'));}
 }
@@ -5305,8 +5317,8 @@ async function leaveSync(bizId){
   const code=b.syncCode;
   try{await callSecureFunction('leavePartnership',{code});}
   catch(e){console.warn(e);showNotice(t('sy.title'),t('sy.needNet'));return;}
-  const subs = FB.subs[code];
-  if(Array.isArray(subs)) subs.forEach(u=>{ try{u();}catch(e){} });
+  const subs = FB.subs[code],unsubs=Array.isArray(subs)?subs:(subs&&Array.isArray(subs.unsubs)?subs.unsubs:[]);
+  unsubs.forEach(u=>{ try{u();}catch(e){} });
   delete FB.subs[code];
   delete b.syncCode;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
   save(); paintSync(); render();
@@ -5345,7 +5357,7 @@ function pushBizRemote(b){
 const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';
 function loadSyncOutbox(){try{return TaxMateSync.normalizeOutbox(JSON.parse(localStorage.getItem(SYNC_OUTBOX_KEY)||'null'));}catch(_){return TaxMateSync.emptyOutbox();}}
 let SYNC_OUTBOX=loadSyncOutbox();
-let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, listenerError:null };
+let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, listenerError:null, hydrationState:'idle', hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
 function persistSyncOutbox(){
   try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
   catch(e){CLOUD.listenerError='outbox-storage';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
@@ -5354,7 +5366,7 @@ function enqueueSyncOperation(operation){SYNC_OUTBOX=TaxMateSync.enqueue(loadSyn
 function syncStatus(){
   const user=cloudUser(),box=TaxMateSync.normalizeOutbox(SYNC_OUTBOX);
   if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
-  return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,error:CLOUD.listenerError});
+  return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,error:CLOUD.listenerError});
 }
 function renderSyncStatus(){
   const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'?'var(--coral)':'var(--muted)';
@@ -5372,15 +5384,24 @@ function cloudUser(){
     return (u && !u.isAnonymous) ? u : null;
   }catch(e){ return null; }
 }
+function onboardingDoneFlag(){try{return localStorage.getItem('tmOnboardDone');}catch(e){return null;}}
+function applyHydratedAccountResult(result){
+  if(!result||result.state!=='converged')return;
+  if(result.existingCloudAccount){
+    if(OB){OB._signingInFlow=false;try{obClose();}catch(e){}}
+    S.tab='home';render();return;
+  }
+  if(!OB&&!S.businesses.length&&!onboardingDoneFlag())startOnboarding();
+}
 function watchAuth(){
   if(watchAuth.done) return; watchAuth.done = true;
-  firebase.auth().onAuthStateChanged(u=>{
+  firebase.auth().onAuthStateChanged(async u=>{
     if(u && !u.isAnonymous){
       try{ localStorage.setItem('tmWasSignedIn','1'); }catch(e){}
-      // 已登入用戶唔應該見到新手流程；若之前 race 彈咗出嚟，即刻關閉。
-      // 但如果用戶係喺新手流程內主動撳「Sign in」（全新用戶），就唔好關，要繼續行落去。
-      if(OB && !OB._signingInFlow){ try{ obClose(); }catch(e){} }
-      startUserSync(u);
+      // Signing in is not enough to classify somebody as new. Keep onboarding pending until
+      // the existing account's meta, personal records and partnership snapshots converge.
+      const result=await startUserSync(u);
+      applyHydratedAccountResult(result);
     } else {
       try{ localStorage.removeItem('tmWasSignedIn'); }catch(e){}
       stopUserSync();
@@ -5400,10 +5421,12 @@ async function signIn(){
     if(cur && cur.isAnonymous){
       try{ await firebase.auth().signOut(); }catch(_){}
     }
-    await firebase.auth().signInWithPopup(provider);
+    const credential=await firebase.auth().signInWithPopup(provider);
+    return credential&&credential.user||firebase.auth().currentUser;
   }catch(e){
     if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')) return;
     console.warn(e);showNotice(t('ac.title'),t('ac.err'));
+    return null;
   }
 }
 function doSignOut(){
@@ -5509,56 +5532,86 @@ function handleSyncListenerError(error){
   CLOUD.listenerError=TaxMateSync.classifyError(error);console.warn('sync listener failed',CLOUD.listenerError);renderSyncStatus();scheduleOutboxFlush(5000,'listener-retry');
 }
 
-async function startUserSync(u){
-  if(CLOUD.metaUnsub) return;
-  const uid = u.uid;
-  await loadEntitlementFromCloud(uid);
-  try{
-    /* 1 ── Initial merge is versioned per item; stale whole snapshots never replace newer local records. */
-    const metaDoc = await userRoot(uid).collection('app').doc('meta').get();
-    const entSnap = await userRoot(uid).collection('entries').get();
-    if(metaDoc.exists) applyCloudMeta(metaDoc.data());
-    const remote=[]; entSnap.forEach(d=>{ const re=d.data(); if(re) remote.push(re); });
-    const mergedEntries=TaxMateSync.mergeRecords(S.entries.concat(S.tombstones||[]),remote);
-    S.entries=TaxMateSync.visible(mergedEntries);
-    S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
-    persistRemoteState();
+function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
+function clearUserSyncListeners(){
+  if(CLOUD.metaUnsub){try{CLOUD.metaUnsub();}catch(e){}CLOUD.metaUnsub=null;}
+  if(CLOUD.entUnsub){try{CLOUD.entUnsub();}catch(e){}CLOUD.entUnsub=null;}
+  Object.keys(FB.subs).forEach(code=>{const sub=FB.subs[code],unsubs=Array.isArray(sub)?sub:(sub&&Array.isArray(sub.unsubs)?sub.unsubs:[]);unsubs.forEach(unsub=>{try{unsub();}catch(e){}});});
+  FB.subs={};
+}
+function startUserSync(u){
+  if(!u||u.isAnonymous)return Promise.resolve({state:'idle',existingCloudAccount:false});
+  const uid=u.uid;
+  if(CLOUD.hydrationUid===uid&&CLOUD.hydrationState==='converged'&&CLOUD.hydrationResult)return Promise.resolve(CLOUD.hydrationResult);
+  if(CLOUD.hydrationUid===uid&&CLOUD.hydrationPromise)return CLOUD.hydrationPromise;
+  if(CLOUD.hydrationUid&&CLOUD.hydrationUid!==uid)stopUserSync();
+  const generation=++CLOUD.generation;
+  CLOUD.hydrationUid=uid;CLOUD.hydrationState='loading';CLOUD.hydrationResult=null;CLOUD.listenerError=null;
+  clearTimeout(CLOUD.hydrationRetryTimer);renderSyncStatus();
+  const hydration=(async()=>{
+    try{
+      await loadEntitlementFromCloud(uid);
+      if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
 
-    /* 2 ── Queue the merged result durably before the first server push. */
-    await pushUserState(uid, true);
-
-    /* 3 ── Live listeners always merge by record version; there is no timed ignore window. */
-    CLOUD.metaUnsub = userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
-      const m = doc.data(); if(!m || CLOUD.applying) return;
-      CLOUD.applying = true;
-      applyCloudMeta(m);
-      CLOUD.applying = false;
-      render();
-      S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
-    }, handleSyncListenerError);
-    CLOUD.entUnsub = userRoot(uid).collection('entries').onSnapshot(snap=>{
-      if(CLOUD.applying) return;
-      CLOUD.applying = true;
-      const remote = []; snap.forEach(d=>remote.push(d.data()));
-      const partnerBiz = new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
-      const partnerEntries = S.entries.filter(e=>partnerBiz.has(e.bizId));
-      const personal=S.entries.filter(e=>!partnerBiz.has(e.bizId)).concat((S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId)));
-      const merged=TaxMateSync.mergeRecords(personal,remote);
-      S.entries=TaxMateSync.visible(merged).filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
-      S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
+      /* 1 ── Read account truth before any push. A clean client must never publish its empty defaults first. */
+      const metaDoc=await userRoot(uid).collection('app').doc('meta').get();
+      const entSnap=await userRoot(uid).collection('entries').get();
+      if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
+      const remote=[];entSnap.forEach(d=>{const re=d.data();if(re)remote.push(re);});
+      const remoteMeta=metaDoc.exists?metaDoc.data():{};
+      if(metaDoc.exists)applyCloudMeta(remoteMeta);
+      const mergedEntries=TaxMateSync.mergeRecords(S.entries.concat(S.tombstones||[]),remote);
+      S.entries=TaxMateSync.visible(mergedEntries);
+      S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
       persistRemoteState();
-      CLOUD.applying = false;
-      render();
-    }, handleSyncListenerError);
 
-    S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
-    scheduleOutboxFlush(0,'auth-ready');render();
-  }catch(e){ console.warn('user sync failed', e); }
+      /* 2 ── Install live personal listeners, then await every partnership's first snapshots. */
+      CLOUD.metaUnsub=userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
+        const m=doc.data();if(!m||CLOUD.applying||CLOUD.hydrationUid!==uid)return;
+        CLOUD.applying=true;applyCloudMeta(m);CLOUD.applying=false;render();
+        S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode,b.id).catch(()=>{}));
+      },handleSyncListenerError);
+      CLOUD.entUnsub=userRoot(uid).collection('entries').onSnapshot(snap=>{
+        if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;
+        CLOUD.applying=true;
+        const latest=[];snap.forEach(d=>latest.push(d.data()));
+        const partnerBiz=new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
+        const partnerEntries=S.entries.filter(e=>partnerBiz.has(e.bizId));
+        const personal=S.entries.filter(e=>!partnerBiz.has(e.bizId)).concat((S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId)));
+        const merged=TaxMateSync.mergeRecords(personal,latest);
+        S.entries=TaxMateSync.visible(merged).filter(e=>!partnerBiz.has(e.bizId)).concat(partnerEntries);
+        S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
+        persistRemoteState();CLOUD.applying=false;render();
+      },handleSyncListenerError);
+      const partnershipSubscriptions=S.businesses.filter(b=>b.syncCode).map(b=>subscribeSync(b.syncCode,b.id));
+      const partnershipResults=await Promise.all(partnershipSubscriptions);
+      if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
+      const partnershipRecordCount=partnershipResults.reduce((sum,row)=>sum+Number(row&&row.entries||0),0);
+      const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount});
+
+      /* 3 ── Only the fully merged state may enter the durable outbound queue. */
+      await pushUserState(uid,true);
+      if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
+      const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length};
+      CLOUD.hydrationState='converged';CLOUD.hydrationResult=result;CLOUD.hydrationPromise=null;CLOUD.listenerError=null;
+      scheduleOutboxFlush(0,'auth-ready');renderSyncStatus();render();return result;
+    }catch(error){
+      if(String(error&&error.message||error)==='stale-hydration')return{state:'cancelled',existingCloudAccount:false};
+      console.warn('user sync failed',error);
+      if(syncGenerationCurrent(uid,generation)){
+        clearUserSyncListeners();CLOUD.hydrationState='failed';CLOUD.hydrationPromise=null;CLOUD.listenerError=TaxMateSync.classifyError(error);renderSyncStatus();
+        CLOUD.hydrationRetryTimer=setTimeout(()=>{const current=cloudUser();if(current&&current.uid===uid)startUserSync(current).then(applyHydratedAccountResult);},5000);
+      }
+      return{state:'failed',existingCloudAccount:false,error:CLOUD.listenerError||'sync-failed'};
+    }
+  })();
+  CLOUD.hydrationPromise=hydration;return hydration;
 }
 function stopUserSync(){
-  if(CLOUD.metaUnsub){ try{CLOUD.metaUnsub();}catch(e){} CLOUD.metaUnsub=null; }
-  if(CLOUD.entUnsub){ try{CLOUD.entUnsub();}catch(e){} CLOUD.entUnsub=null; }
+  CLOUD.generation++;clearTimeout(CLOUD.hydrationRetryTimer);CLOUD.hydrationRetryTimer=null;
+  clearUserSyncListeners();
   CLOUD.lastPushed='';
+  CLOUD.hydrationState='idle';CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.listenerError=null;
   renderSyncStatus();
 }
 async function pushUserState(uid, force){
@@ -6569,14 +6622,19 @@ function obLangSheet(){
 }
 function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
-  // Use the app's real Google sign-in (popup). On success, continue onboarding.
-  OB && (OB._signingInFlow = true); // 標記：用戶喺新手流程內主動登入，唔好被 watchAuth 關閉
+  // Keep onboarding pending until cloud account detection has finished. A successful Google
+  // popup alone does not mean this is a new user.
+  OB && (OB._signingInFlow = true);
   if(typeof signIn==='function' && fbConfigured()){
     try{
       await signIn('google');
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
-      if(OB) OB.loggedIn = !!u;
-    }catch(e){ if(OB) OB.loggedIn=false; }
+      const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
+      if(result.existingCloudAccount){applyHydratedAccountResult(result);return;}
+      if(!OB)return;
+      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;renderSyncStatus();return;}
+      OB.loggedIn=true;
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;}return; }
   } else {
     if(OB) OB.loggedIn = true;
   }
@@ -7037,7 +7095,7 @@ function obFinish(){
   // 7) if a NEW partnership with a code was just created, start syncing
   const nb = OB._newBiz;
   if(nb&&nb.syncCode&&typeof subscribeSync==='function'){
-    try{S.entries.filter(e=>e.bizId===newId).forEach(pushEntryRemote);pushBizRemote(nb);subscribeSync(nb.syncCode,newId);}catch(e){console.warn('onboarding partnership sync queued',e);}
+    try{S.entries.filter(e=>e.bizId===newId).forEach(pushEntryRemote);pushBizRemote(nb);subscribeSync(nb.syncCode,newId).catch(e=>console.warn('onboarding partnership sync failed',e));}catch(e){console.warn('onboarding partnership sync queued',e);}
   }
 
   const wasCatchup = catchup;
@@ -7065,8 +7123,8 @@ setupBackButton();
 if(fbConfigured()){
   ensureFB().then(db=>{if(db){loadCloudRates();scheduleOutboxFlush(0,'app-open');}});
 }
-// 重啟時自動重新訂閱所有已同步嘅合夥生意
-S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode, b.id));
+// Partnership subscriptions start inside startUserSync only after the persisted non-anonymous
+// account has been restored. Starting them here could create an anonymous auth race on boot.
 
 // ── PWA install prompt capture ──
 window.addEventListener('beforeinstallprompt', e=>{

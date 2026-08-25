@@ -83,6 +83,24 @@
     };
   }
 
+  function cloudAccountState(input){
+    const source=plain(input)?input:{},meta=plain(source.meta)?source.meta:{};
+    const businesses=[...(Array.isArray(meta.businesses)?meta.businesses:[]),...(Array.isArray(meta.businessTombstones)?meta.businessTombstones:[])].filter(x=>plain(x)&&x.id);
+    const folders=[...(Array.isArray(meta.folders)?meta.folders:[]),...(Array.isArray(meta.folderTombstones)?meta.folderTombstones:[])].filter(x=>plain(x)&&x.id);
+    const personalRecords=(Array.isArray(source.personalRecords)?source.personalRecords:[]).filter(x=>plain(x)&&x.id);
+    const partnershipRecords=Math.max(0,Number(source.partnershipRecords)||0);
+    const versionedFacts=[meta.customCats,meta.activeCats,meta.yearData,meta.metaVersions].some(value=>plain(value)&&Object.keys(value).length>0);
+    const established=businesses.length>0||folders.length>0||personalRecords.length>0||partnershipRecords>0||versionedFacts;
+    return {
+      established,
+      businessRecords:businesses.length,
+      folderRecords:folders.length,
+      personalRecords:personalRecords.length,
+      partnershipRecords,
+      metaExists:source.metaExists===true
+    };
+  }
+
   function emptyOutbox(){ return {version:1,items:[],lastSuccessAt:0}; }
   function normalizeOutbox(value){
     const source=plain(value)?value:{};
@@ -138,11 +156,13 @@
     const source=input||{},box=normalizeOutbox(source.outbox),pending=box.items.length;
     if(source.online===false) return {state:'offline',pending,message:pending?'Offline — '+pending+' change'+(pending===1?'':'s')+' waiting':'Offline'};
     if(!source.authReady) return {state:'waiting',pending,message:pending?'Waiting for sign-in — '+pending+' pending':'Waiting for sign-in'};
+    if(source.hydrationState==='failed') return {state:'failed',pending,message:'Cloud restore failed — will retry',error:source.error||'hydration-failed'};
     if(source.error) return {state:'failed',pending,message:pending?'Sync failed — '+pending+' change'+(pending===1?'':'s')+' will retry':'Sync failed — will retry',error:source.error};
+    if(source.hydrationState!=='converged') return {state:'waiting',pending,message:source.hydrationState==='loading'?'Restoring cloud data…':'Checking cloud data…'};
     const failed=box.items.filter(x=>x.status==='failed');
     if(failed.length) return {state:'failed',pending,message:'Sync failed — '+pending+' change'+(pending===1?'':'s')+' will retry',error:failed[0].lastError};
     if(pending) return {state:'waiting',pending,message:'Waiting to sync — '+pending+' change'+(pending===1?'':'s')};
     return {state:'synced',pending:0,message:'Synced'};
   }
-  return {compare,mergeRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
+  return {compare,mergeRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
 });
