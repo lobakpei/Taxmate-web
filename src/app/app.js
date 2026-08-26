@@ -5360,16 +5360,16 @@ function pushBizRemote(b){
 const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';
 function loadSyncOutbox(){try{return TaxMateSync.normalizeOutbox(JSON.parse(localStorage.getItem(SYNC_OUTBOX_KEY)||'null'));}catch(_){return TaxMateSync.emptyOutbox();}}
 let SYNC_OUTBOX=loadSyncOutbox();
-let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, listenerError:null, hydrationState:'idle', hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
+let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
 function persistSyncOutbox(){
   try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
-  catch(e){CLOUD.listenerError='outbox-storage';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
+  catch(e){CLOUD.writeError='outbox-storage';CLOUD.writeErrorKind='outbox';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
 }
 function enqueueSyncOperation(operation){SYNC_OUTBOX=TaxMateSync.enqueue(loadSyncOutbox(),operation,Date.now());persistSyncOutbox();renderSyncStatus();}
 function syncStatus(){
   const user=cloudUser(),box=TaxMateSync.normalizeOutbox(SYNC_OUTBOX);
   if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
-  return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,error:CLOUD.listenerError});
+  return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,partnershipHydrationState:CLOUD.partnershipHydrationState,reconciliationState:CLOUD.reconciliationState,ackState:CLOUD.ackState,hydrationError:CLOUD.hydrationError,inboundError:CLOUD.inboundError,writeError:CLOUD.writeError,writeErrorKind:CLOUD.writeErrorKind});
 }
 function renderSyncStatus(){
   const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'?'var(--coral)':'var(--muted)';
@@ -5518,33 +5518,45 @@ async function flushSyncOutbox(reason){
       SYNC_OUTBOX=TaxMateSync.markAttempt(loadSyncOutbox(),operation.key,Date.now());persistSyncOutbox();renderSyncStatus();
       try{
         await user.getIdToken();await sendSyncOperation(operation);
-        SYNC_OUTBOX=TaxMateSync.acknowledge(loadSyncOutbox(),operation.key,Date.now(),operation);CLOUD.listenerError=null;
+        SYNC_OUTBOX=TaxMateSync.acknowledge(loadSyncOutbox(),operation.key,Date.now(),operation);
       }catch(error){
         console.warn('sync operation failed',operation.kind,TaxMateSync.classifyError(error));
         SYNC_OUTBOX=TaxMateSync.markFailure(loadSyncOutbox(),operation.key,error,Date.now(),operation);
-        const code=TaxMateSync.classifyError(error);if(code==='unauthenticated'||code==='permission-denied')break;
+        const code=TaxMateSync.classifyError(error);CLOUD.writeError=code;CLOUD.writeErrorKind=operation.kind;
+        if(code==='unauthenticated'||code==='permission-denied')break;
       }
       persistSyncOutbox();renderSyncStatus();
     }
-    const remaining=TaxMateSync.normalizeOutbox(SYNC_OUTBOX).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
+    const remaining=syncOperationsForUser(user.uid),failed=remaining.find(operation=>operation.status==='failed');
+    CLOUD.reconciliationState=remaining.length?(failed?'retrying':'pending'):'converged';CLOUD.ackState=remaining.length?'waiting':'acked';
+    if(failed){CLOUD.writeError=failed.lastError||CLOUD.writeError||'sync-failed';CLOUD.writeErrorKind=failed.kind||CLOUD.writeErrorKind;}
+    else if(!remaining.length){CLOUD.writeError=null;CLOUD.writeErrorKind=null;}
     if(remaining.length){const next=Math.min(...remaining.map(x=>Number(x.nextAttemptAt)||Date.now()+5000));scheduleOutboxFlush(Math.max(500,next-Date.now()),'retry');}
   })().finally(()=>{CLOUD.flushPromise=null;renderSyncStatus();});
   return CLOUD.flushPromise;
 }
 function handleSyncListenerError(error){
-  CLOUD.listenerError=TaxMateSync.classifyError(error);console.warn('sync listener failed',CLOUD.listenerError);renderSyncStatus();scheduleOutboxFlush(5000,'listener-retry');
+  CLOUD.inboundError=TaxMateSync.classifyError(error);console.warn('sync listener failed',CLOUD.inboundError);renderSyncStatus();scheduleOutboxFlush(5000,'listener-retry');
 }
 
 function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
 function syncOperationsForUser(uid){return TaxMateSync.normalizeOutbox(loadSyncOutbox()).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));}
+function outboundConvergenceState(uid){
+  const remaining=syncOperationsForUser(uid),failed=remaining.find(operation=>operation.status==='failed');
+  CLOUD.reconciliationState=remaining.length?(failed?'retrying':'pending'):'converged';CLOUD.ackState=remaining.length?'waiting':'acked';
+  if(failed){CLOUD.writeError=failed.lastError||CLOUD.writeError||'sync-failed';CLOUD.writeErrorKind=failed.kind||CLOUD.writeErrorKind;}
+  else if(!remaining.length){CLOUD.writeError=null;CLOUD.writeErrorKind=null;}
+  return{state:remaining.length?(failed?'retrying':'pending'):'acked',pending:remaining.length,error:failed&&failed.lastError||null,kind:failed&&failed.kind||null};
+}
 async function flushSyncForConvergence(uid){
+  CLOUD.reconciliationState='pending';CLOUD.ackState='waiting';renderSyncStatus();
   for(let pass=0;pass<4;pass++){
     await flushSyncOutbox('account-convergence');
-    const remaining=syncOperationsForUser(uid);
-    if(!remaining.length)return;
+    const state=outboundConvergenceState(uid),remaining=syncOperationsForUser(uid);
+    if(!remaining.length)return state;
     if(!remaining.some(operation=>!operation.nextAttemptAt||Number(operation.nextAttemptAt)<=Date.now()))break;
   }
-  throw new Error('sync-convergence-pending');
+  return outboundConvergenceState(uid);
 }
 function clearUserSyncListeners(){
   if(CLOUD.metaUnsub){try{CLOUD.metaUnsub();}catch(e){}CLOUD.metaUnsub=null;}
@@ -5559,7 +5571,7 @@ function startUserSync(u){
   if(CLOUD.hydrationUid===uid&&CLOUD.hydrationPromise)return CLOUD.hydrationPromise;
   if(CLOUD.hydrationUid&&CLOUD.hydrationUid!==uid)stopUserSync();
   const generation=++CLOUD.generation;
-  CLOUD.hydrationUid=uid;CLOUD.hydrationState='loading';CLOUD.hydrationResult=null;CLOUD.listenerError=null;
+  CLOUD.hydrationUid=uid;CLOUD.hydrationState='loading';CLOUD.partnershipHydrationState='loading';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationResult=null;CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;
   clearTimeout(CLOUD.hydrationRetryTimer);renderSyncStatus();
   const hydration=(async()=>{
     try{
@@ -5602,21 +5614,28 @@ function startUserSync(u){
       const partnershipRecordCount=partnershipResults.reduce((sum,row)=>sum+Number(row&&row.entries||0),0);
       const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount});
 
-      /* 3 ── Only the fully merged state may enter the durable outbound queue. */
-      await pushUserState(uid,true);
+      /* 3 ── Inbound account and partnership snapshots are complete before outbound reconciliation begins. */
+      CLOUD.hydrationState='converged';CLOUD.partnershipHydrationState='converged';CLOUD.hydrationError=null;CLOUD.inboundError=null;
+      const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length,syncState:{state:'pending',pending:syncOperationsForUser(uid).length}};
+      CLOUD.hydrationResult=result;renderSyncStatus();
+
+      /* 4 ── Only the fully merged state may enter the durable outbound queue. Pending writes do not invalidate inbound restore. */
+      try{result.syncState=await pushUserState(uid,true)||outboundConvergenceState(uid);}
+      catch(error){
+        CLOUD.writeError=TaxMateSync.classifyError(error);CLOUD.writeErrorKind='reconciliation';CLOUD.reconciliationState='retrying';CLOUD.ackState='waiting';
+        result.syncState=outboundConvergenceState(uid);scheduleOutboxFlush(5000,'account-convergence-retry');
+      }
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
-      if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending');
-      const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length};
-      CLOUD.hydrationState='converged';CLOUD.hydrationResult=result;CLOUD.hydrationPromise=null;CLOUD.listenerError=null;
+      CLOUD.hydrationPromise=null;
       scheduleOutboxFlush(0,'auth-ready');renderSyncStatus();render();return result;
     }catch(error){
       if(String(error&&error.message||error)==='stale-hydration')return{state:'cancelled',existingCloudAccount:false};
       console.warn('user sync failed',error);
       if(syncGenerationCurrent(uid,generation)){
-        clearUserSyncListeners();CLOUD.hydrationState='failed';CLOUD.hydrationPromise=null;CLOUD.listenerError=TaxMateSync.classifyError(error);renderSyncStatus();
+        clearUserSyncListeners();CLOUD.hydrationState='failed';CLOUD.partnershipHydrationState='failed';CLOUD.hydrationPromise=null;CLOUD.hydrationError=TaxMateSync.classifyError(error);CLOUD.inboundError=CLOUD.hydrationError;renderSyncStatus();
         CLOUD.hydrationRetryTimer=setTimeout(()=>{const current=cloudUser();if(current&&current.uid===uid)startUserSync(current).then(applyHydratedAccountResult);},5000);
       }
-      return{state:'failed',existingCloudAccount:false,error:CLOUD.listenerError||'sync-failed'};
+      return{state:'failed',existingCloudAccount:false,error:CLOUD.hydrationError||'sync-failed'};
     }
   })();
   CLOUD.hydrationPromise=hydration;return hydration;
@@ -5625,7 +5644,7 @@ function stopUserSync(){
   CLOUD.generation++;clearTimeout(CLOUD.hydrationRetryTimer);CLOUD.hydrationRetryTimer=null;
   clearUserSyncListeners();
   CLOUD.lastPushed='';
-  CLOUD.hydrationState='idle';CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.listenerError=null;
+  CLOUD.hydrationState='idle';CLOUD.partnershipHydrationState='idle';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;
   renderSyncStatus();
 }
 async function pushUserState(uid, force){

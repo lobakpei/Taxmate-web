@@ -195,12 +195,14 @@
     const source=input||{},box=normalizeOutbox(source.outbox),pending=box.items.length;
     if(source.online===false) return {state:'offline',pending,message:pending?'Offline — '+pending+' change'+(pending===1?'':'s')+' waiting':'Offline'};
     if(!source.authReady) return {state:'waiting',pending,message:pending?'Waiting for sign-in — '+pending+' pending':'Waiting for sign-in'};
-    if(source.hydrationState==='failed') return {state:'failed',pending,message:'Cloud restore failed — will retry',error:source.error||'hydration-failed'};
-    if(source.error) return {state:'failed',pending,message:pending?'Sync failed — '+pending+' change'+(pending===1?'':'s')+' will retry':'Sync failed — will retry',error:source.error};
-    if(source.hydrationState!=='converged') return {state:'waiting',pending,message:source.hydrationState==='loading'?'Restoring cloud data…':'Checking cloud data…'};
+    if(source.hydrationState==='failed'||source.partnershipHydrationState==='failed') return {state:'failed',pending,message:'Cloud restore failed — will retry',error:source.hydrationError||source.inboundError||'hydration-failed'};
+    if(source.hydrationState!=='converged'||(source.partnershipHydrationState&&source.partnershipHydrationState!=='converged')) return {state:'waiting',pending,message:source.hydrationState==='loading'||source.partnershipHydrationState==='loading'?'Restoring cloud data…':'Checking cloud data…'};
+    if(source.inboundError) return {state:'failed',pending,message:'Cloud sync read failed — will retry',error:source.inboundError};
     const failed=box.items.filter(x=>x.status==='failed');
-    if(failed.length) return {state:'failed',pending,message:'Sync failed — '+pending+' change'+(pending===1?'':'s')+' will retry',error:failed[0].lastError};
-    if(pending) return {state:'waiting',pending,message:'Waiting to sync — '+pending+' change'+(pending===1?'':'s')};
+    const writeError=source.writeError||(failed[0]&&failed[0].lastError)||null,writeKind=source.writeErrorKind||(failed[0]&&failed[0].kind)||null;
+    if(writeError==='permission-denied') return {state:'failed',pending,message:writeKind&&writeKind.indexOf('partnership-')===0?'Partnership sync access failed — local data is safe':'Sync write access failed — local data is safe',error:writeError};
+    if(writeError||failed.length) return {state:'waiting',pending,message:'Sync retrying — '+pending+' change'+(pending===1?'':'s')+' waiting',error:writeError||failed[0].lastError};
+    if(pending||source.reconciliationState==='pending'||source.reconciliationState==='retrying'||source.ackState==='waiting') return {state:'waiting',pending,message:pending?'Syncing — '+pending+' change'+(pending===1?'':'s')+' waiting':'Finishing sync…'};
     return {state:'synced',pending:0,message:'Synced'};
   }
   return {compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
