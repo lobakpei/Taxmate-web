@@ -22,17 +22,25 @@ test('write failure survives terminate and reopen, then clears only after server
   assert.equal(acknowledged.lastSuccessAt,5100);
 });
 
-test('offline, waiting, failed and synced states are truthful',()=>{
+test('offline, inbound restore, outbound retry, permission and ACK states are truthful',()=>{
   let box=Sync.enqueue(Sync.emptyOutbox(),{kind:'partnership-entry',code:'PARTNER1',record:entry('e-2',200)},200);
   assert.equal(Sync.status({outbox:box,online:false,authReady:true}).state,'offline');
   assert.equal(Sync.status({outbox:box,online:true,authReady:false}).state,'waiting');
   box=Sync.markAttempt(box,box.items[0].key,210);
-  box=Sync.markFailure(box,box.items[0].key,{code:'unauthenticated'},220);
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged'}).state,'failed');
+  box=Sync.markFailure(box,box.items[0].key,{code:'unavailable'},220);
+  const retry=Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged',partnershipHydrationState:'converged',reconciliationState:'retrying',ackState:'waiting',writeError:'network',writeErrorKind:'partnership-entry'});
+  assert.equal(retry.state,'waiting');
+  assert.match(retry.message,/Sync retrying/);
+  assert.doesNotMatch(retry.message,/Cloud restore failed/);
+  const denied=Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged',partnershipHydrationState:'converged',reconciliationState:'retrying',ackState:'waiting',writeError:'permission-denied',writeErrorKind:'partnership-entry'});
+  assert.equal(denied.state,'failed');
+  assert.equal(denied.message,'Partnership sync access failed — local data is safe');
   box=Sync.acknowledge(box,box.items[0].key,300);
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'loading'}).message,'Restoring cloud data…');
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'failed'}).state,'failed');
-  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged'}).state,'synced');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'loading',partnershipHydrationState:'loading'}).message,'Restoring cloud data…');
+  const restoreFailure=Sync.status({outbox:box,online:true,authReady:true,hydrationState:'failed',partnershipHydrationState:'failed',hydrationError:'network'});
+  assert.equal(restoreFailure.state,'failed');
+  assert.equal(restoreFailure.message,'Cloud restore failed — will retry');
+  assert.equal(Sync.status({outbox:box,online:true,authReady:true,hydrationState:'converged',partnershipHydrationState:'converged',reconciliationState:'converged',ackState:'acked'}).state,'synced');
 });
 
 test('returning account detection uses durable cloud facts rather than sign-in alone',()=>{
@@ -44,21 +52,23 @@ test('returning account detection uses durable cloud facts rather than sign-in a
   assert.equal(Sync.cloudAccountState({metaExists:false,meta:{},personalRecords:[],partnershipRecords:90}).established,true);
 });
 
-test('fresh-client flow waits for cloud convergence before closing onboarding or claiming Synced',()=>{
+test('fresh-client flow separates inbound restore from durable outbound ACK convergence',()=>{
   const app=fs.readFileSync(path.join(__dirname,'../../src/app/app.js'),'utf8');
   assert.doesNotMatch(app,/if\(OB\s*&&\s*!OB\._signingInFlow\)\{\s*try\{\s*obClose/);
   assert.match(app,/const result=await startUserSync\(u\);\s*applyHydratedAccountResult\(result\)/);
   assert.match(app,/if\(result\.existingCloudAccount\)\{applyHydratedAccountResult\(result\);return;\}/);
-  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='converged'/);
+  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='converged';CLOUD\.partnershipHydrationState='converged'/);
   assert.match(app,/clearUserSyncListeners\(\);CLOUD\.hydrationState='failed'[\s\S]*setTimeout\(\(\)=>\{const current=cloudUser\(\)/);
   assert.ok(app.indexOf('const metaDoc=await')<app.indexOf('await pushUserState(uid,true)'));
   assert.ok(app.indexOf('Promise.all(partnershipSubscriptions)')<app.indexOf('await pushUserState(uid,true)'));
+  assert.ok(app.indexOf("CLOUD.hydrationState='converged';CLOUD.partnershipHydrationState='converged'")<app.indexOf('await pushUserState(uid,true)'));
   assert.match(app,/TaxMateSync\.reconcileRecords\(current,remote\)/);
   assert.match(app,/reconciliation\.uploads\.forEach\(record=>enqueueSyncOperation/);
   assert.match(app,/async function flushSyncForConvergence\(uid\)/);
   assert.match(app,/if\(force\) return flushSyncForConvergence\(uid\)/);
-  assert.ok(app.indexOf('await pushUserState(uid,true)')<app.indexOf("if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending')"));
-  assert.ok(app.indexOf("if(syncOperationsForUser(uid).length)throw new Error('sync-convergence-pending')")<app.indexOf("CLOUD.hydrationState='converged'"));
+  assert.doesNotMatch(app,/throw new Error\('sync-convergence-pending'\)/);
+  assert.match(app,/return outboundConvergenceState\(uid\)/);
+  assert.match(app,/CLOUD\.writeError=TaxMateSync\.classifyError\(error\)[\s\S]*scheduleOutboxFlush\(5000,'account-convergence-retry'\)/);
 });
 
 test('initial partnership reconciliation queues local-only records and is idempotent after ACK',()=>{
