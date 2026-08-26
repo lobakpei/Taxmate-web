@@ -5391,8 +5391,9 @@ function onboardingDoneFlag(){try{return localStorage.getItem('tmOnboardDone');}
 function applyHydratedAccountResult(result){
   if(!result||result.state!=='converged')return;
   if(result.existingCloudAccount){
-    if(OB){OB._signingInFlow=false;try{obClose();}catch(e){}}
-    S.tab='home';render();return;
+    const exitingOnboarding=!!OB;
+    if(exitingOnboarding){OB._signingInFlow=false;try{obClose();}catch(e){}S.tab='home';}
+    render();return;
   }
   if(!OB&&!S.businesses.length&&!onboardingDoneFlag())startOnboarding();
 }
