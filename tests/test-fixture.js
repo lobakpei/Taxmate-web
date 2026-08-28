@@ -7,10 +7,11 @@ const {createFounderPreviewBackup}=require('../ui-preview-harness/sanitised-back
 const {buildPreviewDataset}=require('../ui-preview-harness/founder-preview-dataset');
 const {CanonicalCompanyDriver,DEFAULT_NOW}=require('../src/integration/ltd/CanonicalCompanyDriver');
 const {TaxMateLtdUIFacade}=require('../src/integration/ltd/TaxMateLtdUIFacade');
+const PRO_ENTITLEMENT=Object.freeze({subscriptionStatus:'active',paidTier:'pro',currentPeriodEnd:DEFAULT_NOW+365*86400000,serverVerifiedAt:DEFAULT_NOW,billingCadence:'monthly'});
 
 function make(mode='existing'){
   const bytes=Buffer.from(JSON.stringify(createFounderPreviewBackup(),null,2)+'\n'),sha=crypto.createHash('sha256').update(bytes).digest('hex').toUpperCase(),dir=fs.mkdtempSync(path.join(os.tmpdir(),'taxmate-ui-test-')),file=path.join(dir,'backup.json');
-  try{fs.writeFileSync(file,bytes);const bundle=buildPreviewDataset({mode,backupPath:file,expectedSha256:sha}),driver=new CanonicalCompanyDriver({mode,state:bundle.state,meta:bundle.meta,copy:{locales:['en','zh-HK','pl','ro','es','ur']},now:()=>DEFAULT_NOW,personalTaxJurisdiction:'EWNI'});return{bundle,driver,facade:new TaxMateLtdUIFacade({driver})};}
+  try{fs.writeFileSync(file,bytes);const bundle=buildPreviewDataset({mode,backupPath:file,expectedSha256:sha}),driver=new CanonicalCompanyDriver({mode,state:bundle.state,meta:bundle.meta,copy:{locales:['en','zh-HK','pl','ro','es','ur']},now:()=>DEFAULT_NOW,personalTaxJurisdiction:'EWNI',entitlementSnapshot:PRO_ENTITLEMENT});return{bundle,driver,facade:new TaxMateLtdUIFacade({driver})};}
   finally{try{fs.unlinkSync(file);}catch(_){}try{fs.rmdirSync(dir);}catch(_){}}
 }
-module.exports={make};
+module.exports={make,PRO_ENTITLEMENT};

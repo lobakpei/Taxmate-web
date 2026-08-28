@@ -145,6 +145,7 @@
     if(op.kind==='personal-state') return 'personal-state:'+String(op.uid||'current');
     if(op.kind==='partnership-entry') return 'partnership-entry:'+String(op.ownerUid||'current')+':'+String(op.code||'')+':'+String(op.record&&op.record.id||'');
     if(op.kind==='partnership-business') return 'partnership-business:'+String(op.ownerUid||'current')+':'+String(op.code||'');
+    if(op.kind==='ltd-record') return 'ltd-record:'+String(op.ownerUid||op.uid||'current')+':'+String(op.collection||'')+':'+String(op.recordId||op.record&&op.record.recordId||'');
     throw new Error('Unsupported sync operation: '+op.kind);
   }
   function operationVersion(op){

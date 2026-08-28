@@ -3,10 +3,11 @@
 const Structural=require('./company-structural-state');
 
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
-const semanticError=(reasonCode='facade_failure',params={})=>({reasonCode,copyKey:'error.fix_issue',params:clone(params)});
+const COPY_KEY_BY_REASON=Object.freeze({pro_required:'plan.ltd_pro_only',one_active_ltd_limit:'add.one_ltd_limit'});
+const semanticError=(reasonCode='facade_failure',params={})=>({reasonCode,copyKey:COPY_KEY_BY_REASON[reasonCode]||'error.fix_issue',params:clone(params)});
 const fieldError=(field,reasonCode,copyKey='error.fix_issue',params={})=>({field,reasonCode,copyKey,params:clone(params)});
 const CALLBACKS=Object.freeze([
-  'onOpenHome','onAddBusiness','onAddBusinessCategoryChosen','onSelfEmployedStructureChosen','onOpenLegacyBusiness','onEditLegacyBusiness','onOpenExistingCompany','onResumeCompanyDraft','onSaveCompanyDraft','onContinueStep','onLookupCompaniesHouse','onPlanCompanyPeriods','onFixCompanyFact','onDraftChanged',
+  'onOpenHome','onAddBusiness','onAddBusinessCategoryChosen','onSelfEmployedStructureChosen','onOpenLegacyBusiness','onEditLegacyBusiness','onOpenExistingCompany','onResumeCompanyDraft','onSaveCompanyDraft','onContinueStep','onLookupCompaniesHouse','onRecheckCompaniesHouse','onPlanCompanyPeriods','onFixCompanyFact','onDraftChanged',
   'onOpenInfo','onCloseInfo','onBack','onDismissRequested','onDiscardConfirmed','onDiscardCancelled','onSetWorkspaceArea','onOpenMetric',
   'onAddIncome','onAddExpense','onAddSharedExpense','onAddPersonallyPaidExpense','onAddDirectorLoanFunding','onRecordDirectorLoanRepayment','onRecordShareFunding','onOpenRecord','onEditDraft','onSaveDraftEdit','onDeleteDraft','onCorrectRecord',
   'onRunCtEstimate','onRunScenario','onRecordSalary','onDeclareDividend','onRecordDividendPayment','onOpenCompanyEdit','onEditCompany','onOpenOwnershipChange','onChangeOwnership','onDownloadWorkingPack','onRemoveCompany','onResetPreview'
@@ -49,6 +50,7 @@ class TaxMateLtdUIFacade{
   onResumeCompanyDraft(input){return this.execute('onResumeCompanyDraft',input,this.driver.resumeDraft);}
   onSaveCompanyDraft(input){return this.execute('onSaveCompanyDraft',input,this.driver.saveCompanyDraft);}
   onLookupCompaniesHouse(input){return this.execute('onLookupCompaniesHouse',input,this.driver.lookupCompany);}
+  onRecheckCompaniesHouse(input){return this.execute('onRecheckCompaniesHouse',input,this.driver.recheckCompany);}
   onPlanCompanyPeriods(input){return this.execute('onPlanCompanyPeriods',input,this.driver.planCompanyPeriods);}
   onFixCompanyFact(input){return this.execute('onFixCompanyFact',input,this.driver.fixCompanyFact);}
   onDraftChanged(input={}){if(!input.screenId||!input.field)return Promise.resolve(this.result({status:'field_error',fieldErrors:[fieldError('draft','screen_and_field_required')]}));this.drafts.patchField(input.screenId,input.field);this.emit();return Promise.resolve(this.result({status:'ok',data:{draft:this.drafts.get(input.screenId)}}));}
@@ -60,8 +62,8 @@ class TaxMateLtdUIFacade{
   onDismissRequested(input={}){const route=this.workflow.currentRoute(),dirty=route?this.drafts.hasDirty(route.screenId):false,outcome=this.workflow.requestDismiss(input.reason||'cancel',dirty);this.emit();return Promise.resolve(this.result({status:outcome.kind==='confirm_discard'?'review_required':'ok',reviewReasons:outcome.kind==='confirm_discard'?['unsaved_changes_confirmation_required']:[],data:{outcome}}));}
   onDiscardConfirmed(){const route=this.workflow.currentRoute();if(route)this.drafts.clear(route.screenId);const outcome=this.workflow.confirmDiscard();this.workflow.enter('home',{mode:this.driver.mode});this.emit();return Promise.resolve(this.result({status:'ok',data:{outcome},nextRoute:'home'}));}
   onDiscardCancelled(){const outcome=this.workflow.cancelDiscard();this.emit();return Promise.resolve(this.result({status:'ok',data:{outcome}}));}
-  onSetWorkspaceArea(input={}){const area=['overview','money','tax','records'].includes(input.area)?input.area:'overview';const route=`ltd.workspace.${area}`;this.route(route);return Promise.resolve(this.result({status:'ok',nextRoute:route}));}
-  onOpenMetric(input={}){this.route('ltd.workspace.metric-detail',{metricId:input.metricId||null});return Promise.resolve(this.result({status:'ok',nextRoute:'ltd.workspace.metric-detail',data:{metricId:input.metricId||null}}));}
+  onSetWorkspaceArea(input={}){const area=['overview','money','tax','records'].includes(input.area)?input.area:'overview',route=`ltd.workspace.${area}`;return this.execute('onSetWorkspaceArea',input,function(){return this.routeAccess('read',route,{area});});}
+  onOpenMetric(input={}){return this.execute('onOpenMetric',input,function(value){return this.routeAccess('read','ltd.workspace.metric-detail',{metricId:value.metricId||null});});}
 
   onAddIncome(input){return this.execute('onAddIncome',{...input,type:'company_income'},this.driver.transaction);}
   onAddExpense(input){return this.execute('onAddExpense',{...input,type:'company_expense'},this.driver.transaction);}
@@ -80,9 +82,9 @@ class TaxMateLtdUIFacade{
   onRecordSalary(input){return this.execute('onRecordSalary',input,this.driver.recordSalary);}
   onDeclareDividend(input){return this.execute('onDeclareDividend',input,this.driver.declareDividend);}
   onRecordDividendPayment(input){return this.execute('onRecordDividendPayment',input,this.driver.payDividend);}
-  onOpenCompanyEdit(){this.route('ltd.records.company-edit');return Promise.resolve(this.result({status:'ok',nextRoute:'ltd.records.company-edit'}));}
+  onOpenCompanyEdit(){return this.execute('onOpenCompanyEdit',{},function(){return this.routeAccess('edit_company','ltd.records.company-edit');});}
   onEditCompany(input){return this.execute('onEditCompany',input,this.driver.editCompany);}
-  onOpenOwnershipChange(){this.route('ltd.records.ownership');return Promise.resolve(this.result({status:'ok',nextRoute:'ltd.records.ownership'}));}
+  onOpenOwnershipChange(){return this.execute('onOpenOwnershipChange',{},function(){return this.routeAccess('change_ownership','ltd.records.ownership');});}
   onChangeOwnership(input){return this.execute('onChangeOwnership',input,this.driver.changeOwnership);}
   onDownloadWorkingPack(input){return this.execute('onDownloadWorkingPack',input,this.driver.workingPack);}
   onRemoveCompany(input){return this.execute('onRemoveCompany',input,this.driver.removeCompany);}

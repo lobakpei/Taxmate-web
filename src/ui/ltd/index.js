@@ -2,7 +2,8 @@
   'use strict';
   var params = new URLSearchParams(root.location.search);
   var mode = params.get('mode') === 'fresh' ? 'fresh' : 'existing';
-  var facade = new root.TaxMateLtdUIFacadeClient(mode);
+  var tier = ['free','plus'].indexOf(params.get('tier')) >= 0 ? params.get('tier') : 'pro';
+  var facade = new root.TaxMateLtdUIFacadeClient(mode, tier);
   var mount = document.getElementById('taxmate-ltd-ui-root');
   root.TaxMateLtdUIFacade = facade;
 

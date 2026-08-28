@@ -31,7 +31,7 @@ test('B1 two-stage Add Business and Codex-owned Back preserve the approved seman
 });
 
 test('B2 one-Ltd limit exposes a real no-write Open existing company action',async()=>{
-  const {facade,driver}=make('existing'),before=JSON.stringify(driver.state),snapshot=facade.getSnapshot();assert.deepEqual(snapshot.companyLimit,{maximum:1,activeCount:1,canCreate:false,existingAction:{callback:'onOpenExistingCompany',nextRoute:'ltd.workspace.overview'}});
+  const {facade,driver}=make('existing'),before=JSON.stringify(driver.state),snapshot=facade.getSnapshot();assert.equal(snapshot.companyLimit.maximum,1);assert.equal(snapshot.companyLimit.activeCount,1);assert.equal(snapshot.companyLimit.canCreate,false);assert.equal(snapshot.companyLimit.additionalLtdSupported,false);assert.equal(snapshot.companyLimit.reason,'one_active_ltd_limit');assert.deepEqual(snapshot.companyLimit.existingAction,{callback:'onOpenExistingCompany',nextRoute:'ltd.workspace.overview',enabled:true,disabledReason:null});
   await facade.onAddBusiness();const limited=await facade.onAddBusinessCategoryChosen({category:'limited_company'});assert.equal(limited.nextRoute,'ltd.one-company-limit');assert.equal(limited.data.limitReached,true);assert.equal(limited.data.noWrite,true);assert.equal(JSON.stringify(driver.state),before);
   const opened=await facade.onOpenExistingCompany({});assert.equal(opened.nextRoute,'ltd.workspace.overview');assert.equal(opened.data.noWrite,true);assert.equal(JSON.stringify(driver.state),before);
 });

@@ -48,3 +48,4 @@ test('proactive prompt is wired after successful first business and entry saves'
 test('offline shell includes the install policy and existing local app runtime',()=>{
   for(const asset of ['/src/core/pwa-install.js','/src/core/state-schema.js','/src/app/app.js','/index.html'])assert.ok(sw.includes(asset),asset);
 });
+test('service worker registration does not wait on third-party window load',()=>{assert.match(app,/registerTaxMateServiceWorker/);assert.match(app,/DOMContentLoaded/);assert.doesNotMatch(app,/window\.addEventListener\(['"]load['"][\s\S]{0,180}serviceWorker\.register/);});

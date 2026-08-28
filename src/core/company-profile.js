@@ -7,7 +7,7 @@
   if(!Money||!Domain)throw new Error('TaxMate company-profile dependencies are required');
 
   const PROFILE_SCHEMA_VERSION=1;
-  const PROFILE_RULESET_VERSION='uk-ltd-profile.2026-08-22.2';
+  const PROFILE_RULESET_VERSION='uk-ltd-profile.2026-08-28.3';
   const COMPANY_NUMBER_STATUSES=Object.freeze(['provided','not_available']);
   const TRADING_STATUSES=Object.freeze(['not_started','trading','dormant','ceased']);
   const CT_STATUSES=Object.freeze(['not_registered','registration_pending','registered','dormant','ceased','unknown']);
@@ -60,6 +60,7 @@
     return target.toISOString().slice(0,10);
   };
   const reason=(code,kind='review_required')=>({code,kind});
+  const emptyRegistryFacts=()=>({legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null});
 
   function createDraft(input={}){
     if(!text(input.entityId,128))throw new Error('Company entity identity is required');
@@ -72,6 +73,7 @@
       lifecycleStatus:'draft',
       assessmentStatus:'review_required',
       assessmentReasons:['company_legal_name_required'],
+      registryVerification:{schemaVersion:1,status:'not_checked',companyNumber:null,checkedAt:null,provider:'taxmate_draft',retryable:false,reasonCodes:['companies_house_verification_not_started'],registryFacts:emptyRegistryFacts()},
       createdAt:now,updatedAt:now,deletedAt:null,deviceId:input.deviceId||'company-profile'
     };
   }
@@ -89,6 +91,16 @@
     profile.shareholders=Array.isArray(profile.shareholders)?profile.shareholders:[];
     profile.shareClasses=Array.isArray(profile.shareClasses)?profile.shareClasses:[];
     profile.riskAnswers=plain(profile.riskAnswers)?profile.riskAnswers:{};
+    if(!plain(profile.registryVerification)){
+      const stamp=Number(profile.updatedAt)||Number(profile.createdAt)||Date.now();
+      if(profile.companyNumberStatus==='provided'&&companyNumber(profile.companyNumber))profile.registryVerification={schemaVersion:1,status:'manual_unverified',companyNumber:profile.companyNumber,checkedAt:stamp,provider:'taxmate_profile_migration',retryable:false,reasonCodes:['companies_house_verification_not_completed'],registryFacts:emptyRegistryFacts()};
+      else if(profile.companyNumberStatus==='not_available')profile.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:stamp,provider:'taxmate_profile_migration',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:emptyRegistryFacts()};
+      else profile.registryVerification={schemaVersion:1,status:'not_checked',companyNumber:null,checkedAt:null,provider:'taxmate_profile_migration',retryable:false,reasonCodes:['companies_house_verification_not_started'],registryFacts:emptyRegistryFacts()};
+    }else if(profile.registryVerification.status==='not_checked'&&profile.companyNumberStatus==='not_available'){
+      profile.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:Number(profile.updatedAt)||Number(profile.createdAt)||Date.now(),provider:'taxmate_profile_migration',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:emptyRegistryFacts()};
+    }else if(profile.registryVerification.status==='not_checked'&&profile.companyNumberStatus==='provided'&&companyNumber(profile.companyNumber)){
+      profile.registryVerification={schemaVersion:1,status:'manual_unverified',companyNumber:profile.companyNumber,checkedAt:Number(profile.updatedAt)||Number(profile.createdAt)||Date.now(),provider:'taxmate_profile_migration',retryable:false,reasonCodes:['companies_house_verification_not_completed'],registryFacts:emptyRegistryFacts()};
+    }
     const points=ownershipBasisPoints(profile.shareholders);
     if(points)profile.shareholders=profile.shareholders.map((holder,index)=>Object.assign({},holder,{ownershipBasisPoints:points[index]}));
     return profile;
@@ -120,6 +132,11 @@
     if(p.companyType!=null&&p.companyType!=='private_limited_by_shares')add('private_company_limited_by_shares_required','unsupported_profile');
     if(p.currency!=null&&p.currency!=='GBP')add('gbp_company_required','unsupported_profile');
     if(p.companyNumberStatus==='provided'&&!companyNumber(p.companyNumber))add('company_number_review_required','review_required');
+    if(p.companyNumberStatus==='provided'){
+      const registry=p.registryVerification;
+      if(!plain(registry)||registry.companyNumber!==p.companyNumber)add('companies_house_verification_not_completed','review_required');
+      else if(registry.status!=='verified')for(const code of registry.reasonCodes&&registry.reasonCodes.length?registry.reasonCodes:['companies_house_verification_needs_checking'])add(code,'review_required');
+    }
     if(Domain.isoDate(p.incorporationDate)&&p.tradingStatus==='trading'&&Domain.isoDate(p.tradingStartDate)&&p.tradingStartDate<p.incorporationDate)add('trading_before_incorporation','review_required');
     if(plain(p.accountingPeriod)&&Domain.isoDate(p.accountingPeriod.startDate)&&Domain.isoDate(p.accountingPeriod.endDate)){
       const duration=daysBetween(p.accountingPeriod.startDate,p.accountingPeriod.endDate);

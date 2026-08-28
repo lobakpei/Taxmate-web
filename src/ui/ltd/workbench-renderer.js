@@ -201,7 +201,7 @@
   function btn(label, cls, onClick, opts){
     opts=opts||{};
     return h('button',{class:'tm-btn '+(cls||'p'), type:'button', disabled: opts.disabled||busy(),
-      onClick:onClick},[label]);
+      dataset:opts.dataset||null, onClick:onClick},[label]);
   }
   function labelRow(text, infoId, hint){
     var kids=[text];
@@ -498,11 +498,12 @@
   }
   function homeRow(b){
     var prim=b.actions&&b.actions.primary||{};
-    var cb=prim.callback, isLtd=b.businessType==='limited_company';
+    var cb=prim.callback, isLtd=b.businessType==='limited_company',locked=isLtd&&prim.enabled===false;
     var sub, cta, avCls='', avTxt=(b.name||'?').slice(0,1).toUpperCase();
     var amt=b.summary&&b.summary.amountMinor;
     var neg = amt!=null && amt<0;
-    if(cb==='onResumeCompanyDraft'){ sub=t('design.ltd_setup_pending'); cta=t('design.finish_setup'); avCls='draft'; }
+    if(locked){ sub=t('plan.ltd_pro_only'); cta=t('plan.pro_launch_price'); avCls='draft'; }
+    else if(cb==='onResumeCompanyDraft'){ sub=t('design.ltd_setup_pending'); cta=t('design.finish_setup'); avCls='draft'; }
     else if(isLtd){ sub=t('workspace.ltd_subtitle',{percent:(b.share&&b.share.percent)||0}); cta=t('common.open'); }
     else { sub=b.structure==='partnership'?t('design.partnership'):t('design.sole_trader'); cta=null; }
     var attn=b.attention&&b.attention.count>0;
@@ -511,7 +512,7 @@
     if(amt!=null && cb!=='onResumeCompanyDraft') right.append(h('div',{class:'amt'+(neg?' neg':'')},[money(amt)]));
     if(attn) right.append(h('div',{class:'cta attn',text:t('design.needs_attention')}));
     else if(cta) right.append(h('div',{class:'cta',text:cta}));
-    return h('button',{class:'tm-row', type:'button',
+    return h('button',{class:'tm-row', type:'button',disabled:locked,
       onClick:function(){ run(cb, prim.input||{}, {}); }},[
       h('div',{class:'av '+avCls, text:avTxt}),
       h('div',{},[h('div',{class:'nm',text:b.name}), h('div',{class:'mt',text:sub})]),
@@ -605,12 +606,15 @@
       ],onPick:function(v){ setField(sid,'companyNumberStatus',v); persistDraft(sid,'companyNumberStatus','select-one',v); }})
     ];
     if(reg==='provided'){
-      body.push(textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text'}));
-      body.push(h('div',{style:'margin-top:8px'},[ btn(t('s1.check_ch'),'s',function(){
-        run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){ toast(t('s1.lookup_unavailable')); },onOk:function(r){var co=r.data&&r.data.company||{};if(co.name)setField(sid,'legalName',co.name);if(co.incorporationDate)setField(sid,'incorporationDate',co.incorporationDate);paint();}}); }) ]));
-      body.push(lookupState());
-      body.push(textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text'}));
-      body.push(dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date')}));
+      body.push(h('div',{class:'tm-company-identity-stack'},[
+        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text'}),
+        h('div',{},[btn(t('s1.check_ch'),'s',function(){
+          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){toast(t('s1.lookup_unavailable'));},onOk:function(r){var co=r.data&&r.data.company||{};if(co.name)setField(sid,'legalName',co.name);if(co.incorporationDate)setField(sid,'incorporationDate',co.incorporationDate);paint();}});
+        })]),
+        lookupState(),
+        textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text'}),
+        dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date')})
+      ]));
     } else if(reg==='not_available'){
       body.push(textField({scope:sid,fid:'legalName',label:t('s1.proposed_name'),placeholder:t('s1.proposed_name'),type:'text'}));
       body.push(notice('info',null,t('s1.draft_notice')));
@@ -628,7 +632,7 @@
     if(ls.status==='loading') return notice('info',null,t('s1.checking'));
     if(ls.status==='found'){
       var co=ls.company||{};
-      var n=notice('ok', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
+      var n=notice(ls.verificationStatus==='verified'?'ok':'warn', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
       if(co.registryUrl)n.append(h('a',{class:'tm-linkbtn',href:co.registryUrl,target:'_blank',rel:'noopener noreferrer',style:'display:inline-block;margin-top:4px'},t('s1.public_record')));
       return n;
     }
@@ -654,12 +658,12 @@
     ];
     if(trading==='trading') body.push(dateField({scope:sid,fid:'tradingStartDate',label:t('s2.start_date'),onChange:function(){requestPeriodPlan(sid,'trading');}}));
     body.push(periodPlanCard());
+    body.push(periodOverrideEntry(sid));
     var ctStatus=fieldVal(sid,'corporationTaxStatus', getChoice(sid,'ct')||'');
     body.push(h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.ct_account_question'), infoTrigger('s2.ct_account')]));
     body.push(choiceGroup({scope:sid,name:'ct',row:true,current:ctStatus,options:[
       {v:'registered',title:t('common.yes')},{v:'not_registered',title:t('s2.not_yet')},{v:'unknown',title:t('common.not_sure')}
     ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); }}));
-    body.push(periodOverrideEntry(sid));
     var foot=[ btn(t('common.continue'),'p',function(){
       var pp=companyPeriod(sid);
       submitStep(2,sid,{ tradingStatus:trading, tradingStartDate:fieldVal(sid,'tradingStartDate',''),
@@ -1001,17 +1005,25 @@
   function companyDetailsCard(){
     var c=S().company||{}; var e=c.entity||{}; var prof=c.profile||{};
     var num=e.companyNumber||prof.companyNumber; var inc=e.incorporationDate||prof.incorporationDate;
+    var registry=prof.registryVerification||null;
     var trading=(prof.tradingStatus||e.tradingStatus)==='trading';
     var rows=[[t('records.registered_name'), h('span',{text:e.name||'\u2014'})]];
     if(num) rows.push([t('records.company_number'), h('span',{class:'tm-num',text:num})]);
     if(inc) rows.push([t('records.incorporation_date'), h('span',{class:'tm-num',text:isoToDisplay(inc)})]);
+    if(registry){
+      var registryText=registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required');
+      rows.push([t('term.companies_house'),h('span',{text:registryText})]);
+    }
     rows.push([t('records.trading_status'), h('span',{text: trading?t('records.trading_yes'):t('records.trading_no')})]);
     var tstart=prof.tradingStartDate||e.tradingStartDate;
     if(trading && tstart) rows.push([t('s5.trading_since'), h('span',{class:'tm-num',text:isoToDisplay(tstart)})]);
     return h('div',{},[
       h('div',{class:'tm-h',text:t('records.company_details')}),
       summRows(rows),
-      h('div',{style:'margin-top:8px'},[ btn(t('records.record_change'),'g sm',function(){ run('onOpenCompanyEdit',{},{}); }) ])
+      h('div',{style:'margin-top:8px'},[
+        btn(t('records.record_change'),'g sm',function(){ run('onOpenCompanyEdit',{},{}); }),
+        registry&&registry.companyNumber?btn(t('s1.check_ch'),'g sm',function(){run('onRecheckCompaniesHouse',{companyNumber:registry.companyNumber},{onReview:function(){paint();},onOk:function(){paint();}});}):null
+      ].filter(Boolean))
     ]);
   }
   // F-05: Salary & dividends — real recorded states with progressive disclosure.
@@ -1263,6 +1275,7 @@
     var sid='ltd.records.company-edit';
     var prof=(S().workspace&&S().workspace.projection&&S().workspace.projection.company)||{};
     var field=getChoice(sid,'field','legalName');
+    var registry=(S().company&&S().company.profile&&S().company.profile.registryVerification)||null;
     var nodes=[backBar(function(){ run('onBack',{},{}); }, t('records.edit_company')),
       notice('info', t('records.correct_setup'), null),
       selectField({scope:sid,fid:'field',label:t('records.correct_setup'),persist:false,default:'legalName',options:[
@@ -1270,6 +1283,7 @@
         ['tradingStartDate',t('s2.start_date')],['tradingStatus',t('term.trading_start')]
       ], onChange:function(v){ setChoice(sid,'field',v); }})
     ];
+    if(registry){nodes.push(notice(registry.status==='verified'?'ok':'warn',t('term.companies_house'),registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required')));if(registry.companyNumber)nodes.push(btn(t('s1.check_ch'),'s',function(){run('onRecheckCompaniesHouse',{companyNumber:registry.companyNumber},{scope:sid,onReview:function(){paint();},onOk:function(){paint();}});}));}
     if(field==='incorporationDate'||field==='tradingStartDate') nodes.push(dateField({scope:sid,fid:'value',persist:false,label:t('design.corrected_detail')}));
     else nodes.push(textField({scope:sid,fid:'value',label:t('design.corrected_detail'),type:'text',persist:false}));
     nodes.push(textField({scope:sid,fid:'reason',label:t('records.reason'),type:'text',persist:false}));
@@ -1457,7 +1471,7 @@
       body:body4,
       foot:[ btn(t('common.save'),'p',function(){ flushActive();
           var base=basePayload(sid);
-          var taxFacts={capitalUseOverOneYear:(capital||undefined),specialCost:(special||undefined),invoiceToCompany:(invoice||undefined),unsureTreatment:unsure==='yes'};
+          var taxFacts={capitalUseOverOneYear:(capital||undefined),specialCost:(special||undefined),invoiceToCompany:(invoice||undefined),companyUseScope:onlyThis==='yes'?'only_company':onlyThis==='no'?'not_only_company':'unknown',unsureTreatment:unsure==='yes'};
           var catFacts={ companyExpenseCategory: expCat, taxFacts:taxFacts };
           // The unsupported third-party payer must NEVER reach a posting callback — resolved
           // FIRST via payerAction(), before the shared/company/personal branches, so a shared
@@ -1577,39 +1591,19 @@
   }
   function checkRow(label){ return h('div',{class:'tm-notice ok'},[h('span',{class:'i',text:'\u2713'}), h('div',{},[label])]); }
   function sheetScenario(){ var sid='ui.scenario';
-    var confirmed=getChoice(sid,'confirm','')==='yes';
-    var baselineFacts=[
-      ['noActualSalaryOrDividendInBaseline','scenario.assumption_no_actual'],
-      ['directorClass1CategoryA','scenario.assumption_class1'],
-      ['directorForFullTaxYear','scenario.assumption_full_year'],
-      ['standardTaxCode1257L','scenario.assumption_tax_code'],
-      ['noOtherEmploymentOrPayeAdjustments','scenario.assumption_no_other_paye'],
-      ['employmentAllowanceUnavailableConfirmed','scenario.assumption_no_employment_allowance'],
-      ['useMaximumEligibleCarriedLoss','scenario.assumption_max_loss'],
-      ['otherShareholderPersonalTaxDataAbsent','scenario.assumption_other_shareholder_absent']
-    ];
-    var factsConfirmed={}; baselineFacts.forEach(function(pair){factsConfirmed[pair[0]]=getChoice(sid,pair[0],'')==='yes';});
-    var allFactsConfirmed=baselineFacts.every(function(pair){return factsConfirmed[pair[0]];});
     var body=[
       notice('neutral', null, t('scenario.compare_intro')),
-      textField({scope:sid,fid:'amountMinor',label:t('scenario.amount_question'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'mixSalaryMinor',label:t('scenario.mix_salary'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'mixDividendMinor',label:t('scenario.mix_dividend'),kind:'money',type:'number',persist:false}),
-      dateField({scope:sid,fid:'when',persist:false,label:t('scenario.when')}),
-      textField({scope:sid,fid:'personalIncome',label:t('scenario.personal_income'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'personalDividends',label:t('scenario.personal_dividends'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'class4',label:t('scenario.class4_ni'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'openingReserve',label:t('scenario.opening_reserve'),kind:'money',type:'number',persist:false}),
-      textField({scope:sid,fid:'evidence',label:t('scenario.accounts_evidence'),type:'text',persist:false}),
-      h('div',{class:'tm-h',text:t('scenario.baseline_title')})
+      textField({scope:sid,fid:'amountMinor',label:t('scenario.amount_question'),kind:'money',type:'number',persist:false,onInput:function(value){
+        var submit=document.querySelector('[data-action="scenario-compare"]');
+        if(submit)submit.disabled=(toMinor(value)||0)<=0||busy();
+      }}),
+      dateField({scope:sid,fid:'when',persist:false,label:t('scenario.when')})
     ];
-    baselineFacts.forEach(function(pair){body.push(checkControl({label:t(pair[1]),checked:factsConfirmed[pair[0]],onToggle:function(v){setChoice(sid,pair[0],v?'yes':'');}}));});
-    body.push(checkControl({label:t('scenario.confirm_baseline'),checked:confirmed,onToggle:function(v){setChoice(sid,'confirm',v?'yes':'');}}));
     return sheet({ kick:t('scenario.title'), title:t('scenario.title'), body:body,
       foot:[ btn(t('tax.compare'),'p',function(){ flushActive();
-          var amt=toMinor(fieldVal(sid,'amountMinor',''))||0, mixSalary=toMinor(fieldVal(sid,'mixSalaryMinor',''))||0, mixDividend=toMinor(fieldVal(sid,'mixDividendMinor',''))||0; var when=fieldVal(sid,'when','')||todayISO();
-          run('onRunScenario',{scenarios:[{kind:'salary',amountMinor:amt},{kind:'dividend',amountMinor:amt},{kind:'mix',salaryGrossMinor:mixSalary,dividendTotalMinor:mixDividend},{kind:'leave',amountMinor:0}],asOfDate:when,personalNonDividendIncomeBeforeScenarioMinor:toMinor(fieldVal(sid,'personalIncome',''))||0,personalDividendIncomeBeforeScenarioMinor:toMinor(fieldVal(sid,'personalDividends',''))||0,baselineClass4NiMinor:toMinor(fieldVal(sid,'class4',''))||0,confirmedOpeningDistributableReserveMinor:toMinor(fieldVal(sid,'openingReserve',''))||0,accountsEvidenceRefs:[fieldVal(sid,'evidence','')].filter(Boolean),confirmations:factsConfirmed},{scope:sid,onReview:function(){ closeSheet(); },onOk:function(){ closeSheet(); }});
-        }, {disabled:(toMinor(fieldVal(sid,'amountMinor',''))||0)<=0||(toMinor(fieldVal(sid,'mixSalaryMinor',''))||0)+(toMinor(fieldVal(sid,'mixDividendMinor',''))||0)!==(toMinor(fieldVal(sid,'amountMinor',''))||0)||!confirmed||!allFactsConfirmed||!fieldVal(sid,'evidence','')}),
+          var amt=toMinor(fieldVal(sid,'amountMinor',''))||0,when=fieldVal(sid,'when','')||todayISO();
+          run('onRunScenario',{ordinaryFacts:{amountMinor:amt,when:when},asOfDate:when},{scope:sid,onReview:function(){ closeSheet(); },onOk:function(){ closeSheet(); }});
+        }, {disabled:(toMinor(fieldVal(sid,'amountMinor',''))||0)<=0,dataset:{action:'scenario-compare'}}),
         btn(t('common.cancel'),'g',function(){ closeSheet(); }) ], onClose:closeSheet });
   }
   function sheetSalary(){ var sid='ui.salary';
@@ -1834,7 +1828,7 @@
   function paint(){
     var mount=LAST.mount; if(!mount||!LAST.snapshot) return;
     flushActive();
-    var app=h('div',{class:'tm-app', 'data-theme':UI.theme, dir:isRTL()?'rtl':'ltr'});
+    var app=h('div',{class:'tm-app', 'data-theme':UI.theme, dir:isRTL()?'rtl':'ltr',lang:UI.locale});
     app.append(devbar());
     var col=h('div',{class:'tm-col'});
     col.append(screenFor(routeId()));

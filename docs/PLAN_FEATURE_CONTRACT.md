@@ -32,3 +32,11 @@ Canonical product contract for TaxMate 2.0.0. Plus includes every Free feature. 
 - MTD guidance remains Free. `SA103 PDF export` is absent until a real independent feature exists.
 
 `PLAN_FEATURE_CONTRACT_GATE` checks this document against `FEATURE_TIER`, plan-card arrays, Help content, Storage/Firestore rules and callable enforcement.
+
+## Ltd V1.5 candidate contract (Founder decision, 28 August 2026)
+
+The isolated Ltd V1.5 production-integration candidate adds a separate, fail-closed contract: every active limited-company read, create, bookkeeping, tax, period, remuneration, ownership, Companies House, working-pack, Ltd cloud-sync, Ltd backup and Ltd restore action requires an effective Pro entitlement. Free and Plus do not receive active Ltd functionality. Account deletion, removal of the active company and reading the archived-access status remain available so a user is never trapped.
+
+Pro includes one active limited company per account/subscription. There is no additional-company add-on, no multi-Ltd mode and no associated-company workflow. The approved monthly copy is **Launch price £9.99/month** and **Standard price £11.99/month**. This is a launch price, not a legacy or grandfathered price, and the UI must never use “Was £11.99”. Annual Pro pricing is intentionally pending and must not be invented.
+
+This candidate does not mutate production Stripe price IDs, current subscriptions, checkout configuration or the live TaxMate 2.0.6 plan cards. Those production billing surfaces still contain the established £7.99/month and £59.99/year Pro prices and must be reconciled in a separately authorised pre-release billing step before Ltd V1.5 can deploy. See `docs/LTD_V1.5_PLAN_FEATURE_CONTRACT_20260828.md` for the exact action matrix.

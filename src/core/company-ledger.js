@@ -33,7 +33,7 @@
   const safeMinor=(value,label)=>{Money.assertMinor(value,label,{nonNegative:true});return value;};
 
   function signature(facts){
-    return JSON.stringify([facts.type,facts.id,facts.entityId,facts.date,facts.amountMinor,facts.description||null,facts.invoicePartyId||null,facts.payerPaymentAccountId||null,facts.receiverPaymentAccountId||null,facts.payerOwnerType||null,facts.receiverOwnerType||null,facts.category||null,facts.treatmentBasis||null,facts.reimbursementExpected==null?null:facts.reimbursementExpected,facts.shareCapitalEvidenceConfirmed==null?null:facts.shareCapitalEvidenceConfirmed,facts.sharedExpense||null,facts.companyTaxTreatment||null,facts.salarySnapshot||null,facts.dividendSnapshot||null,facts.openingBalances||null,facts.evidenceRefs||[]]);
+    return JSON.stringify([facts.type,facts.id,facts.entityId,facts.date,facts.amountMinor,facts.description||null,facts.invoicePartyId||null,facts.payerPaymentAccountId||null,facts.receiverPaymentAccountId||null,facts.payerOwnerType||null,facts.receiverOwnerType||null,facts.category||null,facts.treatmentBasis||null,facts.reimbursementExpected==null?null:facts.reimbursementExpected,facts.shareCapitalEvidenceConfirmed==null?null:facts.shareCapitalEvidenceConfirmed,facts.sharedExpense||null,facts.expenseFactProvenance||null,facts.companyTaxTreatment||null,facts.salarySnapshot||null,facts.dividendSnapshot||null,facts.openingBalances||null,facts.evidenceRefs||[]]);
   }
 
   function validateFacts(facts,profile){
@@ -49,6 +49,7 @@
         const company=Money.sumMinor(shared.allocations.filter(item=>item.scope==='business'&&item.entityId===facts.entityId).map(item=>item.amountMinor),'Company shared allocation');if(company!==shared.companyAmountMinor)throw new Error('Invalid shared-expense company allocation');
       }
     }
+    if(facts.expenseFactProvenance!=null){const p=facts.expenseFactProvenance;if(!p||p.schemaVersion!==1||!['only_company','not_only_company','shared','unknown'].includes(p.companyUseScope)||typeof p.allocationDerived!=='boolean')throw new Error('Invalid expense fact provenance');}
     if(facts.salarySnapshot!=null)Domain.validateSalarySnapshot(facts.salarySnapshot);if(facts.dividendSnapshot!=null)Domain.validateDividendSnapshot(facts.dividendSnapshot);
     if(facts.evidenceRefs!=null&&(!Array.isArray(facts.evidenceRefs)||facts.evidenceRefs.some(ref=>!text(ref,512))))throw new Error('Invalid company evidence reference');
     if(facts.companyTaxTreatment!=null)CompanyTreatment.validateDecision(facts.companyTaxTreatment,facts,profile);
@@ -61,6 +62,7 @@
     if(facts.reimbursementExpected!=null)source.reimbursementExpected=facts.reimbursementExpected;
     if(facts.shareCapitalEvidenceConfirmed!=null)source.shareCapitalEvidenceConfirmed=facts.shareCapitalEvidenceConfirmed;
     if(facts.sharedExpense!=null)source.sharedExpense=clone(facts.sharedExpense);
+    if(facts.expenseFactProvenance!=null)source.expenseFactProvenance=clone(facts.expenseFactProvenance);
     if(facts.companyTaxTreatment!=null)source.companyTaxTreatment=clone(facts.companyTaxTreatment);
     if(facts.salarySnapshot!=null)source.salarySnapshot=clone(facts.salarySnapshot);if(facts.dividendSnapshot!=null)source.dividendSnapshot=clone(facts.dividendSnapshot);
     if(facts.evidenceRefs&&facts.evidenceRefs.length)source.evidenceRefs=clone(facts.evidenceRefs);

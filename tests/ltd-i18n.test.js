@@ -19,4 +19,4 @@ test('every literal renderer copy key exists in every locale',()=>{
   for(const locale of locales){const dictionary={...copy.design_scaffolding[locale],...copy.canonical[locale]};for(const key of keys)assert.ok(Object.hasOwn(dictionary,key),`${locale}:${key}`);}
 });
 
-test('Urdu remains the only RTL locale and all supported locale dictionaries are non-empty',()=>{assert.equal(locales.includes('ur'),true);assert.ok(Object.keys(copy.canonical.ur).length>0);});
+test('Urdu remains the only RTL locale and the rendered app carries locale and direction semantics',()=>{const source=fs.readFileSync(path.join(root,'src','ui','ltd','workbench-renderer.js'),'utf8');assert.equal(locales.includes('ur'),true);assert.ok(Object.keys(copy.canonical.ur).length>0);assert.match(source,/dir:isRTL\(\)\?'rtl':'ltr'/);assert.match(source,/lang:UI\.locale/);});

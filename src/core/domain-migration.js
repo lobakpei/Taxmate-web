@@ -1,12 +1,12 @@
 (function(root,factory){
   const node=typeof module==='object'&&module.exports;
-  const api=factory(node?require('./money'):root.TaxMateMoney,node?require('./domain-schema'):root.TaxMateDomain,node?require('./partnership'):root.TaxMatePartnership);
+  const api=factory(node?require('./money'):root.TaxMateMoney,node?require('./domain-schema'):root.TaxMateDomain,node?require('./partnership'):root.TaxMatePartnership,node?require('./company-profile'):root.TaxMateCompanyProfile);
   if(node) module.exports=api;
   root.TaxMateDomainMigration=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(Money,Domain,Partnership){
+})(typeof globalThis!=='undefined'?globalThis:this,function(Money,Domain,Partnership,CompanyProfile){
   'use strict';
-  if(!Money||!Domain||!Partnership) throw new Error('TaxMate domain migration dependencies are required');
-  const PROJECTION_VERSION=5,clone=value=>JSON.parse(JSON.stringify(value));
+  if(!Money||!Domain||!Partnership||!CompanyProfile) throw new Error('TaxMate domain migration dependencies are required');
+  const PROJECTION_VERSION=6,clone=value=>JSON.parse(JSON.stringify(value));
   function emptyDomain(now,deviceId){const stamp=Number(now)||Date.now();return{schemaVersion:Domain.DOMAIN_SCHEMA_VERSION,projectionVersion:PROJECTION_VERSION,migrationStatus:'complete',migratedAt:stamp,updatedAt:stamp,deviceId:deviceId||'legacy-migration',persons:[],entities:[],companyProfiles:[],projects:[],paymentAccounts:[],economicEvents:[],companyTaxPeriods:[],companyLossRecords:[],salaryRecords:[],dividendDeclarations:[],personalIncomeLinks:[],migrationIssues:[],syncConflicts:[]};}
   function latestLegacyRecords(entries,tombstones){
     const map=new Map(),compare=(left,right)=>{
@@ -26,7 +26,7 @@
     if(!domain.persons.some(person=>person.id==='person:account-holder'))domain.persons.push({id:'person:account-holder',accountUid:null,origin:'legacy_v5'});
     const priorEntities=new Map((prior.entities||[]).map(entity=>[entity.id,entity])),legacyEntityIds=new Set();
     domain.entities=(prior.entities||[]).filter(entity=>entity.origin!=='legacy_v5');
-    domain.companyProfiles=(prior.companyProfiles||[]).map(clone);
+    domain.companyProfiles=(prior.companyProfiles||[]).map(profile=>CompanyProfile.normalize(profile));
     domain.companyTaxPeriods=(prior.companyTaxPeriods||[]).map(clone);domain.companyLossRecords=(prior.companyLossRecords||[]).map(clone);domain.salaryRecords=(prior.salaryRecords||[]).map(clone);domain.dividendDeclarations=(prior.dividendDeclarations||[]).map(clone);domain.personalIncomeLinks=(prior.personalIncomeLinks||[]).map(clone);
     const businesses=(state.businesses||[]).map(original=>{
       const business=clone(original),type=business.structure==='partnership'?'partnership':'sole_trade';

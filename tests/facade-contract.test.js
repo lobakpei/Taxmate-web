@@ -5,7 +5,7 @@ const {CALLBACKS}=require('../src/integration/ltd/TaxMateLtdUIFacade');
 const {make}=require('./test-fixture');
 
 test('facade exposes the complete stable semantic callback surface',()=>{
-  const {facade}=make();assert.equal(CALLBACKS.length,46);for(const callback of CALLBACKS)assert.equal(typeof facade[callback],'function',callback);const snapshot=facade.getSnapshot();assert.deepEqual(snapshot.callbacks,CALLBACKS);assert.equal(snapshot.contractVersion,'taxmate-ltd-ui-facade.3');assert.equal(snapshot.packageStatus,'INTEGRATED_CANDIDATE');assert.equal(snapshot.runtime.externalNetwork,false);assert.equal(snapshot.runtime.firebase,false);assert.equal(JSON.stringify(snapshot).includes('<div'),false);
+  const {facade}=make();assert.equal(CALLBACKS.length,47);assert.ok(CALLBACKS.includes('onRecheckCompaniesHouse'));for(const callback of CALLBACKS)assert.equal(typeof facade[callback],'function',callback);const snapshot=facade.getSnapshot();assert.deepEqual(snapshot.callbacks,CALLBACKS);assert.equal(snapshot.contractVersion,'taxmate-ltd-ui-facade.3');assert.equal(snapshot.packageStatus,'INTEGRATED_CANDIDATE');assert.equal(snapshot.runtime.externalNetwork,false);assert.equal(snapshot.runtime.firebase,false);assert.equal(JSON.stringify(snapshot).includes('<div'),false);
 });
 
 test('fresh and existing modes use the same facade and canonical dataset',()=>{

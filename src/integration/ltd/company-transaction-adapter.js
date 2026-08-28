@@ -20,11 +20,13 @@ function expenseCategory(input={}){
 
 function deriveExpenseTreatment(input={}){
   const category=expenseCategory(input),taxFacts=input.taxFacts||{};
-  if(category!=='ordinary_running')return{canonicalCategory:category,treatmentBasis:`${category}_review_required`,confirmations:{}};
-  const confirmations={revenueExpenseConfirmed:true,whollyAndExclusivelyBusiness:true,capitalExpense:false};
+  const shared=input.sharedExpense||null,scope=shared?'shared':taxFacts.companyUseScope==='only_company'?'only_company':taxFacts.companyUseScope==='not_only_company'?'not_only_company':'unknown';
+  const provenance={schemaVersion:1,companyUseScope:scope,sourceQuestion:'money.only_company',answer:taxFacts.companyUseScope||'unknown',allocationDerived:!!shared,companyAllocationMinor:shared&&shared.companyAmountMinor||null,grossAmountMinor:shared&&shared.grossAmountMinor||input.amountMinor||null,derivedAtAction:'company_expense_capture'};
+  if(category!=='ordinary_running')return{canonicalCategory:category,treatmentBasis:`${category}_review_required`,confirmations:{},provenance};
+  const confirmations={revenueExpenseConfirmed:true,whollyAndExclusivelyBusiness:scope==='only_company',capitalExpense:false};
   if(taxFacts.specialCost==='no')confirmations.specificallyDisallowed=false;
   for(const field of ['wouldBeDeductibleAfterTrading','reliefClaimedElsewhere','advancePaymentOrStock'])if(typeof taxFacts[field]==='boolean')confirmations[field]=taxFacts[field];
-  return{canonicalCategory:category,treatmentBasis:'ordinary_running_expense_confirmed',confirmations};
+  return{canonicalCategory:category,treatmentBasis:scope==='only_company'?'ordinary_running_expense_confirmed':'ordinary_running_expense_review_required',confirmations,provenance};
 }
 
 function deriveIncomeTreatment(input={}){

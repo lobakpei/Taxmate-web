@@ -3,20 +3,16 @@
 const fs=require('node:fs');
 const path=require('node:path');
 const {spawnSync}=require('node:child_process');
+const {localToolEnvironment,localBinary,localNodePath}=require('./local-tool-runtime');
 
 const root=path.resolve(__dirname,'..');
-const jdkRoot=path.join(root,'.tools','jdk');
-const jdkName=fs.readdirSync(jdkRoot).find(name=>fs.existsSync(path.join(jdkRoot,name,'bin','java.exe')));
-if(!jdkName)throw new Error('Portable JDK not found under .tools/jdk');
-const javaHome=path.join(jdkRoot,jdkName);
-const firebase=path.join(root,'node_modules','.bin','firebase.cmd');
+const firebase=localBinary(root,path.join('node_modules','.bin','firebase.cmd'));
 const generatedEnv=path.join(root,'functions','.env.local'),hadEnv=fs.existsSync(generatedEnv);
 const evidence=process.env.TAXMATE_PAID_SYNC_EVIDENCE||path.join(root,'.paid-sync-browser-evidence');
+const runtime=localToolEnvironment(root);
 const env={
-  ...process.env,
-  JAVA_HOME:javaHome,
-  PATH:path.join(javaHome,'bin')+path.delimiter+process.env.PATH,
-  XDG_CONFIG_HOME:path.join(root,'.tools','config'),
+  ...runtime.env,
+  NODE_PATH:localNodePath(root),
   FUNCTIONS_DISCOVERY_TIMEOUT:'60000',
   STRIPE_SECRET_KEY:'emulator-placeholder',
   STRIPE_WEBHOOK_SECRET:'emulator-placeholder',

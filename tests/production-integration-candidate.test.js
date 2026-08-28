@@ -1,0 +1,108 @@
+'use strict';
+const assert=require('node:assert/strict');
+const crypto=require('node:crypto');
+const fs=require('node:fs');
+const os=require('node:os');
+const path=require('node:path');
+const test=require('node:test');
+const JSZip=require('jszip');
+const Rules=require('../src/core/company-tax-rules');
+const CompanyState=require('../src/integration/ltd/company-state');
+const Repository=require('../src/integration/ltd/company-state-repository');
+const LtdSync=require('../src/core/ltd-sync');
+const Sync=require('../src/core/sync');
+const Evidence=require('../src/core/company-evidence');
+const Portable=require('../src/core/portable-backup');
+const TransactionAdapter=require('../src/integration/ltd/company-transaction-adapter');
+const CompanyAccess=require('../src/core/company-access');
+const ProfileHistory=require('../src/core/company-profile-history');
+const {CanonicalCompanyDriver,DEFAULT_NOW}=require('../src/integration/ltd/CanonicalCompanyDriver');
+const {make,PRO_ENTITLEMENT}=require('./test-fixture');
+
+const clone=value=>JSON.parse(JSON.stringify(value));
+const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+test('FY2027 is official-source locked and covers current cross-year and leap-year periods',()=>{
+  assert.deepEqual(Rules.validateRuleset(Rules.RULESET),{valid:true,errors:[]});
+  assert.equal(Rules.RULESET.supportedFinancialYears.at(-1).id,'FY2027');
+  assert.equal(Rules.RULESET.supportedFinancialYears.at(-1).financialYearDays,366);
+  assert.ok(Rules.RULESET.officialSources.some(source=>source.id==='UKPGA-2026-11-SECTIONS-11-12'));
+  for(const [start,end,days] of [['2026-04-01','2027-03-31',365],['2026-08-15','2027-08-14',365],['2027-04-01','2028-03-31',366],['2027-08-01','2028-01-31',184]]){const result=Rules.rulesForPeriod(start,end,'2026-08-28');assert.equal(result.status,'supported_calculated',`${start} to ${end}`);assert.equal(result.days,days);}
+});
+
+test('FY2027 thresholds, marginal relief, short periods and associated-company divisor use exact pence maths',()=>{
+  const year=Rules.RULESET.supportedFinancialYears.at(-1);
+  assert.deepEqual(Rules.calculateEstimate(5_000_000,5_000_000,366,year),assertion('small_profits',950_000,5_000_000,25_000_000));
+  assert.deepEqual(Rules.calculateEstimate(25_000_000,25_000_000,366,year),assertion('main_rate',6_250_000,5_000_000,25_000_000));
+  const marginal=Rules.calculateEstimate(10_000_000,10_000_000,366,year);assert.equal(marginal.band,'marginal_relief');assert.equal(marginal.marginalReliefMinor,225_000);assert.equal(marginal.corporationTaxEstimateMinor,2_275_000);
+  const short=Rules.calculateEstimate(2_500_000,2_500_000,183,year);assert.equal(short.band,'small_profits');assert.equal(short.lowerThresholdMinor,2_500_000);
+  const associated=Rules.calculateEstimate(6_000_000,6_000_000,366,year,{associatedCompanies:1});assert.equal(associated.thresholdDivisor,2);assert.equal(associated.lowerThresholdMinor,2_500_000);assert.equal(associated.upperThresholdMinor,12_500_000);assert.equal(associated.marginalReliefMinor,97_500);assert.equal(associated.corporationTaxEstimateMinor,1_402_500);
+  function assertion(band,tax,lower,upper){return{band,taxableProfitMinor:band==='small_profits'?5_000_000:25_000_000,augmentedProfitMinor:band==='small_profits'?5_000_000:25_000_000,associatedCompanies:0,thresholdDivisor:1,lowerThresholdMinor:lower,upperThresholdMinor:upper,mainRateTaxMinor:band==='small_profits'?1_250_000:6_250_000,marginalReliefMinor:0,corporationTaxEstimateMinor:tax,formulaVersion:Rules.RULESET_VERSION,roundingPolicy:Rules.RULESET.estimateRoundingPolicy};}
+});
+
+test('expense tax facts are derived only from persisted company-use facts',()=>{
+  const only=TransactionAdapter.deriveExpenseTreatment({amountMinor:1000,companyExpenseCategory:'day_to_day',taxFacts:{capitalUseOverOneYear:'no',companyUseScope:'only_company'}});assert.equal(only.confirmations.whollyAndExclusivelyBusiness,true);assert.equal(only.provenance.companyUseScope,'only_company');assert.equal(only.provenance.sourceQuestion,'money.only_company');
+  const categoryOnly=TransactionAdapter.deriveExpenseTreatment({amountMinor:1000,companyExpenseCategory:'day_to_day',taxFacts:{capitalUseOverOneYear:'no'}});assert.notEqual(categoryOnly.confirmations.whollyAndExclusivelyBusiness,true);assert.equal(categoryOnly.canonicalCategory,'ordinary_running');assert.equal(categoryOnly.treatmentBasis,'ordinary_running_expense_review_required');assert.equal(categoryOnly.provenance.companyUseScope,'unknown');
+  const shared=TransactionAdapter.deriveExpenseTreatment({amountMinor:1000,companyExpenseCategory:'day_to_day',taxFacts:{capitalUseOverOneYear:'no',companyUseScope:'only_company'},sharedExpense:{grossAmountMinor:1000,companyAmountMinor:800}});assert.notEqual(shared.confirmations.whollyAndExclusivelyBusiness,true);assert.equal(shared.provenance.companyUseScope,'shared');assert.equal(shared.provenance.companyAllocationMinor,800);
+});
+
+test('Companies House provenance survives reload and unsupported/not-found results never erase manual facts',async()=>{
+  const fixture=make('existing'),repo=fixture.driver.repository,manual={name:fixture.driver.activeProfile().legalName,date:fixture.driver.activeProfile().incorporationDate,number:fixture.driver.activeProfile().companyNumber};
+  fixture.driver.companiesHouseProvider={isNetworkProvider:true,async lookup(){return{status:'found',verificationStatus:'needs_checking',reasonCodes:['companies_house_status_needs_checking'],company:{number:'00000000',name:'ARCHIVED COMPANY LTD',incorporationDate:'2025-12-15',status:'dissolved',type:'ltd',registryUrl:'https://find-and-update.company-information.service.gov.uk/company/00000000'}};}};
+  const result=await fixture.facade.onRecheckCompaniesHouse({companyNumber:'00000000'});assert.equal(result.status,'ok');assert.equal(fixture.driver.activeProfile().registryVerification.status,'needs_checking');assert.deepEqual({name:fixture.driver.activeProfile().legalName,date:fixture.driver.activeProfile().incorporationDate,number:fixture.driver.activeProfile().companyNumber},manual);
+  const reloaded=new CanonicalCompanyDriver({mode:'existing',repository:repo,now:()=>DEFAULT_NOW,entitlementSnapshot:PRO_ENTITLEMENT});assert.equal(reloaded.readSnapshot().lookupStatus.verificationStatus,'needs_checking');assert.equal(reloaded.readSnapshot().lookupStatus.company.status,'dissolved');
+  reloaded.companiesHouseProvider={isNetworkProvider:true,async lookup(){return{status:'not_found',retryable:false,reasonCode:'company_not_found'};}};await reloaded.recheckCompany({companyNumber:'00000000'});assert.equal(reloaded.activeProfile().registryVerification.status,'not_found');assert.deepEqual({name:reloaded.activeProfile().legalName,date:reloaded.activeProfile().incorporationDate,number:reloaded.activeProfile().companyNumber},manual);
+});
+
+test('Companies House credentials remain in the authenticated App Check and Pro callable boundary only',()=>{
+  const provider=fs.readFileSync(path.join(__dirname,'../src/integration/ltd/companies-house-provider.js'),'utf8'),functions=fs.readFileSync(path.join(__dirname,'../functions/index.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.doesNotMatch(provider,/apiKey|authorization|Buffer\.from|api\.company-information/);assert.doesNotMatch(html,/COMPANIES_HOUSE_API_KEY|company-information\.service\.gov\.uk/);assert.match(functions,/defineSecret\('COMPANIES_HOUSE_API_KEY'\)/);assert.match(functions,/lookupCompaniesHouse=onCall\(\{\.\.\.baseOpts,secrets:\[COMPANIES_HOUSE_API_KEY\]\}/);assert.match(functions,/lookupCompaniesHouse[\s\S]*await requireTier\(user\.uid,'pro'\)/);assert.match(functions,/authorization:`Basic/);assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==['"]true['"]/);
+});
+
+test('unregistered draft persists an explicit not-registered provenance without inventing official facts',async()=>{
+  const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});const result=await facade.onContinueStep({step:1,values:{legalName:'Preview Draft Ltd',companyNumberStatus:'not_available'}});assert.equal(result.status,'ok');const profile=driver.activeProfile();assert.equal(profile.registryVerification.status,'not_registered');assert.equal(profile.registryVerification.companyNumber,null);assert.equal(profile.incorporationDate,undefined);
+});
+
+test('2.0.6 state migrates atomically, keeps legacy bytes semantically intact, reloads, and rejects future schemas',()=>{
+  const legacy=clone(make('fresh').driver.state);delete legacy.domain;delete legacy.companyStateSchemaVersion;delete legacy.companyStateMigration;const legacyBusinessHash=hash(legacy.businesses),legacyEntriesHash=hash(legacy.entries),migrated=CompanyState.migrate(legacy,DEFAULT_NOW,'migration-test');CompanyState.validateState(migrated);assert.equal(hash(migrated.businesses),legacyBusinessHash);assert.equal(hash(migrated.entries),legacyEntriesHash);assert.equal(migrated.companyStateMigration.fromCompanyStateSchemaVersion,0);assert.equal(migrated.companyStateMigration.rollbackSnapshotRequired,true);
+  const values=new Map([['state',JSON.stringify(legacy)]]),storage={getItem:key=>values.has(key)?values.get(key):null,setItem:(key,value)=>values.set(key,String(value)),removeItem:key=>values.delete(key)},repo=Repository.localStorageRepository({storage,key:'state'});repo.replace(migrated);assert.deepEqual(repo.load(),migrated);assert.deepEqual(repo.rollbackSnapshot(),legacy);repo.replace({...migrated,year:'2027-28'});assert.deepEqual(repo.rollbackSnapshot(),legacy);assert.equal(values.has('state:atomic-pending'),false);
+  assert.throws(()=>CompanyState.migrate({...migrated,companyStateSchemaVersion:999},DEFAULT_NOW,'future'),/Future company state schema/);assert.throws(()=>CompanyState.importBackup({exportSchemaVersion:999,data:migrated},DEFAULT_NOW,'future'),/Future company backup schema/);
+});
+
+test('pre-provenance Ltd profiles migrate deterministically to an explicit Companies House state',()=>{
+  const prior=clone(make('existing').driver.state),profile=prior.domain.companyProfiles[0];delete profile.registryVerification;profile.companyNumberStatus='provided';profile.companyNumber='00000000';prior.domain.schemaVersion=5;prior.domain.projectionVersion=5;prior.companyStateSchemaVersion=7;const migrated=CompanyState.migrate(prior,DEFAULT_NOW,'registry-migration');CompanyState.validateState(migrated);const next=migrated.domain.companyProfiles[0];assert.equal(migrated.domain.schemaVersion,6);assert.equal(migrated.companyStateSchemaVersion,8);assert.equal(next.registryVerification.status,'manual_unverified');assert.equal(next.registryVerification.companyNumber,next.companyNumber);assert.equal(next.registryVerification.provider,'taxmate_profile_migration');assert.deepEqual(next.registryVerification.registryFacts,{legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null});
+});
+
+test('Ltd sync is per-record, owner-path deterministic, clean-device reconstructable and tombstone authoritative',()=>{
+  const source=make('existing').driver.state,fresh=make('fresh').driver.state,records=LtdSync.recordsForSync(source),envelopes=[];for(const collection of LtdSync.COLLECTIONS)for(const record of records[collection])envelopes.push(LtdSync.envelope(collection,record));assert.ok(envelopes.length>8);assert.equal(new Set(envelopes.map(item=>item.documentId)).size,envelopes.length);assert.ok(envelopes.every(item=>LtdSync.documentPath('owner',item.collection,item.recordId)===`users/owner/ltd/v1/${item.collection}/${item.documentId}`));assert.ok(envelopes.every(item=>Buffer.byteLength(JSON.stringify(item))<LtdSync.MAX_DOCUMENT_BYTES));
+  const clean=LtdSync.reconcile(fresh,envelopes,'owner');assert.equal(clean.uploads.length,0);assert.equal(clean.conflicts.length,0);const hydrated=LtdSync.applyDownloads(fresh,clean.downloads);CompanyState.validateState(hydrated);assert.deepEqual(LtdSync.recordsForSync(hydrated),records);
+  const profile=envelopes.find(item=>item.collection==='companyProfiles'),tombstone=clone(profile);tombstone.payload.deletedAt=DEFAULT_NOW+1;tombstone.payload.updatedAt=DEFAULT_NOW+1;tombstone.payload.deviceId='remote-delete';tombstone.updatedAt=DEFAULT_NOW+1;tombstone.deletedAt=DEFAULT_NOW+1;tombstone.deviceId='remote-delete';tombstone.checksum=require('../src/core/revision-sync').fingerprint(tombstone.payload);LtdSync.validateEnvelope(tombstone);const conflict=LtdSync.reconcile(source,[...envelopes.filter(item=>item!==profile),tombstone],'owner');assert.ok(conflict.downloads.some(item=>item.recordId===profile.recordId));assert.equal(conflict.uploads.some(item=>item.recordId===profile.recordId),false);
+});
+
+test('Ltd outbox survives reopen, retries offline work, and cannot report Synced before ACK',()=>{
+  const operation=LtdSync.reconcile(make('existing').driver.state,[],'owner').uploads[0];let outbox=Sync.enqueue(Sync.emptyOutbox(),operation,1000),key=outbox.items[0].key,attempted=clone(outbox.items[0]);outbox=Sync.markAttempt(outbox,key,1100);outbox=Sync.markFailure(outbox,key,Object.assign(new Error('offline'),{code:'unavailable'}),1100,attempted);const reopened=Sync.normalizeOutbox(JSON.parse(JSON.stringify(outbox)));assert.equal(reopened.items.length,1);assert.equal(Sync.status({outbox:reopened,online:true,authReady:true,hydrationState:'converged',partnershipHydrationState:'converged'}).state,'waiting');assert.equal(Sync.due(reopened,1200).length,0);assert.equal(Sync.due(reopened,reopened.items[0].nextAttemptAt).length,1);const acked=Sync.acknowledge(reopened,key,5000,attempted);assert.equal(Sync.status({outbox:acked,online:true,authReady:true,hydrationState:'converged',partnershipHydrationState:'converged',reconciliationState:'converged',ackState:'acked'}).state,'synced');
+});
+
+test('production outbound dispatch uses the Ltd envelope writer rather than legacy id filtering',()=>{
+  const source=fs.readFileSync(path.join(__dirname,'../src/app/app.js'),'utf8');assert.match(source,/async function writeLtdRecordIfNewer\(ref,envelope\)/);assert.match(source,/if\(!remote\)\{tx\.set\(ref,envelope\);return;\}/);assert.match(source,/TaxMateLtdSync\.compare\(envelope,remote\)/);assert.match(source,/operation\.kind==='ltd-record'[\s\S]*writeLtdRecordIfNewer/);assert.doesNotMatch(source,/operation\.kind==='ltd-record'[\s\S]{0,300}writeRecordIfNewer/);
+});
+
+test('Data-only and Full Backup round-trip complete Ltd state and evidence with exact manifest hashes',async()=>{
+  const state=clone(make('existing').driver.state);state.domain.companyProfiles[0]=ProfileHistory.ensureHistory(state.domain.companyProfiles[0]);state.domain.companyProfiles[0].ownershipHistory[0].evidenceRefs=['receipts/test-owner/ltd-evidence.jpg'];CompanyState.validateState(state);
+  const required=Portable.requiredAssociations(state),groups=new Map();for(const association of required){const list=groups.get(association.originalPath)||[];list.push(association);groups.set(association.originalPath,list);}const receipts=Array.from(groups,([originalPath,associations],index)=>({originalPath,associations,bytes:new Uint8Array([index+1,2,3,4]),mimeType:'image/jpeg'}));const created=await Portable.createArchive({state,identity:{appVersion:'2.0.6',buildId:'candidate',deviceId:'backup-test'},receipts,exportedAt:'2026-08-28T12:00:00.000Z',nodeBuffer:true}),inspected=await Portable.inspectArchive(created.archive);assertCanonicalCollections(inspected.state,state);assert.equal(inspected.receipts.length,groups.size);assert.equal(inspected.preview.ltdEvidenceReceipts,1);for(const receipt of inspected.receipts)assert.equal(await PortableHash(receipt.bytes),receipt.sha256);
+  const dataOnly=CompanyState.createExport(state,{appVersion:'2.0.6',buildId:'candidate'},required),restored=CompanyState.importBackup(dataOnly,DEFAULT_NOW,'restore');assertCanonicalCollections(restored,state);
+  const zip=await JSZip.loadAsync(created.archive),first=created.manifest[0];zip.file(first.archivePath,new Uint8Array([9,9,9]));const tampered=await zip.generateAsync({type:'nodebuffer'});await assert.rejects(()=>Portable.inspectArchive(tampered),/integrity validation/);
+  function assertCanonicalCollections(actual,expected){for(const name of ['persons','entities','companyProfiles','projects','paymentAccounts','economicEvents','companyTaxPeriods','companyLossRecords','salaryRecords','dividendDeclarations','personalIncomeLinks','migrationIssues','syncConflicts'])assert.deepEqual(actual.domain[name],expected.domain[name],name);}
+  async function PortableHash(bytes){return crypto.createHash('sha256').update(bytes).digest('hex');}
+});
+
+test('Founder-approved Ltd contract is Pro-only, one-company, and the ordinary scenario UI hides engine jargon',async()=>{
+  const {facade,driver}=make('existing'),snapshot=facade.getSnapshot(),mapping=CompanyAccess.FOUNDER_APPROVED_LTD_PLAN_MAPPING;
+  assert.equal(snapshot.entitlement.planMappingStatus,'FOUNDER_APPROVED_PRO_ONLY');assert.equal(snapshot.entitlement.commercialGateApplied,true);assert.equal(snapshot.entitlement.tier,'pro');assert.equal(mapping.oneActiveLtdIncluded,1);assert.equal(mapping.additionalLtdSupported,false);assert.equal(mapping.pricing.monthly.launchMinor,999);assert.equal(mapping.pricing.monthly.standardMinor,1199);assert.equal(mapping.pricing.annual.status,'founder_decision_pending');assert.equal(mapping.pricing.annual.amountMinor,null);assert.equal(mapping.pricing.existingUserMigration,false);
+  const free={subscriptionStatus:'inactive',paidTier:'free'},plus={subscriptionStatus:'active',paidTier:'plus',currentPeriodEnd:DEFAULT_NOW+86400000,serverVerifiedAt:DEFAULT_NOW},pro={subscriptionStatus:'active',paidTier:'pro',currentPeriodEnd:DEFAULT_NOW+86400000,serverVerifiedAt:DEFAULT_NOW};
+  for(const action of CompanyAccess.LTD_PRO_ACTIONS){assert.equal(CompanyAccess.decide({action,snapshot:free,now:DEFAULT_NOW}).reason,'pro_required',`free ${action}`);assert.equal(CompanyAccess.decide({action,snapshot:plus,now:DEFAULT_NOW}).reason,'pro_required',`plus ${action}`);assert.equal(CompanyAccess.decide({action,snapshot:pro,now:DEFAULT_NOW}).allowed,true,`pro ${action}`);}
+  assert.equal(driver.access('remove_company').allowed,true);const freeDriver=new CanonicalCompanyDriver({mode:'existing',state:clone(driver.state),now:()=>DEFAULT_NOW,entitlementSnapshot:free}),plusDriver=new CanonicalCompanyDriver({mode:'existing',state:clone(driver.state),now:()=>DEFAULT_NOW,entitlementSnapshot:plus});await assertBlocked(new (require('../src/integration/ltd/TaxMateLtdUIFacade').TaxMateLtdUIFacade)({driver:freeDriver}));await assertBlocked(new (require('../src/integration/ltd/TaxMateLtdUIFacade').TaxMateLtdUIFacade)({driver:plusDriver}));
+  for(const blockedDriver of [freeDriver,plusDriver]){const row=blockedDriver.readSnapshot().businessList.find(item=>item.businessType==='limited_company');assert.equal(row.access.allowed,false);assert.equal(row.access.reason,'pro_required');assert.equal(row.actions.primary.enabled,false);assert.equal(blockedDriver.readSnapshot().companyLimit.requiredTier,'pro');}
+  const app=fs.readFileSync(path.join(__dirname,'../src/app/app.js'),'utf8'),rules=fs.readFileSync(path.join(__dirname,'../firestore.rules'),'utf8');assert.match(app,/ltdAccessDecision\('cloud_sync'\)/);assert.match(app,/ltdBackupAllowed\('portable_backup'\)/);assert.match(app,/ltdBackupAllowed\('full_backup'\)/);assert.match(app,/ltdBackupAllowed\('restore'/);assert.match(rules,/allow read: if owner\(uid\) && pro\(uid\)/);assert.match(rules,/allow create, update: if owner\(uid\) && pro\(uid\) && validLtdRecord/);
+  const source=fs.readFileSync(path.join(__dirname,'../src/ui/ltd/workbench-renderer.js'),'utf8');for(const jargon of ['Class 1 category A','Class 4 NI baseline','Employment Allowance mechanics'])assert.equal(source.includes(jargon),false);assert.match(source,/data-action/);const result=await facade.onRunScenario({ordinaryFacts:{amountMinor:100000,when:'2026-09-01'},asOfDate:'2026-09-01'});assert.equal(result.status,'review_required');assert.deepEqual(result.data.results.map(item=>item.id),['salary','dividend','mix','retained']);assert.equal(result.data.results.find(item=>item.id==='salary').status,'supported_provisional');assert.ok(result.data.results.find(item=>item.id==='dividend').reasonCodes.includes('scenario_dividend_exceeds_provisional_distributable_position'));
+  async function assertBlocked(blockedFacade){for(const [callback,input] of [['onOpenExistingCompany',{}],['onSetWorkspaceArea',{area:'money'}],['onOpenCompanyEdit',{}],['onOpenOwnershipChange',{}],['onDownloadWorkingPack',{}]]){const blocked=await blockedFacade.invoke(callback,input);assert.equal(blocked.status,'failure',callback);assert.equal(blocked.error.reasonCode,'pro_required',callback);assert.equal(blocked.error.copyKey,'plan.ltd_pro_only',callback);}}
+});
