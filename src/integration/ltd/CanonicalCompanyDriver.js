@@ -400,7 +400,7 @@ class CanonicalCompanyDriver{
       if(!scenarios.length)return{status:'field_error',fieldErrors:[fieldError('scenarios','scenario_required')]};
       const before=JSON.stringify(this.state),result=CompanyScenario.compare({baseline,scenarios,asOfDate:input.asOfDate||this.currentDate()});
       if(JSON.stringify(this.state)!==before)throw new Error('scenario_mutated_actual_books');
-      return{status:result.status==='supported_provisional'?'ok':'review_required',reviewReasons:result.results.flatMap(item=>item.reasonCodes||item.reasons||[]),data:{...clone(result),semanticStatus:result.status==='supported_provisional'?'supported_calculated':'review_required'},nonPosting:true,nextRoute:'ltd.tax.scenario-results'};
+      return{status:result.status==='supported_provisional'?'ok':'review_required',reviewReasons:result.results.flatMap(item=>item.reasonCodes||item.reasons||[]),data:{...clone(result),semanticStatus:result.status==='supported_provisional'?'supported_calculated':'review_required',comparisonScope:'displayed_examples',mixedScenarioMethod:'equal_split_example'},nonPosting:true,nextRoute:'ltd.tax.scenario-results'};
     }catch(error){const reason=stableReason(error,'scenario_facts_need_checking');return{status:'review_required',reviewReasons:[reason],data:{nonPosting:true,noCalculation:true,ordinaryFacts:clone(input.ordinaryFacts||{}),reasonCode:reason},nextRoute:'ltd.tax.scenario-results'};}
   }
   defaultScenarioBaseline(input={}){

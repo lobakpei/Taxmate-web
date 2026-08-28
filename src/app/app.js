@@ -3546,11 +3546,12 @@ function persistCanonicalState(state){
 }
 function save(){
   if(STATE_LOAD_ERROR){showNotice('TaxMate data needs checking','This device contains data from an unsupported or damaged state. TaxMate has not replaced it. Update or recover the data before making changes.');return false;}
-  const now=Date.now(); stampVersionedMetaChanges(now); S=TaxMateState.migrate(S,now,DEVICE_ID);
+  const now=Date.now(),persistedBefore=localStorage.getItem(STORE_KEY); stampVersionedMetaChanges(now); S=TaxMateState.migrate(S,now,DEVICE_ID);const encodedAfter=JSON.stringify(S),stateChanged=persistedBefore!==encodedAfter;
   try{ persistCanonicalState(S); }catch(e){
     showNotice('TaxMate could not save this change','Your existing data is still on this device. Check the information and try again before closing TaxMate.');
     return false;
   }
+  if(!stateChanged)return true;
   CLOUD.localEditAt=now;
   if(typeof scheduleCloudPush==='function') scheduleCloudPush();return true;
 }

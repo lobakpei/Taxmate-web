@@ -8,12 +8,12 @@ const {spawnSync}=require('node:child_process');
 const JSZip=require('jszip');
 
 const root=path.resolve(__dirname,'..');
-const parent='6edbec41af9ffac4a533c972ab131e22ee65fd88';
+const parent='23377ae57d7fed43147f6c3c7c8829bfee76ef8a';
 const originalBase='da7092c15ff4eb565c46d0153f2a9e08cadc8079';
 const expectedBranch='codex/taxmate-ltd-v1-5-actual-app-integration-20260828';
-const packageName='TAXMATE_LTD_V1.5_ACTUAL_APP_INTEGRATION_CANDIDATE_AUDIT_PACK_20260828.zip';
+const packageName='TAXMATE_LTD_V1.5_FINAL_PRE_RELEASE_CANDIDATE_AUDIT_PACK_20260828.zip';
 const output=path.resolve(root,'..',packageName);
-const evidenceFolders=['.ltd-audit-evidence','.ltd-actual-app-evidence','.paid-sync-browser-evidence','.ltd-founder-preview-evidence'];
+const evidenceFolders=['.ltd-audit-evidence','.ltd-actual-app-evidence','.ltd-final-correction-evidence','.paid-sync-browser-evidence','.ltd-founder-preview-evidence'];
 
 function run(command,args,options={}){
   const result=spawnSync(command,args,{cwd:options.cwd||root,encoding:options.binary?null:'utf8',maxBuffer:128*1024*1024,windowsHide:true});
@@ -83,7 +83,7 @@ function verifyPatch(patchFile,candidateTree){
   }
 }
 function hostingManifest(hostingRoot){return manifest(hostingRoot);}
-function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 actual-app integration candidate closeout
+function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 final pre-release correction closeout
 
 Date: 2026-08-28
 
@@ -108,8 +108,13 @@ Date: 2026-08-28
 - Trusted one-active-Ltd race: PASS.
 - Pro-only active actions and downgrade read/hydrate/export: PASS.
 - Companies House server-only provenance boundary: PASS.
+- Personal shell isolation in active Ltd mode: PASS by computed-style and rendered-geometry assertions; All businesses and legacy-business exits restore the personal shell with one navigation instance.
 - Hidden factual defaults: PASS.
+- Current-schema migration no-op: PASS with equal full-state/data-payload SHA-256, unchanged original provenance/domain timestamp, zero sync upload and zero browser outbox churn.
+- Later genuine structural reconciliation: PASS with separate reconciliation provenance and original v0-to-v8 provenance preserved.
+- Scenario product honesty: PASS; the fixed equal-split candidate is labelled as an example and the badge is limited to the displayed examples.
 - 2.0.6 migration, per-record sync/outbox/tombstones, clean device and backup/restore: PASS.
+- Companies House Step 1 grouping: PASS by current mobile/desktop, light/dark and Urdu RTL actual-app screenshots.
 - Six locales, Urdu RTL, light/dark, 390x844 and desktop: PASS.
 - Existing Web, Cloud Sync, Partner Sync, receipt/rules and Full Backup regression: PASS.
 - Sentry localhost/emulator/automation isolation: PASS.
@@ -124,10 +129,11 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 - Unit 132/132
 - Integration 7/7
 - Rules source 6/6
-- Ltd/facade/domain 58/58
+- Ltd/facade/domain 59/59
 - Functions emulator 8/8
 - Firestore/Storage emulator 16/16
-- Actual app browser 95 assertions
+- Final correction evidence script: PASS
+- Actual app browser 215 assertions
 - Paid Cloud/Partner Sync browser 90 assertions
 - Isolated preview browser 35 assertions
 - Product Health: 85 REAL_DURABLE, 6 INTENTIONALLY_HIDDEN, all defect counters 0
@@ -141,6 +147,13 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 - Native/Mobile PR #2/SEO/P10: NO.
 - Live Companies House or Stripe operation: NO.
 - Actual incremental cost: GBP 0.
+
+## Remaining gates
+
+- Pro annual price: Founder decision pending.
+- Production billing alignment: pending separate release authority.
+- Live Companies House credential smoke: pending release gate.
+- Final release drift/migration preflight and explicit production release authority: pending.
 
 This package is for independent audit only. It is not deployment authority.
 `;}
@@ -158,6 +171,7 @@ npm run test:rules:emulator
 npm run test:paid-sync:browser
 npm run test:ltd:browser
 npm run test:ltd:actual-app
+npm run test:ltd:final-corrections
 \`\`\`
 
 Founder review of the real TaxMate app shell:
@@ -205,6 +219,7 @@ async function main(){
     write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.0',buildId:'2026-08-28.ltd-v1-5-actual-app.1',cache:'taxmate-v2-ltd-v1-5-actual-app-1',hosting},null,2)+'\n');
     write(path.join(payload,'evidence','SOURCE_BLOB_VERIFICATION.json'),JSON.stringify({status:'PASS',trackedBlobs:sourceVerification.entries,mismatchCount:0,commit,tree},null,2)+'\n');
     write(path.join(payload,'evidence','PATCH_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(patchVerification,null,2)+'\n');
+    write(path.join(payload,'review','DECISIVE_CORRECTION_EVIDENCE.md'),'# Decisive final-correction evidence\n\n## Personal shell isolation\n\n- Implementation: `source/index.html` explicit `body.ltd-active` boundary plus the existing production bridge.\n- Real-browser assertions: `evidence/ltd-actual-app-evidence/ltd-actual-app-browser-result.json` under `shellEvidence`.\n- The test deliberately clears the personal shell elements hidden attributes while Ltd mode is active; computed `display` remains `none`, rendered geometry is zero, the Ltd root is rendered, and nav count remains one.\n- All-businesses and legacy-business exits restore the personal header/page/nav and hide the Ltd root.\n- Screenshots: all `actual-app-step1-*` and workspace images in the same evidence folder.\n\n## Migration no-op and sync churn\n\n- Exact evidence: `evidence/ltd-final-correction-evidence/migration-noop-and-scenario-result.json`.\n- First and second full state SHA-256 are equal; Data-only data payload SHA-256 values are equal; original migration timestamp/device/from-version and domain updatedAt are unchanged; reconciliation against exact remote envelopes creates 0 uploads, 0 downloads and 0 conflicts.\n- Browser lifecycle: `noOpSave` in the actual-app result proves persisted state, migration provenance, domain updatedAt, localEditAt and outbox are unchanged and outbox count is 0.\n\n## Scenario claim\n\n- Runtime returns `comparisonScope=displayed_examples` and `mixedScenarioMethod=equal_split_example`.\n- Six locales label the mixed result as an example and limit the lowest-tax badge to these examples.\n- Scenario remains non-posting and unsupported facts remain review-required.\n\n## Companies House Step 1\n\n- Five actual-app screenshots cover 390x844 light/dark English, desktop light/dark English, and 390x844 Urdu RTL.\n- Browser geometry verifies the three identity field groups are rendered with a consistent visible gap; visual evidence shows company number, check action, lookup result, and registered-name/date groups separately.\n\n## PWA lifecycle\n\n- `evidence/paid-sync-browser-evidence/paid-sync-browser-result.json` proves active Service Worker control, full offline reload, browser termination, backend-blocked reopen, durable local record, reconnect, ACK and no duplication for Ltd, same-account and partnership paths.\n');
     write(path.join(payload,'review','REMAINING_RELEASE_GATES.md'),'# Remaining genuine release gates\n\n1. Independent source audit and Founder acceptance.\n2. Founder decision on Pro annual pricing; no annual amount is exposed or inferred.\n3. Separately authorised production billing alignment for the approved Ltd monthly positioning.\n4. Live Companies House credential/configuration and smoke test under a release gate.\n5. Release-time identity/drift, migration/rollback preflight, authorised Functions/Rules/Hosting deployment and post-deploy fresh/upgrade/offline checks.\n\nNo production release action is authorised by this package.\n');
     write(path.join(payload,'review','NO_PRODUCTION_IMPACT.md'),'# No-production-impact proof\n\nProduction TaxMate 2.0.6 modified = NO\n\nProduction Firebase/data mutation = NO\n\nPush = NO\n\nPR = NO\n\nMerge = NO\n\nDeploy = NO\n\nNative/Mobile PR #2 = NO\n\nSEO = NO\n\nP10 = NOT AUTHORISED\n\nBillable operation = NO\n\nActual incremental cost = GBP 0\n');
     const rows=manifest(payload);write(path.join(payload,'MANIFEST_SHA256.txt'),'# SHA-256, bytes and relative path for every payload file except this self-referential manifest.\n'+rows.map(row=>`${row.sha256}\t${row.bytes}\t${row.relative}`).join('\n')+'\n');

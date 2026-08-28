@@ -91,6 +91,9 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .top .name{font-weight:800;font-size:19px;letter-spacing:-.4px}
 .beta-badge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
 .top .name span{color:var(--brand)}
+.ltd-active>.top,.ltd-active>#page,.ltd-active>#nav{display:none!important}
+body:not(.ltd-active)>#taxmate-ltd-ui-root{display:none!important}
+body.ltd-active>#taxmate-ltd-ui-root:not([hidden]){display:block!important}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
