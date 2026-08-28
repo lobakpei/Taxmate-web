@@ -5,12 +5,13 @@
   'use strict';
   if(!Entitlement||!Domain||!RevisionSync)throw new Error('TaxMate company-access dependencies are required');
   const ACCESS_SCHEMA_VERSION=3,ARCHIVE_RETENTION_MONTHS=24;
-  const ALWAYS_ALLOWED=new Set(['account_delete','remove_company','read_archived_access_status']);
+  const ALWAYS_ALLOWED=new Set(['account_delete','read_archived_access_status']);
+  const RETAINED_DATA_ACTIONS=new Set(['read','portable_backup','full_backup','download_evidence']);
   const LTD_PRO_ACTIONS=new Set([
-    'create_company','resume_company_draft','read','create_event','edit_draft_event','correct_event','reverse_event',
+    'create_company','resume_company_draft','create_event','edit_draft_event','correct_event','reverse_event',
     'create_period','create_scenario','confirm_salary','declare_dividend','record_dividend_payment','add_evidence',
     'edit_company','change_ownership','companies_house_lookup','generate_working_pack','cloud_sync','portable_backup',
-    'full_backup','restore'
+    'restore','remove_company'
   ]);
   const FOUNDER_APPROVED_LTD_PLAN_MAPPING=Object.freeze({
     status:'approved',version:'ltd-v1.5-pro-only.2026-08-28',oneActiveLtdIncluded:1,additionalLtdSupported:false,
@@ -48,6 +49,13 @@
   function decide(input){
     const action=input&&input.action,at=Number(input&&input.now)||Date.now(),offline=input&&input.offline===true,access=Entitlement.resolve(input&&input.snapshot,at,offline),base={tier:access.tier,source:access.source};
     if(ALWAYS_ALLOWED.has(action))return{...base,allowed:true,mode:'retained'};
+    if(action==='cloud_hydrate')return{...base,allowed:true,mode:access.tier==='pro'?'approved_mapping':'retained_discovery_read',requiredTier:'pro',writeAllowed:access.tier==='pro'};
+    if(RETAINED_DATA_ACTIONS.has(action)){
+      if(access.tier==='pro')return{...base,allowed:true,mode:offline?'approved_offline_entitlement':'approved_mapping',requiredTier:'pro',mappingVersion:(input&&input.planMapping||FOUNDER_APPROVED_LTD_PLAN_MAPPING).version};
+      return input&&input.hasExistingLtdData===true
+        ?{...base,allowed:true,mode:'retained_read_export',requiredTier:'pro',writeAllowed:false}
+        :{...base,allowed:false,mode:'blocked',reason:'pro_required',requiredTier:'pro'};
+    }
     if(LTD_PRO_ACTIONS.has(action)){
       const mapping=input&&input.planMapping||FOUNDER_APPROVED_LTD_PLAN_MAPPING,requiredTier=approvedTierFor(action,mapping);
       if(!requiredTier)return{...base,allowed:false,mode:'blocked',reason:'invalid_ltd_plan_mapping'};
@@ -56,5 +64,5 @@
     }
     return{...base,allowed:false,mode:'blocked',reason:'unknown_company_action'};
   }
-  return{ACCESS_SCHEMA_VERSION,ARCHIVE_RETENTION_MONTHS,ALWAYS_ALLOWED,LTD_PRO_ACTIONS,FOUNDER_APPROVED_LTD_PLAN_MAPPING,addUtcMonths,retention,retainedTransition,approvedTierFor,decide};
+  return{ACCESS_SCHEMA_VERSION,ARCHIVE_RETENTION_MONTHS,ALWAYS_ALLOWED,RETAINED_DATA_ACTIONS,LTD_PRO_ACTIONS,FOUNDER_APPROVED_LTD_PLAN_MAPPING,addUtcMonths,retention,retainedTransition,approvedTierFor,decide};
 });

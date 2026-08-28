@@ -1,6 +1,9 @@
+(function(root,factory){
+  const node=typeof module==='object'&&module.exports,api=factory(node?require('./company-structural-state'):root.TaxMateCompanyStructuralState);
+  if(node)module.exports=api;
+  root.TaxMateLtdUIFacadeModule=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(Structural){
 'use strict';
-
-const Structural=require('./company-structural-state');
 
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
 const COPY_KEY_BY_REASON=Object.freeze({pro_required:'plan.ltd_pro_only',one_active_ltd_limit:'add.one_ltd_limit'});
@@ -20,6 +23,7 @@ class TaxMateLtdUIFacade{
     this.drafts=Structural.createDraftStore({storage:options.storage||Structural.memoryStorage(),key:options.draftKey||`taxmate-ltd-fable-drafts-${this.driver.mode}`});
     this.workflow=Structural.createWorkflow({routes:[{screenId:'home',params:{mode:this.driver.mode}}]});
     this.busy={active:false,action:null};
+    this.prepareAction=typeof options.prepareAction==='function'?options.prepareAction:null;
     this.lastResult=null;
     this.listeners=new Set();
   }
@@ -35,7 +39,7 @@ class TaxMateLtdUIFacade{
   execute(action,input,handler){
     if(this.busy.active)return Promise.resolve(this.result({status:'busy',error:semanticError('action_in_progress',{action:this.busy.action})}));
     this.busy={active:true,action};this.emit();
-    return Promise.resolve().then(()=>handler.call(this.driver,clone(input||{}))).then(raw=>{
+    return Promise.resolve().then(()=>this.prepareAction?this.prepareAction(action,clone(input||{})):null).then(()=>handler.call(this.driver,clone(input||{}))).then(raw=>{
       const value=raw||{status:'ok'};this.lastResult=clone(value);if(value.nextRoute)this.workflow.enter(value.nextRoute,value.routeParams||{});this.busy={active:false,action:null};this.emit();return this.result(value);
     }).catch(error=>{this.lastResult={status:'failure',error:semanticError(error&&error.code||'facade_failure')};this.busy={active:false,action:null};this.emit();return this.fail(error);});
   }
@@ -93,4 +97,5 @@ class TaxMateLtdUIFacade{
   async invoke(callback,input={}){if(!CALLBACKS.includes(callback)||typeof this[callback]!=='function')return this.result({status:'failure',error:semanticError('unknown_callback')});return this[callback](input);}
 }
 
-module.exports={TaxMateLtdUIFacade,CALLBACKS};
+return{TaxMateLtdUIFacade,CALLBACKS};
+});

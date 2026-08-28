@@ -144,6 +144,22 @@ exports.joinPartnership=onCall(baseOpts,async req=>{
   await partnership.collection('members').doc(user.uid).set({uid:user.uid,role:'member',joinedAt:FieldValue.serverTimestamp()},{merge:true});
   const data=snap.data()||{};return{bizId:data.bizId,name:data.name||'Partnership'};
 });
+exports.claimActiveLtdCompany=onCall(baseOpts,async req=>{
+  const user=auth(req),companyId=String(req.data&&req.data.companyId||'').trim();
+  if(!/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(companyId))throw new HttpsError('invalid-argument','Invalid company identity',{reason:'company_id_invalid'});
+  await requireTier(user.uid,'pro');
+  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`);
+  return db.runTransaction(async tx=>{
+    const snap=await tx.get(anchor);
+    if(snap.exists){
+      const current=String((snap.data()||{}).activeCompanyId||'');
+      if(current===companyId)return{status:'existing',activeCompanyId:current,idempotent:true};
+      throw new HttpsError('already-exists','This TaxMate account already has its Limited Company',{reason:'one_active_ltd_limit',activeCompanyId:current});
+    }
+    tx.create(anchor,{schemaVersion:1,status:'active_slot_claimed',activeCompanyId:companyId,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),releasePolicy:'founder_approval_required'});
+    return{status:'claimed',activeCompanyId:companyId,idempotent:false};
+  });
+});
 exports.lookupCompaniesHouse=onCall({...baseOpts,secrets:[COMPANIES_HOUSE_API_KEY]},async req=>{
   const user=auth(req),companyNumber=String(req.data&&req.data.companyNumber||'').trim().toUpperCase();if(!/^[A-Z0-9]{8}$/.test(companyNumber))throw new HttpsError('invalid-argument','Invalid company number',{reason:'company_number_format'});await requireTier(user.uid,'pro');const key=String(COMPANIES_HOUSE_API_KEY.value()||'');if(!key)throw new HttpsError('failed-precondition','Companies House lookup is unavailable',{reason:'companies_house_provider_not_configured'});
   let response;try{response=await fetch(`https://api.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`,{headers:{accept:'application/json',authorization:`Basic ${Buffer.from(`${key}:`,'utf8').toString('base64')}`},signal:AbortSignal.timeout(8000)});}catch(error){throw new HttpsError('unavailable','Companies House lookup is temporarily unavailable',{reason:error&&error.name==='TimeoutError'?'companies_house_timeout':'companies_house_network_failed',retryable:true});}

@@ -1,6 +1,9 @@
+(function(root,factory){
+  const node=typeof module==='object'&&module.exports,api=factory(node?require('../../core/money'):root.TaxMateMoney);
+  if(node)module.exports=api;
+  root.TaxMateCompanyTransactionAdapter=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(Money){
 'use strict';
-
-const Money=require('../../core/money');
 
 const EXPENSE_CATEGORIES=Object.freeze(['day_to_day','formation','equipment','software_dev','stock','other']);
 const INCOME_CATEGORIES=Object.freeze(['trading','non_trading','asset_disposal','other']);
@@ -58,4 +61,5 @@ function deriveSharedAllocation(input={}){
   return{status:'ok',data:{grossAmountMinor:gross,companyAmountMinor,nonCompanyAmountMinor,personalAmountMinor:nonCompanyAmountMinor,privateUseAmountMinor,businessUseBasisPoints:Math.max(1,Math.min(10000,Math.round(companyAmountMinor*10000/gross))),allocations:canonical}};
 }
 
-module.exports={EXPENSE_CATEGORIES,INCOME_CATEGORIES,PRIVATE_USE_ID,expenseCategory,deriveExpenseTreatment,deriveIncomeTreatment,deriveSharedAllocation};
+return{EXPENSE_CATEGORIES,INCOME_CATEGORIES,PRIVATE_USE_ID,expenseCategory,deriveExpenseTreatment,deriveIncomeTreatment,deriveSharedAllocation};
+});

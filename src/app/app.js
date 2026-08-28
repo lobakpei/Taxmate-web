@@ -2950,7 +2950,7 @@ Object.assign(I18N.ur,{
 const HEALTH_COPY={
   'promo.signIn':'Sign in with Google first, then redeem this code.',
   'promo.title':'Redeem promotion code','promo.body':'Enter the code exactly as you received it.','promo.placeholder':'Promotion code','promo.apply':'Redeem code','promo.invalid':"This promotion code isn't valid.",'promo.notStarted':"This promotion isn't available yet.",'promo.expired':'This promotion has ended.','promo.full':'This promotion has reached its limit.','promo.duplicate':"You've already used this promotion code.",'promo.service':'Promotion access is temporarily unavailable. Please try again.','promo.success':'Promotion applied',
-  'billing.unavailable':'Payments are temporarily unavailable. Please try again.','tier.manage':'Manage subscription','tier.permanent':'Permanent Pro access','plan.freeSub':'Bookkeeping and tax estimates for one business.','plan.plusSub':'For receipts, reports and more than one business.','plan.proSub':'For partnerships and advanced records.','plan.includesFree':'Everything in Free, plus:','plan.includesPlus':'Everything in Plus, plus:','plan.renewal':'Monthly and yearly subscriptions renew until cancelled.','plan.promoUntil':'{p} access until {d}','plan.renews':'{p} renews on {d}','plan.ends':'{p} ends on {d}','sec.help':'Help & support','sy.joinTitle':'Join a partnership','sy.readOnly':'Shared partnership records are read-only without Pro. Your data is still here.','biz.readOnly':'This business is read-only on your current plan. Your data is still here.','ltd.backupProOnly':'Limited company sync, backup and restore are available on Pro. Your local data was not changed.'
+  'billing.unavailable':'Payments are temporarily unavailable. Please try again.','tier.manage':'Manage subscription','tier.permanent':'Permanent Pro access','plan.freeSub':'Bookkeeping and tax estimates for one business.','plan.plusSub':'For receipts, reports and more than one business.','plan.proSub':'For partnerships and one active Limited Company.','plan.includesFree':'Everything in Free, plus:','plan.includesPlus':'Everything in Plus, plus:','plan.renewal':'Subscriptions renew on the interval shown at Checkout until cancelled.','plan.promoUntil':'{p} access until {d}','plan.renews':'{p} renews on {d}','plan.ends':'{p} ends on {d}','plan.proBillingPending':'Pro checkout will open after launch billing is configured','feat.ltd':'One active Limited Company','sec.help':'Help & support','sy.joinTitle':'Join a partnership','sy.readOnly':'Shared partnership records are read-only without Pro. Your data is still here.','biz.readOnly':'This business is read-only on your current plan. Your data is still here.','ltd.backupProOnly':'Limited company sync, backup and restore are available on Pro. Your local data was not changed.'
 };
 Object.assign(I18N.en,HEALTH_COPY);
 for(const language of ['zh','pl','ro','es','ur'])Object.assign(I18N[language],HEALTH_COPY);
@@ -2969,6 +2969,11 @@ Object.assign(I18N.pl,{'ltd.backupProOnly':'Synchronizacja, kopia zapasowa i prz
 Object.assign(I18N.ro,{'ltd.backupProOnly':'Sincronizarea, backupul și restaurarea societății cu răspundere limitată sunt disponibile în Pro. Datele locale nu au fost modificate.'});
 Object.assign(I18N.es,{'ltd.backupProOnly':'La sincronización, copia de seguridad y restauración de la sociedad limitada están disponibles en Pro. Tus datos locales no se han modificado.'});
 Object.assign(I18N.ur,{'ltd.backupProOnly':'لمیٹڈ کمپنی کی سنک، بیک اپ اور بحالی Pro میں دستیاب ہیں۔ آپ کا مقامی ڈیٹا تبدیل نہیں ہوا۔'});
+Object.assign(I18N.zh,{'plan.proBillingPending':'設定好推出收費後先會開放 Pro 結帳','feat.ltd':'一間營運中有限公司'});
+Object.assign(I18N.pl,{'plan.proBillingPending':'Płatność Pro będzie dostępna po skonfigurowaniu ceny startowej','feat.ltd':'Jedna aktywna spółka z o.o.'});
+Object.assign(I18N.ro,{'plan.proBillingPending':'Plata Pro va fi disponibilă după configurarea prețului de lansare','feat.ltd':'O societate cu răspundere limitată activă'});
+Object.assign(I18N.es,{'plan.proBillingPending':'El pago de Pro se abrirá tras configurar el precio de lanzamiento','feat.ltd':'Una sociedad limitada activa'});
+Object.assign(I18N.ur,{'plan.proBillingPending':'لانچ بلنگ ترتیب دینے کے بعد Pro چیک آؤٹ کھلے گا','feat.ltd':'ایک فعال لمیٹڈ کمپنی'});
 
 Object.assign(I18N.en,{
   'pwa.homeTitle':'Install TaxMate',
@@ -3111,7 +3116,7 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
-const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'£7.99 / month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£59.99 / year'}});
+const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'Launch price £9.99/month · Standard price £11.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'Pro annual price not yet available'}});
 let BILLING_CADENCE='monthly';
 function tierPrice(tier){return TIER_PRICE[BILLING_CADENCE][tier];}
 function setBillingCadence(cadence){
@@ -3131,7 +3136,8 @@ const FEATURE_TIER = {
   partnerSync:'pro',       // partner sync
   sa104:'pro',             // SA104 partnership
   receiptPack:'pro',       // Receipt Pack PDF
-  mtdReady:'pro'           // quarterly record summary; no HMRC submission
+  mtdReady:'pro',          // quarterly record summary; no HMRC submission
+  ltd:'pro'                // one active Limited Company
 };
 let ENTITLEMENT={snapshot:null,loaded:false};
 function trackEvent(name){try{if(!window.TaxMateAnalytics||!TaxMateAnalytics.enabled())return;const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
@@ -3153,9 +3159,9 @@ async function loadEntitlementFromCloud(uid){
 function currentTier(){
   return TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine).tier;
 }
-function ltdAccessDecision(action){return TaxMateCompanyAccess.decide({action,snapshot:ENTITLEMENT.snapshot,now:Date.now(),offline:typeof navigator!=='undefined'&&navigator.onLine===false});}
+function ltdAccessDecision(action,state=S){return TaxMateCompanyAccess.decide({action,snapshot:ENTITLEMENT.snapshot,now:Date.now(),offline:typeof navigator!=='undefined'&&navigator.onLine===false,hasExistingLtdData:ltdStateHasRecords(state)});}
 function ltdStateHasRecords(state=S){const domain=state&&state.domain||{};return TaxMateLtdSync.COLLECTIONS.some(collection=>collection==='companyProfileRevisions'||collection==='companyOwnershipVersions'?false:Array.isArray(domain[collection])&&domain[collection].length>0)||Array.isArray(domain.companyProfiles)&&domain.companyProfiles.some(profile=>Array.isArray(profile.profileRevisionHistory)&&profile.profileRevisionHistory.length||Array.isArray(profile.ownershipHistory)&&profile.ownershipHistory.length);}
-function ltdBackupAllowed(action,state=S){if(!ltdStateHasRecords(state))return true;const decision=ltdAccessDecision(action);if(decision.allowed)return true;showNotice(t('tier.pro'),t('ltd.backupProOnly'));return false;}
+function ltdBackupAllowed(action,state=S){if(!ltdStateHasRecords(state))return true;const decision=ltdAccessDecision(action,state);if(decision.allowed)return true;showNotice(t('tier.pro'),t('ltd.backupProOnly'));return false;}
 function hasFeature(key){
   const need = FEATURE_TIER[key];
   if(!need) return true; // ungated = free
@@ -3164,7 +3170,7 @@ function hasFeature(key){
 function tierFeatureList(tier){
   const free = ['feat.records','feat.taxcalc','feat.onebiz','feat.mileageBasic','feat.sa103view','feat.sync','feat.backup'];
   const plus = ['feat.multiBiz','feat.receiptPhoto','feat.mileageCompare','feat.pdfReport'];
-  const pro  = ['feat.partnerSync','feat.sa104','feat.receiptPack','feat.mtdReady'];
+  const pro  = ['feat.partnerSync','feat.sa104','feat.receiptPack','feat.mtdReady','feat.ltd'];
   if(tier==='free') return free;
   if(tier==='plus') return plus;
   return pro;
@@ -3189,6 +3195,7 @@ function planBlock(tier){
   else if(isCurrent&&paid&&snapshot.currentPeriodEnd){const date=new Date(Number(snapshot.currentPeriodEnd)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});status=t(snapshot.cancelAtPeriodEnd?'plan.ends':'plan.renews',{p:name,d:date});}
   let btn='';
   if(paid&&tier!=='free')btn=`<button class="btn ghost" style="margin-top:12px;width:100%" data-tm-click="openBillingPortal()">${t('tier.manage')}</button>`;
+  else if(!permanent&&!isCurrent&&tier==='pro')btn=`<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<div class="card" style="${ring}margin-bottom:12px">
@@ -3258,7 +3265,9 @@ async function callSecureFunction(name,data){
     let token;try{token=await u.getIdToken();}catch(_){throw secureFunctionError('auth-required','UNAUTHENTICATED');}
     let appCheck;try{appCheck=await firebase.appCheck().getToken(false);}catch(_){throw secureFunctionError('app-check-unavailable');}
     if(!appCheck||!appCheck.token)throw secureFunctionError('app-check-unavailable');
-    let res;try{res=await fetch('https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});}catch(_){throw secureFunctionError('network');}
+    const configuredOrigin=String(FIREBASE_ENVIRONMENT.functionsOrigin||'').replace(/\/$/,'');
+    const endpoint=configuredOrigin?configuredOrigin+'/'+FIREBASE_CONFIG.projectId+'/europe-west2/'+name:'https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name;
+    let res;try{res=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});}catch(_){throw secureFunctionError('network');}
     let body;try{body=await res.json();}catch(_){throw secureFunctionError('network');}
     if(!res.ok||body.error){const code=body.error&&body.error.status||'UNKNOWN',reason=body.error&&body.error.details&&body.error.details.reason||null,category=SAFE_BILLING_FAILURES.has(reason)?reason:code==='UNAUTHENTICATED'?'app-check-rejected':code==='FAILED_PRECONDITION'?'billing-config':'network';throw secureFunctionError(category,code,reason);}
     return body.result||{};
@@ -3527,6 +3536,7 @@ function persistRemoteState(){
   S=TaxMateState.migrate(S,Date.now(),DEVICE_ID);
   META_SYNC_SHADOW=metaSyncSnapshot(S);
   try{ persistCanonicalState(S); }catch(e){}
+  window.dispatchEvent(new CustomEvent('taxmate:canonical-state-updated'));
 }
 function persistCanonicalState(state){
   if(STATE_LOAD_ERROR)throw Object.assign(new Error('Canonical state writes are blocked until the stored data is recovered safely.'),{code:'state-load-blocked'});
@@ -3544,6 +3554,32 @@ function save(){
   CLOUD.localEditAt=now;
   if(typeof scheduleCloudPush==='function') scheduleCloudPush();return true;
 }
+window.TaxMateLtdProductionBridge=Object.freeze({
+  loadState:()=>JSON.parse(JSON.stringify(S)),
+  replaceState(next){
+    const migrated=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(migrated);persistCanonicalState(migrated);S=migrated;CLOUD.localEditAt=Date.now();
+    window.dispatchEvent(new CustomEvent('taxmate:canonical-state-updated'));
+    if(typeof scheduleCloudPush==='function')scheduleCloudPush();
+    return JSON.parse(JSON.stringify(S));
+  },
+  rollbackSnapshot(){try{return JSON.parse(localStorage.getItem('taxmateuk_pre_ltd_v15_migration')||'null');}catch(_){return null;}},
+  entitlementSnapshot:()=>JSON.parse(JSON.stringify(ENTITLEMENT.snapshot||{})),
+  hasExistingCompany:()=>!!activeLtdProfile(),
+  activeCompanyId:()=>CLOUD.ltdAnchor&&CLOUD.ltdAnchor.activeCompanyId||null,
+  personalTaxJurisdiction:()=>{const rules=TaxMateCore.TAX_RULESETS&&TaxMateCore.TAX_RULESETS[S.year];return rules&&rules.jurisdiction||null;},
+  deviceId:()=>DEVICE_ID,
+  locale:()=>({en:'en',zh:'zh-HK',pl:'pl',ro:'ro',es:'es',ur:'ur'})[S.settings.lang]||'en',
+  theme:()=>S.settings.theme==='dark'?'dark':S.settings.theme==='light'?'light':matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',
+  mount:()=>document.getElementById('taxmate-ltd-ui-root'),
+  enterLtd(){for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
+  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
+  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
+  callTrusted:(name,data)=>callSecureFunction(name,data),
+  downloadWorkingPack(data){const blob=new Blob([JSON.stringify(data.payload,null,2)],{type:data.mimeType||'application/json'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=data.fileName||'taxmate-company-working-pack.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},
+  refreshShell:()=>render(),
+  sentryEnabled:()=>typeof window.Sentry!=='undefined',
+  analyticsEnabled:()=>{try{return localStorage.getItem('taxmateuk_analytics_consent')==='granted';}catch(_){return false;}}
+});
 function yd(){
   if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};
   return S.yearData[S.year];
@@ -3663,7 +3699,7 @@ function render(){
   applyStaticI18n(); renderYearSel(); renderNav();
   const page = document.getElementById('page');
   if(STATE_LOAD_ERROR){page.innerHTML='<div class="notice amber"><strong>TaxMate data needs checking</strong><br>This device contains data from an unsupported or damaged state. Your stored data has not been replaced and cloud sync is paused on this device.</div>';renderSyncStatus();return;}
-  if(!S.businesses.length && S.tab!=='more'){ page.innerHTML = welcome(); return; }
+  if(!S.businesses.length && !activeLtdProfile() && S.tab!=='more'){ page.innerHTML = welcome(); return; }
   if(S.tab==='home') page.innerHTML = pageHome();
   else if(S.tab==='income') page.innerHTML = pageList('income');
   else if(S.tab==='expenses') page.innerHTML = pageList('expense');
@@ -3684,7 +3720,7 @@ function welcome(){
   </div>
   <div class="notice green">${t('w.priv')}</div>
   <div class="card">${steps}
-    <button class="btn" style="margin-top:14px" data-tm-click="openBiz()">${t('w.start')}</button>
+    <button class="btn" style="margin-top:14px" data-tm-click="openAddBusinessFlow()">${t('w.start')}</button>
   </div>`;
 }
 
@@ -3841,6 +3877,27 @@ function topContextTip(){
     return {icon:'📱', t:t('tip.phone_t'), b:t('tip.phone_b')};
   return null;
 }
+function activeLtdProfile(state=S){return(state&&state.domain&&state.domain.companyProfiles||[]).find(profile=>profile.deletedAt==null)||null;}
+function ltdHomeBusinessCards(){
+  const profile=activeLtdProfile();if(!profile)return'';
+  const snapshot=window.TaxMateLtdProductionAdapter&&TaxMateLtdProductionAdapter.getSnapshot&&TaxMateLtdProductionAdapter.getSnapshot();
+  const row=snapshot&&snapshot.businessList&&snapshot.businessList.find(item=>item.businessType==='limited_company')||null;
+  const name=row&&row.name||profile.legalName||'Limited company',draft=profile.lifecycleStatus!=='confirmed',amount=row&&row.summary&&Number.isSafeInteger(row.summary.amountMinor)?row.summary.amountMinor:null,share=row&&row.share&&row.share.percent;
+  const readOnly=currentTier()!=='pro';
+  return `<div class="row">
+    <div class="avatar" style="background:var(--brand-soft);color:var(--brand-deep)">${esc(name.trim().charAt(0).toUpperCase()||'L')}</div>
+    <div class="grow"><div class="t">${esc(name)}</div><div class="s">Limited company${share!=null?' · '+esc(String(share))+'%':''}${draft?' · Setup pending':''}${readOnly?' · Read-only':''}</div></div>
+    <div style="text-align:end">${amount==null?'':`<div class="v num ${amount>=0?'pos':'neg'}">${fmt(amount/100)}</div>`}<button class="link" data-tm-click="openLtdCompany()">${draft?'Finish setup':'Open'}</button></div>
+  </div>`;
+}
+function openAddBusinessFlow(){
+  if(!window.TaxMateLtdProductionAdapter){showNotice('Limited company','The company workspace could not be loaded. Reload TaxMate and try again.');return;}
+  TaxMateLtdProductionAdapter.openAddBusiness().catch(error=>{console.error(error);showNotice('Limited company','The company workspace could not be opened. Your data was not changed.');});
+}
+function openLtdCompany(){
+  if(!window.TaxMateLtdProductionAdapter){showNotice('Limited company','The company workspace could not be loaded. Reload TaxMate and try again.');return;}
+  TaxMateLtdProductionAdapter.openExistingCompany().catch(error=>{console.error(error);showNotice('Limited company','The company workspace could not be opened. Your data was not changed.');});
+}
 function pageHome(){
   const tx = calcTax(S.year);
   const totalIn = entriesFor(S.year,null,'income').reduce((s,e)=>s+e.amount,0);
@@ -3860,7 +3917,7 @@ function pageHome(){
         <button class="link" data-tm-click="openBiz('${p.biz.id}')">${t('c.edit')}</button>
       </div>
     </div>`;
-  }).join('');
+  }).join('')+ltdHomeBusinessCards();
 
   const recent = S.entries.filter(e=>inYear(e.date,S.year)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
   const recentHTML = recent.length ? `
@@ -3906,7 +3963,7 @@ function pageHome(){
 
   <div class="h2">${t('home.biz')}</div>
   <div class="card">${bizCards}</div>
-  <button class="btn soft home-add-business" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
+  <button class="btn soft home-add-business" data-tm-click="openAddBusinessFlow()">+ ${t('home.addBiz')}</button>
 
   ${recentHTML}
 
@@ -4282,7 +4339,8 @@ function pageMore(){
         </div>
         <button class="link" data-tm-click="openBiz('${b.id}')">${t('c.edit')}</button>
       </div>`).join(''):''}
-    <button class="btn soft" style="margin-top:${S.businesses.length?14:0}px" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
+    ${activeLtdProfile()?ltdHomeBusinessCards():''}
+    <button class="btn soft" style="margin-top:${S.businesses.length||activeLtdProfile()?14:0}px" data-tm-click="openAddBusinessFlow()">+ ${t('home.addBiz')}</button>
     <div class="frow" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
       <span class="fl">${t('sy.joinTitle')}${featBadge('partnerSync')}</span>
       <button class="link" data-tm-click="${hasFeature('partnerSync')?'openJoinPartnership()':`lockGuard('partnerSync')`}">${hasFeature('partnerSync')?'›':'🔒'}</button>
@@ -4919,12 +4977,12 @@ function deleteEntry(){
 let BZ = {id:null, structure:'sole'};
 // suggested-categories feature removed — businesses start empty, users add their own
 function paintTrades(){ /* trade selector removed */ }
-function openBiz(id){
+function openBiz(id,initialStructure){
   // Gate: more than one business needs Plus
   if(!id && S.businesses.length>=1 && lockGuard('multiBiz')) return;
   const b = id?bizById(id):null;
   if(b&&((S.businesses.indexOf(b)>0&&!hasFeature('multiBiz'))||(b.syncCode&&!hasFeature('partnerSync')))){showNotice(t('sec.biz'),b.syncCode?t('sy.readOnly'):t('biz.readOnly'));return;}
-  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null, trade:b.trade||null} : {id:null, structure:'sole', pendingCode:null, trade:null};
+  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null, trade:b.trade||null} : {id:null, structure:initialStructure==='partnership'?'partnership':'sole', pendingCode:null, trade:null};
   document.getElementById('bz-title').textContent = b?t('b.edit'):t('b.add');
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
@@ -5386,7 +5444,7 @@ function pushBizRemote(b){
 const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';
 function loadSyncOutbox(){try{return TaxMateSync.normalizeOutbox(JSON.parse(localStorage.getItem(SYNC_OUTBOX_KEY)||'null'));}catch(_){return TaxMateSync.emptyOutbox();}}
 let SYNC_OUTBOX=loadSyncOutbox();
-let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
+let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
 function persistSyncOutbox(){
   try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
   catch(e){CLOUD.writeError='outbox-storage';CLOUD.writeErrorKind='outbox';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
@@ -5466,19 +5524,23 @@ function doSignOut(){
 }
 function userRoot(uid){ return FB.db.collection('users').doc(uid); }
 function ltdCollectionRef(uid,collection){return userRoot(uid).collection('ltd').doc('v1').collection(collection);}
+function normaliseLtdAnchor(value){if(!value)return null;if(value.schemaVersion!==1||value.status!=='active_slot_claimed'||typeof value.activeCompanyId!=='string'||!value.activeCompanyId)throw Object.assign(new Error('ltd-anchor-invalid'),{code:'ltd-anchor-invalid'});return{schemaVersion:1,status:value.status,activeCompanyId:value.activeCompanyId,releasePolicy:value.releasePolicy||null};}
+function validateLtdAnchorConsistency(anchor,envelopes){const ids=new Set((envelopes||[]).map(item=>item.companyId)),localIds=new Set((S.domain&&S.domain.entities||[]).filter(item=>item.type==='limited_company'&&item.deletedAt==null).map(item=>item.id));if((ids.size||localIds.size)&&!anchor)throw Object.assign(new Error('ltd-anchor-missing'),{code:'ltd-anchor-missing'});if(anchor&&[...ids,...localIds].some(id=>id!==anchor.activeCompanyId))throw Object.assign(new Error('ltd-anchor-mismatch'),{code:'ltd-anchor-mismatch'});return true;}
 function setLtdRemote(envelopes){CLOUD.ltdRemote=envelopes.slice().sort((a,b)=>String(a.collection).localeCompare(String(b.collection))||String(a.recordId).localeCompare(String(b.recordId)));}
 function reconcileLtdState(uid,envelopes,{queue=true}={}){
-  if(!ltdAccessDecision('cloud_sync').allowed)return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
+  const hydrate=ltdAccessDecision('cloud_hydrate'),write=ltdAccessDecision('cloud_sync');
+  if(!hydrate.allowed)return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
   const result=TaxMateLtdSync.reconcile(S,envelopes,uid);if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
   if(result.downloads.length){const next=TaxMateLtdSync.applyDownloads(S,result.downloads);S=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(S);persistCanonicalState(S);}
-  if(queue)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));return result;
+  if(queue&&write.allowed)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
+  return{...result,uploads:write.allowed?result.uploads:[],retainedLocalOnlyUploads:write.allowed?0:result.uploads.length,readOnly:!write.allowed};
 }
 async function readLtdCloud(uid){
-  if(!ltdAccessDecision('cloud_sync').allowed){setLtdRemote([]);return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};}
-  const batches=await Promise.all(TaxMateLtdSync.COLLECTIONS.map(async collection=>{const snap=await ltdCollectionRef(uid,collection).get(),rows=[];snap.forEach(doc=>rows.push(doc.data()));return rows;})),remote=batches.flat();remote.forEach(TaxMateLtdSync.validateEnvelope);setLtdRemote(remote);return reconcileLtdState(uid,remote);
+  if(!ltdAccessDecision('cloud_hydrate').allowed){setLtdRemote([]);return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};}
+  const anchorDoc=await userRoot(uid).collection('ltdControl').doc('activeCompany').get(),anchor=anchorDoc.exists?normaliseLtdAnchor(anchorDoc.data()):null,batches=await Promise.all(TaxMateLtdSync.COLLECTIONS.map(async collection=>{const snap=await ltdCollectionRef(uid,collection).get(),rows=[];snap.forEach(doc=>rows.push(doc.data()));return rows;})),remote=batches.flat();remote.forEach(TaxMateLtdSync.validateEnvelope);validateLtdAnchorConsistency(anchor,remote);CLOUD.ltdAnchor=anchor;setLtdRemote(remote);return{...reconcileLtdState(uid,remote),anchor:anchor?{...anchor}:null};
 }
 function installLtdListeners(uid){
-  if(!ltdAccessDecision('cloud_sync').allowed){(CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=[];return;}
+  if(!ltdAccessDecision('cloud_hydrate').allowed){(CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=[];return;}
   (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=TaxMateLtdSync.COLLECTIONS.map(collection=>ltdCollectionRef(uid,collection).onSnapshot(snap=>{if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;const other=(CLOUD.ltdRemote||[]).filter(item=>item.collection!==collection),rows=[];snap.forEach(doc=>rows.push(doc.data()));try{rows.forEach(TaxMateLtdSync.validateEnvelope);setLtdRemote(other.concat(rows));CLOUD.applying=true;reconcileLtdState(uid,CLOUD.ltdRemote);CLOUD.applying=false;persistRemoteState();render();scheduleOutboxFlush(0,'ltd-reconciliation');}catch(error){CLOUD.applying=false;handleSyncListenerError(error);}},handleSyncListenerError));
 }
 
@@ -5619,7 +5681,7 @@ async function flushSyncForConvergence(uid){
 function clearUserSyncListeners(){
   if(CLOUD.metaUnsub){try{CLOUD.metaUnsub();}catch(e){}CLOUD.metaUnsub=null;}
   if(CLOUD.entUnsub){try{CLOUD.entUnsub();}catch(e){}CLOUD.entUnsub=null;}
-  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(e){}});CLOUD.ltdUnsubs=[];CLOUD.ltdRemote=[];
+  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(e){}});CLOUD.ltdUnsubs=[];CLOUD.ltdRemote=[];CLOUD.ltdAnchor=null;
   Object.keys(FB.subs).forEach(code=>{const sub=FB.subs[code],unsubs=Array.isArray(sub)?sub:(sub&&Array.isArray(sub.unsubs)?sub.unsubs:[]);unsubs.forEach(unsub=>{try{unsub();}catch(e){}});});
   FB.subs={};
 }
@@ -5649,7 +5711,7 @@ function startUserSync(u){
       S.entries=TaxMateSync.visible(mergedEntries);
       S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
       persistRemoteState();
-      const ltdReconciliation=ltdAccessDecision('cloud_sync').allowed?await readLtdCloud(uid):{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
+      const ltdReconciliation=ltdAccessDecision('cloud_hydrate').allowed?await readLtdCloud(uid):{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
 
       /* 2 ── Install live personal listeners, then await every partnership's first snapshots. */
@@ -5670,12 +5732,12 @@ function startUserSync(u){
         S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
         persistRemoteState();CLOUD.applying=false;render();
       },handleSyncListenerError);
-      if(ltdAccessDecision('cloud_sync').allowed)installLtdListeners(uid);
+      if(ltdAccessDecision('cloud_hydrate').allowed)installLtdListeners(uid);
       const partnershipSubscriptions=S.businesses.filter(b=>b.syncCode).map(b=>subscribeSync(b.syncCode,b.id));
       const partnershipResults=await Promise.all(partnershipSubscriptions);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
       const partnershipRecordCount=partnershipResults.reduce((sum,row)=>sum+Number(row&&row.entries||0),0);
-      const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount+(CLOUD.ltdRemote||[]).length});
+      const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount+(CLOUD.ltdRemote||[]).length+(CLOUD.ltdAnchor?1:0)});
 
       /* 3 ── Inbound account and partnership snapshots are complete before outbound reconciliation begins. */
       CLOUD.hydrationState='converged';CLOUD.partnershipHydrationState='converged';CLOUD.hydrationError=null;CLOUD.inboundError=null;
@@ -7206,6 +7268,7 @@ function obFinish(){
 applyCachedRates();
 applyTheme();
 render();
+if(window.TaxMateLtdProductionAdapter)TaxMateLtdProductionAdapter.initialise().then(()=>render()).catch(error=>console.error('Ltd runtime initialisation failed',error));
 setupBackButton();
 // First run: no businesses and never onboarded → launch catch-up flow
 // ⚠️ 已登入（或正在還原登入）嘅用戶係「返嚟嘅用戶」，資料喺雲端，唔可以即刻彈新手流程，

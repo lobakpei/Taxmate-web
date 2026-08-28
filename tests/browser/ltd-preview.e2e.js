@@ -42,7 +42,7 @@ async function main(){
   await mobile.context.close();
 
   const desktop=await pageFor({width:1440,height:1000}),desktopPage=desktop.page;
-  for(const tier of ['plus','free']){await goto(desktopPage,`/?mode=existing&tier=${tier}&reset=1`);const row=desktopPage.getByRole('button',{name:/ToodaLoop Ltd/});check(await row.isDisabled(),`${tier} cannot open the existing Ltd workspace`);check((await row.innerText()).includes('Launch price £9.99/month'),`${tier} sees the approved launch-price wording`);await desktopPage.getByRole('button',{name:'+ Add a business'}).click();await desktopPage.getByRole('button',{name:/Limited company/}).click();await desktopPage.getByText('Limited company tools are available on Pro.').waitFor();check(true,`${tier} create path returns the Pro gate without activating Ltd`);}
+  for(const tier of ['plus','free']){await goto(desktopPage,`/?mode=existing&tier=${tier}&reset=1`);const row=desktopPage.getByRole('button',{name:/ToodaLoop Ltd/});check(await row.isEnabled(),`${tier} retains read access to the existing Ltd workspace`);await row.click();await desktopPage.getByRole('tab',{name:'Overview'}).waitFor();check(true,`${tier} can inspect retained company records after downgrade`);await goto(desktopPage,`/?mode=fresh&tier=${tier}&reset=1`);await desktopPage.getByRole('button',{name:'+ Add a business'}).click();await desktopPage.getByRole('button',{name:/Limited company/}).click();await desktopPage.getByText('Limited company tools are available on Pro.').waitFor();check(true,`${tier} create path returns the Pro gate without activating Ltd`);}
 
   await goto(desktopPage,'/?mode=fresh&tier=pro&reset=1');
   await desktopPage.getByRole('button',{name:'+ Add a business'}).click();

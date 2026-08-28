@@ -15,6 +15,7 @@
   /* ---- UI-only presentation state (NOT domain state) -------------------- */
   var UI = {
     locale:'en', theme:'light',
+    production:false,
     cache:{},        // fieldKey -> live input text (smooth typing across local repaints)
     choices:{},      // choiceKey -> selected value (UI-local selections before submit)
     sheet:null,      // { kind, step, ctx } UI-local sheet layered over current route
@@ -326,7 +327,7 @@
       h('ul',{}, ks.map(function(k){ return h('li',{text:e[k]}); }))]);
   }
   function stripTags(s){ return String(s||'').replace(/<[^>]*>/g,''); }
-  function todayISO(){ var d=(S().workspace&&S().workspace.projection&&S().workspace.projection.asOfDate)|| (S().dataset&&'2026-08-24'); return d||'2026-08-24'; }
+  function todayISO(){ return S().context&&S().context.currentDate||''; }
 
   /* ---- compact calendar (approved size, month/year nav, RTL shell) ------ */
   function localeMonths(){
@@ -1011,7 +1012,7 @@
     if(num) rows.push([t('records.company_number'), h('span',{class:'tm-num',text:num})]);
     if(inc) rows.push([t('records.incorporation_date'), h('span',{class:'tm-num',text:isoToDisplay(inc)})]);
     if(registry){
-      var registryText=registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required');
+      var registryText=registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='manual_unverified'?t('s1.lookup_manual'):registry.status==='needs_checking'?t('s1.lookup_needs_checking'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required');
       rows.push([t('term.companies_house'),h('span',{text:registryText})]);
     }
     rows.push([t('records.trading_status'), h('span',{text: trading?t('records.trading_yes'):t('records.trading_no')})]);
@@ -1283,7 +1284,7 @@
         ['tradingStartDate',t('s2.start_date')],['tradingStatus',t('term.trading_start')]
       ], onChange:function(v){ setChoice(sid,'field',v); }})
     ];
-    if(registry){nodes.push(notice(registry.status==='verified'?'ok':'warn',t('term.companies_house'),registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required')));if(registry.companyNumber)nodes.push(btn(t('s1.check_ch'),'s',function(){run('onRecheckCompaniesHouse',{companyNumber:registry.companyNumber},{scope:sid,onReview:function(){paint();},onOk:function(){paint();}});}));}
+    if(registry){nodes.push(notice(registry.status==='verified'?'ok':'warn',t('term.companies_house'),registry.status==='verified'?t('s1.lookup_confirmed'):registry.status==='manual_unverified'?t('s1.lookup_manual'):registry.status==='needs_checking'?t('s1.lookup_needs_checking'):registry.status==='not_registered'?t('s2.unregistered_title'):registry.status==='not_found'?t('s1.lookup_not_found'):registry.status==='unavailable'?t('s1.lookup_unavailable'):t('common.review_required')));if(registry.companyNumber)nodes.push(btn(t('s1.check_ch'),'s',function(){run('onRecheckCompaniesHouse',{companyNumber:registry.companyNumber},{scope:sid,onReview:function(){paint();},onOk:function(){paint();}});}));}
     if(field==='incorporationDate'||field==='tradingStartDate') nodes.push(dateField({scope:sid,fid:'value',persist:false,label:t('design.corrected_detail')}));
     else nodes.push(textField({scope:sid,fid:'value',label:t('design.corrected_detail'),type:'text',persist:false}));
     nodes.push(textField({scope:sid,fid:'reason',label:t('records.reason'),type:'text',persist:false}));
@@ -1829,7 +1830,7 @@
     var mount=LAST.mount; if(!mount||!LAST.snapshot) return;
     flushActive();
     var app=h('div',{class:'tm-app', 'data-theme':UI.theme, dir:isRTL()?'rtl':'ltr',lang:UI.locale});
-    app.append(devbar());
+    if(!UI.production) app.append(devbar());
     var col=h('div',{class:'tm-col'});
     col.append(screenFor(routeId()));
     app.append(col);
@@ -1854,6 +1855,7 @@
     // optional hooks so a production shell can drive locale/theme from app settings
     setLocale: function(l){ UI.locale=l; UI.mountedKey=null; paint(); },
     setTheme: function(th){ UI.theme=th; UI.mountedKey=null; paint(); },
+    setProductionMode: function(on){ UI.production=on===true; UI.mountedKey=null; paint(); },
     // pure, side-effect-free helpers exposed for source-level acceptance tests
     _allocateByPercent: allocateByPercent,
     _payerAction: payerAction

@@ -1,5 +1,7 @@
 # TaxMate Ltd V1.5 Integrated Candidate Closeout — 2026-08-28
 
+> **Historical audit reference only.** This document describes parent candidate `6edbec41af9ffac4a533c972ab131e22ee65fd88` before actual-app integration. Its preview-ready outcome and counts are superseded by the current actual-app candidate audit pack and must not be used as current release evidence.
+
 ## Outcome
 
 `TAXMATE_LTD_V1.5_INTEGRATED_CANDIDATE_READY_FOR_FOUNDER_PREVIEW`

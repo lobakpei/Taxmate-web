@@ -40,16 +40,19 @@ test('promotion redemption is independent and appears before every plan card', (
   assert.doesNotMatch(app, /if\(tier==='pro'\)[^\n]*promo\.redeem/);
 });
 
-test('monthly and yearly cadence extends the approved Plans UI without changing plan structure',()=>{
+test('Plans UI keeps Plus cadence and exposes only the Founder-approved monthly Pro positioning',()=>{
   assert.match(app,/data-billing-cadence="monthly"/);
   assert.match(app,/data-billing-cadence="yearly"/);
   assert.match(app,/min-height:19px/);
   assert.match(app,/style\.visibility=cadence==='yearly'\?'visible':'hidden'/);
   assert.match(app,/£3\.99 \/ month/);
   assert.match(app,/£29\.99 \/ year/);
-  assert.match(app,/£7\.99 \/ month/);
-  assert.match(app,/£59\.99 \/ year/);
+  assert.match(app,/Launch price £9\.99\/month/);
+  assert.match(app,/Standard price £11\.99\/month/);
+  assert.match(app,/Pro annual price not yet available/);
+  assert.doesNotMatch(app,/Was £11\.99/);
   assert.match(app,/BILLING_CADENCE/);
+  assert.match(app,/!isCurrent&&tier==='pro'/);
   assert.match(app,/createCheckoutSession',\{tier,cadence:BILLING_CADENCE\}/);
   assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year/i);
 });

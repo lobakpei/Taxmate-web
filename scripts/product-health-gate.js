@@ -28,6 +28,6 @@ assert.doesNotMatch(publicText,/car\.proTitle|activateTrial|Free Pro access|Limi
 assert.doesNotMatch(publicText,/sk_(?:live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/i);
 assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','legal.js')),false,'obsolete legal runtime must not ship');
 assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','product-content.js')),true,'canonical content runtime missing');
-assert.match(read('src/core/versions.js'),/APP_VERSION:\s*'2\.0\.6'/);
+assert.match(read('src/core/versions.js'),/APP_VERSION:\s*'2\.1\.0'/);
 assert.match(read('index.html'),/src\/core\/product-content\.js/);
 console.log(`PRODUCT_FUNCTION_HEALTH_GATE PASS REAL_DURABLE=${totals.REAL_DURABLE} INTENTIONALLY_HIDDEN=${totals.INTENTIONALLY_HIDDEN} BROKEN=0 SHELL=0 DEAD_VISIBLE=0 DUPLICATE_VISIBLE=0 MISPLACED=0 MISLABELLED=0`);

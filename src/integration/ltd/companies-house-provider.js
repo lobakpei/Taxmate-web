@@ -1,6 +1,9 @@
+(function(root,factory){
+  const node=typeof module==='object'&&module.exports,api=factory(node?require('../../core/company-identity'):root.TaxMateCompanyIdentity);
+  if(node)module.exports=api;
+  root.TaxMateCompaniesHouseProvider=api;
+})(typeof globalThis!=='undefined'?globalThis:this,function(CompanyIdentity){
 'use strict';
-
-const CompanyIdentity=require('../../core/company-identity');
 
 const PUBLIC_BASE_URL='https://find-and-update.company-information.service.gov.uk/company';
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
@@ -15,4 +18,5 @@ function createCallableProvider(callable){
   if(typeof callable!=='function')return unavailableProvider('companies_house_callable_not_configured');return Object.freeze({isNetworkProvider:true,async lookup(companyNumber){try{const response=await callable({companyNumber}),result=response&&response.data||response;if(!result||!['found','not_found'].includes(result.status))return{status:'unavailable',retryable:true,reasonCode:'companies_house_callable_invalid_response'};return clone(result);}catch(error){const details=error&&error.details||{};return{status:'unavailable',retryable:details.retryable!==false,reasonCode:details.reason||'companies_house_callable_failed'};}}});
 }
 
-module.exports={PUBLIC_BASE_URL,SUPPORTED_TYPES,SUPPORTED_STATUSES,assessRegistryCompany,unavailableProvider,createCallableProvider};
+return{PUBLIC_BASE_URL,SUPPORTED_TYPES,SUPPORTED_STATUSES,assessRegistryCompany,unavailableProvider,createCallableProvider};
+});
