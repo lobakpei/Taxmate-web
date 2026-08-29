@@ -1,6 +1,6 @@
 {
   "name": "taxmate-web",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "private": true,
   "description": "TaxMate bookkeeping and tax planning web app",
   "scripts": {
@@ -20,6 +20,7 @@
     "preview:ltd": "node ui-preview-harness/server.js --port=41742",
     "test:product-health": "node scripts/product-health-gate.js",
     "test:plan-contract": "node scripts/plan-feature-contract-gate.js",
+    "audit:bootstrap": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/bootstrap-audit-review.ps1",
     "test:all": "npm test && npm run test:rules:emulator && npm run test:functions:emulator && npm run test:paid-sync:browser && npm run test:ltd:browser && npm run test:ltd:actual-app",
     "stripe:configure:sandbox": "node scripts/configure-stripe-billing-delta.js",
     "stripe:configure:billing-delta": "node scripts/configure-stripe-billing-delta.js",

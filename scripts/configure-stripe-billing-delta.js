@@ -4,13 +4,14 @@ const Stripe=require(path.resolve(__dirname,'..','functions','node_modules','str
 
 const required=['STRIPE_SECRET_KEY','TAXMATE_STRIPE_ACCOUNT_ID','STRIPE_PLUS_PRODUCT_ID','STRIPE_PRO_PRODUCT_ID','EXPECTED_STRIPE_MODE'];
 for(const name of required)if(!process.env[name])throw new Error(`Missing ${name}`);
-if(!['test','live'].includes(process.env.EXPECTED_STRIPE_MODE))throw new Error('EXPECTED_STRIPE_MODE must be test or live');
-const stripe=new Stripe(process.env.STRIPE_SECRET_KEY),expectedLive=process.env.EXPECTED_STRIPE_MODE==='live';
+if(process.env.EXPECTED_STRIPE_MODE!=='test')throw new Error('This candidate helper is TEST-mode only; production billing alignment requires separate release authority');
+if(!/^(?:sk|rk)_test_/.test(process.env.STRIPE_SECRET_KEY))throw new Error('A TEST-mode Stripe key is required');
+const stripe=new Stripe(process.env.STRIPE_SECRET_KEY),expectedLive=false;
 const desired=[
   {tier:'plus',cadence:'monthly',product:process.env.STRIPE_PLUS_PRODUCT_ID,amount:399,interval:'month'},
   {tier:'plus',cadence:'yearly',product:process.env.STRIPE_PLUS_PRODUCT_ID,amount:2999,interval:'year'},
-  {tier:'pro',cadence:'monthly',product:process.env.STRIPE_PRO_PRODUCT_ID,amount:799,interval:'month'},
-  {tier:'pro',cadence:'yearly',product:process.env.STRIPE_PRO_PRODUCT_ID,amount:5999,interval:'year'}
+  {tier:'pro',cadence:'monthly',product:process.env.STRIPE_PRO_PRODUCT_ID,amount:999,interval:'month'},
+  {tier:'pro',cadence:'yearly',product:process.env.STRIPE_PRO_PRODUCT_ID,amount:9999,interval:'year'}
 ];
 
 async function ensurePrice(spec){

@@ -3,8 +3,9 @@ const path=require('node:path');
 const tier=String(process.argv[2]||'').toLowerCase();
 const cadence=String(process.argv[3]||'monthly').toLowerCase();
 if(!['plus','pro'].includes(tier)||!['monthly','yearly'].includes(cadence))throw new Error('Usage: node scripts/create-stripe-hosted-test-checkout.js plus|pro monthly|yearly');
-const required=['STRIPE_SECRET_KEY','TAXMATE_STRIPE_ACCOUNT_ID','STRIPE_PLUS_MONTHLY_PRICE_ID','STRIPE_PLUS_ANNUAL_PRICE_ID','STRIPE_PRO_MONTHLY_PRICE_ID','STRIPE_PRO_ANNUAL_PRICE_ID'];
+const required=['STRIPE_SECRET_KEY','TAXMATE_STRIPE_ACCOUNT_ID','STRIPE_PLUS_MONTHLY_PRICE_ID','STRIPE_PLUS_ANNUAL_PRICE_ID','STRIPE_PRO_MONTHLY_PRICE_ID','STRIPE_PRO_ANNUAL_PRICE_ID','EXPECTED_STRIPE_MODE'];
 for(const name of required){if(!process.env[name])throw new Error(`Missing ${name}`);}
+if(process.env.EXPECTED_STRIPE_MODE!=='test'||!/^(?:sk|rk)_test_/.test(process.env.STRIPE_SECRET_KEY))throw new Error('This helper requires an explicitly selected Stripe TEST-mode key');
 const Stripe=require(path.resolve(__dirname,'..','functions','node_modules','stripe'));
 const stripe=new Stripe(process.env.STRIPE_SECRET_KEY);
 
@@ -21,7 +22,7 @@ async function main(){
     subscription_data:{metadata:{firebaseUid:uid,tier,billingCadence:cadence,taxmate_fixture:'true'}},
     metadata:{taxmate_fixture:'true',tier,billingCadence:cadence}
   });
-  const amount={plus:{monthly:399,yearly:2999},pro:{monthly:799,yearly:5999}}[tier][cadence];
+  const amount={plus:{monthly:399,yearly:2999},pro:{monthly:999,yearly:9999}}[tier][cadence];
   console.log(JSON.stringify({tier,cadence,uid,customerId:customer.id,sessionId:session.id,url:session.url,priceId,amount,currency:'gbp',automaticTax:false},null,2));
 }
 

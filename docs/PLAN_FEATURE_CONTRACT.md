@@ -29,7 +29,7 @@ Canonical product contract for TaxMate 2.0.0. Plus includes every Free feature. 
 
 - Free — £0: income and expenses; tax estimate; one business; annual mileage total; SA103 box/reference mapping; cloud sync; full backup and restore.
 - Plus — £3.99/month or £29.99/year: includes Free; multiple businesses; receipt photos; mileage comparison; PDF tax report.
-- Pro — £7.99/month or £59.99/year: includes Plus; Partner Sync; SA104 partnership working paper; Receipt Pack PDF; quarterly record summary with no HMRC submission.
+- Pro — launch £9.99/month, standard £11.99/month, or £99.99/year: includes Plus; Partner Sync; SA104 partnership working paper; Receipt Pack PDF; quarterly record summary with no HMRC submission; one active Limited Company.
 - MTD guidance remains Free. `SA103 PDF export` is absent until a real independent feature exists.
 
 `PLAN_FEATURE_CONTRACT_GATE` checks this document against `FEATURE_TIER`, plan-card arrays, Help content, Storage/Firestore rules and callable enforcement.
@@ -38,6 +38,6 @@ Canonical product contract for TaxMate 2.0.0. Plus includes every Free feature. 
 
 The Ltd V1.5 actual-app candidate adds a separate, fail-closed contract: every active limited-company create, edit, bookkeeping, tax, period, remuneration, ownership, Companies House, restore and outbound-sync action requires effective Pro. Free and Plus do not receive active Ltd functionality. After Pro ends, the authenticated owner retains read-only hydration, existing evidence access and Data-only/Full Backup export; restore/import and all writes remain blocked. Account deletion and archived-access status remain available. Removing a company is still Pro-only and never frees the trusted one-company anchor automatically.
 
-Pro includes one active limited company per account/subscription. There is no additional-company add-on, no multi-Ltd mode and no associated-company workflow. The approved monthly copy is **Launch price £9.99/month** and **Standard price £11.99/month**. This is a launch price, not a legacy or grandfathered price, and the UI must not use previous-price or struck-through-price wording. Annual Pro pricing is intentionally pending and must not be invented.
+Pro includes one active limited company per account/subscription. There is no additional-company add-on, no multi-Ltd mode and no associated-company workflow. The approved pricing is **Launch price £9.99/month**, **Standard price £11.99/month**, and **£99.99/year** (`amountMinor: 9999`). This is a launch price, not a legacy or grandfathered price. The UI must not use previous-price or struck-through-price wording or add an unapproved savings/free-month claim.
 
-This candidate does not mutate production Stripe price IDs, current subscriptions, checkout configuration or the live TaxMate 2.0.6 plan cards. Those production billing surfaces still contain the established £7.99/month and £59.99/year Pro prices and must be reconciled in a separately authorised pre-release billing step before Ltd V1.5 can deploy. See `docs/LTD_V1.5_PLAN_FEATURE_CONTRACT_20260828.md` for the exact action matrix.
+This candidate does not mutate production Stripe price IDs, current subscriptions, checkout configuration or live TaxMate 2.0.6. Production Stripe price/configuration alignment to the Founder-approved Pro contract remains a separately authorised pre-release gate; until then, new Pro checkout is disabled/fail-closed in this candidate. See `docs/LTD_V1.5_PLAN_FEATURE_CONTRACT_20260828.md` for the exact action matrix.

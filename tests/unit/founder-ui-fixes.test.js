@@ -40,7 +40,7 @@ test('promotion redemption is independent and appears before every plan card', (
   assert.doesNotMatch(app, /if\(tier==='pro'\)[^\n]*promo\.redeem/);
 });
 
-test('Plans UI keeps Plus cadence and exposes only the Founder-approved monthly Pro positioning',()=>{
+test('Plans UI keeps Plus cadence and exposes the complete Founder-approved Pro pricing',()=>{
   assert.match(app,/data-billing-cadence="monthly"/);
   assert.match(app,/data-billing-cadence="yearly"/);
   assert.match(app,/min-height:19px/);
@@ -49,10 +49,19 @@ test('Plans UI keeps Plus cadence and exposes only the Founder-approved monthly 
   assert.match(app,/£29\.99 \/ year/);
   assert.match(app,/Launch price £9\.99\/month/);
   assert.match(app,/Standard price £11\.99\/month/);
-  assert.match(app,/Pro annual price not yet available/);
+  assert.match(app,/£99\.99 \/ year/);
+  assert.doesNotMatch(app,/Pro annual price not yet available|Annual Pro price pending|Founder decision pending/i);
   assert.doesNotMatch(app,/Was £11\.99/);
   assert.match(app,/BILLING_CADENCE/);
   assert.match(app,/!isCurrent&&tier==='pro'/);
   assert.match(app,/createCheckoutSession',\{tier,cadence:BILLING_CADENCE\}/);
-  assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year/i);
+  assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year|Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);
+});
+
+test('draft persistence emit cannot repaint away a button between input blur and click',()=>{
+  const renderer=fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8');
+  assert.match(renderer,/if\(key===UI\.mountedKey\)\{\s*return; \/\/ draft-only emit: preserve the active field and any click target reached through blur/);
+  assert.match(renderer,/onDraftChanged[^\n]*\{skipPaint:true\}/);
+  assert.match(renderer,/else if\(!opts\.skipPaint\) paint\(\)/);
+  assert.doesNotMatch(renderer,/key===UI\.mountedKey && document\.activeElement/);
 });

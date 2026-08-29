@@ -19,7 +19,8 @@ test('fixed promo and annual paid notifications use exact lifecycle copy',()=>{
   assert.equal(E.notification({promotions:{PROMO:{status:'active',tier:'plus',startsAt:now-1,expiresAt:now+86400000}},serverVerifiedAt:now},now).message,'Your Plus access ends tomorrow.');
   assert.match(E.notification({promotions:{PROMO:{status:'active',tier:'pro',startsAt:now-1000,expiresAt:now-1}},serverVerifiedAt:now},now).message,/now on Free/);
   assert.equal(E.notification({promotions:{PERM:{status:'active',tier:'pro',startsAt:now-1,expiresAt:null,permanent:true}},serverVerifiedAt:now},now),null);
-  assert.match(E.notification({subscriptionStatus:'active',paidTier:'pro',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message,/renews.*£59\.99/);
+  assert.match(E.notification({subscriptionStatus:'active',paidTier:'pro',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message,/renews.*£99\.99/);
+  assert.match(E.notification({subscriptionStatus:'active',paidTier:'plus',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message,/renews.*£29\.99/);
   assert.match(E.notification({subscriptionStatus:'active',paidTier:'plus',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:true,serverVerifiedAt:now},now).message,/plan ends/);
 });
 test('expired Pro promo copy reflects paid Plus fallback',()=>{

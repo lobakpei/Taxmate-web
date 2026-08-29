@@ -1,6 +1,6 @@
 # TaxMate Ltd V1.5 Plan Feature Contract
 
-Status: Founder approved for the isolated production-integration candidate on 28 August 2026.
+Status: Founder approved and pricing-corrected for the isolated production-integration candidate on 29 August 2026.
 
 ## Commercial identity
 
@@ -10,9 +10,9 @@ Status: Founder approved for the isolated production-integration candidate on 28
 - Multi-Ltd and associated-company workflows: absent.
 - Pro monthly launch price: £9.99/month.
 - Pro monthly standard price: £11.99/month.
-- Pro annual price: Founder decision pending; no amount may be inferred or displayed.
+- Pro annual price: £99.99/year (`amountMinor: 9999`), Founder approved.
 - Existing-user migration, grandfathering or legacy pricing: none.
-- Forbidden copy: previous-price or struck-through-price wording, and any claim that the launch price is a legacy price.
+- Forbidden copy: previous-price or struck-through-price wording, any claim that the launch price is a legacy price, and any unapproved savings or free-month claim.
 
 ## Exact semantic action matrix
 
@@ -51,4 +51,4 @@ The Founder Preview defaults to a verified active Pro fixture. Explicit local-on
 
 ## Production release boundary
 
-No production Stripe price, price ID, subscription, billing portal, callable or checkout configuration is changed by this candidate. The candidate shows the approved £9.99 monthly launch / £11.99 monthly standard positioning but keeps new Pro checkout disabled until production billing is explicitly aligned. Annual Pro pricing remains a Founder pre-release decision and no annual Pro offer is exposed.
+No production Stripe price, price ID, subscription, billing portal, callable or checkout configuration is changed by this candidate. The candidate shows the approved £9.99 monthly launch / £11.99 monthly standard / £99.99 annual pricing but keeps new Pro checkout disabled until production billing is explicitly aligned. The annual pricing decision is resolved; production billing alignment remains a separate release gate.

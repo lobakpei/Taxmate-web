@@ -13,8 +13,8 @@ const stripe=new Stripe(process.env.STRIPE_SECRET_KEY,{maxNetworkRetries:2});
 const specs=[
   {key:'plusMonthly',tier:'plus',cadence:'monthly',amount:399,interval:'month',price:process.env.STRIPE_PLUS_MONTHLY_PRICE_ID,product:process.env.STRIPE_PLUS_PRODUCT_ID},
   {key:'plusYearly',tier:'plus',cadence:'yearly',amount:2999,interval:'year',price:process.env.STRIPE_PLUS_ANNUAL_PRICE_ID,product:process.env.STRIPE_PLUS_PRODUCT_ID},
-  {key:'proMonthly',tier:'pro',cadence:'monthly',amount:799,interval:'month',price:process.env.STRIPE_PRO_MONTHLY_PRICE_ID,product:process.env.STRIPE_PRO_PRODUCT_ID},
-  {key:'proYearly',tier:'pro',cadence:'yearly',amount:5999,interval:'year',price:process.env.STRIPE_PRO_ANNUAL_PRICE_ID,product:process.env.STRIPE_PRO_PRODUCT_ID}
+  {key:'proMonthly',tier:'pro',cadence:'monthly',amount:999,interval:'month',price:process.env.STRIPE_PRO_MONTHLY_PRICE_ID,product:process.env.STRIPE_PRO_PRODUCT_ID},
+  {key:'proYearly',tier:'pro',cadence:'yearly',amount:9999,interval:'year',price:process.env.STRIPE_PRO_ANNUAL_PRICE_ID,product:process.env.STRIPE_PRO_PRODUCT_ID}
 ];
 
 async function expire(ids){

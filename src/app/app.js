@@ -3116,7 +3116,7 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
-const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'Launch price £9.99/month · Standard price £11.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'Pro annual price not yet available'}});
+const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'Launch price £9.99/month · Standard price £11.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£99.99 / year'}});
 let BILLING_CADENCE='monthly';
 function tierPrice(tier){return TIER_PRICE[BILLING_CADENCE][tier];}
 function setBillingCadence(cadence){

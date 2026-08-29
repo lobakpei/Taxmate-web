@@ -16,7 +16,7 @@ const hosting=read('firebase.json');
 const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, BH15 9EL';
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
-  assert.equal(Legal.POLICY_VERSION,'2026-08-28');
+  assert.equal(Legal.POLICY_VERSION,'2026-08-29');
   assert.equal(Legal.PUBLIC_CORRESPONDENCE_ADDRESS,APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS);
   assert.equal(privacy,Legal.publicPage('privacy'));
   assert.equal(terms,Legal.publicPage('terms'));
@@ -39,8 +39,9 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/£29\.99\s*\/\s*year|£29\.99 per year/);
     assert.match(text,/£9\.99\s*\/\s*month|£9\.99 per month/);
     assert.match(text,/£11\.99\s*\/\s*month|£11\.99 per month/);
-    assert.match(text,/(?:Pro annual price not yet available|annual price has not been approved|annual price has been approved or offered|No Pro annual price has been approved or offered)/i);
-    assert.doesNotMatch(text,/Was £11\.99/i);
+    assert.match(text,/£99\.99\s*\/\s*year|£99\.99 per year/);
+    assert.doesNotMatch(text,/(?:Pro annual price not yet available|annual price has not been approved|annual price has been approved or offered|No Pro annual price has been approved or offered|Founder decision pending)/i);
+    assert.doesNotMatch(text,/Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);
   }
   assert.match(app,/Billed yearly/);
   assert.doesNotMatch(app,/Pay once for the year/i);

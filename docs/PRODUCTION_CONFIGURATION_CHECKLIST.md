@@ -1,5 +1,7 @@
 # Production Configuration Checklist
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Do not perform these actions until Founder release approval. Complete them first in approved isolated staging, then repeat the approved configuration in production with exact identity checks.
 
 ## Firebase / Google

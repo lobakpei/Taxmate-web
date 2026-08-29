@@ -1,5 +1,7 @@
 # Billing and Entitlement Report
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Free remains permanent. Plus and Pro access resolves only from `users/{uid}/entitlements/current`, a client-read/server-write document. A local `tier`, `pro` or legacy trial flag cannot unlock paid features.
 
 Founder-approved pricing is Free £0; Plus £3.99/month or £29.99/year; and Pro £7.99/month or £59.99/year. Monthly and yearly are recurring subscriptions. The independent TaxMate Stripe account contains matching TEST and LIVE Price objects with strict mode separation. Stripe Tax is off and TaxMate does not add VAT at checkout.

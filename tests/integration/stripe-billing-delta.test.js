@@ -6,8 +6,8 @@ const stripe=new Stripe(process.env.STRIPE_SECRET_KEY),sessionIds=JSON.parse(pro
 const cases=[
   {key:'plusMonthly',tier:'plus',cadence:'monthly',amount:399,interval:'month',price:process.env.STRIPE_PLUS_MONTHLY_PRICE_ID},
   {key:'plusYearly',tier:'plus',cadence:'yearly',amount:2999,interval:'year',price:process.env.STRIPE_PLUS_ANNUAL_PRICE_ID},
-  {key:'proMonthly',tier:'pro',cadence:'monthly',amount:799,interval:'month',price:process.env.STRIPE_PRO_MONTHLY_PRICE_ID},
-  {key:'proYearly',tier:'pro',cadence:'yearly',amount:5999,interval:'year',price:process.env.STRIPE_PRO_ANNUAL_PRICE_ID}
+  {key:'proMonthly',tier:'pro',cadence:'monthly',amount:999,interval:'month',price:process.env.STRIPE_PRO_MONTHLY_PRICE_ID},
+  {key:'proYearly',tier:'pro',cadence:'yearly',amount:9999,interval:'year',price:process.env.STRIPE_PRO_ANNUAL_PRICE_ID}
 ];
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function waitFor(read,predicate,label){for(let i=0;i<80;i++){const value=await read();if(predicate(value))return value;await delay(250);}throw new Error(`Timed out waiting for ${label}`);}

@@ -14,8 +14,8 @@
     'restore','remove_company'
   ]);
   const FOUNDER_APPROVED_LTD_PLAN_MAPPING=Object.freeze({
-    status:'approved',version:'ltd-v1.5-pro-only.2026-08-28',oneActiveLtdIncluded:1,additionalLtdSupported:false,
-    pricing:Object.freeze({currency:'GBP',monthly:Object.freeze({launchMinor:999,standardMinor:1199,copy:'Launch price £9.99/month',standardCopy:'Standard price £11.99/month'}),annual:Object.freeze({status:'founder_decision_pending',amountMinor:null}),existingUserMigration:false}),
+    status:'approved',version:'ltd-v1.5-pro-only.2026-08-29',oneActiveLtdIncluded:1,additionalLtdSupported:false,
+    pricing:Object.freeze({currency:'GBP',monthly:Object.freeze({launchMinor:999,standardMinor:1199,copy:'Launch price £9.99/month',standardCopy:'Standard price £11.99/month'}),annual:Object.freeze({status:'founder_approved',amountMinor:9999,copy:'£99.99/year'}),existingUserMigration:false}),
     actions:Object.freeze(Object.fromEntries(Array.from(LTD_PRO_ACTIONS).map(action=>[action,'pro'])))
   });
   const clone=value=>JSON.parse(JSON.stringify(value));

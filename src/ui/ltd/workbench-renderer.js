@@ -174,7 +174,7 @@
       } else if(r.status==='ok'){
         UI.errors[scope]=null; UI.review[scope]=null;
         if(opts.onOk) opts.onOk(r);
-        else paint();
+        else if(!opts.skipPaint) paint();
       } else { paint(); }
     });
   }
@@ -285,7 +285,7 @@
   function persistDraft(sid,fid,type,value){
     // only persist for facade-backed onboarding/edit screens (real screenIds), not ui.* sheets
     if(sid.indexOf('ui.')===0) return;
-    run('onDraftChanged',{screenId:sid, field:{id:fid, type:type||'text', value:value}},{});
+    run('onDraftChanged',{screenId:sid, field:{id:fid, type:type||'text', value:value}},{skipPaint:true});
   }
   function choiceGroup(o){
     // o:{scope,name,options:[{v,title,body}],row,onPick,current}
@@ -1820,8 +1820,8 @@
       UI.cache={}; UI.cal=null; UI.lastRouteKey=rId;
     }
     var key=renderKey();
-    if(key===UI.mountedKey && document.activeElement && document.activeElement.dataset && document.activeElement.dataset.fkey!=null){
-      return; // draft-only change while typing: skip repaint to preserve focus
+    if(key===UI.mountedKey){
+      return; // draft-only emit: preserve the active field and any click target reached through blur
     }
     paint();
   }

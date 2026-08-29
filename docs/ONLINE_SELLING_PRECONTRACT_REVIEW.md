@@ -1,5 +1,7 @@
 # UK Online/Distance-Selling Pre-contract Review
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Official baseline: <https://www.gov.uk/online-and-distance-selling-for-businesses/distance-selling> and CMA fair-terms guidance at <https://www.gov.uk/guidance/how-to-write-fair-contracts>.
 
 ## Implemented in candidate

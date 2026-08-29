@@ -8,10 +8,10 @@ const {spawnSync}=require('node:child_process');
 const JSZip=require('jszip');
 
 const root=path.resolve(__dirname,'..');
-const parent='23377ae57d7fed43147f6c3c7c8829bfee76ef8a';
+const parent='c879b1d708d039ec4597aa7fcfb4dd7ad7ac767e';
 const originalBase='da7092c15ff4eb565c46d0153f2a9e08cadc8079';
 const expectedBranch='codex/taxmate-ltd-v1-5-actual-app-integration-20260828';
-const packageName='TAXMATE_LTD_V1.5_FINAL_PRE_RELEASE_CANDIDATE_AUDIT_PACK_20260828.zip';
+const packageName='TAXMATE_LTD_V1.5_PRICING_CONTRACT_FINAL_INDEPENDENT_AUDIT_PACK_20260829.zip';
 const output=path.resolve(root,'..',packageName);
 const evidenceFolders=['.ltd-audit-evidence','.ltd-actual-app-evidence','.ltd-final-correction-evidence','.paid-sync-browser-evidence','.ltd-founder-preview-evidence'];
 
@@ -83,9 +83,9 @@ function verifyPatch(patchFile,candidateTree){
   }
 }
 function hostingManifest(hostingRoot){return manifest(hostingRoot);}
-function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 final pre-release correction closeout
+function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 pricing-contract final independent-audit closeout
 
-Date: 2026-08-28
+Date: 2026-08-29
 
 ## Frozen identity
 
@@ -96,9 +96,9 @@ Date: 2026-08-28
 - Parent tree: \`${identity.parentTree}\`
 - Original base: \`${identity.originalBase}\`
 - Changed paths from frozen parent: ${changedCount}
-- Version: \`2.1.0\`
-- Build: \`2026-08-28.ltd-v1-5-actual-app.1\`
-- Cache: \`taxmate-v2-ltd-v1-5-actual-app-1\`
+- Version: \`2.1.1\`
+- Build: \`2026-08-29.ltd-v1-5-pricing-contract.1\`
+- Cache: \`taxmate-v2-ltd-v1-5-pricing-contract-1\`
 - Hosting artifact: ${hosting.files} files, ${hosting.bytes} bytes, aggregate SHA-256 \`${hosting.aggregateSha256}\`
 
 ## Acceptance
@@ -114,7 +114,10 @@ Date: 2026-08-28
 - Later genuine structural reconciliation: PASS with separate reconciliation provenance and original v0-to-v8 provenance preserved.
 - Scenario product honesty: PASS; the fixed equal-split candidate is labelled as an example and the badge is limited to the displayed examples.
 - 2.0.6 migration, per-record sync/outbox/tombstones, clean device and backup/restore: PASS.
-- Companies House Step 1 grouping: PASS by current mobile/desktop, light/dark and Urdu RTL actual-app screenshots.
+- Founder-approved Pro pricing: launch £9.99/month, standard £11.99/month and £99.99/year (9999 minor units): PASS across current runtime, UI, plan contract, legal/help, deterministic Stripe TEST helpers and tests.
+- Pro checkout remains fail-closed; production billing alignment remains a separate open release gate.
+- Companies House Step 1 real-button lookup/autofill/edit/Continue/provenance: PASS, including found, not-found, unavailable and edited-facts recheck behaviour.
+- Companies House Step 1 visual evidence: PASS by current mobile/desktop, light/dark and Urdu RTL actual-app screenshots; official name and incorporation date are visibly autofilled.
 - Six locales, Urdu RTL, light/dark, 390x844 and desktop: PASS.
 - Existing Web, Cloud Sync, Partner Sync, receipt/rules and Full Backup regression: PASS.
 - Sentry localhost/emulator/automation isolation: PASS.
@@ -126,14 +129,14 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 ## Test result
 
 - Characterization 4/4
-- Unit 132/132
+- Unit 134/134
 - Integration 7/7
 - Rules source 6/6
-- Ltd/facade/domain 59/59
+- Ltd/facade/domain 60/60
 - Functions emulator 8/8
 - Firestore/Storage emulator 16/16
 - Final correction evidence script: PASS
-- Actual app browser 215 assertions
+- Actual app browser 247 assertions
 - Paid Cloud/Partner Sync browser 90 assertions
 - Isolated preview browser 35 assertions
 - Product Health: 85 REAL_DURABLE, 6 INTENTIONALLY_HIDDEN, all defect counters 0
@@ -146,25 +149,27 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 - Push/PR/merge/deploy: NO.
 - Native/Mobile PR #2/SEO/P10: NO.
 - Live Companies House or Stripe operation: NO.
+- Stripe TEST network operation: NO; no test customer, subscription, Checkout Session or Price was created. The £99.99 evidence is deterministic and remains fail-closed pending separately authorised TEST/LIVE billing alignment.
 - Actual incremental cost: GBP 0.
 
 ## Remaining gates
 
-- Pro annual price: Founder decision pending.
-- Production billing alignment: pending separate release authority.
+- Pro annual pricing decision: RESOLVED — £99.99/year.
+- Production billing alignment: STILL OPEN under separate release authority.
+- Founder acceptance: STILL OPEN.
 - Live Companies House credential smoke: pending release gate.
 - Final release drift/migration preflight and explicit production release authority: pending.
 
 This package is for independent audit only. It is not deployment authority.
 `;}
-function rerun(){return `# Portable run and review
+function rerun(){return `# Portable Windows run and review
 
-Requirements: Node.js 22+, npm, Java 21+ for Firebase emulators, and Chrome/Chromium available to Playwright.
+Supported review environment: Windows PowerShell. Requirements: Node.js 22+, npm, Java 21+ for Firebase emulators, and Chrome/Chromium available to Playwright. A Git checkout is not required.
 
 From the extracted \`source\` directory:
 
 \`\`\`powershell
-npm ci
+npm run audit:bootstrap
 npm test
 npm run test:functions:emulator
 npm run test:rules:emulator
@@ -173,6 +178,8 @@ npm run test:ltd:browser
 npm run test:ltd:actual-app
 npm run test:ltd:final-corrections
 \`\`\`
+
+\`audit:bootstrap\` installs both root and \`functions\` lockfile dependencies. It requires no manual file move, hidden Git object or production credential. The packaged characterization tests validate authenticated immutable fixtures, so they run when \`.git\` is absent.
 
 Founder review of the real TaxMate app shell:
 
@@ -213,14 +220,20 @@ async function main(){
     const hostingRows=hostingManifest(hostingTarget),hosting={files:hostingRows.length,bytes:hostingRows.reduce((sum,row)=>sum+row.bytes,0),aggregateSha256:sha256(Buffer.from(hostingRows.map(row=>`${row.sha256} ${row.bytes} ${row.relative}`).join('\n')))};
     write(path.join(payload,'evidence','HOSTING_ARTIFACT_MANIFEST_SHA256.txt'),hostingRows.map(row=>`${row.sha256}\t${row.bytes}\t${row.relative}`).join('\n')+'\n');
     for(const folder of evidenceFolders){const source=path.join(root,folder);if(!fs.existsSync(source))throw new Error(`Missing evidence folder: ${folder}`);copySanitised(source,path.join(payload,'evidence',folder.slice(1)));}
+    const portableLogPath=path.join(root,'.ltd-audit-evidence','extracted-source-bootstrap-and-npm-test.log');
+    if(!fs.existsSync(portableLogPath))throw new Error('Missing extracted-source bootstrap/npm-test evidence');
+    const portableLog=fs.readFileSync(portableLogPath,'utf8');
+    for(const phrase of ['TAXMATE_AUDIT_BOOTSTRAP_PASS','authenticated immutable baseline fixture is frozen exactly without requiring a Git checkout','# fail 0','PRODUCT_FUNCTION_HEALTH_GATE PASS','PLAN_FEATURE_CONTRACT_GATE PASS'])if(!portableLog.includes(phrase))throw new Error(`Extracted-source evidence missing: ${phrase}`);
     const identity={branch,commit,tree,parent,parentTree,originalBase};
     write(path.join(payload,'review','CANDIDATE_CLOSEOUT.md'),closeout(identity,changed.split(/\r?\n/).filter(Boolean).length,hosting));
     write(path.join(payload,'review','RUN_AND_REVIEW.md'),rerun());
-    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.0',buildId:'2026-08-28.ltd-v1-5-actual-app.1',cache:'taxmate-v2-ltd-v1-5-actual-app-1',hosting},null,2)+'\n');
+    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.1',buildId:'2026-08-29.ltd-v1-5-pricing-contract.1',cache:'taxmate-v2-ltd-v1-5-pricing-contract-1',hosting},null,2)+'\n');
     write(path.join(payload,'evidence','SOURCE_BLOB_VERIFICATION.json'),JSON.stringify({status:'PASS',trackedBlobs:sourceVerification.entries,mismatchCount:0,commit,tree},null,2)+'\n');
     write(path.join(payload,'evidence','PATCH_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(patchVerification,null,2)+'\n');
+    write(path.join(payload,'evidence','EXTRACTED_SOURCE_SELF_CONSISTENCY.json'),JSON.stringify({status:'PASS',supportedEnvironment:'Windows PowerShell',gitDirectoryPresent:false,bootstrap:'root npm ci + functions npm ci',npmTest:'PASS',log:'evidence/ltd-audit-evidence/extracted-source-bootstrap-and-npm-test.log',logSha256:sha256(Buffer.from(portableLog))},null,2)+'\n');
     write(path.join(payload,'review','DECISIVE_CORRECTION_EVIDENCE.md'),'# Decisive final-correction evidence\n\n## Personal shell isolation\n\n- Implementation: `source/index.html` explicit `body.ltd-active` boundary plus the existing production bridge.\n- Real-browser assertions: `evidence/ltd-actual-app-evidence/ltd-actual-app-browser-result.json` under `shellEvidence`.\n- The test deliberately clears the personal shell elements hidden attributes while Ltd mode is active; computed `display` remains `none`, rendered geometry is zero, the Ltd root is rendered, and nav count remains one.\n- All-businesses and legacy-business exits restore the personal header/page/nav and hide the Ltd root.\n- Screenshots: all `actual-app-step1-*` and workspace images in the same evidence folder.\n\n## Migration no-op and sync churn\n\n- Exact evidence: `evidence/ltd-final-correction-evidence/migration-noop-and-scenario-result.json`.\n- First and second full state SHA-256 are equal; Data-only data payload SHA-256 values are equal; original migration timestamp/device/from-version and domain updatedAt are unchanged; reconciliation against exact remote envelopes creates 0 uploads, 0 downloads and 0 conflicts.\n- Browser lifecycle: `noOpSave` in the actual-app result proves persisted state, migration provenance, domain updatedAt, localEditAt and outbox are unchanged and outbox count is 0.\n\n## Scenario claim\n\n- Runtime returns `comparisonScope=displayed_examples` and `mixedScenarioMethod=equal_split_example`.\n- Six locales label the mixed result as an example and limit the lowest-tax badge to these examples.\n- Scenario remains non-posting and unsupported facts remain review-required.\n\n## Companies House Step 1\n\n- Five actual-app screenshots cover 390x844 light/dark English, desktop light/dark English, and 390x844 Urdu RTL.\n- Browser geometry verifies the three identity field groups are rendered with a consistent visible gap; visual evidence shows company number, check action, lookup result, and registered-name/date groups separately.\n\n## PWA lifecycle\n\n- `evidence/paid-sync-browser-evidence/paid-sync-browser-result.json` proves active Service Worker control, full offline reload, browser termination, backend-blocked reopen, durable local record, reconnect, ACK and no duplication for Ltd, same-account and partnership paths.\n');
-    write(path.join(payload,'review','REMAINING_RELEASE_GATES.md'),'# Remaining genuine release gates\n\n1. Independent source audit and Founder acceptance.\n2. Founder decision on Pro annual pricing; no annual amount is exposed or inferred.\n3. Separately authorised production billing alignment for the approved Ltd monthly positioning.\n4. Live Companies House credential/configuration and smoke test under a release gate.\n5. Release-time identity/drift, migration/rollback preflight, authorised Functions/Rules/Hosting deployment and post-deploy fresh/upgrade/offline checks.\n\nNo production release action is authorised by this package.\n');
+    write(path.join(payload,'review','REMAINING_RELEASE_GATES.md'),'# Current release gates\n\n- Pro annual pricing decision: RESOLVED — £99.99/year (9999 minor units).\n- Production billing alignment: STILL OPEN.\n- Founder acceptance: STILL OPEN.\n- Live Companies House credential smoke: STILL OPEN.\n- Release drift/migration/rollback preflight: STILL OPEN.\n- Explicit production release authority: STILL OPEN.\n\nNo production release action is authorised by this package.\n');
+    write(path.join(payload,'review','STRIPE_EVIDENCE_BOUNDARY.md'),'# Stripe evidence boundary\n\nThe current Founder contract is launch £9.99/month, standard £11.99/month and £99.99/year (9999 minor units). Local deterministic contract, entitlement, hosted-receipt and billing-delta tests use those values. No Stripe TEST or LIVE network operation was performed during this correction: no Price, customer, subscription or Checkout Session was created or changed. Production checkout remains disabled/fail-closed until separately authorised production billing alignment. Historical £7.99/£59.99 reports are retained only as explicitly superseded evidence and are not current contract truth.\n');
     write(path.join(payload,'review','NO_PRODUCTION_IMPACT.md'),'# No-production-impact proof\n\nProduction TaxMate 2.0.6 modified = NO\n\nProduction Firebase/data mutation = NO\n\nPush = NO\n\nPR = NO\n\nMerge = NO\n\nDeploy = NO\n\nNative/Mobile PR #2 = NO\n\nSEO = NO\n\nP10 = NOT AUTHORISED\n\nBillable operation = NO\n\nActual incremental cost = GBP 0\n');
     const rows=manifest(payload);write(path.join(payload,'MANIFEST_SHA256.txt'),'# SHA-256, bytes and relative path for every payload file except this self-referential manifest.\n'+rows.map(row=>`${row.sha256}\t${row.bytes}\t${row.relative}`).join('\n')+'\n');
     const zip=new JSZip();for(const file of collectFiles(payload)){const relative=normal(path.relative(payload,file));zip.file(relative,fs.readFileSync(file),{binary:true});}

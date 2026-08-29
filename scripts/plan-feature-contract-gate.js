@@ -16,8 +16,8 @@ assert.match(app,/const plus = \['feat\.multiBiz','feat\.receiptPhoto','feat\.mi
 assert.match(app,/const pro  = \['feat\.partnerSync','feat\.sa104','feat\.receiptPack','feat\.mtdReady','feat\.ltd'\]/);
 for(const id of [...Object.keys(expected),'records','taxcalc','onebiz','mileageBasic','sa103view','sync','backup','aiTips','mtdGuidance','promotion','billing'])assert.match(contract,new RegExp('`'+id+'`'));
 for(const phrase of ['multiple businesses','receipt photos','mileage comparison','PDF tax report','Partner Sync','SA104 partnership working paper','Receipt Pack PDF','quarterly record summaries'])assert.match(help,new RegExp(phrase,'i'));
-for(const price of ['£3.99','£29.99','£9.99','£11.99']){assert.match(app,new RegExp(price.replace('.','\\.')));assert.match(help,new RegExp(price.replace('.','\\.')));assert.match(contract,new RegExp(price.replace('.','\\.')));}
-for(const text of [app,help,contract]){assert.match(text,/(?:Pro annual price (?:not yet available|has not been approved)|Annual Pro pricing is intentionally pending)/i);assert.doesNotMatch(text,/Was £11\.99/i);}
+for(const price of ['£3.99','£29.99','£9.99','£11.99','£99.99']){assert.match(app,new RegExp(price.replace('.','\\.')));assert.match(help,new RegExp(price.replace('.','\\.')));assert.match(contract,new RegExp(price.replace('.','\\.')));}
+for(const text of [app,help,contract]){assert.doesNotMatch(text,/(?:Pro annual price (?:not yet available|has not been approved)|Annual Pro pricing is intentionally pending|Founder decision pending)/i);assert.doesNotMatch(text,/Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);}
 assert.doesNotMatch(app,/sa103Pdf/);assert.doesNotMatch(help,/SA103 PDF/i);
 assert.match(app,/if\(!hasFeature\('mileageCompare'\)\)return[\s\S]*feat\.mileageBasic/);
 assert.equal((app.match(/'rc\.proOnly':[^\n]*Plus/g)||[]).length,6,'receipt Plus wording must exist in all six locales');
