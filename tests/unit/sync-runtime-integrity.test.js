@@ -88,3 +88,17 @@ test('service worker enforces coherent atomic shell and navigation-only HTML fal
   assert.doesNotMatch(sw,/cached \|\| caches\.match\(['"]\.\/index\.html/);
   assert.doesNotMatch(sw,/SHELL\.map\([\s\S]{0,180}catch \(err\) \{ \/\* ignore individual failures \*\//);
 });
+
+test('every local index script is part of the atomic service-worker shell',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'../../index.html'),'utf8');
+  const shellMatch=sw.match(/const SHELL = (\[[\s\S]*?\]);/);
+  assert.ok(shellMatch,'service-worker shell must be statically inspectable');
+  const shell=new Set(vm.runInNewContext(shellMatch[1]));
+  const localScripts=[...html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["'][^>]*>/gi)]
+    .map(match=>match[1])
+    .filter(src=>!/^https?:\/\//i.test(src)&&!/^\/\//.test(src))
+    .map(src=>new URL(src,'https://www.taxmate.uk/').pathname);
+  assert.ok(localScripts.length>0,'index must expose local runtime scripts');
+  for(const script of localScripts)assert.ok(shell.has(script),`${script} must be atomically precached`);
+  assert.ok(shell.has('/src/core/product-content.js'),'TaxMateLegal runtime must be atomically precached');
+});
