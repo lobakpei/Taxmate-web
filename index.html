@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-29.sync-runtime-integrity.2 -->
+<!-- build: 2026-08-29.founder-brand-sync-runtime-integrity.2 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
 <script src="src/core/telemetry.js"></script>
 <script src="src/app/sentry-bootstrap.js"></script>
-<script
-  src="https://js-de.sentry-cdn.com/95145fe82ff528333c69e34ee61f6d86.min.js"
-  crossorigin="anonymous"
-></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
@@ -19,25 +15,31 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta property="og:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta property="og:image" content="https://www.taxmate.uk/og-image.png">
-<meta property="og:image:secure_url" content="https://www.taxmate.uk/og-image.png">
+<meta property="og:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
+<meta property="og:image:secure_url" content="https://www.taxmate.uk/taxmate-share-20260829.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TaxMate UK bookkeeping and estimated tax app">
+<meta property="og:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
 <meta property="og:url" content="https://www.taxmate.uk/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta name="twitter:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta name="twitter:image" content="https://www.taxmate.uk/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
+<meta name="twitter:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
+<meta name="twitter:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","image":"https://www.taxmate.uk/icon-512.png","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="src/ui/ltd/workbench.css">
 <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-light.svg" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TaxMate">
@@ -88,12 +90,28 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
 /* ── header ── */
 .top{padding:18px 20px 4px;display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto}
-.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px;flex-shrink:0;
-  box-shadow:0 4px 12px rgba(10,169,104,.3)}
-.top .name{font-weight:800;font-size:19px;letter-spacing:-.4px}
-.beta-badge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
-.top .name span{color:var(--brand)}
+.brand-lockup{display:block;position:relative;flex-shrink:0}
+.brand-lockup img{display:block;width:100%;height:100%;object-fit:contain;object-position:left center}
+.brand-lockup .brand-logo-dark{display:none}
+:root[data-theme="dark"] .brand-lockup .brand-logo-light{display:none}
+:root[data-theme="dark"] .brand-lockup .brand-logo-dark{display:block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme]) .brand-lockup .brand-logo-light{display:none}
+  :root:not([data-theme]) .brand-lockup .brand-logo-dark{display:block}
+}
+.header-brand-lockup{width:136px;height:40px}
+.ltd-active>.top,.ltd-active>#page,.ltd-active>#nav{display:none!important}
+body:not(.ltd-active)>#taxmate-ltd-ui-root{display:none!important}
+body.ltd-active>#taxmate-ltd-ui-root:not([hidden]){display:block!important}
+/* Ltd is a separate application surface. Personal sheets/overlays are closed
+   by the production bridge; this is the fail-safe if stale classes or inline
+   lightbox display state survive an interrupted personal-shell transition. */
+body.ltd-active .sb,
+body.ltd-active>#taxmate-lightbox,
+body.ltd-active>#taxmate-toast,
+body.ltd-active>#ob-root{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.ltd-active .sb *,body.ltd-active>#taxmate-lightbox *{pointer-events:none!important}
+body.ltd-active.sheet-open{overflow:auto}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
@@ -428,8 +446,10 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <body>
 
 <div class="top">
-  <div class="logo">£</div>
-  <div class="name">Tax<span>Mate</span></div>
+  <div class="brand-lockup header-brand-lockup">
+    <img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate">
+    <img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate">
+  </div>
   <div class="year-pill"><select id="yearSel" data-tm-change="setYear(this.value)"></select></div>
 </div>
 
@@ -441,6 +461,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <nav aria-label="Public information"><a href="/help.html">Help</a><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></nav>
 </section></main>
 <nav id="nav"></nav>
+<div id="taxmate-ltd-ui-root" hidden aria-live="polite"></div>
 
 <!-- entry sheet -->
 <div class="sb" id="sb-entry"><div class="sheet">
@@ -774,15 +795,44 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/tax-engine.js"></script>
 <script src="src/core/mtd.js"></script>
 <script src="src/core/form-mappings.js"></script>
+<script src="src/core/money.js"></script>
 <script src="src/core/state-schema.js"></script>
+<script src="src/core/domain-schema.js"></script>
+<script src="src/core/revision-sync.js"></script>
+<script src="src/core/partnership.js"></script>
+<script src="src/core/company-profile.js"></script>
+<script src="src/core/company-identity.js"></script>
+<script src="src/core/company-tax-rules.js"></script>
+<script src="src/core/company-profile-history.js"></script>
+<script src="src/core/company-treatment.js"></script>
+<script src="src/core/company-ledger.js"></script>
+<script src="src/core/company-remuneration-rules.js"></script>
+<script src="src/core/company-remuneration.js"></script>
+<script src="src/core/company-scenario.js"></script>
+<script src="src/core/company-tax.js"></script>
+<script src="src/core/company-deadlines.js"></script>
+<script src="src/core/company-workspace.js"></script>
+<script src="src/core/domain-migration.js"></script>
+<script src="src/integration/ltd/company-state.js"></script>
+<script src="src/integration/ltd/company-state-repository.js"></script>
+<script src="src/integration/ltd/company-structural-state.js"></script>
+<script src="src/integration/ltd/company-transaction-adapter.js"></script>
+<script src="src/integration/ltd/companies-house-provider.js"></script>
+<script src="src/core/ltd-sync.js"></script>
+<script src="src/core/company-evidence.js"></script>
 <script src="src/core/portable-backup.js"></script>
 <script src="src/core/onboarding-root.js"></script>
 <script src="src/core/sync.js"></script>
 <script src="src/core/entitlement.js"></script>
+<script src="src/core/company-access.js"></script>
+<script src="src/integration/ltd/CanonicalCompanyDriver.js"></script>
+<script src="src/integration/ltd/TaxMateLtdUIFacade.js"></script>
+<script src="src/ui/ltd/workbench-renderer.js"></script>
 <script src="src/core/pwa-install.js"></script>
 <script src="src/core/product-content.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>
+<script defer src="src/integration/ltd/TaxMateLtdProductionAdapter.js"></script>
 <script defer src="src/app/audit.js"></script>
 <!-- ═══════════ ONBOARDING OVERLAY (catch-up flow) ═══════════ -->
 <style>
@@ -816,10 +866,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-sheet-tick{color:var(--brand);font-weight:800}
   @keyframes obFade{from{opacity:0}to{opacity:1}}
   @keyframes obSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-  .ob-logo .lo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
-  .ob-logo .lo-name{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
-  .ob-logo .lo-name span{color:var(--brand)}
+  .ob-logo{display:flex;align-items:center;margin-bottom:14px}
+  .onboarding-brand-lockup{width:184px;height:58px}
   .ob-tile{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;cursor:pointer;margin-bottom:12px;transition:border-color .15s,transform .12s;font-family:inherit}
   .ob-tile:active{transform:scale(.985)}
   .ob-tile.solid{border-color:var(--brand);background:var(--brand-soft)}

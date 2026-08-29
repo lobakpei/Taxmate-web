@@ -5,7 +5,7 @@ const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldVa
 const {getAuth}=require('firebase-admin/auth');
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const FounderPromotions=require('./founder-promotions');
-const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET');
+const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET'), COMPANIES_HOUSE_API_KEY=defineSecret('COMPANIES_HOUSE_API_KEY');
 const PLUS_MONTHLY_PRICE=defineString('STRIPE_PLUS_MONTHLY_PRICE_ID',{default:''}),PLUS_ANNUAL_PRICE=defineString('STRIPE_PLUS_ANNUAL_PRICE_ID',{default:''});
 const PRO_MONTHLY_PRICE=defineString('STRIPE_PRO_MONTHLY_PRICE_ID',{default:''}),PRO_ANNUAL_PRICE=defineString('STRIPE_PRO_ANNUAL_PRICE_ID',{default:''});
 const LEGACY_PLUS_PRICES=defineString('STRIPE_PLUS_LEGACY_PRICE_IDS',{default:''}),LEGACY_PRO_PRICES=defineString('STRIPE_PRO_LEGACY_PRICE_IDS',{default:''});
@@ -143,6 +143,27 @@ exports.joinPartnership=onCall(baseOpts,async req=>{
   if(!snap.exists)throw new HttpsError('not-found','Partnership not found');
   await partnership.collection('members').doc(user.uid).set({uid:user.uid,role:'member',joinedAt:FieldValue.serverTimestamp()},{merge:true});
   const data=snap.data()||{};return{bizId:data.bizId,name:data.name||'Partnership'};
+});
+exports.claimActiveLtdCompany=onCall(baseOpts,async req=>{
+  const user=auth(req),companyId=String(req.data&&req.data.companyId||'').trim();
+  if(!/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(companyId))throw new HttpsError('invalid-argument','Invalid company identity',{reason:'company_id_invalid'});
+  await requireTier(user.uid,'pro');
+  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`);
+  return db.runTransaction(async tx=>{
+    const snap=await tx.get(anchor);
+    if(snap.exists){
+      const current=String((snap.data()||{}).activeCompanyId||'');
+      if(current===companyId)return{status:'existing',activeCompanyId:current,idempotent:true};
+      throw new HttpsError('already-exists','This TaxMate account already has its Limited Company',{reason:'one_active_ltd_limit',activeCompanyId:current});
+    }
+    tx.create(anchor,{schemaVersion:1,status:'active_slot_claimed',activeCompanyId:companyId,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),releasePolicy:'founder_approval_required'});
+    return{status:'claimed',activeCompanyId:companyId,idempotent:false};
+  });
+});
+exports.lookupCompaniesHouse=onCall({...baseOpts,secrets:[COMPANIES_HOUSE_API_KEY]},async req=>{
+  const user=auth(req),companyNumber=String(req.data&&req.data.companyNumber||'').trim().toUpperCase();if(!/^[A-Z0-9]{8}$/.test(companyNumber))throw new HttpsError('invalid-argument','Invalid company number',{reason:'company_number_format'});await requireTier(user.uid,'pro');const key=String(COMPANIES_HOUSE_API_KEY.value()||'');if(!key)throw new HttpsError('failed-precondition','Companies House lookup is unavailable',{reason:'companies_house_provider_not_configured'});
+  let response;try{response=await fetch(`https://api.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`,{headers:{accept:'application/json',authorization:`Basic ${Buffer.from(`${key}:`,'utf8').toString('base64')}`},signal:AbortSignal.timeout(8000)});}catch(error){throw new HttpsError('unavailable','Companies House lookup is temporarily unavailable',{reason:error&&error.name==='TimeoutError'?'companies_house_timeout':'companies_house_network_failed',retryable:true});}
+  if(response.status===404)return{status:'not_found',companyNumber,reasonCode:'company_not_found',retryable:false};if(response.status===429||response.status>=500)throw new HttpsError('unavailable','Companies House lookup is temporarily unavailable',{reason:response.status===429?'companies_house_rate_limited':'companies_house_temporarily_unavailable',retryable:true});if(!response.ok)throw new HttpsError('internal','Companies House lookup failed',{reason:'companies_house_lookup_failed'});const body=await response.json(),name=String(body.company_name||'').trim(),incorporationDate=String(body.date_of_creation||'');if(!name||!/^(\d{4})-(\d{2})-(\d{2})$/.test(incorporationDate))throw new HttpsError('data-loss','Companies House returned an invalid identity',{reason:'companies_house_response_invalid'});const company={number:companyNumber,name,incorporationDate,status:body.company_status||null,type:body.type||null,registryUrl:`https://find-and-update.company-information.service.gov.uk/company/${encodeURIComponent(companyNumber)}`},reasonCodes=[];if(company.status!=='active')reasonCodes.push('companies_house_status_needs_checking');if(company.type!=='ltd')reasonCodes.push('companies_house_company_type_not_supported');return{status:'found',company,verificationStatus:reasonCodes.length?'needs_checking':'verified',reasonCodes,retryable:false};
 });
 exports.leavePartnership=onCall(baseOpts,async req=>{
   const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();

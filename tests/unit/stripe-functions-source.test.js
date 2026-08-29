@@ -25,7 +25,7 @@ test('Checkout is server-priced, requires Terms and blocks a second live subscri
 
 test('synthetic customerless smoke is cleanup-only and is not production UI acceptance',()=>{
   const smoke=fs.readFileSync('scripts/smoke-live-checkout-sessions.js','utf8');
-  for(const amount of [399,2999,799,5999])assert.match(smoke,new RegExp(`amount:${amount}`));
+  for(const amount of [399,2999,999,9999])assert.match(smoke,new RegExp(`amount:${amount}`));
   assert.match(smoke,/\^rk_live_/);
   assert.match(smoke,/consent_collection:\{terms_of_service:'required'\}/);
   assert.match(smoke,/assert\.equal\(session\.customer,null\)/);
@@ -35,6 +35,13 @@ test('synthetic customerless smoke is cleanup-only and is not production UI acce
   assert.doesNotMatch(smoke,/customers\.create|payment_methods|card/);
   const scripts=require('../../package.json').scripts;
   assert.doesNotMatch(scripts['test:all'],/stripe:smoke:live/);
+});
+
+test('candidate Stripe fixture helpers fail closed before any operation unless TEST mode is explicit',()=>{
+  const configure=fs.readFileSync('scripts/configure-stripe-billing-delta.js','utf8');
+  const hosted=fs.readFileSync('scripts/create-stripe-hosted-test-checkout.js','utf8');
+  for(const source of [configure,hosted]){assert.match(source,/EXPECTED_STRIPE_MODE/);assert.match(source,/\(\?:sk\|rk\)_test_/);}
+  assert.doesNotMatch(configure,/\['test','live'\]/);
 });
 
 test('visible Plans UI uses the production Auth and App Check secured Checkout path',()=>{

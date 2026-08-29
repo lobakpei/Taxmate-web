@@ -1,5 +1,7 @@
 # Browser E2E and Visual Preservation Report
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 ## Live Auth restoration RC.12 addendum — 20 August 2026
 
 Build `2026-08-20.live-auth-restored-rc.12` restores the service-worker behavior of Founder-confirmed known-good live production. A fresh local browser pass returned 29/29 with zero fail/warn and no console errors; it retained exactly one Google control, zero Apple sign-in controls/runtime paths, and the exact monthly/yearly price display. Per Founder instruction, no Google popup or staging OAuth test was performed.

@@ -8,5 +8,10 @@ window.TAXMATE_FIREBASE_ENVIRONMENT = Object.freeze({
     appId: '1:995936701479:web:ed61c51a65e61aa1d21202'
   }),
   hosts: Object.freeze(['taxmate.uk', 'www.taxmate.uk', 'taxmate-uk-2.web.app', 'taxmate-uk-2.firebaseapp.com']),
-  appCheckKey: '6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH'
+  appCheckKey: '6LcW6D0tAAAAAJHpolEjjPAkrVMdaizD-EGO7wsH',
+  sentry: Object.freeze({
+    enabled: true,
+    environment: 'production',
+    loaderUrl: 'https://js-de.sentry-cdn.com/95145fe82ff528333c69e34ee61f6d86.min.js'
+  })
 });

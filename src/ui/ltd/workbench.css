@@ -1,0 +1,342 @@
+/* ============================================================================
+   TaxMate Ltd V1.5 — Founder-approved UI implementation
+   Owner: TaxMate Web. Approved visual language from
+   references/approved-fable/. Colour tokens are Founder-approved; no colour
+   outside this set is used. Theme switches on [data-theme], direction on
+   [dir="rtl"]. This replaces the disposable contract-workbench CSS entirely.
+   ============================================================================ */
+
+/* 0 — APPROVED TOKENS ------------------------------------------------------ */
+:root{
+  --bg:#F5F7F9; --card:#FFFFFF; --ink:#16202B; --muted:#6B7686; --line:#ECEFF3;
+  --brand:#0AA968; --brand-deep:#067A4B; --brand-soft:#E6F7EF; --teal:#0D8C86;
+  --coral:#E5484D; --coral-soft:#FDEDEE; --blue:#3478F6; --blue-soft:#EAF1FE;
+  --amber:#B47D12; --amber-soft:#FCF3DF;
+  --r-l:24px; --r-m:18px; --r-s:12px;
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
+  --font-rtl:'Noto Sans Arabic','Plus Jakarta Sans',system-ui,sans-serif;
+  --e-card:0 1px 2px rgba(22,32,43,.04), 0 8px 24px rgba(22,32,43,.05);
+  --e-hero:0 10px 30px rgba(10,169,104,.18);
+  --e-sheet:0 -2px 24px rgba(22,32,43,.10);
+  --e-child:0 -2px 32px rgba(22,32,43,.20);
+  --t-product:20px; --t-sheet:21px; --t-question:17px; --t-section:15px;
+  --t-label:13px; --t-body:14px; --t-hint:12px; --t-error:12.5px;
+  --t-metric:30px; --t-button:15px;
+}
+[data-theme="dark"]{
+  --bg:#0F1620; --card:#1A2533; --ink:#EDF2F7; --muted:#8493A5; --line:#293647;
+  --brand:#15D982; --brand-deep:#3DE89B; --brand-soft:rgba(21,217,130,.16);
+  --coral:#FF6B6F; --coral-soft:rgba(229,72,77,.18);
+  --blue:#6EA0FF; --blue-soft:rgba(52,120,246,.18);
+  --amber:#E0A93A; --amber-soft:rgba(180,125,18,.20);
+  --e-card:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.28);
+  --e-hero:0 10px 30px rgba(0,0,0,.35);
+  --e-sheet:0 -2px 24px rgba(0,0,0,.45);
+  --e-child:0 -2px 32px rgba(0,0,0,.60);
+}
+
+/* 1 — RESET & APP SHELL ---------------------------------------------------- */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%}
+body{
+  background:var(--bg); color:var(--ink);
+  font-family:var(--font); font-size:var(--t-body); line-height:1.5;
+  -webkit-font-smoothing:antialiased; text-rendering:optimizeLegibility;
+}
+#taxmate-ltd-ui-root{min-height:100%}
+.tm-app{
+  --col:440px;
+  min-height:100vh; background:var(--bg); color:var(--ink);
+  display:flex; flex-direction:column; align-items:center;
+}
+.tm-app[dir="rtl"]{font-family:var(--font-rtl)}
+.tm-num{unicode-bidi:isolate; direction:ltr; white-space:nowrap}
+
+.tm-col{
+  width:100%; max-width:var(--col); flex:1 0 auto;
+  display:flex; flex-direction:column; position:relative;
+  padding:0 16px 132px;
+}
+@media (min-width:900px){
+  .tm-app{padding:28px 0}
+  .tm-col{
+    max-width:520px; background:var(--card); min-height:calc(100vh - 56px);
+    border-radius:28px; box-shadow:var(--e-card); padding:0 24px 132px; overflow:hidden;
+  }
+}
+
+/* 2 — DEV BAR (locale/theme/reset) ---------------------------------------- */
+.tm-devbar{
+  position:sticky; top:0; z-index:80; width:100%;
+  display:flex; gap:8px; align-items:center; justify-content:flex-end;
+  padding:7px 16px; background:color-mix(in srgb,var(--bg) 86%, transparent);
+  border-bottom:1px solid var(--line); font-size:11.5px; color:var(--muted);
+}
+.tm-devbar b{margin-inline-end:auto; font-weight:800; letter-spacing:.2px; color:var(--ink)}
+.tm-devbar b span{color:var(--brand)}
+.tm-devbar select{font:inherit; font-size:11.5px; padding:4px 8px; border-radius:8px;
+  background:var(--card); color:var(--ink); border:1px solid var(--line)}
+
+/* 3 — TOP BAR ------------------------------------------------------------- */
+.tm-top{display:flex; align-items:center; justify-content:space-between; padding:16px 0 12px}
+.tm-brand{display:flex; align-items:center; gap:9px; font-weight:800; font-size:19px; letter-spacing:-.4px}
+.tm-brand .mk{width:30px; height:30px; border-radius:9px; background:var(--brand); color:#fff;
+  display:grid; place-items:center; font-size:16px; font-weight:800}
+.tm-brand .mk2{color:var(--brand)}
+.tm-year{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700;
+  color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:999px; padding:6px 11px; box-shadow:var(--e-card)}
+
+/* 4 — PROMO STRIP --------------------------------------------------------- */
+.tm-promo{background:linear-gradient(120deg,#F4A21E,#E8890F); color:#fff;
+  border-radius:var(--r-l); padding:14px 16px; position:relative; overflow:hidden; margin-top:2px}
+.tm-promo .t{font-weight:800; font-size:14.5px}
+.tm-promo .s{font-size:12.5px; opacity:.95; margin-top:2px}
+.tm-promo .a{font-weight:800; font-size:13px; margin-top:7px}
+.tm-promo .ico{position:absolute; inset-inline-end:14px; inset-block-start:14px; font-size:20px}
+.tm-dots{display:flex; gap:4px; justify-content:center; margin:8px 0 2px}
+.tm-dots i{width:16px; height:4px; border-radius:2px; background:var(--muted); opacity:.4}
+.tm-dots i.on{opacity:1; width:20px; background:var(--brand)}
+
+/* 5 — HERO ---------------------------------------------------------------- */
+.tm-hero{background:linear-gradient(150deg,#0FB673,var(--brand-deep)); border-radius:var(--r-l);
+  padding:18px; color:#fff; box-shadow:var(--e-hero); position:relative; overflow:hidden; margin-top:14px}
+.tm-hero::after{content:""; position:absolute; width:190px; height:190px; border-radius:50%;
+  background:rgba(255,255,255,.07); inset-block-start:-70px; inset-inline-end:-50px}
+.tm-hero .hi{font-size:13.5px; font-weight:700; opacity:.95}
+.tm-hero .lbl{font-size:12.5px; opacity:.9; margin-top:8px}
+.tm-hero .big{font-size:34px; font-weight:800; letter-spacing:-1.2px; margin:2px 0 12px; line-height:1.1}
+.tm-hero .strip{background:rgba(255,255,255,.16); border-radius:14px; padding:11px 13px;
+  display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; cursor:pointer}
+.tm-hero .two{display:flex; gap:10px; margin-top:10px}
+.tm-hero .two div{flex:1; background:rgba(255,255,255,.13); border-radius:14px; padding:10px 12px}
+.tm-hero .two span{display:block; font-size:11.5px; opacity:.88}
+.tm-hero .two b{font-size:15px; font-weight:800}
+.tm-hero.loss{background:linear-gradient(150deg,#3A4653,#2A333E)}
+
+/* 6 — SECTION LABEL & PAIR ------------------------------------------------ */
+.tm-h{font-size:var(--t-section); font-weight:800; margin:20px 0 10px; letter-spacing:-.2px}
+.tm-sub{font-size:var(--t-hint); color:var(--muted); margin:-6px 0 10px}
+.tm-pair{display:flex; gap:11px; margin:14px 0 2px}
+.tm-pair>*{flex:1}
+
+/* 7 — BUTTONS ------------------------------------------------------------- */
+.tm-btn{appearance:none; border:0; cursor:pointer; font-family:inherit; font-weight:800;
+  font-size:var(--t-button); border-radius:var(--r-m); padding:14px 16px; width:100%;
+  display:inline-flex; align-items:center; justify-content:center; gap:8px;
+  transition:transform .04s ease, background .15s ease, opacity .15s ease}
+.tm-btn:active{transform:translateY(1px)}
+.tm-btn:disabled{opacity:.5; cursor:not-allowed}
+.tm-btn.p{background:var(--brand); color:#fff}
+.tm-btn.p:hover:not(:disabled){background:var(--brand-deep)}
+[data-theme="dark"] .tm-btn.p{color:#06231A}
+.tm-btn.s{background:var(--brand-soft); color:var(--brand-deep)}
+[data-theme="dark"] .tm-btn.s{color:var(--brand)}
+.tm-btn.g{background:transparent; color:var(--ink); border:1.5px solid var(--line)}
+.tm-btn.d{background:var(--coral); color:#fff}
+[data-theme="dark"] .tm-btn.d{color:#2A0B0C}
+.tm-btn.coral-soft{background:var(--coral-soft); color:var(--coral)}
+.tm-btn.sm{width:auto; padding:9px 14px; font-size:13px; border-radius:12px}
+.tm-linkbtn{appearance:none;border:0;background:none;cursor:pointer;font-family:inherit;
+  color:var(--brand-deep); font-weight:800; font-size:13px; padding:6px 0}
+[data-theme="dark"] .tm-linkbtn{color:var(--brand)}
+
+/* 8 — BUSINESS ROW -------------------------------------------------------- */
+.tm-rows{display:flex; flex-direction:column; gap:10px}
+.tm-row{display:grid; grid-template-columns:auto 1fr auto; gap:12px; align-items:center;
+  background:var(--card); border:1px solid var(--line); border-radius:var(--r-m);
+  padding:14px; text-align:start; width:100%; cursor:pointer; font-family:inherit}
+.tm-row:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.tm-row .av{width:40px; height:40px; border-radius:11px; background:var(--brand); color:#fff;
+  display:grid; place-items:center; font-weight:800; font-size:16px}
+.tm-row .av.draft{background:var(--brand-soft); color:var(--brand-deep)}
+.tm-row .av.attn{background:var(--amber-soft); color:var(--amber)}
+.tm-row .nm{font-weight:800; font-size:15px; color:var(--ink)}
+.tm-row .mt{font-size:12.5px; color:var(--muted); margin-top:2px}
+.tm-row .rt{text-align:end}
+.tm-row .amt{font-weight:800; font-size:15px; color:var(--brand-deep)}
+[data-theme="dark"] .tm-row .amt{color:var(--brand)}
+.tm-row .amt.neg{color:var(--coral)}
+.tm-row .cta{font-size:12.5px; font-weight:800; color:var(--brand-deep); margin-top:2px}
+[data-theme="dark"] .tm-row .cta{color:var(--brand)}
+.tm-row .cta.attn{color:var(--amber)}
+.tm-add{width:100%; border:1.5px dashed color-mix(in srgb,var(--brand) 45%,var(--line));
+  background:var(--brand-soft); color:var(--brand-deep); border-radius:var(--r-m);
+  padding:14px; font-weight:800; font-size:14px; cursor:pointer; font-family:inherit; margin-top:10px}
+[data-theme="dark"] .tm-add{color:var(--brand)}
+
+/* 9 — INFORMATION TRIGGER (18px glyph, 44px target) ----------------------- */
+.tm-info{position:relative; display:inline-flex; align-items:center; justify-content:center;
+  flex:0 0 auto; width:18px; height:18px; border:1.6px solid var(--muted); border-radius:50%;
+  color:var(--muted); font-size:11px; font-weight:800; font-style:normal;
+  background:none; cursor:pointer; vertical-align:middle; margin-inline-start:6px; padding:0;
+  font-family:Georgia,'Times New Roman',serif; line-height:1}
+.tm-info::after{content:""; position:absolute; inset:-13px; border-radius:50%}
+.tm-info:hover{border-color:var(--brand); color:var(--brand-deep)}
+
+/* 10 — SHEET SYSTEM ------------------------------------------------------- */
+.tm-scrim{position:fixed; inset:0; background:rgba(9,16,22,.42); z-index:100;
+  display:flex; align-items:flex-end; justify-content:center}
+@media (min-width:900px){.tm-scrim{align-items:center}}
+.tm-sheet{width:100%; max-width:520px; background:var(--card); color:var(--ink);
+  border-radius:24px 24px 0 0; box-shadow:var(--e-sheet); max-height:92vh;
+  display:flex; flex-direction:column; position:relative}
+@media (min-width:900px){.tm-sheet{border-radius:24px; max-height:88vh}}
+.tm-sheet.child{box-shadow:var(--e-child)}
+.tm-grab{width:38px; height:4px; border-radius:2px; background:var(--line); margin:10px auto 2px; flex:0 0 auto}
+.tm-sbody{padding:8px 20px 16px; overflow-y:auto; flex:1 1 auto}
+.tm-sfoot{flex:0 0 auto; padding:14px 20px calc(14px + env(safe-area-inset-bottom));
+  border-top:1px solid var(--line); background:var(--card); display:flex; flex-direction:column; gap:9px}
+.tm-stitle{font-size:var(--t-sheet); font-weight:800; letter-spacing:-.3px; margin:6px 0 4px}
+.tm-kick{font-size:12px; font-weight:800; letter-spacing:.6px; text-transform:uppercase; color:var(--brand-deep)}
+[data-theme="dark"] .tm-kick{color:var(--brand)}
+.tm-progress{height:4px; border-radius:2px; background:var(--line); margin:10px 0 4px; overflow:hidden}
+.tm-progress i{display:block; height:100%; background:var(--brand); border-radius:2px}
+.tm-infosec{margin-top:14px}
+.tm-infosec h4{font-size:13.5px; font-weight:800; margin:0 0 3px; color:var(--ink)}
+.tm-infosec p{font-size:13.5px; color:var(--muted); margin:0; line-height:1.55}
+
+/* 11 — FIELD FAMILY ------------------------------------------------------- */
+.tm-field{margin-top:14px}
+.tm-flabel{display:flex; align-items:center; font-size:var(--t-label); font-weight:700; color:var(--ink); margin-bottom:6px}
+.tm-fhint{font-size:var(--t-hint); color:var(--muted); font-weight:500; margin-inline-start:6px}
+.tm-inwrap{position:relative; display:flex; align-items:center}
+.tm-input{width:100%; font-family:inherit; font-size:15px; color:var(--ink);
+  background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-s);
+  padding:13px 14px; transition:border-color .15s ease}
+.tm-input::placeholder{color:color-mix(in srgb,var(--muted) 70%,transparent)}
+.tm-input:focus{outline:none; border-color:var(--brand)}
+.tm-inwrap.err .tm-input{border-color:var(--coral)}
+.tm-input.pre{padding-inline-start:34px}
+.tm-input.suf{padding-inline-end:40px}
+.tm-affix{position:absolute; color:var(--muted); font-weight:700; font-size:15px; pointer-events:none}
+.tm-affix.pre{inset-inline-start:14px}
+.tm-affix.suf{inset-inline-end:14px}
+.tm-dateico{position:absolute; inset-inline-end:8px; color:var(--muted); font-size:15px; z-index:2;
+  width:32px; height:32px; border:0; background:none; cursor:pointer; display:grid; place-items:center; border-radius:8px}
+.tm-dateico:hover{background:var(--brand-soft); color:var(--brand-deep)}
+select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-inline-end:34px}
+.tm-selarrow{position:absolute; inset-inline-end:14px; color:var(--muted); pointer-events:none; font-size:11px}
+.tm-err{display:flex; align-items:flex-start; gap:5px; color:var(--coral); font-size:var(--t-error); font-weight:600; margin-top:6px}
+.tm-err .x{font-weight:800}
+.tm-errsum{background:var(--coral-soft); border-radius:12px; padding:11px 13px; margin-top:12px}
+.tm-errsum b{color:var(--coral); font-size:13px; font-weight:800}
+.tm-errsum ul{margin:6px 0 0; padding-inline-start:18px}
+.tm-errsum li{color:var(--coral); font-size:12.5px; margin-top:3px}
+
+/* 12 — CHOICE GROUP & CHECK ----------------------------------------------- */
+.tm-question{font-size:var(--t-question); font-weight:800; margin:16px 0 10px; letter-spacing:-.2px; line-height:1.35}
+.tm-choices{display:flex; flex-direction:column; gap:9px}
+.tm-choices.row{flex-direction:row}
+.tm-choices.row>*{flex:1}
+.tm-choice{display:flex; align-items:flex-start; gap:10px; text-align:start; width:100%;
+  background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-s);
+  padding:13px 14px; cursor:pointer; font-family:inherit; transition:border-color .12s,background .12s}
+.tm-choice:hover{border-color:color-mix(in srgb,var(--brand) 40%,var(--line))}
+.tm-choice.on{border-color:var(--brand); background:var(--brand-soft)}
+.tm-choice .ct{font-weight:800; font-size:14px; color:var(--ink)}
+.tm-choice .cb{font-size:12.5px; color:var(--muted); margin-top:2px}
+.tm-choices.row .tm-choice{justify-content:center; text-align:center}
+.tm-choices.row .tm-choice .ct{font-size:14.5px}
+.tm-check{display:flex; align-items:flex-start; gap:11px; cursor:pointer; font-family:inherit;
+  background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-s); padding:13px 14px; width:100%; text-align:start}
+.tm-check .bx{width:22px; height:22px; border-radius:6px; border:1.8px solid var(--muted);
+  flex:0 0 auto; display:grid; place-items:center; color:#fff; font-size:13px; margin-top:1px}
+.tm-check.on .bx{background:var(--brand); border-color:var(--brand)}
+.tm-check .cl{font-size:13.5px; color:var(--ink); font-weight:600; line-height:1.45}
+
+/* 13 — NOTICE ------------------------------------------------------------- */
+.tm-notice{display:flex; gap:10px; border-radius:var(--r-s); padding:12px 13px; margin-top:12px; font-size:13px; line-height:1.5}
+.tm-notice .i{flex:0 0 auto; font-size:15px; margin-top:1px}
+.tm-notice b{display:block; font-weight:800; margin-bottom:2px}
+.tm-notice.info{background:var(--blue-soft); color:var(--ink)}
+.tm-notice.info .i{color:var(--blue)}
+.tm-notice.ok{background:var(--brand-soft); color:var(--ink)}
+.tm-notice.ok .i{color:var(--brand-deep)}
+.tm-notice.warn{background:var(--amber-soft); color:var(--ink)}
+.tm-notice.warn .i{color:var(--amber)}
+.tm-notice.neutral{background:color-mix(in srgb,var(--muted) 12%,var(--card)); color:var(--ink)}
+
+/* 14 — WORKSPACE ---------------------------------------------------------- */
+.tm-wsback{display:inline-flex; align-items:center; gap:6px; color:var(--brand-deep); font-weight:800; font-size:13px; background:none; border:0; cursor:pointer; font-family:inherit; padding:16px 0 4px}
+[data-theme="dark"] .tm-wsback{color:var(--brand)}
+.tm-wstitle{font-size:24px; font-weight:800; letter-spacing:-.6px; margin:2px 0 3px}
+.tm-wsmeta{font-size:12.5px; color:var(--muted)}
+.tm-wsperiod{display:inline-block; font-size:12px; color:var(--muted); background:var(--card); border:1px solid var(--line); border-radius:999px; padding:5px 11px; margin-top:8px}
+.tm-tabs{display:flex; gap:4px; background:var(--card); border:1px solid var(--line); border-radius:16px; padding:5px; margin:14px 0 4px}
+.tm-tabs button{flex:1 1 0; min-width:0; appearance:none; border:0; background:none; cursor:pointer; font-family:inherit;
+  font-size:11.5px; font-weight:800; letter-spacing:-.2px; color:var(--muted); padding:9px 3px; border-radius:12px; transition:.12s;
+  overflow:hidden; text-overflow:ellipsis; white-space:nowrap}
+.tm-tabs button.on{background:var(--brand-soft); color:var(--brand-deep)}
+[data-theme="dark"] .tm-tabs button.on{color:var(--brand)}
+.tm-metrics{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px}
+.tm-metric{background:var(--card); border:1px solid var(--line); border-radius:var(--r-s); padding:13px; text-align:start; cursor:pointer; font-family:inherit; width:100%}
+.tm-metric .l{font-size:12px; color:var(--muted); font-weight:700}
+.tm-metric .v{font-size:17px; font-weight:800; margin-top:3px}
+.tm-metric .v.pos{color:var(--brand-deep)} [data-theme="dark"] .tm-metric .v.pos{color:var(--brand)}
+.tm-metric .v.neg{color:var(--coral)}
+.tm-metric .st{font-size:11.5px; color:var(--muted); margin-top:2px}
+.tm-metric .st.attn{color:var(--amber); font-weight:700}
+.tm-recs{display:flex; flex-direction:column; gap:9px; margin-top:12px}
+.tm-rec{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; background:var(--card);
+  border:1px solid var(--line); border-radius:var(--r-s); padding:13px 14px; width:100%; text-align:start; cursor:pointer; font-family:inherit}
+.tm-rec .rl{font-weight:700; font-size:14px; color:var(--ink)}
+.tm-rec .rs{font-size:12px; color:var(--muted); margin-top:2px}
+.tm-rec .rv{font-weight:800; font-size:14px; text-align:end}
+.tm-rec .rv.neg{color:var(--coral)}
+.tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
+.tm-pill.warn{background:var(--amber-soft); color:var(--amber)}
+.tm-pill.ok{background:var(--brand-soft); color:var(--brand-deep)}
+.tm-pill.rev{background:color-mix(in srgb,var(--muted) 14%,var(--card)); color:var(--muted)}
+.tm-summ{background:var(--card); border:1px solid var(--line); border-radius:var(--r-m); overflow:hidden; margin-top:12px}
+.tm-summ .r{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:13px 15px; border-top:1px solid var(--line)}
+.tm-summ .r:first-child{border-top:0}
+.tm-summ .k{font-size:13px; color:var(--muted)}
+.tm-summ .val{font-size:13.5px; font-weight:800; color:var(--ink); text-align:end}
+.tm-disc{background:var(--card); border:1px solid var(--line); border-radius:var(--r-s); margin-top:10px; overflow:hidden}
+.tm-disc>summary{list-style:none; cursor:pointer; padding:13px 15px; font-weight:800; font-size:13.5px; display:flex; justify-content:space-between; align-items:center}
+.tm-disc>summary::-webkit-details-marker{display:none}
+.tm-disc[open]>summary{border-bottom:1px solid var(--line)}
+.tm-disc .dc{padding:6px 15px 14px}
+.tm-total{display:flex; justify-content:space-between; align-items:center; background:var(--brand-soft);
+  border-radius:var(--r-s); padding:12px 14px; margin-top:12px; font-weight:800; font-size:14px; color:var(--brand-deep)}
+[data-theme="dark"] .tm-total{color:var(--brand)}
+.tm-total.bad{background:var(--coral-soft); color:var(--coral)}
+
+/* 15 — COMPACT CALENDAR --------------------------------------------------- */
+.tm-cal{width:100%; max-width:300px; margin-top:10px; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-m); padding:12px; box-shadow:var(--e-card)}
+.tm-calhead{display:flex; align-items:center; justify-content:space-between; gap:6px; margin-bottom:8px}
+.tm-calnav{width:32px; height:32px; border-radius:9px; border:1px solid var(--line); background:var(--card);
+  color:var(--ink); cursor:pointer; font-size:15px; display:grid; place-items:center}
+.tm-calsel{display:flex; gap:6px; flex:1; justify-content:center}
+.tm-calsel select{font:inherit; font-size:13px; font-weight:700; padding:6px 8px; border-radius:8px;
+  background:var(--card); color:var(--ink); border:1px solid var(--line); cursor:pointer}
+.tm-calgrid{display:grid; grid-template-columns:repeat(7,1fr); gap:2px}
+.tm-calwd{text-align:center; font-size:10.5px; font-weight:800; color:var(--muted); padding:3px 0; overflow:hidden; white-space:nowrap}
+.tm-app[dir="rtl"] .tm-calwd{font-size:8.5px; letter-spacing:-.2px}
+.tm-calday{aspect-ratio:1; border:0; background:none; border-radius:9px; cursor:pointer; font-family:inherit;
+  font-size:13px; font-weight:600; color:var(--ink); display:grid; place-items:center}
+.tm-calday:hover{background:var(--brand-soft)}
+.tm-calday.on{background:var(--brand); color:#fff; font-weight:800}
+.tm-calday.mut{color:color-mix(in srgb,var(--muted) 60%,transparent)}
+.tm-caltoday{margin-top:8px; width:100%; text-align:center; font-size:12.5px; font-weight:800;
+  color:var(--brand-deep); background:var(--brand-soft); border:0; border-radius:10px; padding:8px; cursor:pointer; font-family:inherit}
+[data-theme="dark"] .tm-caltoday{color:var(--brand)}
+
+/* 16 — TOAST -------------------------------------------------------------- */
+.tm-toast{position:fixed; inset-inline:0; bottom:20px; display:flex; justify-content:center; z-index:120; pointer-events:none}
+.tm-toast .b{background:var(--ink); color:var(--bg); font-size:13px; font-weight:700; padding:12px 18px; border-radius:999px; box-shadow:var(--e-card); display:flex; align-items:center; gap:8px}
+[data-theme="dark"] .tm-toast .b{background:var(--card); color:var(--ink); border:1px solid var(--line)}
+
+/* 17 — FOCUS & MOTION ----------------------------------------------------- */
+:where(button,a,input,select,textarea,[tabindex]):focus-visible{
+  outline:3px solid color-mix(in srgb,var(--brand) 45%,transparent); outline-offset:2px; border-radius:8px}
+@media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+
+/* 18 — HELPERS ------------------------------------------------------------ */
+.tm-muted{color:var(--muted)} .tm-center{text-align:center}
+.tm-empty{text-align:center; padding:34px 16px; color:var(--muted)}
+.tm-empty .e{font-size:15px; font-weight:800; color:var(--ink); margin-bottom:4px}
+.tm-spacer{height:8px}
+.tm-plainbtn{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:inherit;width:100%}
+.tm-company-identity-stack{display:flex;flex-direction:column;gap:16px;margin-top:14px}

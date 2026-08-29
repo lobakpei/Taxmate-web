@@ -1,5 +1,7 @@
 # TaxMate Final Founder Preview Package
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Production remains at commit `745f7497d374f000870c4a7a111130008f8945a7`, tree `4726b48f89150782f50e6227226c227c13765212`. Candidate branch is `codex/taxmate-modernisation-20260817`.
 
 Runtime identity is app `2.0.0-rc.1`, build `2026-08-20.live-auth-restored-rc.12`, state/sync schema 5, tax rules `2026-27.2026-08-17.1`, form map `2025-26.2026-04-06.1` and PWA cache `taxmate-v2-rc-1-live-auth-restored-rc-12`.
