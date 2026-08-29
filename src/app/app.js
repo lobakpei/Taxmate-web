@@ -5358,25 +5358,41 @@ function pushBizRemote(b){
 
 /* ═══════════ Account & personal cloud sync ═══════════ */
 const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';
-function loadSyncOutbox(){try{return TaxMateSync.normalizeOutbox(JSON.parse(localStorage.getItem(SYNC_OUTBOX_KEY)||'null'));}catch(_){return TaxMateSync.emptyOutbox();}}
+const SYNC_RUNTIME_REQUIRED_METHODS=['normalizeOutbox','emptyOutbox','enqueue','markAttempt','markFailure','acknowledge','due','status','classifyError','mergeMeta','mergeRecords','visible','reconcileRecords','cloudAccountState','shouldWriteRecord','compare','touch','tombstone'];
+const SYNC_RUNTIME={blocked:false,reason:null,storedOutboxPresent:false,storedOutboxBytes:0};
+function syncRuntimeApiReady(){return typeof TaxMateSync==='object'&&TaxMateSync!==null&&TaxMateSync.API_VERSION===2&&SYNC_RUNTIME_REQUIRED_METHODS.every(method=>typeof TaxMateSync[method]==='function');}
+function blockSyncRuntime(reason,raw){SYNC_RUNTIME.blocked=true;SYNC_RUNTIME.reason=reason;SYNC_RUNTIME.storedOutboxPresent=raw!==null;SYNC_RUNTIME.storedOutboxBytes=raw===null?0:new Blob([String(raw)]).size;return null;}
+function validStoredSyncOutbox(value){return !!value&&typeof value==='object'&&!Array.isArray(value)&&value.version===1&&Array.isArray(value.items)&&value.items.every(item=>item&&typeof item==='object'&&!Array.isArray(item)&&item.key&&item.kind);}
+function loadSyncOutbox(){
+  let raw=null;
+  try{raw=localStorage.getItem(SYNC_OUTBOX_KEY);}catch(_){return blockSyncRuntime('outbox-storage-read',null);}
+  if(!syncRuntimeApiReady())return blockSyncRuntime('dependency-mismatch',raw);
+  if(SYNC_RUNTIME.blocked)return null;
+  if(raw===null)return TaxMateSync.emptyOutbox();
+  try{const parsed=JSON.parse(raw);if(!validStoredSyncOutbox(parsed))return blockSyncRuntime('outbox-format',raw);return TaxMateSync.normalizeOutbox(parsed);}
+  catch(_){return blockSyncRuntime('outbox-format',raw);}
+}
 let SYNC_OUTBOX=loadSyncOutbox();
 let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
 function persistSyncOutbox(){
+  if(SYNC_RUNTIME.blocked||!SYNC_OUTBOX){renderSyncStatus();return false;}
   try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
   catch(e){CLOUD.writeError='outbox-storage';CLOUD.writeErrorKind='outbox';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
 }
-function enqueueSyncOperation(operation){SYNC_OUTBOX=TaxMateSync.enqueue(loadSyncOutbox(),operation,Date.now());persistSyncOutbox();renderSyncStatus();}
+function enqueueSyncOperation(operation){if(SYNC_RUNTIME.blocked)return false;const outbox=loadSyncOutbox();if(!outbox)return false;SYNC_OUTBOX=TaxMateSync.enqueue(outbox,operation,Date.now());return persistSyncOutbox();}
 function syncStatus(){
+  if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,message:'TaxMate update required — reload to continue. Local data is safe.',error:SYNC_RUNTIME.reason};
   const user=cloudUser(),box=TaxMateSync.normalizeOutbox(SYNC_OUTBOX);
   if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
   return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,partnershipHydrationState:CLOUD.partnershipHydrationState,reconciliationState:CLOUD.reconciliationState,ackState:CLOUD.ackState,hydrationError:CLOUD.hydrationError,inboundError:CLOUD.inboundError,writeError:CLOUD.writeError,writeErrorKind:CLOUD.writeErrorKind});
 }
 function renderSyncStatus(){
-  const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'?'var(--coral)':'var(--muted)';
+  const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'||current.state==='update-required'?'var(--coral)':'var(--muted)';
   const elements=Array.from(document.querySelectorAll('#cloud-sync-status,[data-cloud-sync-status]'));
   elements.forEach(el=>{el.textContent=current.message;el.style.color=col;el.dataset.state=current.state;});
 }
 function scheduleOutboxFlush(delay,reason){
+  if(SYNC_RUNTIME.blocked){renderSyncStatus();return;}
   clearTimeout(CLOUD.retryTimer);
   CLOUD.retryTimer=setTimeout(()=>flushSyncOutbox(reason||'scheduled'),Math.max(0,Number(delay)||0));
 }
@@ -5508,6 +5524,7 @@ async function sendSyncOperation(operation){
   throw new Error('unsupported-sync-operation');
 }
 async function flushSyncOutbox(reason){
+  if(SYNC_RUNTIME.blocked){renderSyncStatus();return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason};}
   if(CLOUD.flushPromise)return CLOUD.flushPromise;
   CLOUD.flushPromise=(async()=>{
     if(typeof navigator!=='undefined'&&navigator.onLine===false){renderSyncStatus();return;}
@@ -5541,8 +5558,9 @@ function handleSyncListenerError(error){
 }
 
 function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
-function syncOperationsForUser(uid){return TaxMateSync.normalizeOutbox(loadSyncOutbox()).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));}
+function syncOperationsForUser(uid){if(SYNC_RUNTIME.blocked)return[];const outbox=loadSyncOutbox();if(!outbox)return[];return TaxMateSync.normalizeOutbox(outbox).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));}
 function outboundConvergenceState(uid){
+  if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason,kind:'runtime'};
   const remaining=syncOperationsForUser(uid),failed=remaining.find(operation=>operation.status==='failed');
   CLOUD.reconciliationState=remaining.length?(failed?'retrying':'pending'):'converged';CLOUD.ackState=remaining.length?'waiting':'acked';
   if(failed){CLOUD.writeError=failed.lastError||CLOUD.writeError||'sync-failed';CLOUD.writeErrorKind=failed.kind||CLOUD.writeErrorKind;}
@@ -5566,6 +5584,7 @@ function clearUserSyncListeners(){
   FB.subs={};
 }
 function startUserSync(u){
+  if(SYNC_RUNTIME.blocked){renderSyncStatus();return Promise.resolve({state:'update-required',existingCloudAccount:false,error:SYNC_RUNTIME.reason});}
   if(!u||u.isAnonymous)return Promise.resolve({state:'idle',existingCloudAccount:false});
   const uid=u.uid;
   if(CLOUD.hydrationUid===uid&&CLOUD.hydrationState==='converged'&&CLOUD.hydrationResult)return Promise.resolve(CLOUD.hydrationResult);
@@ -5649,10 +5668,12 @@ function stopUserSync(){
   renderSyncStatus();
 }
 async function pushUserState(uid, force){
+  if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason};
   uid=queuePersonalState(uid);if(!uid)return;
   if(force) return flushSyncForConvergence(uid);
 }
 function scheduleCloudPush(){
+  if(SYNC_RUNTIME.blocked){renderSyncStatus();return;}
   if(!cloudUser() || CLOUD.applying) return;
   CLOUD.localEditAt = Date.now();
   queuePersonalState();
