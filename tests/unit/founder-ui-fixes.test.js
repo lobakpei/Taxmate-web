@@ -71,3 +71,13 @@ test('draft persistence has one-shot suppression while canonical emits always re
   assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
   assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)[\s\S]*paint\(\);\s*\}\s*\n\s*function paint/);
 });
+
+test('Ltd entry clears personal overlays without scheduling a personal prompt and has a CSS fail-safe',()=>{
+  assert.match(app,/function closePersonalSurfacesForLtd\(\)\{[\s\S]*querySelectorAll\('\.sb\.open'\)[\s\S]*classList\.remove\('sheet-open'\)[\s\S]*taxmate-lightbox[\s\S]*pwaProactivePending=false;[\s\S]*sheetOpener=null;[\s\S]*LB=\{url:'',path:''\};/);
+  assert.match(app,/enterLtd\(\)\{closePersonalSurfacesForLtd\(\);/);
+  assert.match(app,/function openSheet\(id\)\{ if\(document\.body\.classList\.contains\('ltd-active'\)\)return false;/);
+  const cleanup=app.match(/function closePersonalSurfacesForLtd\(\)\{[\s\S]*?\n\}/)[0];
+  assert.doesNotMatch(cleanup,/maybeOpenPendingPwaSuggestion|openSheet\(/);
+  assert.match(html,/body\.ltd-active \.sb,[\s\S]*body\.ltd-active>#taxmate-lightbox,[\s\S]*body\.ltd-active>#taxmate-toast,[\s\S]*body\.ltd-active>#ob-root\{display:none!important;visibility:hidden!important;pointer-events:none!important\}/);
+  assert.match(html,/body\.ltd-active\.sheet-open\{overflow:auto\}/);
+});

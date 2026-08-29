@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-29.ltd-v1-5-renderer-repaint.1 -->
+<!-- build: 2026-08-29.ltd-v1-5-personal-overlay-isolation.1 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -94,6 +94,15 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 .ltd-active>.top,.ltd-active>#page,.ltd-active>#nav{display:none!important}
 body:not(.ltd-active)>#taxmate-ltd-ui-root{display:none!important}
 body.ltd-active>#taxmate-ltd-ui-root:not([hidden]){display:block!important}
+/* Ltd is a separate application surface. Personal sheets/overlays are closed
+   by the production bridge; this is the fail-safe if stale classes or inline
+   lightbox display state survive an interrupted personal-shell transition. */
+body.ltd-active .sb,
+body.ltd-active>#taxmate-lightbox,
+body.ltd-active>#taxmate-toast,
+body.ltd-active>#ob-root{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.ltd-active .sb *,body.ltd-active>#taxmate-lightbox *{pointer-events:none!important}
+body.ltd-active.sheet-open{overflow:auto}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}

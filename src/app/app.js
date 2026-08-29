@@ -3555,6 +3555,22 @@ function save(){
   CLOUD.localEditAt=now;
   if(typeof scheduleCloudPush==='function') scheduleCloudPush();return true;
 }
+function closePersonalSurfacesForLtd(){
+  const active=document.activeElement;
+  if(active&&active.closest&&active.closest('.sb,#taxmate-lightbox,#ob-root')&&typeof active.blur==='function')active.blur();
+  document.querySelectorAll('.sb.open').forEach(surface=>surface.classList.remove('open'));
+  document.body.classList.remove('sheet-open');
+  const lightbox=document.getElementById('taxmate-lightbox');
+  if(lightbox){lightbox.style.display='none';const image=lightbox.querySelector('img');if(image)image.removeAttribute('src');}
+  const personalToast=document.getElementById('taxmate-toast');
+  if(personalToast)personalToast.classList.remove('show');
+  const onboarding=document.getElementById('ob-root');
+  if(onboarding)onboarding.classList.remove('active');
+  pwaProactivePending=false;
+  if(_toastTimer){clearTimeout(_toastTimer);_toastTimer=null;}
+  sheetOpener=null;
+  LB={url:'',path:''};
+}
 window.TaxMateLtdProductionBridge=Object.freeze({
   loadState:()=>JSON.parse(JSON.stringify(S)),
   replaceState(next){
@@ -3572,7 +3588,7 @@ window.TaxMateLtdProductionBridge=Object.freeze({
   locale:()=>({en:'en',zh:'zh-HK',pl:'pl',ro:'ro',es:'es',ur:'ur'})[S.settings.lang]||'en',
   theme:()=>S.settings.theme==='dark'?'dark':S.settings.theme==='light'?'light':matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',
   mount:()=>document.getElementById('taxmate-ltd-ui-root'),
-  enterLtd(){for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
+  enterLtd(){closePersonalSurfacesForLtd();for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
   exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
   exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
   callTrusted:(name,data)=>callSecureFunction(name,data),
@@ -5191,7 +5207,7 @@ function sheetSnapshot(sheetEl){
   }).join('\u0001');
 }
 let sheetOpener=null;
-function openSheet(id){ const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
+function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); setTimeout(maybeOpenPendingPwaSuggestion,0); }

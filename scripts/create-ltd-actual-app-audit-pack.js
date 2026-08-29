@@ -8,10 +8,10 @@ const {spawnSync}=require('node:child_process');
 const JSZip=require('jszip');
 
 const root=path.resolve(__dirname,'..');
-const parent='e10b613d3aae0d7f24e2c4ae91bc50c10b99a75e';
+const parent='00861cbb047ca0afbc7b081c08a9438bc781f56f';
 const originalBase='da7092c15ff4eb565c46d0153f2a9e08cadc8079';
 const expectedBranch='codex/taxmate-ltd-v1-5-actual-app-integration-20260828';
-const packageName='TAXMATE_LTD_V1.5_RENDERER_REPAINT_FINAL_INDEPENDENT_AUDIT_PACK_20260829.zip';
+const packageName='TAXMATE_LTD_V1.5_PERSONAL_OVERLAY_ISOLATION_FINAL_INDEPENDENT_AUDIT_PACK_20260829.zip';
 const output=path.resolve(root,'..',packageName);
 const evidenceFolders=['.ltd-actual-app-evidence','.ltd-final-correction-evidence','.paid-sync-browser-evidence','.ltd-founder-preview-evidence'];
 
@@ -90,7 +90,7 @@ function verifyPatch(patchFile,candidateTree){
   }
 }
 function hostingManifest(hostingRoot){return manifest(hostingRoot);}
-function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 renderer-repaint final independent-audit closeout
+function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 personal-overlay-isolation final independent-audit closeout
 
 Date: 2026-08-29
 
@@ -103,9 +103,9 @@ Date: 2026-08-29
 - Parent tree: \`${identity.parentTree}\`
 - Original base: \`${identity.originalBase}\`
 - Changed paths from frozen parent: ${changedCount}
-- Version: \`2.1.2\`
-- Build: \`2026-08-29.ltd-v1-5-renderer-repaint.1\`
-- Cache: \`taxmate-v2-ltd-v1-5-renderer-repaint-1\`
+- Version: \`2.1.3\`
+- Build: \`2026-08-29.ltd-v1-5-personal-overlay-isolation.1\`
+- Cache: \`taxmate-v2-ltd-v1-5-personal-overlay-isolation-1\`
 - Hosting artifact: ${hosting.files} files, ${hosting.bytes} bytes, aggregate SHA-256 \`${hosting.aggregateSha256}\`
 
 ## Acceptance
@@ -115,7 +115,8 @@ Date: 2026-08-29
 - Trusted one-active-Ltd race: PASS.
 - Pro-only active actions and downgrade read/hydrate/export: PASS.
 - Companies House server-only provenance boundary: PASS.
-- Personal shell isolation in active Ltd mode: PASS by computed-style and rendered-geometry assertions; All businesses and legacy-business exits restore the personal shell with one navigation instance.
+- Personal shell isolation in active Ltd mode: PASS. The bridge clears every open personal sheet, sheet-open state, lightbox, overlay focus and pending PWA suggestion before entering Ltd. CSS independently forces residual personal surfaces to zero rendered geometry and zero pointer interception.
+- Real stale-overlay journey: PASS. The actual legacy Edit business sheet remains open while Existing Ltd is selected; Ltd becomes immediately interactive, All businesses returns to a clean personal shell, and no stale sheet/lightbox/overlay is resurrected.
 - Hidden factual defaults: PASS.
 - Current-schema migration no-op: PASS with equal full-state/data-payload SHA-256, unchanged original provenance/domain timestamp, zero sync upload and zero browser outbox churn.
 - Later genuine structural reconciliation: PASS with separate reconciliation provenance and original v0-to-v8 provenance preserved.
@@ -139,14 +140,14 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 ## Test result
 
 - Characterization 4/4
-- Unit 134/134
+- Unit 135/135
 - Integration 7/7
 - Rules source 6/6
 - Ltd/facade/domain 60/60
 - Functions emulator 8/8
 - Firestore/Storage emulator 16/16
 - Final correction evidence script: PASS
-- Actual app browser 262 assertions
+- Actual app browser 807 assertions
 - Paid Cloud/Partner Sync browser 90 assertions
 - Isolated preview browser 35 assertions
 - Product Health: 85 REAL_DURABLE, 6 INTENTIONALLY_HIDDEN, all defect counters 0
@@ -243,10 +244,10 @@ async function main(){
     const identity={branch,commit,tree,parent,parentTree,originalBase};
     write(path.join(payload,'review','CANDIDATE_CLOSEOUT.md'),closeout(identity,changed.split(/\r?\n/).filter(Boolean).length,hosting));
     write(path.join(payload,'review','RUN_AND_REVIEW.md'),rerun());
-    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.2',buildId:'2026-08-29.ltd-v1-5-renderer-repaint.1',cache:'taxmate-v2-ltd-v1-5-renderer-repaint-1',hosting},null,2)+'\n');
+    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.3',buildId:'2026-08-29.ltd-v1-5-personal-overlay-isolation.1',cache:'taxmate-v2-ltd-v1-5-personal-overlay-isolation-1',hosting},null,2)+'\n');
     write(path.join(payload,'evidence','SOURCE_BLOB_VERIFICATION.json'),JSON.stringify({status:'PASS',trackedBlobs:sourceVerification.entries,mismatchCount:0,commit,tree},null,2)+'\n');
     write(path.join(payload,'evidence','PATCH_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(patchVerification,null,2)+'\n');
-    write(path.join(payload,'review','DECISIVE_CORRECTION_EVIDENCE.md'),'# Decisive renderer-repaint correction evidence\n\n## Draft-only suppression\n\n- `source/src/ui/ltd/workbench-renderer.js` arms a one-shot counter only around `onDraftChanged`, consumes it only in the corresponding synchronous subscription callback, and clears any unused token for the HTTP preview facade.\n- `source/tests/unit/founder-ui-fixes.test.js` forbids the former unconditional same-renderKey return and proves the draft and canonical event paths are distinct.\n\n## Real blur-to-click\n\n- `evidence/ltd-actual-app-evidence/ltd-actual-app-browser-result.json` records ordered `blur` then `click` events and exactly one provider call for Companies House found, not-found and unavailable.\n- The test uses the rendered company-number input and real Check Companies House button; it does not call the facade directly.\n\n## Same-route canonical repaint\n\n- The actual-app result `canonicalRepaintEvidence` records an Overview identity replacement and a cloud-peer Money record insertion through `TaxMateLtdProductionBridge.replaceState`.\n- Both preserve the route and reach the DOM after `taxmate:canonical-state-updated -> driver.reload -> facade.emit`, with `manualPaint=false`.\n- Screenshots: `actual-app-same-route-canonical-repaint.png` and `actual-app-cloud-style-record-repaint.png`.\n\n## Existing decisive evidence\n\n- Personal shell isolation remains under `shellEvidence`.\n- Migration no-op and sync churn remain in `evidence/ltd-final-correction-evidence/migration-noop-and-scenario-result.json`.\n- Companies House visual proof remains in the five `actual-app-step1-*` images.\n- `evidence/paid-sync-browser-evidence/paid-sync-browser-result.json` proves the PWA offline/reopen/reconnect/ACK lifecycle.\n');
+    write(path.join(payload,'review','DECISIVE_CORRECTION_EVIDENCE.md'),'# Decisive personal-overlay-isolation and renderer evidence\n\n## Personal overlay isolation\n\n- `source/src/app/app.js` closes every personal `.sb.open`, removes `body.sheet-open`, clears lightbox/toast/onboarding focus state and cancels a pending proactive PWA suggestion before activating Ltd. Personal `openSheet` calls fail closed while `body.ltd-active` is present.\n- `source/index.html` independently hides every personal sheet, lightbox, toast and onboarding overlay with zero pointer events while Ltd is active.\n- `evidence/ltd-actual-app-evidence/ltd-actual-app-browser-result.json` records computed style, rendered geometry and pointer interception for every personal surface across the journey.\n- The browser opens the real legacy Edit business sheet and enters Existing Ltd without pre-closing it. `actual-app-personal-overlay-isolation.png` proves the immediately operable Ltd-only surface.\n- Repaint screenshots `actual-app-same-route-canonical-repaint.png` and `actual-app-cloud-style-record-repaint.png` contain only Ltd UI.\n\n## Draft-only suppression\n\n- `source/src/ui/ltd/workbench-renderer.js` arms a one-shot counter only around `onDraftChanged`, consumes it only in the corresponding synchronous subscription callback, and clears any unused token for the HTTP preview facade.\n- `source/tests/unit/founder-ui-fixes.test.js` forbids the former unconditional same-renderKey return and proves the draft and canonical event paths are distinct.\n\n## Real blur-to-click\n\n- The actual-app result records ordered `blur` then `click` events and exactly one provider call for Companies House found, not-found and unavailable.\n- The test uses the rendered company-number input and real Check Companies House button; it does not call the facade directly.\n\n## Same-route canonical repaint\n\n- The actual-app result `canonicalRepaintEvidence` records an Overview identity replacement and a cloud-peer Money record insertion through `TaxMateLtdProductionBridge.replaceState`.\n- Both preserve the route and reach the DOM after `taxmate:canonical-state-updated -> driver.reload -> facade.emit`, with `manualPaint=false`.\n\n## Existing decisive evidence\n\n- Migration no-op and sync churn remain in `evidence/ltd-final-correction-evidence/migration-noop-and-scenario-result.json`.\n- Companies House visual proof remains in the five `actual-app-step1-*` images.\n- `evidence/paid-sync-browser-evidence/paid-sync-browser-result.json` proves the PWA offline/reopen/reconnect/ACK lifecycle.\n');
     write(path.join(payload,'review','REMAINING_RELEASE_GATES.md'),'# Current release gates\n\n- Pro annual pricing decision: RESOLVED — £99.99/year (9999 minor units).\n- Production billing alignment: STILL OPEN.\n- Founder acceptance: STILL OPEN.\n- Live Companies House credential smoke: STILL OPEN.\n- Release drift/migration/rollback preflight: STILL OPEN.\n- Explicit production release authority: STILL OPEN.\n\nNo production release action is authorised by this package.\n');
     write(path.join(payload,'review','STRIPE_EVIDENCE_BOUNDARY.md'),'# Stripe evidence boundary\n\nThe current Founder contract is launch £9.99/month, standard £11.99/month and £99.99/year (9999 minor units). Local deterministic contract, entitlement, hosted-receipt and billing-delta tests use those values. No Stripe TEST or LIVE network operation was performed during this correction: no Price, customer, subscription or Checkout Session was created or changed. Production checkout remains disabled/fail-closed until separately authorised production billing alignment. Historical £7.99/£59.99 reports are retained only as explicitly superseded evidence and are not current contract truth.\n');
     write(path.join(payload,'review','NO_PRODUCTION_IMPACT.md'),'# No-production-impact proof\n\nProduction TaxMate 2.0.6 modified = NO\n\nProduction Firebase/data mutation = NO\n\nPush = NO\n\nPR = NO\n\nMerge = NO\n\nDeploy = NO\n\nNative/Mobile PR #2 = NO\n\nSEO = NO\n\nP10 = NOT AUTHORISED\n\nBillable operation = NO\n\nActual incremental cost = GBP 0\n');
