@@ -28,6 +28,11 @@
     review:{},       // scopeId -> [reasonCode]
     toast:null,      // transient toast string
     focusError:false,
+    // onDraftChanged emits synchronously in the production facade. Suppress
+    // exactly that one subscription callback so a blur cannot replace the
+    // button which is about to receive the same pointer click. No other emit
+    // (including a canonical-state reload) is eligible for this suppression.
+    skipNextDraftEmitRender:0,
     lastRouteKey:null, mountedKey:null
   };
   var LAST = { mount:null, facade:null, snapshot:null };
@@ -285,7 +290,15 @@
   function persistDraft(sid,fid,type,value){
     // only persist for facade-backed onboarding/edit screens (real screenIds), not ui.* sheets
     if(sid.indexOf('ui.')===0) return;
-    run('onDraftChanged',{screenId:sid, field:{id:fid, type:type||'text', value:value}},{skipPaint:true});
+    UI.skipNextDraftEmitRender+=1;
+    try{
+      run('onDraftChanged',{screenId:sid, field:{id:fid, type:type||'text', value:value}},{skipPaint:true});
+    } finally {
+      // The local production facade consumes this counter synchronously. The
+      // localhost HTTP facade intentionally emits nothing for onDraftChanged,
+      // so clear any unconsumed token before an unrelated future emit arrives.
+      if(UI.skipNextDraftEmitRender>0) UI.skipNextDraftEmitRender-=1;
+    }
   }
   function choiceGroup(o){
     // o:{scope,name,options:[{v,title,body}],row,onPick,current}
@@ -1810,8 +1823,8 @@
       UI.cal||'', UI.calView?(UI.calView.y+'-'+UI.calView.m):'', JSON.stringify(UI.disc), JSON.stringify(UI.choices)].join('#');
   }
 
-  // Public entry (subscribed). Repaints only when something visible changes,
-  // so draft-only onDraftChanged emits never steal input focus.
+  // Public entry (subscribed). Every facade emit repaints except the explicit,
+  // one-shot synchronous onDraftChanged emit armed by persistDraft above.
   function render(mount, facade, snapshot){
     LAST.mount=mount; LAST.facade=facade; LAST.snapshot=snapshot;
     if(!snapshot){ mount.replaceChildren(h('div',{style:'padding:24px',text:'\u2026'})); return; }
@@ -1819,9 +1832,9 @@
     if(UI.lastRouteKey!==rId){ // arrived at a new screen: clear field cache so it seeds from snapshot draft
       UI.cache={}; UI.cal=null; UI.lastRouteKey=rId;
     }
-    var key=renderKey();
-    if(key===UI.mountedKey){
-      return; // draft-only emit: preserve the active field and any click target reached through blur
+    if(UI.skipNextDraftEmitRender>0){
+      UI.skipNextDraftEmitRender-=1;
+      return; // consume only the draft persistence emit; preserve blur-to-click
     }
     paint();
   }

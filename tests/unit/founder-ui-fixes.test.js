@@ -58,10 +58,16 @@ test('Plans UI keeps Plus cadence and exposes the complete Founder-approved Pro 
   assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year|Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);
 });
 
-test('draft persistence emit cannot repaint away a button between input blur and click',()=>{
+test('draft persistence has one-shot suppression while canonical emits always repaint',()=>{
   const renderer=fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8');
-  assert.match(renderer,/if\(key===UI\.mountedKey\)\{\s*return; \/\/ draft-only emit: preserve the active field and any click target reached through blur/);
+  const adapter=fs.readFileSync('src/integration/ltd/TaxMateLtdProductionAdapter.js','utf8');
+  assert.match(renderer,/UI\.skipNextDraftEmitRender\+=1;\s*try\{\s*run\('onDraftChanged'/);
+  assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)\{\s*UI\.skipNextDraftEmitRender-=1;\s*return; \/\/ consume only the draft persistence emit/);
+  assert.match(renderer,/finally \{[\s\S]*if\(UI\.skipNextDraftEmitRender>0\) UI\.skipNextDraftEmitRender-=1;/);
   assert.match(renderer,/onDraftChanged[^\n]*\{skipPaint:true\}/);
   assert.match(renderer,/else if\(!opts\.skipPaint\) paint\(\)/);
-  assert.doesNotMatch(renderer,/key===UI\.mountedKey && document\.activeElement/);
+  assert.doesNotMatch(renderer,/if\s*\(\s*key\s*===\s*UI\.mountedKey\s*\)\s*\{?\s*return/);
+  assert.match(adapter,/taxmate:canonical-state-updated'[\s\S]*driver\.reload\(\);facade\.emit\(\)/);
+  assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
+  assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)[\s\S]*paint\(\);\s*\}\s*\n\s*function paint/);
 });
