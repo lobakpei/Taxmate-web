@@ -6778,7 +6778,7 @@ function obShell(progHTML, bodyHTML, footHTML){
 /* LOGIN */
 function obScrLogin(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
-    <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
+    <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${t('ob.h1')}</h1>
     <p class="ob-lede">${t('ob.lede')}</p>
     <button class="ob-tile solid" data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>

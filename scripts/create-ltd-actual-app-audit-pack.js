@@ -8,10 +8,11 @@ const {spawnSync}=require('node:child_process');
 const JSZip=require('jszip');
 
 const root=path.resolve(__dirname,'..');
-const parent='00861cbb047ca0afbc7b081c08a9438bc781f56f';
+const parent='9170091e10ededcb685d3c28b8241095ffcfbe2e';
+const expectedParentTree='83e8492717530ed11a5022c049358dbff2dda72d';
 const originalBase='da7092c15ff4eb565c46d0153f2a9e08cadc8079';
 const expectedBranch='codex/taxmate-ltd-v1-5-actual-app-integration-20260828';
-const packageName='TAXMATE_LTD_V1.5_PERSONAL_OVERLAY_ISOLATION_FINAL_INDEPENDENT_AUDIT_PACK_20260829.zip';
+const packageName='TAXMATE_FOUNDER_BRAND_IDENTITY_FINAL_INDEPENDENT_AUDIT_PACK_20260829.zip';
 const output=path.resolve(root,'..',packageName);
 const evidenceFolders=['.ltd-actual-app-evidence','.ltd-final-correction-evidence','.paid-sync-browser-evidence','.ltd-founder-preview-evidence'];
 
@@ -89,8 +90,21 @@ function verifyPatch(patchFile,candidateTree){
     try{run('git',['worktree','remove','--force',worktree]);}catch(_){safeRemove(worktree,os.tmpdir());run('git',['worktree','prune']);}
   }
 }
+function verifyReversePatch(patchFile,candidate,parentTree){
+  const worktree=path.join(os.tmpdir(),`taxmate-brand-reverse-patch-${process.pid}-${Date.now()}`);
+  safeRemove(worktree,os.tmpdir());
+  try{
+    run('git',['worktree','add','--detach',worktree,candidate]);
+    run('git',['apply','-R','--binary','--whitespace=nowarn',patchFile],{cwd:worktree});
+    run('git',['add','-A'],{cwd:worktree});
+    const reconstructed=run('git',['write-tree'],{cwd:worktree}).trim();
+    return{status:reconstructed===parentTree?'PASS':'FAIL',expectedTree:parentTree,reconstructedTree:reconstructed};
+  }finally{
+    try{run('git',['worktree','remove','--force',worktree]);}catch(_){safeRemove(worktree,os.tmpdir());run('git',['worktree','prune']);}
+  }
+}
 function hostingManifest(hostingRoot){return manifest(hostingRoot);}
-function closeout(identity,changedCount,hosting){return `# TaxMate Ltd V1.5 personal-overlay-isolation final independent-audit closeout
+function closeout(identity,changedCount,hosting){return `# TaxMate Founder-approved brand identity integration final independent-audit closeout
 
 Date: 2026-08-29
 
@@ -103,13 +117,20 @@ Date: 2026-08-29
 - Parent tree: \`${identity.parentTree}\`
 - Original base: \`${identity.originalBase}\`
 - Changed paths from frozen parent: ${changedCount}
-- Version: \`2.1.3\`
-- Build: \`2026-08-29.ltd-v1-5-personal-overlay-isolation.1\`
-- Cache: \`taxmate-v2-ltd-v1-5-personal-overlay-isolation-1\`
+- Version: \`2.1.4\`
+- Build: \`2026-08-29.founder-brand-identity.1\`
+- Cache: \`taxmate-v2-founder-brand-identity-1\`
 - Hosting artifact: ${hosting.files} files, ${hosting.bytes} bytes, aggregate SHA-256 \`${hosting.aggregateSha256}\`
 
 ## Acceptance
 
+- The four Founder-approved SVG source files are preserved byte-exact under \`assets/brand/source\` and locked by SHA-256 in the deterministic generator and tests.
+- Header and onboarding/login use the transparent Brand Logo, never the square App Icon. Light, dark and automatic system-theme changes select the correct asset without reload.
+- The old pound-square brand mark and duplicate textual logo are absent. App Icon placement is limited to favicon, PWA/install, Apple touch and social identity outputs; it is absent from Home, Tax and Ltd hero content.
+- Favicon 16/32/48, multi-size ICO, Apple touch 180, PWA 192/512/maskable and 1200x630 Open Graph/WhatsApp assets are generated deterministically from the approved vector sources.
+- Maskable output is fully opaque and its foreground remains inside the safe bounds. Transparent Brand Logo reconstruction preserves source paths/colours with a foreground mask mismatch below 0.5% and mean channel delta below 1 caused only by antialiasing against the removed background.
+- Open Graph, Twitter, structured-data and favicon metadata point to the new production brand assets while the approved product title, description, H1, pricing and product positioning remain unchanged.
+- Actual-app evidence covers mobile/desktop, light/dark, onboarding/login, Settings, Home, automatic theme response, social preview and favicon/PWA visual output.
 - Real \`index.html\` app mount: PASS.
 - Canonical production facade/state/domain binding: PASS.
 - Trusted one-active-Ltd race: PASS.
@@ -140,14 +161,14 @@ The four alerts were emitted by localhost actual-app testing. The exact defects 
 ## Test result
 
 - Characterization 4/4
-- Unit 135/135
+- Unit 144/144
 - Integration 7/7
 - Rules source 6/6
 - Ltd/facade/domain 60/60
 - Functions emulator 8/8
 - Firestore/Storage emulator 16/16
 - Final correction evidence script: PASS
-- Actual app browser 807 assertions
+- Actual app browser 841 assertions
 - Paid Cloud/Partner Sync browser 90 assertions
 - Isolated preview browser 35 assertions
 - Product Health: 85 REAL_DURABLE, 6 INTENTIONALLY_HIDDEN, all defect counters 0
@@ -181,6 +202,7 @@ From the extracted \`source\` directory:
 
 \`\`\`powershell
 npm run audit:bootstrap
+npm run generate:brand-assets
 npm test
 npm run test:functions:emulator
 npm run test:rules:emulator
@@ -215,6 +237,7 @@ async function main(){
   const branch=run('git',['branch','--show-current']).trim(),commit=run('git',['rev-parse','HEAD']).trim(),tree=run('git',['rev-parse','HEAD^{tree}']).trim(),parentTree=run('git',['rev-parse',`${parent}^{tree}`]).trim();
   if(branch!==expectedBranch)throw new Error(`Branch drift: ${branch}`);
   if(run('git',['rev-parse','HEAD^']).trim()!==parent)throw new Error('Candidate parent drift');
+  if(parentTree!==expectedParentTree)throw new Error(`Parent tree drift: ${parentTree}`);
   const dirty=run('git',['status','--porcelain','--untracked-files=all']).split(/\r?\n/).filter(Boolean).filter(line=>!evidenceFolders.some(folder=>line.slice(3).replace(/\\/g,'/').startsWith(folder+'/'))&&!line.slice(3).endsWith(packageName));
   if(dirty.length)throw new Error(`Worktree is not frozen:\n${dirty.join('\n')}`);
   const temp=fs.mkdtempSync(path.join(os.tmpdir(),'taxmate-ltd-audit-')),payload=path.join(temp,'payload');
@@ -226,11 +249,13 @@ async function main(){
     const changed=run('git',['diff','--name-status',parent,commit,'--']);write(path.join(payload,'changes','CHANGED_FILES.txt'),changed+'\n');
     write(path.join(payload,'changes','DIFFSTAT.txt'),run('git',['diff','--stat',parent,commit,'--'])+'\n');
     const patchVerification=verifyPatch(patchFile,tree);if(patchVerification.status!=='PASS')throw new Error('Patch did not reconstruct candidate tree');
+    const parentPatchVerification=verifyReversePatch(patchFile,commit,parentTree);if(parentPatchVerification.status!=='PASS')throw new Error('Reverse patch did not reconstruct parent tree');
     run(process.execPath,['scripts/build-hosting.js','production','ltd-audit-candidate']);
     const hostingSource=path.join(root,'.hosting-build','ltd-audit-candidate'),hostingTarget=path.join(payload,'hosting-artifact');fs.cpSync(hostingSource,hostingTarget,{recursive:true});
     const hostingRows=hostingManifest(hostingTarget),hosting={files:hostingRows.length,bytes:hostingRows.reduce((sum,row)=>sum+row.bytes,0),aggregateSha256:sha256(Buffer.from(hostingRows.map(row=>`${row.sha256} ${row.bytes} ${row.relative}`).join('\n')))};
     write(path.join(payload,'evidence','HOSTING_ARTIFACT_MANIFEST_SHA256.txt'),hostingRows.map(row=>`${row.sha256}\t${row.bytes}\t${row.relative}`).join('\n')+'\n');
     const validationDir=path.join(payload,'evidence','current-validation'),validationSpecs=[
+      ['deterministic brand asset generation',['run','generate:brand-assets'],'brand-asset-generation.log'],
       ['complete Node gates',['test'],'npm-test.log'],
       ['Functions emulator',['run','test:functions:emulator'],'functions-emulator.log'],
       ['Firestore and Storage emulators',['run','test:rules:emulator'],'rules-emulator.log'],
@@ -244,10 +269,15 @@ async function main(){
     const identity={branch,commit,tree,parent,parentTree,originalBase};
     write(path.join(payload,'review','CANDIDATE_CLOSEOUT.md'),closeout(identity,changed.split(/\r?\n/).filter(Boolean).length,hosting));
     write(path.join(payload,'review','RUN_AND_REVIEW.md'),rerun());
-    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.3',buildId:'2026-08-29.ltd-v1-5-personal-overlay-isolation.1',cache:'taxmate-v2-ltd-v1-5-personal-overlay-isolation-1',hosting},null,2)+'\n');
+    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.4',buildId:'2026-08-29.founder-brand-identity.1',cache:'taxmate-v2-founder-brand-identity-1',hosting},null,2)+'\n');
     write(path.join(payload,'evidence','SOURCE_BLOB_VERIFICATION.json'),JSON.stringify({status:'PASS',trackedBlobs:sourceVerification.entries,mismatchCount:0,commit,tree},null,2)+'\n');
     write(path.join(payload,'evidence','PATCH_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(patchVerification,null,2)+'\n');
+    write(path.join(payload,'evidence','PARENT_TREE_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(parentPatchVerification,null,2)+'\n');
+    write(path.join(payload,'evidence','CLEAN_WORKTREE_PROOF.txt'),`Candidate tracked worktree clean before packaging: YES\nStaged diff empty: YES\nUnstaged tracked diff empty: YES\nOnly generated evidence folders and the outside-worktree audit ZIP are permitted during packaging.\nBranch: ${branch}\nCommit: ${commit}\nTree: ${tree}\n`);
     write(path.join(payload,'review','DECISIVE_CORRECTION_EVIDENCE.md'),'# Decisive personal-overlay-isolation and renderer evidence\n\n## Personal overlay isolation\n\n- `source/src/app/app.js` closes every personal `.sb.open`, removes `body.sheet-open`, clears lightbox/toast/onboarding focus state and cancels a pending proactive PWA suggestion before activating Ltd. Personal `openSheet` calls fail closed while `body.ltd-active` is present.\n- `source/index.html` independently hides every personal sheet, lightbox, toast and onboarding overlay with zero pointer events while Ltd is active.\n- `evidence/ltd-actual-app-evidence/ltd-actual-app-browser-result.json` records computed style, rendered geometry and pointer interception for every personal surface across the journey.\n- The browser opens the real legacy Edit business sheet and enters Existing Ltd without pre-closing it. `actual-app-personal-overlay-isolation.png` proves the immediately operable Ltd-only surface.\n- Repaint screenshots `actual-app-same-route-canonical-repaint.png` and `actual-app-cloud-style-record-repaint.png` contain only Ltd UI.\n\n## Draft-only suppression\n\n- `source/src/ui/ltd/workbench-renderer.js` arms a one-shot counter only around `onDraftChanged`, consumes it only in the corresponding synchronous subscription callback, and clears any unused token for the HTTP preview facade.\n- `source/tests/unit/founder-ui-fixes.test.js` forbids the former unconditional same-renderKey return and proves the draft and canonical event paths are distinct.\n\n## Real blur-to-click\n\n- The actual-app result records ordered `blur` then `click` events and exactly one provider call for Companies House found, not-found and unavailable.\n- The test uses the rendered company-number input and real Check Companies House button; it does not call the facade directly.\n\n## Same-route canonical repaint\n\n- The actual-app result `canonicalRepaintEvidence` records an Overview identity replacement and a cloud-peer Money record insertion through `TaxMateLtdProductionBridge.replaceState`.\n- Both preserve the route and reach the DOM after `taxmate:canonical-state-updated -> driver.reload -> facade.emit`, with `manualPaint=false`.\n\n## Existing decisive evidence\n\n- Migration no-op and sync churn remain in `evidence/ltd-final-correction-evidence/migration-noop-and-scenario-result.json`.\n- Companies House visual proof remains in the five `actual-app-step1-*` images.\n- `evidence/paid-sync-browser-evidence/paid-sync-browser-result.json` proves the PWA offline/reopen/reconnect/ACK lifecycle.\n');
+    const brandManifest=fs.readFileSync(path.join(root,'assets','brand','derived','BRAND_ASSET_MANIFEST.json'));
+    write(path.join(payload,'evidence','BRAND_SOURCE_AND_DERIVED_SHA256.json'),brandManifest);
+    write(path.join(payload,'review','BRAND_VISUAL_EVIDENCE.md'),'# Founder-approved brand identity visual evidence\n\nAll paths below are inside `evidence/ltd-actual-app-evidence/`. The screenshots are rendered by the actual production-shaped TaxMate app, not a separate mock.\n\n- `brand-settings-mobile-light.png`: header Brand Logo, mobile light.\n- `brand-settings-mobile-dark.png`: header Brand Logo, mobile dark.\n- `brand-home-desktop-light.png`: Home header, desktop light; no App Icon in hero.\n- `brand-home-desktop-dark.png`: Home header, desktop dark; no App Icon in hero.\n- `brand-onboarding-light.png`: fresh onboarding/login Brand Logo, light.\n- `brand-onboarding-dark.png`: fresh onboarding/login Brand Logo, dark.\n- `brand-og-whatsapp-preview-1200x630.png`: browser-rendered Open Graph/WhatsApp image at its native 1200x630 size.\n- `brand-favicon-pwa-visual-sheet.png`: 16/32/48 favicon plus 192/512/maskable identity outputs rendered in browser.\n\nThe browser result JSON records active logo source, alt text, viewport, theme, hero icon count, automatic `prefers-color-scheme` switching and zero external or production Sentry requests.\n');
     write(path.join(payload,'review','REMAINING_RELEASE_GATES.md'),'# Current release gates\n\n- Pro annual pricing decision: RESOLVED — £99.99/year (9999 minor units).\n- Production billing alignment: STILL OPEN.\n- Founder acceptance: STILL OPEN.\n- Live Companies House credential smoke: STILL OPEN.\n- Release drift/migration/rollback preflight: STILL OPEN.\n- Explicit production release authority: STILL OPEN.\n\nNo production release action is authorised by this package.\n');
     write(path.join(payload,'review','STRIPE_EVIDENCE_BOUNDARY.md'),'# Stripe evidence boundary\n\nThe current Founder contract is launch £9.99/month, standard £11.99/month and £99.99/year (9999 minor units). Local deterministic contract, entitlement, hosted-receipt and billing-delta tests use those values. No Stripe TEST or LIVE network operation was performed during this correction: no Price, customer, subscription or Checkout Session was created or changed. Production checkout remains disabled/fail-closed until separately authorised production billing alignment. Historical £7.99/£59.99 reports are retained only as explicitly superseded evidence and are not current contract truth.\n');
     write(path.join(payload,'review','NO_PRODUCTION_IMPACT.md'),'# No-production-impact proof\n\nProduction TaxMate 2.0.6 modified = NO\n\nProduction Firebase/data mutation = NO\n\nPush = NO\n\nPR = NO\n\nMerge = NO\n\nDeploy = NO\n\nNative/Mobile PR #2 = NO\n\nSEO = NO\n\nP10 = NOT AUTHORISED\n\nBillable operation = NO\n\nActual incremental cost = GBP 0\n');
@@ -258,7 +288,7 @@ async function main(){
     const archiveFiles=Object.values(reopened.files).filter(item=>!item.dir),failures=[];for(const [relative,item] of expected){const file=reopened.file(relative);if(!file){failures.push(`${relative}: missing`);continue;}const data=await file.async('nodebuffer'),row=item;if(data.length!==row.bytes||sha256(data)!==row.hash)failures.push(`${relative}: digest`);}
     const unexpected=archiveFiles.map(item=>item.name).filter(name=>name!=='MANIFEST_SHA256.txt'&&!expected.has(name));failures.push(...unexpected.map(name=>`${name}: unexpected`));
     if(failures.length)throw new Error(`Manifest verification failed:\n${failures.join('\n')}`);
-    process.stdout.write(JSON.stringify({status:'PASS',zip:output,sha256:sha256(archive),bytes:archive.length,fileCount:archiveFiles.length,manifestVerified:`${expected.size}/${expected.size}`,sourceBlobs:`${sourceVerification.entries}/${sourceVerification.entries}`,patchTree:patchVerification.reconstructedTree,commit,tree,branch},null,2)+'\n');
+    process.stdout.write(JSON.stringify({status:'PASS',zip:output,sha256:sha256(archive),bytes:archive.length,fileCount:archiveFiles.length,manifestVerified:`${expected.size}/${expected.size}`,sourceBlobs:`${sourceVerification.entries}/${sourceVerification.entries}`,candidatePatchTree:patchVerification.reconstructedTree,parentPatchTree:parentPatchVerification.reconstructedTree,hosting,commit,tree,parent,parentTree,branch},null,2)+'\n');
   }finally{safeRemove(temp,os.tmpdir());}
 }
 main().catch(error=>{console.error(error.stack||error);process.exitCode=1;});

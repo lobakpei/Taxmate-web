@@ -1,0 +1,158 @@
+{
+  "status": "PASS",
+  "generator": "scripts/generate-brand-assets.js",
+  "source": {
+    "dark_brandlogo.svg": {
+      "bytes": 108876,
+      "sha256": "55A5431D3196F94B9F92C326F87A1798089910FBAFD44E06DDEB3DACF47217A1"
+    },
+    "light_brandlogo.svg": {
+      "bytes": 109218,
+      "sha256": "7B8E9469058A4CBFD345387B55A0282DBFF43426EEF8AB76766FE4608C2B113E"
+    },
+    "dark_icon.svg": {
+      "bytes": 14046,
+      "sha256": "12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8"
+    },
+    "light_icon.svg": {
+      "bytes": 16968,
+      "sha256": "6CA5D181A5BB18C257642700C2AA2AEB5875A87B0D3BFD0A06A4E11E49905638"
+    }
+  },
+  "transparentLogoComparison": {
+    "light": {
+      "width": 1024,
+      "height": 316,
+      "background": "#fcfcfc",
+      "comparisonTolerance": {
+        "foregroundMaskMismatchRatio": 0.005,
+        "meanChannelDelta": 1
+      },
+      "exactMismatchPixels": 7088,
+      "exactMismatchRatio": 0.021904667721518986,
+      "maxChannelDelta": 132,
+      "meanChannelDelta": 0.6092529296875,
+      "originalForegroundPixels": 78604,
+      "compositeForegroundPixels": 79759,
+      "foregroundMaskMismatch": 1155,
+      "foregroundMaskMismatchRatio": 0.0035693977452531645,
+      "status": "PASS"
+    },
+    "dark": {
+      "width": 1024,
+      "height": 334,
+      "background": "#0b121a",
+      "comparisonTolerance": {
+        "foregroundMaskMismatchRatio": 0.005,
+        "meanChannelDelta": 1
+      },
+      "exactMismatchPixels": 6780,
+      "exactMismatchRatio": 0.01982363398203593,
+      "maxChannelDelta": 121,
+      "meanChannelDelta": 0.6448441008607785,
+      "originalForegroundPixels": 79752,
+      "compositeForegroundPixels": 79659,
+      "foregroundMaskMismatch": 93,
+      "foregroundMaskMismatchRatio": 0.00027191710329341315,
+      "status": "PASS"
+    }
+  },
+  "darkFaceSubpaths": [
+    10,
+    11,
+    13
+  ],
+  "maskableValidation": {
+    "width": 512,
+    "height": 512,
+    "transparentPixels": 0,
+    "opaquePixels": 262144,
+    "foregroundPixels": 27312,
+    "foregroundBounds": {
+      "left": 145,
+      "top": 159,
+      "right": 323,
+      "bottom": 363
+    },
+    "foregroundBoundsRatio": {
+      "left": 0.283203125,
+      "top": 0.310546875,
+      "right": 0.6328125,
+      "bottom": 0.7109375
+    }
+  },
+  "derived": {
+    "taxmate-brand-logo-light.svg": {
+      "bytes": 79018,
+      "sha256": "20E184C5C7076DD812D462407186D37EBD79F15310331909CEB933D7241D58A1"
+    },
+    "taxmate-brand-logo-dark.svg": {
+      "bytes": 82660,
+      "sha256": "FB6B860FD6CCC25D96688A15E280DC957EE26DFF6F1AFE415E01C007DFD04369"
+    },
+    "taxmate-icon-light.svg": {
+      "bytes": 16968,
+      "sha256": "6CA5D181A5BB18C257642700C2AA2AEB5875A87B0D3BFD0A06A4E11E49905638"
+    },
+    "taxmate-icon-dark.svg": {
+      "bytes": 14046,
+      "sha256": "12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8"
+    },
+    "taxmate-share-20260829.svg": {
+      "bytes": 128949,
+      "sha256": "478DA9FC1B7062655D63D0E1AAE0CCDA9ABDD967740767DECB97F123FCA20D9C"
+    },
+    "favicon-16x16.png": {
+      "bytes": 260,
+      "sha256": "FCC59016705C8E4D55C1A9615464B9AA88EBC217534116BA0A5F365CD999946F",
+      "width": 16,
+      "height": 16
+    },
+    "favicon-32x32.png": {
+      "bytes": 476,
+      "sha256": "E0E90AA96C6403B232D4EC7CB1897D5400FF54F1E9721A70B229555D74CF42D8",
+      "width": 32,
+      "height": 32
+    },
+    "favicon-48x48.png": {
+      "bytes": 676,
+      "sha256": "628B41A87560B966D7EA7CE8411C28615729705252D993762F8CB7BB090FE391",
+      "width": 48,
+      "height": 48
+    },
+    "favicon.ico": {
+      "bytes": 1466,
+      "sha256": "152FBBB582EADC2CBD1D864C09BDAA92CED7E86CD4A85AF98C6AE254504012E2"
+    },
+    "apple-touch-icon.png": {
+      "bytes": 2613,
+      "sha256": "B5C226ECE816AFAED0A5330D0C3DC9248AB3F6D5EE90F140477CD20D524C2B45",
+      "width": 180,
+      "height": 180
+    },
+    "icon-192.png": {
+      "bytes": 2794,
+      "sha256": "D780DA4DE5C0458A64842276EC606F73C03397AE441137B1C1920A3E9027B1F3",
+      "width": 192,
+      "height": 192
+    },
+    "icon-512.png": {
+      "bytes": 7863,
+      "sha256": "84C6AB80868C2D0376DF68C1F34C133C1C56183968C8C3F05F200578910A2825",
+      "width": 512,
+      "height": 512
+    },
+    "icon-512-maskable.png": {
+      "bytes": 7863,
+      "sha256": "84C6AB80868C2D0376DF68C1F34C133C1C56183968C8C3F05F200578910A2825",
+      "width": 512,
+      "height": 512
+    },
+    "taxmate-share-20260829.png": {
+      "bytes": 52709,
+      "sha256": "40F29B1D579CC27F836B7A918DE093CA30C86E690885AA73AFD954DF5ED8D457",
+      "width": 1200,
+      "height": 630
+    }
+  }
+}
