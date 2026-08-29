@@ -117,9 +117,9 @@ Date: 2026-08-29
 - Parent tree: \`${identity.parentTree}\`
 - Original base: \`${identity.originalBase}\`
 - Changed paths from frozen parent: ${changedCount}
-- Version: \`2.1.4\`
-- Build: \`2026-08-29.founder-brand-identity.1\`
-- Cache: \`taxmate-v2-founder-brand-identity-1\`
+- Version: \`2.1.5\`
+- Build: \`2026-08-29.founder-brand-sync-runtime-integrity.1\`
+- Cache: \`taxmate-v2-founder-brand-sync-runtime-integrity-1\`
 - Hosting artifact: ${hosting.files} files, ${hosting.bytes} bytes, aggregate SHA-256 \`${hosting.aggregateSha256}\`
 
 ## Acceptance
@@ -269,7 +269,7 @@ async function main(){
     const identity={branch,commit,tree,parent,parentTree,originalBase};
     write(path.join(payload,'review','CANDIDATE_CLOSEOUT.md'),closeout(identity,changed.split(/\r?\n/).filter(Boolean).length,hosting));
     write(path.join(payload,'review','RUN_AND_REVIEW.md'),rerun());
-    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.4',buildId:'2026-08-29.founder-brand-identity.1',cache:'taxmate-v2-founder-brand-identity-1',hosting},null,2)+'\n');
+    write(path.join(payload,'review','IDENTITY.json'),JSON.stringify({...identity,version:'2.1.5',buildId:'2026-08-29.founder-brand-sync-runtime-integrity.1',cache:'taxmate-v2-founder-brand-sync-runtime-integrity-1',hosting},null,2)+'\n');
     write(path.join(payload,'evidence','SOURCE_BLOB_VERIFICATION.json'),JSON.stringify({status:'PASS',trackedBlobs:sourceVerification.entries,mismatchCount:0,commit,tree},null,2)+'\n');
     write(path.join(payload,'evidence','PATCH_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(patchVerification,null,2)+'\n');
     write(path.join(payload,'evidence','PARENT_TREE_RECONSTRUCTION_VERIFICATION.json'),JSON.stringify(parentPatchVerification,null,2)+'\n');

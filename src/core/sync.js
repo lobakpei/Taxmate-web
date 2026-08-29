@@ -2,6 +2,7 @@
   const api=factory(); if(typeof module==='object'&&module.exports) module.exports=api; root.TaxMateSync=api;
 })(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
+  const API_VERSION=2;
   const clone=v=>JSON.parse(JSON.stringify(v));
   const plain=v=>v!==null&&typeof v==='object'&&!Array.isArray(v);
   function compare(a,b){
@@ -206,5 +207,5 @@
     if(pending||source.reconciliationState==='pending'||source.reconciliationState==='retrying'||source.ackState==='waiting') return {state:'waiting',pending,message:pending?'Syncing — '+pending+' change'+(pending===1?'':'s')+' waiting':'Finishing sync…'};
     return {state:'synced',pending:0,message:'Synced'};
   }
-  return {compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
+  return {API_VERSION,compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
 });
