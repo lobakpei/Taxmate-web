@@ -9,3 +9,5 @@ test-results/
 functions/.env.local
 functions/.env.taxmate-staging
 functions/.secret.local
+.sync-runtime-browser-evidence/
+.paid-sync-browser-evidence/
