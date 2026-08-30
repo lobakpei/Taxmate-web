@@ -60,19 +60,26 @@
     return ready;
   }
 
-  async function openRoute(kind){
+  async function openRoute(kind,options={}){
     const f=await initialise(),b=bridge();
     driver.reload();driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());
     root.TaxMateLtdWorkbenchRenderer.setLocale(b.locale());root.TaxMateLtdWorkbenchRenderer.setTheme(b.theme());
     b.enterLtd();
     if(kind==='add')f.route('business.category-choice');
-    else await f.onOpenExistingCompany({});
+    else if(kind==='new-ltd'){
+      f.route('business.category-choice');
+      const chosen=await f.onAddBusinessCategoryChosen({category:'limited_company'});
+      if(chosen&&chosen.nextRoute==='ltd.onboarding.step1'&&['provided','not_available'].includes(options.companyNumberStatus)){
+        await f.onDraftChanged({screenId:'ltd.onboarding.step1',field:{id:'companyNumberStatus',type:'select-one',value:options.companyNumberStatus}});
+      }
+    }else await f.onOpenExistingCompany({});
     return f.getSnapshot();
   }
 
   root.TaxMateLtdProductionAdapter=Object.freeze({
     initialise,
     openAddBusiness:()=>openRoute('add'),
+    openNewLimitedCompany:options=>openRoute('new-ltd',options),
     openExistingCompany:()=>openRoute('existing'),
     getSnapshot:()=>clone(snapshot),
     refreshFromCanonicalState:()=>{if(driver){driver.reload();driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}return clone(snapshot);},

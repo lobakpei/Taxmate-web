@@ -26,7 +26,7 @@
 [data-theme="dark"]{
   --bg:#0F1620; --card:#1A2533; --ink:#EDF2F7; --muted:#8493A5; --line:#293647;
   --brand:#15D982; --brand-deep:#3DE89B; --brand-soft:rgba(21,217,130,.16);
-  --coral:#FF6B6F; --coral-soft:rgba(229,72,77,.18);
+  --coral:#FF6B73; --coral-soft:rgba(229,72,77,.18);
   --blue:#6EA0FF; --blue-soft:rgba(52,120,246,.18);
   --amber:#E0A93A; --amber-soft:rgba(180,125,18,.20);
   --e-card:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.28);
@@ -277,11 +277,11 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-metric .st{font-size:11.5px; color:var(--muted); margin-top:2px}
 .tm-metric .st.attn{color:var(--amber); font-weight:700}
 .tm-recs{display:flex; flex-direction:column; gap:9px; margin-top:12px}
-.tm-rec{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; background:var(--card);
+.tm-rec{display:grid; grid-template-columns:1fr auto; gap:10px; align-items:center; background:var(--card); color:var(--ink);
   border:1px solid var(--line); border-radius:var(--r-s); padding:13px 14px; width:100%; text-align:start; cursor:pointer; font-family:inherit}
 .tm-rec .rl{font-weight:700; font-size:14px; color:var(--ink)}
 .tm-rec .rs{font-size:12px; color:var(--muted); margin-top:2px}
-.tm-rec .rv{font-weight:800; font-size:14px; text-align:end}
+.tm-rec .rv{font-weight:800; font-size:14px; text-align:end; color:var(--ink)}
 .tm-rec .rv.neg{color:var(--coral)}
 .tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
 .tm-pill.warn{background:var(--amber-soft); color:var(--amber)}

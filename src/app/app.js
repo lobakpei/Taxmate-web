@@ -358,10 +358,16 @@ en:{
  'ob.codeLogin':'Got a partner sync code? — please sign in first.',
  'ob.howStart':'How would you like to get started?',
  'ob.together':'Let\'s do this together',
- 'ob.togetherS':'I\'ll walk you through it — then you\'ll know what you owe.',
+ 'ob.togetherS':'Sole trader or partnership',
+ 'ob.ltdEntry':'Set up a Limited Company','ob.ltdEntryS':'New or existing company',
+ 'ob.partnerEntry':'Enter a Partner Sync code','ob.partnerEntryS':'Connect an existing business',
  'ob.dash':'Go straight to dashboard',
  'ob.dashS':'I know what I\'m doing.',
  'ob.codeEntry':'Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
+ 'ob.ltdChoiceTitle':'Which best describes your company?','ob.ltdExisting':'I already have a company','ob.ltdExistingS':'Add its Companies House details','ob.ltdForming':'I’m setting one up','ob.ltdFormingS':'Start before registration is complete',
+ 'ob.registrationTitle':'Where are you up to?','ob.notRegistered':'Not registered yet','ob.notRegisteredS':'Save a working company name and continue later','ob.registered':'I have registered it','ob.registeredS':'Check the company using its Companies House number',
+ 'ob.partnerTitle':'Enter your Partner Sync code','ob.partnerBody':'Use the 8-character code shared by the business owner.','ob.partnerConfirmTitle':'Connect this business?','ob.partnerConfirmBody':'TaxMate will use this code to connect the partnership and sync its business records. Your personal records stay private.','ob.confirmConnect':'Confirm & connect','ob.connecting':'Connecting…','ob.connected':'Business connected',
+ 'ob.proRequired':'Pro required','ob.proRequiredBody':'Limited companies and Partner Sync are included in Pro.','ob.havePromo':'Have a promotion code?','ob.upgrade':'Upgrade to Pro','ob.entitlementPending':'Checking your Pro access…','ob.promoNoPro':'The code was accepted, but Pro access is not active yet. Please try again shortly.','ob.back':'Back',
  'ob.run':'How do you run it?',
  'ob.partner':'With a partner',
  'ob.shareLabel':'Your share of the profit',
@@ -843,10 +849,16 @@ zh:{
  'ob.codeLogin':'有 partner sync code？請先登入。',
  'ob.howStart':'想點樣開始？',
  'ob.together':'一齊嚟啦',
- 'ob.togetherS':'我會一步步陪你行——跟住你就知要交幾多稅。',
+ 'ob.togetherS':'自僱人士或合夥業務',
+ 'ob.ltdEntry':'設定有限公司','ob.ltdEntryS':'新公司或現有公司',
+ 'ob.partnerEntry':'輸入 Partner Sync 代碼','ob.partnerEntryS':'連接現有業務',
  'ob.dash':'直接去主頁',
  'ob.dashS':'我識㗎喇。',
  'ob.codeEntry':'有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
+ 'ob.ltdChoiceTitle':'邊項最符合你間公司？','ob.ltdExisting':'我已經有一間公司','ob.ltdExistingS':'加入 Companies House 資料','ob.ltdForming':'我正在成立公司','ob.ltdFormingS':'註冊完成前先開始',
+ 'ob.registrationTitle':'而家進行到邊一步？','ob.notRegistered':'尚未註冊','ob.notRegisteredS':'先保存暫用公司名稱，之後繼續','ob.registered':'我已經完成註冊','ob.registeredS':'用 Companies House 編號核對公司',
+ 'ob.partnerTitle':'輸入 Partner Sync 代碼','ob.partnerBody':'輸入業務擁有人提供嘅8位代碼。','ob.partnerConfirmTitle':'連接呢個業務？','ob.partnerConfirmBody':'TaxMate會用呢個代碼連接合夥業務並同步業務記錄。你嘅私人記錄會保持私隱。','ob.confirmConnect':'確認並連接','ob.connecting':'連接中…','ob.connected':'業務已連接',
+ 'ob.proRequired':'需要 Pro','ob.proRequiredBody':'有限公司及 Partner Sync 已包括喺 Pro。','ob.havePromo':'有推廣代碼？','ob.upgrade':'升級至 Pro','ob.entitlementPending':'正在核對 Pro 權限…','ob.promoNoPro':'代碼已接受，但 Pro 權限尚未生效。請稍後再試。','ob.back':'返回',
  'ob.run':'你點樣經營？',
  'ob.partner':'同拍檔一齊',
  'ob.shareLabel':'你佔利潤幾多',
@@ -1328,10 +1340,16 @@ pl:{
  'ob.codeLogin':'Masz partner sync code? Najpierw się zaloguj.',
  'ob.howStart':'Jak chcesz zacząć?',
  'ob.together':'Zróbmy to razem',
- 'ob.togetherS':'Poprowadzę Cię krok po kroku — zobaczysz, ile podatku odłożyć.',
+ 'ob.togetherS':'Samozatrudnienie lub spółka osobowa',
+ 'ob.ltdEntry':'Skonfiguruj spółkę z o.o.','ob.ltdEntryS':'Nowa lub istniejąca spółka',
+ 'ob.partnerEntry':'Wpisz kod Partner Sync','ob.partnerEntryS':'Połącz istniejącą firmę',
  'ob.dash':'Przejdź od razu do pulpitu',
  'ob.dashS':'Wiem, co robię.',
  'ob.codeEntry':'Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
+ 'ob.ltdChoiceTitle':'Która opcja opisuje Twoją spółkę?','ob.ltdExisting':'Mam już spółkę','ob.ltdExistingS':'Dodaj dane z Companies House','ob.ltdForming':'Zakładam spółkę','ob.ltdFormingS':'Zacznij przed zakończeniem rejestracji',
+ 'ob.registrationTitle':'Na jakim jesteś etapie?','ob.notRegistered':'Jeszcze niezarejestrowana','ob.notRegisteredS':'Zapisz roboczą nazwę i wróć później','ob.registered':'Spółka jest zarejestrowana','ob.registeredS':'Sprawdź spółkę po numerze Companies House',
+ 'ob.partnerTitle':'Wpisz kod Partner Sync','ob.partnerBody':'Użyj 8-znakowego kodu od właściciela firmy.','ob.partnerConfirmTitle':'Połączyć tę firmę?','ob.partnerConfirmBody':'TaxMate użyje kodu do połączenia spółki osobowej i synchronizacji danych firmy. Twoje dane osobiste pozostaną prywatne.','ob.confirmConnect':'Potwierdź i połącz','ob.connecting':'Łączenie…','ob.connected':'Firma połączona',
+ 'ob.proRequired':'Wymagany Pro','ob.proRequiredBody':'Spółki z o.o. i Partner Sync są dostępne w Pro.','ob.havePromo':'Masz kod promocyjny?','ob.upgrade':'Przejdź na Pro','ob.entitlementPending':'Sprawdzanie dostępu Pro…','ob.promoNoPro':'Kod został przyjęty, ale dostęp Pro nie jest jeszcze aktywny. Spróbuj ponownie za chwilę.','ob.back':'Wstecz',
  'ob.run':'Jak prowadzisz działalność?',
  'ob.partner':'Ze wspólnikiem',
  'ob.shareLabel':'Twój udział w zysku',
@@ -1813,10 +1831,16 @@ ro:{
  'ob.codeLogin':'Ai un partner sync code? Conectează-te mai întâi.',
  'ob.howStart':'Cum vrei să începi?',
  'ob.together':'Hai să o facem împreună',
- 'ob.togetherS':'Te ghidez pas cu pas — apoi știi exact cât ai de plătit.',
+ 'ob.togetherS':'Activitate independentă sau parteneriat',
+ 'ob.ltdEntry':'Configurează o societate limitată','ob.ltdEntryS':'Societate nouă sau existentă',
+ 'ob.partnerEntry':'Introdu un cod Partner Sync','ob.partnerEntryS':'Conectează o afacere existentă',
  'ob.dash':'Direct la panou',
  'ob.dashS':'Știu ce fac.',
  'ob.codeEntry':'Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
+ 'ob.ltdChoiceTitle':'Ce descrie cel mai bine societatea?','ob.ltdExisting':'Am deja o societate','ob.ltdExistingS':'Adaugă datele Companies House','ob.ltdForming':'Înființez una','ob.ltdFormingS':'Începe înainte de finalizarea înregistrării',
+ 'ob.registrationTitle':'În ce etapă ești?','ob.notRegistered':'Încă neînregistrată','ob.notRegisteredS':'Salvează o denumire de lucru și continuă mai târziu','ob.registered':'Am înregistrat-o','ob.registeredS':'Verifică societatea cu numărul Companies House',
+ 'ob.partnerTitle':'Introdu codul Partner Sync','ob.partnerBody':'Folosește codul de 8 caractere oferit de proprietarul afacerii.','ob.partnerConfirmTitle':'Conectezi această afacere?','ob.partnerConfirmBody':'TaxMate va folosi codul pentru a conecta parteneriatul și a sincroniza datele afacerii. Datele personale rămân private.','ob.confirmConnect':'Confirmă și conectează','ob.connecting':'Se conectează…','ob.connected':'Afacere conectată',
+ 'ob.proRequired':'Este necesar Pro','ob.proRequiredBody':'Societățile limitate și Partner Sync sunt incluse în Pro.','ob.havePromo':'Ai un cod promoțional?','ob.upgrade':'Treci la Pro','ob.entitlementPending':'Se verifică accesul Pro…','ob.promoNoPro':'Codul a fost acceptat, dar accesul Pro nu este încă activ. Încearcă din nou în curând.','ob.back':'Înapoi',
  'ob.run':'Cum lucrezi?',
  'ob.partner':'Cu un partener',
  'ob.shareLabel':'Partea ta din profit',
@@ -2298,10 +2322,16 @@ es:{
  'ob.codeLogin':'¿Tienes un partner sync code? Inicia sesión primero.',
  'ob.howStart':'¿Cómo quieres empezar?',
  'ob.together':'Hagámoslo juntos',
- 'ob.togetherS':'Te guío paso a paso — y sabrás exactamente cuánto debes.',
+ 'ob.togetherS':'Autónomo o sociedad colectiva',
+ 'ob.ltdEntry':'Configurar una sociedad limitada','ob.ltdEntryS':'Sociedad nueva o existente',
+ 'ob.partnerEntry':'Introducir un código Partner Sync','ob.partnerEntryS':'Conectar una empresa existente',
  'ob.dash':'Ir directo al panel',
  'ob.dashS':'Sé lo que hago.',
  'ob.codeEntry':'¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
+ 'ob.ltdChoiceTitle':'¿Qué describe mejor tu sociedad?','ob.ltdExisting':'Ya tengo una sociedad','ob.ltdExistingS':'Añadir sus datos de Companies House','ob.ltdForming':'Estoy creando una','ob.ltdFormingS':'Empezar antes de completar el registro',
+ 'ob.registrationTitle':'¿En qué punto estás?','ob.notRegistered':'Aún no está registrada','ob.notRegisteredS':'Guarda un nombre provisional y continúa después','ob.registered':'Ya la he registrado','ob.registeredS':'Comprobar la sociedad con su número de Companies House',
+ 'ob.partnerTitle':'Introduce el código Partner Sync','ob.partnerBody':'Usa el código de 8 caracteres facilitado por el propietario.','ob.partnerConfirmTitle':'¿Conectar esta empresa?','ob.partnerConfirmBody':'TaxMate usará el código para conectar la sociedad y sincronizar sus datos. Tus registros personales seguirán siendo privados.','ob.confirmConnect':'Confirmar y conectar','ob.connecting':'Conectando…','ob.connected':'Empresa conectada',
+ 'ob.proRequired':'Se necesita Pro','ob.proRequiredBody':'Las sociedades limitadas y Partner Sync están incluidos en Pro.','ob.havePromo':'¿Tienes un código promocional?','ob.upgrade':'Mejorar a Pro','ob.entitlementPending':'Comprobando tu acceso Pro…','ob.promoNoPro':'El código se aceptó, pero el acceso Pro aún no está activo. Vuelve a intentarlo en breve.','ob.back':'Atrás',
  'ob.run':'¿Cómo trabajas?',
  'ob.partner':'Con un socio',
  'ob.shareLabel':'Tu parte del beneficio',
@@ -2781,10 +2811,16 @@ ur:{
  'ob.codeLogin':'partner sync code ہے؟ پہلے سائن ان کریں۔',
  'ob.howStart':'آپ کیسے شروع کرنا چاہیں گے؟',
  'ob.together':'آئیں مل کر کریں',
- 'ob.togetherS':'میں قدم بہ قدم ساتھ چلوں گا — پھر آپ کو معلوم ہوگا کہ کتنا ٹیکس بنتا ہے۔',
+ 'ob.togetherS':'سیلف ایمپلائڈ یا پارٹنرشپ',
+ 'ob.ltdEntry':'لمیٹڈ کمپنی سیٹ اپ کریں','ob.ltdEntryS':'نئی یا موجودہ کمپنی',
+ 'ob.partnerEntry':'Partner Sync کوڈ درج کریں','ob.partnerEntryS':'موجودہ کاروبار جوڑیں',
  'ob.dash':'سیدھا ڈیش بورڈ پر جائیں',
  'ob.dashS':'مجھے معلوم ہے۔',
  'ob.codeEntry':'partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
+ 'ob.ltdChoiceTitle':'آپ کی کمپنی کی بہتر وضاحت کون سی ہے؟','ob.ltdExisting':'میری کمپنی پہلے سے موجود ہے','ob.ltdExistingS':'Companies House کی تفصیلات شامل کریں','ob.ltdForming':'میں کمپنی بنا رہا ہوں','ob.ltdFormingS':'رجسٹریشن مکمل ہونے سے پہلے شروع کریں',
+ 'ob.registrationTitle':'آپ کس مرحلے پر ہیں؟','ob.notRegistered':'ابھی رجسٹرڈ نہیں','ob.notRegisteredS':'عارضی نام محفوظ کریں اور بعد میں جاری رکھیں','ob.registered':'میں نے اسے رجسٹر کر لیا ہے','ob.registeredS':'Companies House نمبر سے کمپنی چیک کریں',
+ 'ob.partnerTitle':'Partner Sync کوڈ درج کریں','ob.partnerBody':'کاروبار کے مالک کا دیا ہوا 8 حروف کا کوڈ استعمال کریں۔','ob.partnerConfirmTitle':'یہ کاروبار جوڑیں؟','ob.partnerConfirmBody':'TaxMate اس کوڈ سے پارٹنرشپ جوڑے گا اور کاروباری ریکارڈ sync کرے گا۔ آپ کے ذاتی ریکارڈ نجی رہیں گے۔','ob.confirmConnect':'تصدیق کریں اور جوڑیں','ob.connecting':'جوڑا جا رہا ہے…','ob.connected':'کاروبار جڑ گیا',
+ 'ob.proRequired':'Pro درکار ہے','ob.proRequiredBody':'لمیٹڈ کمپنیاں اور Partner Sync، Pro میں شامل ہیں۔','ob.havePromo':'پروموشن کوڈ ہے؟','ob.upgrade':'Pro میں اپ گریڈ کریں','ob.entitlementPending':'Pro رسائی چیک ہو رہی ہے…','ob.promoNoPro':'کوڈ قبول ہو گیا، مگر Pro رسائی ابھی فعال نہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔','ob.back':'واپس',
  'ob.run':'آپ کام کیسے چلاتے ہیں؟',
  'ob.partner':'پارٹنر کے ساتھ',
  'ob.shareLabel':'منافع میں آپ کا حصہ',
@@ -3116,14 +3152,21 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
-const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'Launch price £9.99/month · Standard price £11.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£99.99 / year'}});
+const PRO_PRICE_CONTRACT = Object.freeze({currency:'GBP',monthly:Object.freeze({launchMinor:999,standardMinor:1199}),annual:Object.freeze({amountMinor:9999})});
+const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'£9.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£99.99/year'}});
 let BILLING_CADENCE='monthly';
 function tierPrice(tier){return TIER_PRICE[BILLING_CADENCE][tier];}
+function proPriceMarkup(cadence=BILLING_CADENCE){
+  if(cadence==='yearly')return `<span class="tm-pro-price yearly"><span class="current">£99.99/year</span></span>`;
+  return `<span class="tm-pro-price" aria-label="Standard price £11.99; launch price £9.99 per month."><span aria-hidden="true"><s>£11.99</s> <span class="current">£9.99/month</span></span><span class="launch" aria-hidden="true">Launch price</span><span class="tm-visually-hidden">Standard price £11.99; launch price £9.99 per month.</span></span>`;
+}
+function tierPriceMarkup(tier,cadence=BILLING_CADENCE){return tier==='pro'?proPriceMarkup(cadence):esc(TIER_PRICE[cadence][tier]);}
+function updatePlanPriceNode(node){node.innerHTML=tierPriceMarkup(node.dataset.planPrice,BILLING_CADENCE);}
 function setBillingCadence(cadence){
   if(!['monthly','yearly'].includes(cadence)||cadence===BILLING_CADENCE)return;
   BILLING_CADENCE=cadence;
   document.querySelectorAll('[data-billing-cadence]').forEach(button=>{const on=button.dataset.billingCadence===cadence;button.classList.toggle('on',on);button.setAttribute('aria-pressed',String(on));});
-  document.querySelectorAll('[data-plan-price]').forEach(node=>{node.textContent=tierPrice(node.dataset.planPrice);});
+  document.querySelectorAll('[data-plan-price]').forEach(updatePlanPriceNode);
   const note=document.querySelector('[data-billing-yearly]');if(note){note.textContent=cadence==='yearly'?t('billing.billedYearly'):'';note.style.visibility=cadence==='yearly'?'visible':'hidden';note.setAttribute('aria-hidden',String(cadence!=='yearly'));}
 }
 // Which tier each gated feature needs
@@ -3203,7 +3246,7 @@ function planBlock(tier){
       <div class="t" style="font-size:17px">${name}</div>
       ${badge}
     </div>
-    <div class="t" data-plan-price="${tier}" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${tierPrice(tier)}</div>
+    <div class="t" data-plan-price="${tier}" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${tierPriceMarkup(tier)}</div>
     <div class="s" style="margin-bottom:10px">${sub}</div>
     ${includes?`<div class="s" style="font-weight:700;margin-bottom:5px">${includes}</div>`:''}
     ${feats}
@@ -3293,6 +3336,15 @@ async function startBillingAction(name,data){
   }
 }
 function openBillingPortal(){ if(requireLoginForTier()) startBillingAction('createBillingPortal',{}); }
+function promotionFailureMessage(error){return error&&error.reason==='not-started'?t('promo.notStarted'):error&&error.reason==='expired'?t('promo.expired'):error&&error.reason==='redemption-limit-reached'?t('promo.full'):error&&(error.reason==='duplicate'||error.code==='ALREADY_EXISTS')?t('promo.duplicate'):error&&(error.reason==='invalid'||error.code==='NOT_FOUND'||error.code==='INVALID_ARGUMENT')?t('promo.invalid'):t('promo.service');}
+async function redeemPromotionThroughCanonicalBackend(code){
+  const normalized=String(code||'').trim().toUpperCase();
+  if(!TaxMateEntitlement.validatePromotionCode(normalized))throw Object.assign(new Error('promotion-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'});
+  const user=cloudUser();if(!user)throw Object.assign(new Error('promotion-sign-in-required'),{code:'UNAUTHENTICATED',reason:'sign-in'});
+  const result=await callSecureFunction('redeemPromotion',{code:normalized});
+  await loadEntitlementFromCloud(user.uid);
+  return result;
+}
 async function redeemPromotionCode(){
   const input=document.getElementById('promo-code'),error=document.getElementById('promo-error'),button=document.getElementById('promo-submit'),code=(input.value||'').trim().toUpperCase();
   const fail=message=>{error.textContent=message;error.classList.add('show');};
@@ -3300,8 +3352,8 @@ async function redeemPromotionCode(){
   if(!TaxMateEntitlement.validatePromotionCode(code)){fail(t('promo.invalid'));return;}
   if(!cloudUser()){fail(t('promo.signIn'));return;}
   button.disabled=true;
-  try{const result=await callSecureFunction('redeemPromotion',{code}),user=cloudUser();await loadEntitlementFromCloud(user.uid);closeSheet('promo');render();showNotice(t('promo.success'),result.message||t('promo.success'));}
-  catch(e){const message=e.reason==='not-started'?t('promo.notStarted'):e.reason==='expired'?t('promo.expired'):e.reason==='redemption-limit-reached'?t('promo.full'):e.reason==='duplicate'||e.code==='ALREADY_EXISTS'?t('promo.duplicate'):e.reason==='invalid'||e.code==='NOT_FOUND'?t('promo.invalid'):t('promo.service');fail(message);}
+  try{const result=await redeemPromotionThroughCanonicalBackend(code);closeSheet('promo');render();showNotice(t('promo.success'),result.message||t('promo.success'));}
+  catch(e){fail(e&&e.reason==='sign-in'?t('promo.signIn'):promotionFailureMessage(e));}
   finally{button.disabled=false;}
 }
 const PWA_KEYS=TaxMatePwaInstall.KEYS;
@@ -5394,27 +5446,38 @@ function openJoinPartnership(){
   if(lockGuard('partnerSync')||!requireLoginForTier())return;
   const input=document.getElementById('join-code'),msg=document.getElementById('join-msg');input.value='';msg.textContent='';msg.classList.remove('show');openSheet('partner');
 }
+let PARTNER_JOIN_IN_FLIGHT=null;
+function normalisePartnerCode(value){return String(value||'').trim().toUpperCase();}
+function partnerCodeValid(code){return code.length===6||code.length===8;}
+function partnerJoinErrorMessage(error){return (error&&error.reason==='invalid')||(error&&error.code==='INVALID_ARGUMENT')?t('sy.enterCode'):error&&(error.reason==='expired'||error.code==='NOT_FOUND')?t('sy.badCode'):error&&error.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet');}
+function joinPartnershipByCode(value){
+  const code=normalisePartnerCode(value);
+  if(!partnerCodeValid(code))return Promise.reject(Object.assign(new Error('partner-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'}));
+  if(!hasFeature('partnerSync'))return Promise.reject(Object.assign(new Error('partner-pro-required'),{code:'PERMISSION_DENIED',reason:'tier-required'}));
+  if(PARTNER_JOIN_IN_FLIGHT&&PARTNER_JOIN_IN_FLIGHT.code===code)return PARTNER_JOIN_IN_FLIGHT.promise;
+  if(PARTNER_JOIN_IN_FLIGHT)return Promise.reject(Object.assign(new Error('partner-join-in-progress'),{code:'ABORTED'}));
+  const promise=(async()=>{
+    const db=await ensureFB();if(!db)throw Object.assign(new Error('partner-sync-unavailable'),{code:'UNAVAILABLE'});
+    const user=await ensureAuth();if(!user)throw Object.assign(new Error('partner-auth-unavailable'),{code:'UNAUTHENTICATED'});
+    const joined=await callSecureFunction('joinPartnership',{code});
+    const existing=bizById(joined.bizId);
+    if(!existing)S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
+    else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
+    save();await subscribeSync(code,joined.bizId);return joined;
+  })().finally(()=>{if(PARTNER_JOIN_IN_FLIGHT&&PARTNER_JOIN_IN_FLIGHT.promise===promise)PARTNER_JOIN_IN_FLIGHT=null;});
+  PARTNER_JOIN_IN_FLIGHT={code,promise};return promise;
+}
 async function joinPartnership(){
   const input = document.getElementById('join-code');
   const msg = document.getElementById('join-msg');
-  const code = (input && input.value || '').trim().toUpperCase();
+  const code = normalisePartnerCode(input && input.value || '');
   // Code 由 6 位升級到 8 位；接受兩者（8=新，6=舊兼容）
   const fail=message=>{if(msg){msg.textContent=message;msg.classList.add('show');}};
-  if(code.length !== 6 && code.length !== 8){fail(t('sy.enterCode'));return;}
-  if(!hasFeature('partnerSync')){fail(t('sy.needPro'));return;}
-  const db = await ensureFB();
-  if(!db){fail(t(fbConfigured()?'sy.needNet':'sy.setup'));return;}
-  const u = await ensureAuth();
-  if(!u){fail(t('sy.needNet'));return;}
+  if(!partnerCodeValid(code)){fail(t('sy.enterCode'));return;}
   try{
-    const joined=await callSecureFunction('joinPartnership',{code});
-    const existing = bizById(joined.bizId);
-    if(!existing) S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
-    else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
-    save();
-    await subscribeSync(code, joined.bizId);
+    await joinPartnershipByCode(code);
     closeSheet('partner');render();toast(t('sy.synced'));
-  }catch(e){console.warn(e);fail(e&&e.code==='NOT_FOUND'?t('sy.badCode'):e&&e.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet'));}
+  }catch(e){console.warn(e);fail(partnerJoinErrorMessage(e));}
 }
 async function leaveSync(bizId){
   const b = bizById(bizId); if(!b || !b.syncCode) return;
@@ -5507,6 +5570,7 @@ function cloudUser(){
 function onboardingDoneFlag(){try{return localStorage.getItem('tmOnboardDone');}catch(e){return null;}}
 function applyHydratedAccountResult(result){
   if(!result||result.state!=='converged')return;
+  if(OB&&OB.pendingIntent){OB._signingInFlow=false;OB.loggedIn=true;obResumePendingIntentAfterHydration(result);render();return;}
   if(result.existingCloudAccount){
     const exitingOnboarding=!!OB;
     if(exitingOnboarding){OB._signingInFlow=false;try{obClose();}catch(e){}S.tab='home';}
@@ -6731,7 +6795,7 @@ function obStartMonthList(){
 function obDefaultState(loggedIn){
   return {
     screen:'login', loggedIn:!!loggedIn,
-    bizName:'', structure:'sole', share:50, partnerCode:'',
+    bizName:'', structure:'sole', share:50, partnerCode:'', connectCode:'', promoCode:'', pendingIntent:null,
     cats:[],                 // (no longer chosen in onboarding; kept for compat)
     monthsAll: obStartMonthList(),
     startIdx:0,
@@ -6773,7 +6837,7 @@ function obClose(){
   OB=null;
 }
 function obRender(){
-  const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
+  const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
@@ -6798,12 +6862,13 @@ function obShell(progHTML, bodyHTML, footHTML){
 
 /* LOGIN */
 function obScrLogin(){
+  const required=!!(OB&&OB._authReturnScreen);
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${t('ob.h1')}</h1>
     <p class="ob-lede">${t('ob.lede')}</p>
     <button class="ob-tile solid" data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
+    ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
   </div></div>${obLangSheet()}`;
@@ -6821,32 +6886,145 @@ function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Keep onboarding pending until cloud account detection has finished. A successful Google
   // popup alone does not mean this is a new user.
-  OB && (OB._signingInFlow = true);
+  const returnScreen=OB&&OB._authReturnScreen;OB && (OB._signingInFlow = true);
   if(typeof signIn==='function' && fbConfigured()){
     try{
-      await signIn('google');
+      const signedIn=await signIn('google');
+      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
       const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
+      if(OB&&OB.pendingIntent){applyHydratedAccountResult(result);return;}
       if(result.existingCloudAccount){applyHydratedAccountResult(result);return;}
       if(!OB)return;
-      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;renderSyncStatus();return;}
+      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
       OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;}return; }
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return; }
   } else {
     if(OB) OB.loggedIn = true;
   }
-  if(OB){ OB._signingInFlow = false; obGo('entry'); }
+  if(OB){ OB._signingInFlow = false; if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry'); }
 }
 function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
+function obCancelRequiredSignIn(){if(!OB)return;const screen=OB._authReturnScreen||'entry';OB._authReturnScreen=null;OB._signingInFlow=false;obGo(screen);}
 
 /* ENTRY */
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <h1>${t('ob.howStart')}</h1>
     <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obExplore()"><span><span class="ob-tt">${t('ob.dash')}</span><span class="ob-ts">${t('ob.dashS')}</span></span></button>
-    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeEntry')}</div>
+    <button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
+    <div class="ob-skiprow"><button class="ob-link muted" data-tm-click="obExplore()">${t('ob.dash')}</button></div>
   </div></div>`;
+}
+function obIntentCopy(value){return value==null?value:JSON.parse(JSON.stringify(value));}
+function obSetPendingIntent(source,details={}){
+  if(!OB)return null;
+  OB.pendingIntent=Object.assign({source,returnScreen:OB.screen,formState:{}},obIntentCopy(details));
+  return OB.pendingIntent;
+}
+function obScrLtdChoice(){
+  return obShell(obProgress(10,t('ob.ltdEntry'),"obGo('entry')"),`<h1>${t('ob.ltdChoiceTitle')}</h1>
+    <button class="ob-tile" data-tm-click="obChooseLtdPath('existing')"><span><span class="ob-tt">${t('ob.ltdExisting')}</span><span class="ob-ts">${t('ob.ltdExistingS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obChooseLtdPath('forming')"><span><span class="ob-tt">${t('ob.ltdForming')}</span><span class="ob-ts">${t('ob.ltdFormingS')}</span></span></button>`,'');
+}
+function obChooseLtdPath(choice){
+  if(choice==='existing'){
+    obSetPendingIntent('ltd',{ltdChoice:'existing',companyNumberStatus:'provided',returnScreen:'ltd-choice',formState:{}});
+    obContinuePendingIntent();return;
+  }
+  OB.pendingIntent=null;obGo('ltd-registration');
+}
+function obScrLtdRegistration(){
+  return obShell(obProgress(15,t('ob.ltdEntry'),"obGo('ltd-choice')"),`<h1>${t('ob.registrationTitle')}</h1>
+    <button class="ob-tile" data-tm-click="obChooseLtdRegistration('not_available')"><span><span class="ob-tt">${t('ob.notRegistered')}</span><span class="ob-ts">${t('ob.notRegisteredS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obChooseLtdRegistration('provided')"><span><span class="ob-tt">${t('ob.registered')}</span><span class="ob-ts">${t('ob.registeredS')}</span></span></button>`,'');
+}
+function obChooseLtdRegistration(companyNumberStatus){
+  if(!['not_available','provided'].includes(companyNumberStatus))return;
+  obSetPendingIntent('ltd',{ltdChoice:'forming',companyNumberStatus,returnScreen:'ltd-registration',formState:{companyNumberStatus}});
+  obContinuePendingIntent();
+}
+function obStartPartnerSync(){if(!OB)return;OB._intentError='';OB.pendingIntent=null;obGo('partner-code');}
+function obSetConnectCode(value){if(!OB)return;OB.connectCode=normalisePartnerCode(value).slice(0,8);OB._intentError='';}
+function obSetPromoCode(value){if(!OB)return;OB.promoCode=String(value||'').toUpperCase();OB._promoError='';}
+function obScrPartnerCode(){
+  return obShell(obProgress(10,t('ob.partnerEntry'),"obGo('entry')"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
+    <div class="ob-card"><label for="ob-partner-code">${t('sy.code')}</label><input type="text" id="ob-partner-code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD2345" value="${esc(OB.connectCode||'')}" style="text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px" data-tm-input="obSetConnectCode(this.value)" data-tm-keydown="if(event.key==='Enter')obPartnerContinue()"><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div></div>`,
+    `<button class="ob-btn" data-tm-click="obPartnerContinue()">${t('ob.continue')}</button>`);
+}
+function obPartnerContinue(){
+  const code=normalisePartnerCode(OB&&OB.connectCode||'');
+  if(!partnerCodeValid(code)){OB._intentError=t('sy.enterCode');obRender();return;}
+  OB.connectCode=code;obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});obContinuePendingIntent();
+}
+function obScrIntentLoading(){return obShell('',`<h1>${t('ob.entitlementPending')}</h1><div class="ob-card flat"><div data-cloud-sync-status>${esc(syncStatus().message)}</div></div>${OB._intentError?`<div class="ob-error show">${esc(OB._intentError)}</div>`:''}`,'');}
+async function obContinuePendingIntent(){
+  if(!OB||!OB.pendingIntent)return;
+  const user=cloudUser();
+  if(!user){OB._authReturnScreen=OB.pendingIntent.returnScreen||OB.screen;obGo('login');return;}
+  const returnScreen=OB.screen;OB._intentError='';OB.screen='intent-loading';obRender();
+  try{
+    const result=CLOUD.hydrationState==='converged'&&ENTITLEMENT.loaded?{state:'converged',existingCloudAccount:true}:await startUserSync(user);
+    if(!OB)return;
+    if(!result||result.state!=='converged'){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();return;}
+    obResumePendingIntentAfterHydration(result);
+  }catch(_){if(OB){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();}}
+}
+function obResumePendingIntentAfterHydration(result){
+  if(!OB||!OB.pendingIntent||!result||result.state!=='converged'||OB._intentLaunching)return false;
+  OB.loggedIn=true;OB._authReturnScreen=null;OB._signingInFlow=false;
+  if(currentTier()!=='pro'){OB.screen='pro-gate';obRender();return true;}
+  obExecutePendingIntent();return true;
+}
+async function obExecutePendingIntent(){
+  if(!OB||!OB.pendingIntent||OB._intentLaunching)return;
+  const intent=obIntentCopy(OB.pendingIntent);
+  if(intent.source==='partner_sync'){OB.screen='partner-confirm';OB._intentError='';obRender();return;}
+  if(intent.source!=='ltd')return;
+  OB._intentLaunching=true;const preserved=OB;obClose();
+  try{
+    if(!window.TaxMateLtdProductionAdapter||typeof TaxMateLtdProductionAdapter.openNewLimitedCompany!=='function')throw new Error('ltd-adapter-unavailable');
+    await TaxMateLtdProductionAdapter.openNewLimitedCompany({companyNumberStatus:intent.companyNumberStatus});
+  }catch(error){
+    console.error('Connected Ltd onboarding could not open',error);OB=preserved;OB._intentLaunching=false;OB.screen='pro-gate';OB._intentError=t('sy.needNet');TaxMateOnboardingRoot.open(document);obRender();
+  }
+}
+function obScrPartnerConfirm(){
+  const code=OB&&OB.pendingIntent&&OB.pendingIntent.partnerCode||OB.connectCode||'';
+  return obShell(obProgress(20,t('ob.partnerEntry'),"obGo('partner-code')"),`<h1>${t('ob.partnerConfirmTitle')}</h1><p class="ob-lede">${t('ob.partnerConfirmBody')}</p><div class="ob-card flat"><div class="ob-codevalue">${esc(code)}</div></div><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div>${OB._partnerBusy?`<div class="ob-busy">${t('ob.connecting')}</div>`:''}`,
+    `<button class="ob-btn" ${OB._partnerBusy?'disabled':''} data-tm-click="obConfirmPartnerConnection()">${OB._partnerBusy?t('ob.connecting'):t('ob.confirmConnect')}</button><button class="ob-btn ghost" ${OB._partnerBusy?'disabled':''} data-tm-click="obGo('partner-code')">${t('ob.back')}</button>`);
+}
+async function obConfirmPartnerConnection(){
+  if(!OB||OB._partnerBusy||!OB.pendingIntent)return;
+  const code=OB.pendingIntent.partnerCode;OB._partnerBusy=true;OB._intentError='';obRender();
+  try{
+    const joined=await joinPartnershipByCode(code);if(!OB)return;
+    OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;OB.screen='partner-success';obRender();
+  }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
+}
+function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell('',`<h1>${t('ob.connected')}</h1><div class="ob-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerEntryS')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.dash')}</button>`);}
+function obFinishPartnerConnection(){try{localStorage.setItem('tmOnboardDone','partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
+function obScrProGate(){
+  const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
+  return obShell(obProgress(20,t('ob.proRequired'),"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
+    <div class="ob-seg" role="group" aria-label="Billing cadence"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
+    <div class="ob-gate-price"><div data-plan-price="pro">${tierPriceMarkup('pro')}</div></div>
+    <button class="ob-btn" data-tm-click="obProUpgrade()">${t('ob.upgrade')}</button>${message?`<div class="ob-busy">${esc(message)}</div>`:''}
+    <div class="ob-card" style="margin-top:18px"><label for="ob-promo-code">${t('ob.havePromo')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${t('promo.placeholder')}" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)" data-tm-keydown="if(event.key==='Enter')obRedeemPromotionCode()"><div class="ob-error ${error?'show':''}">${esc(error)}</div><button class="ob-btn soft" style="margin-top:12px" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button></div>`,
+    `<button class="ob-btn ghost" ${OB._promoBusy?'disabled':''} data-tm-click="obReturnFromProGate()">${t('ob.back')}</button>`);
+}
+function obReturnFromProGate(){if(!OB||!OB.pendingIntent)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent.returnScreen||'entry');}
+function obProUpgrade(){if(!OB)return;setTier('pro');}
+async function obRedeemPromotionCode(){
+  if(!OB||OB._promoBusy)return;const code=normalisePartnerCode(OB.promoCode||'');OB.promoCode=code;OB._promoError='';OB._intentMessage='';
+  if(!TaxMateEntitlement.validatePromotionCode(code)){OB._promoError=t('promo.invalid');obRender();return;}
+  OB._promoBusy=true;obRender();
+  try{
+    await redeemPromotionThroughCanonicalBackend(code);if(!OB)return;OB._promoBusy=false;
+    if(currentTier()!=='pro'){OB._promoError=t('ob.promoNoPro');obRender();return;}
+    obResumePendingIntentAfterHydration({state:'converged',existingCloudAccount:true});
+  }catch(error){if(OB){OB._promoBusy=false;OB._promoError=promotionFailureMessage(error);obRender();}}
 }
 function obExplore(){
   // mark onboarding as skipped (explore), close, land on app welcome/home
