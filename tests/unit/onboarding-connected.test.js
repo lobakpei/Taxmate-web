@@ -67,6 +67,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.7',build:'2026-08-30.complete-founder-preview-correction.1',cache:'taxmate-v2-complete-founder-preview-correction-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.8',build:'2026-08-30.home-assistant-founder-preview-correction.1',cache:'taxmate-v2-home-assistant-founder-preview-correction-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

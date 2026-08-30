@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-30.complete-founder-preview-correction.1 -->
+<!-- build: 2026-08-30.home-assistant-founder-preview-correction.1 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -140,6 +140,24 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .hero .pill{flex:1;min-width:0;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
 .hero .pill .pl{font-size:12px;font-weight:600;opacity:.85}
 .hero .pill .pv{font-size:17px;font-weight:800;margin-top:1px;white-space:nowrap}
+.assistant-home-card{border:1px solid var(--line);background:var(--card);cursor:pointer}
+.assistant-home-card .assistant-count{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45}
+.assistant-task-list{display:grid;gap:12px}
+.assistant-task{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px}
+.assistant-task-head{display:flex;gap:10px;align-items:flex-start}
+.assistant-task-copy{min-width:0;flex:1}
+.assistant-task-title{font-size:15px;font-weight:800;color:var(--ink);line-height:1.4}
+.assistant-task-reason{font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px}
+.assistant-badge{display:inline-flex;align-items:center;min-height:26px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800;margin-bottom:8px}
+.assistant-badge.action-required{background:var(--coral-soft);color:var(--coral)}
+.assistant-badge.needs-decision{background:var(--amber-soft);color:var(--amber)}
+.assistant-badge.helpful-reminder{background:var(--blue-soft);color:var(--blue)}
+.assistant-task-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.assistant-task-actions .btn{width:auto;min-height:44px;padding:10px 15px;font-size:13px;box-shadow:none}
+.assistant-task-dismiss{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--bg);color:var(--muted);font-size:18px;cursor:pointer;flex:0 0 44px}
+.assistant-task-dismiss:hover{color:var(--ink);background:var(--line)}
+.assistant-highlight{outline:3px solid var(--amber)!important;outline-offset:4px;border-radius:14px;scroll-margin-top:90px}
+.assistant-hidden-wrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
 
 /* ── cards ── */
 .card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
@@ -415,6 +433,27 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .hero .pill{padding:10px 9px}
   .hero .pill .pv{font-size:14.5px}
   .seg button{padding:9px 2px;font-size:12px}
+}
+/* At 200% browser zoom a 390px phone has roughly a 195px CSS viewport.
+   Keep the approved components and reading order, but let their content reflow
+   instead of widening the document beyond the visible viewport. */
+@media (max-width:240px){
+  .top{padding:12px 8px 4px;gap:6px}
+  .header-brand-lockup{width:82px;height:30px}
+  .year-pill select{max-width:82px;padding:6px 20px 6px 7px;font-size:11px}
+  [dir=rtl] .year-pill select{padding:6px 7px 6px 20px}
+  .year-pill::after{inset-inline-end:7px}
+  main{padding-inline:8px}
+  .hero{padding:14px}
+  .hero .big{font-size:30px;letter-spacing:-1px}
+  .hero .hero-owe{align-items:flex-start;flex-direction:column;gap:3px;padding:9px 10px}
+  .hero .hero-owe .ho-val{white-space:normal;overflow-wrap:anywhere}
+  .hero .pills{display:grid;grid-template-columns:minmax(0,1fr)}
+  .assistant-home-card .row{align-items:flex-start;flex-wrap:wrap}
+  .assistant-home-card .link{margin-inline-start:55px}
+  [data-home-business-list] .row{align-items:flex-start;flex-wrap:wrap}
+  [data-home-business-list] .v{margin-inline-start:55px;white-space:normal}
+  nav button{min-width:0;font-size:8px;overflow-wrap:anywhere;overflow:hidden}
 }
 /* A single long word in a squeezed list row must wrap, not overflow its box. */
 .grow .t,.grow .s{overflow-wrap:break-word}
@@ -781,6 +820,20 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
 </div></div>
 
+<!-- TaxMate Assistant uses the existing TaxMate sheet pattern and canonical task state. -->
+<div class="sb" id="sb-assistant"><div class="sheet">
+  <div class="grab" data-tm-click="closeParentSheet(this)"></div>
+  <div class="stitle" id="assistant-title"></div>
+  <div class="sub" id="assistant-summary" style="margin-bottom:16px"></div>
+  <div class="assistant-task-list" id="assistant-task-list"></div>
+  <div class="assistant-hidden-wrap" id="assistant-hidden-wrap" hidden>
+    <div class="t" id="assistant-hidden-title" style="margin-bottom:10px"></div>
+    <div class="assistant-task-list" id="assistant-hidden-list"></div>
+  </div>
+  <button class="btn ghost" id="assistant-show-hidden" style="margin-top:14px" data-tm-click="assistantToggleHidden()"></button>
+  <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('assistant')" data-i18n="c.cancel"></button>
+</div></div>
+
 <!-- Deterministic onboarding mount: present before deferred application startup. -->
 <div id="ob-root" aria-hidden="true"></div>
 
@@ -800,6 +853,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/form-mappings.js"></script>
 <script src="src/core/money.js"></script>
 <script src="src/core/state-schema.js"></script>
+<script src="src/core/assistant.js"></script>
 <script src="src/core/domain-schema.js"></script>
 <script src="src/core/revision-sync.js"></script>
 <script src="src/core/partnership.js"></script>

@@ -21,11 +21,12 @@ test('personal onboarding uses an explicit lexical-state action and durable draf
   assert.doesNotMatch(app,/data-tm-input="OB\./);
 });
 
-test('Home Hero reconciles from the same canonical ledger rows as Money and business rows',()=>{
+test('Home Hero reconciles from the same canonical ledger rows and keeps quarterly metrics off ordinary Home',()=>{
   assert.match(app,/function homeLedgerSnapshot\(yr,bizId=null,period=null\)/);
   assert.match(app,/const ledger=homeLedgerSnapshot\(S\.year\)/);
   assert.match(app,/data-home-ledger-profit>\$\{fmt\(ledger\.profit\)\}/);
-  assert.match(app,/const qP=homeLedgerSnapshot\(S\.year,null,qr\)\.profit/);
+  const pageHome=app.match(/function pageHome\(\)\{[\s\S]*?\/\* ═+ INCOME \/ EXPENSES lists/)[0];
+  assert.doesNotMatch(pageHome,/quarterRange|qP|home\.qLabel|Q[1-4]/);
   assert.match(app,/function bizFigures\(b,yr\)\{\s*return homeLedgerSnapshot\(yr,b\.id\)/);
 });
 
@@ -69,7 +70,8 @@ test('onboarding accessibility uses a dark action ink, 44px targets and localize
 test('review reset is fail-closed and full/fresh Pro modes keep local and emulator anchors coherent',()=>{
   assert.match(review,/if\(!response\.ok\)throw new Error\('Local review reset failed: '/);
   assert.match(review,/proFresh:\{email:'founder-pro-fresh@taxmate-review\.local'/);
-  assert.match(review,/if\(mode==='pro'\)await seedFullReviewDataset\(user\)/);
+  assert.match(review,/if\(mode==='pro'\|\|mode==='mixed'\)return clone\(reviewFullState\)/);
+  assert.match(review,/if\(dataset\)await seedReviewDataset\(user,dataset\)/);
   assert.match(review,/await seedLtdCloud\(user,state\)/);
   assert.match(review,/ltdControl\/activeCompany/);
 });

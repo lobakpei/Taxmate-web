@@ -2983,6 +2983,45 @@ Object.assign(I18N.ur,{
   'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ جن زمروں کی ضرورت ہو انہیں شامل کرنے کے لیے چھوئیں۔','sug.add':'منتخب زمرے شامل کریں','sug.skip':'چھوڑ دیں','sug.added':'{n} زمرے شامل ہو گئے','ob.partnerSync':'پارٹنر سنک','rep.desc':'آپ، آپ کے اکاؤنٹنٹ یا رہن کے لیے مکمل سالانہ خلاصہ۔','tax.emptyT':'اپنا تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس صورتحال یہاں دکھائی دے گی۔'
 });
 
+// Home business-type truth and TaxMate Assistant. English is canonical and every
+// user-facing key has an explicit value in all six supported locales.
+Object.assign(I18N.en,{
+  'home.selfProfit':'Your self-employed profit · {y}','home.ltdSeparate':'Limited Company figures are shown separately.','home.ltdHeroTitle':'Your Limited Company','home.accountsPeriod':'Accounts period','home.setupPending':'Setup pending','home.openCompany':'Open company →',
+  'assistant.title':'TaxMate assistant','assistant.countOne':'1 thing needs your attention','assistant.countMany':'{n} things need your attention','assistant.review':'Review →','assistant.none':'Nothing needs your attention right now.','assistant.actionRequired':'Action required','assistant.needsDecision':'Needs your decision','assistant.helpful':'Helpful reminder','assistant.hiddenTitle':'Hidden reminders','assistant.showHidden':'Show hidden reminders','assistant.hideHidden':'Hide hidden reminders','assistant.restore':'Restore reminder','assistant.dismiss':'Hide reminder',
+  'assistant.dateTitle':'{amount} {kind} — exact date missing','assistant.dateReason':'{business} needs an exact date, or your decision to keep the estimated date.','assistant.requiredTitle':'{amount} {kind} needs checking','assistant.requiredReason':'Add the missing {fields} so TaxMate can use this record reliably.','assistant.ltdTitle':'{company} setup isn’t finished','assistant.ltdReason':'Finish the company facts before relying on its accounts and tax position.','assistant.receiptTitle':'{n} expenses need receipts','assistant.receiptReason':'Add receipt photos for {business}, or hide this reminder for {year}.',
+  'assistant.addExactDate':'Add exact date','assistant.keepEstimated':'Keep estimated date','assistant.fixEntry':'Fix this entry','assistant.resumeLtd':'Resume setup','assistant.removeLtd':'Remove this Limited Company setup','assistant.removeLtdTitle':'Remove this Limited Company setup?','assistant.removeLtdBody':'This removes the unfinished company setup. It does not hide a completed company or change personal bookkeeping.','assistant.openReceipts':'Add receipts','assistant.income':'income','assistant.expense':'expense','assistant.amount':'amount','assistant.business':'business','assistant.category':'category'
+});
+Object.assign(I18N.zh,{
+  'home.selfProfit':'你嘅自僱利潤 · {y}','home.ltdSeparate':'有限公司數字會分開顯示。','home.ltdHeroTitle':'你嘅有限公司','home.accountsPeriod':'會計期間','home.setupPending':'設定未完成','home.openCompany':'開啟公司 →',
+  'assistant.title':'TaxMate 助手','assistant.countOne':'有 1 件事需要你處理','assistant.countMany':'有 {n} 件事需要你處理','assistant.review':'查看 →','assistant.none':'目前冇需要你處理嘅事項。','assistant.actionRequired':'必須處理','assistant.needsDecision':'需要你決定','assistant.helpful':'實用提醒','assistant.hiddenTitle':'已隱藏提醒','assistant.showHidden':'顯示已隱藏提醒','assistant.hideHidden':'收起已隱藏提醒','assistant.restore':'恢復提醒','assistant.dismiss':'隱藏提醒',
+  'assistant.dateTitle':'{amount} {kind} — 未有確實日期','assistant.dateReason':'{business}需要確實日期，或者由你確認保留估算日期。','assistant.requiredTitle':'{amount} {kind}需要核對','assistant.requiredReason':'請補上{fields}，TaxMate先可以可靠使用呢筆記錄。','assistant.ltdTitle':'{company}設定未完成','assistant.ltdReason':'請完成公司資料，先好依賴相關帳目同稅務結果。','assistant.receiptTitle':'有 {n} 筆開支需要收據','assistant.receiptReason':'為{business}加入收據相片，或者隱藏{year}年度呢個提醒。',
+  'assistant.addExactDate':'加入確實日期','assistant.keepEstimated':'保留估算日期','assistant.fixEntry':'修正呢筆記錄','assistant.resumeLtd':'繼續設定','assistant.removeLtd':'移除呢個有限公司設定','assistant.removeLtdTitle':'移除呢個有限公司設定？','assistant.removeLtdBody':'呢個操作只會移除未完成嘅公司設定，唔會隱藏已完成公司或改動個人記帳。','assistant.openReceipts':'加入收據','assistant.income':'收入','assistant.expense':'開支','assistant.amount':'金額','assistant.business':'業務','assistant.category':'分類'
+});
+Object.assign(I18N.pl,{
+  'home.selfProfit':'Twój zysk z samozatrudnienia · {y}','home.ltdSeparate':'Dane spółki Limited Company są pokazane osobno.','home.ltdHeroTitle':'Twoja spółka Limited Company','home.accountsPeriod':'Okres rozliczeniowy','home.setupPending':'Konfiguracja nieukończona','home.openCompany':'Otwórz spółkę →',
+  'assistant.title':'Asystent TaxMate','assistant.countOne':'1 sprawa wymaga uwagi','assistant.countMany':'{n} spraw wymaga uwagi','assistant.review':'Sprawdź →','assistant.none':'Obecnie nic nie wymaga Twojej uwagi.','assistant.actionRequired':'Wymagane działanie','assistant.needsDecision':'Potrzebna decyzja','assistant.helpful':'Przydatne przypomnienie','assistant.hiddenTitle':'Ukryte przypomnienia','assistant.showHidden':'Pokaż ukryte przypomnienia','assistant.hideHidden':'Ukryj przypomnienia','assistant.restore':'Przywróć przypomnienie','assistant.dismiss':'Ukryj przypomnienie',
+  'assistant.dateTitle':'{amount} {kind} — brak dokładnej daty','assistant.dateReason':'Dla {business} dodaj dokładną datę albo zachowaj datę szacunkową.','assistant.requiredTitle':'{amount} {kind} wymaga sprawdzenia','assistant.requiredReason':'Uzupełnij: {fields}, aby TaxMate mógł bezpiecznie użyć wpisu.','assistant.ltdTitle':'Konfiguracja {company} nie jest ukończona','assistant.ltdReason':'Uzupełnij dane spółki przed użyciem wyników księgowych i podatkowych.','assistant.receiptTitle':'{n} wydatków wymaga paragonów','assistant.receiptReason':'Dodaj zdjęcia paragonów dla {business} albo ukryj przypomnienie za {year}.',
+  'assistant.addExactDate':'Dodaj dokładną datę','assistant.keepEstimated':'Zachowaj datę szacunkową','assistant.fixEntry':'Popraw wpis','assistant.resumeLtd':'Wznów konfigurację','assistant.removeLtd':'Usuń tę konfigurację Limited Company','assistant.removeLtdTitle':'Usunąć tę konfigurację Limited Company?','assistant.removeLtdBody':'Usuwa tylko nieukończoną konfigurację spółki. Nie zmienia księgowości osobistej.','assistant.openReceipts':'Dodaj paragony','assistant.income':'przychód','assistant.expense':'wydatek','assistant.amount':'kwota','assistant.business':'firma','assistant.category':'kategoria'
+});
+Object.assign(I18N.ro,{
+  'home.selfProfit':'Profitul tău din activitatea independentă · {y}','home.ltdSeparate':'Cifrele societății sunt afișate separat.','home.ltdHeroTitle':'Societatea ta','home.accountsPeriod':'Perioada contabilă','home.setupPending':'Configurare nefinalizată','home.openCompany':'Deschide societatea →',
+  'assistant.title':'Asistent TaxMate','assistant.countOne':'1 lucru necesită atenție','assistant.countMany':'{n} lucruri necesită atenție','assistant.review':'Verifică →','assistant.none':'Nimic nu necesită atenție acum.','assistant.actionRequired':'Acțiune necesară','assistant.needsDecision':'Decizia ta este necesară','assistant.helpful':'Memento util','assistant.hiddenTitle':'Mementouri ascunse','assistant.showHidden':'Arată mementourile ascunse','assistant.hideHidden':'Ascunde mementourile','assistant.restore':'Restaurează mementoul','assistant.dismiss':'Ascunde mementoul',
+  'assistant.dateTitle':'{amount} {kind} — lipsește data exactă','assistant.dateReason':'Pentru {business}, adaugă data exactă sau păstrează data estimată.','assistant.requiredTitle':'{amount} {kind} necesită verificare','assistant.requiredReason':'Completează {fields} pentru ca TaxMate să folosească sigur înregistrarea.','assistant.ltdTitle':'Configurarea {company} nu este finalizată','assistant.ltdReason':'Finalizează datele societății înainte de a folosi rezultatele contabile și fiscale.','assistant.receiptTitle':'{n} cheltuieli necesită bonuri','assistant.receiptReason':'Adaugă fotografii pentru {business} sau ascunde mementoul pentru {year}.',
+  'assistant.addExactDate':'Adaugă data exactă','assistant.keepEstimated':'Păstrează data estimată','assistant.fixEntry':'Corectează înregistrarea','assistant.resumeLtd':'Continuă configurarea','assistant.removeLtd':'Elimină această configurare de societate','assistant.removeLtdTitle':'Elimini această configurare de societate?','assistant.removeLtdBody':'Elimină doar configurarea nefinalizată și nu modifică evidența personală.','assistant.openReceipts':'Adaugă bonuri','assistant.income':'venit','assistant.expense':'cheltuială','assistant.amount':'suma','assistant.business':'afacerea','assistant.category':'categoria'
+});
+Object.assign(I18N.es,{
+  'home.selfProfit':'Tu beneficio por cuenta propia · {y}','home.ltdSeparate':'Las cifras de la sociedad se muestran por separado.','home.ltdHeroTitle':'Tu sociedad limitada','home.accountsPeriod':'Período contable','home.setupPending':'Configuración pendiente','home.openCompany':'Abrir sociedad →',
+  'assistant.title':'Asistente TaxMate','assistant.countOne':'1 asunto requiere tu atención','assistant.countMany':'{n} asuntos requieren tu atención','assistant.review':'Revisar →','assistant.none':'Ahora mismo nada requiere tu atención.','assistant.actionRequired':'Acción necesaria','assistant.needsDecision':'Necesita tu decisión','assistant.helpful':'Recordatorio útil','assistant.hiddenTitle':'Recordatorios ocultos','assistant.showHidden':'Mostrar recordatorios ocultos','assistant.hideHidden':'Ocultar recordatorios','assistant.restore':'Restaurar recordatorio','assistant.dismiss':'Ocultar recordatorio',
+  'assistant.dateTitle':'{amount} {kind} — falta la fecha exacta','assistant.dateReason':'Para {business}, añade la fecha exacta o conserva la fecha estimada.','assistant.requiredTitle':'{amount} {kind} necesita revisión','assistant.requiredReason':'Añade {fields} para que TaxMate use este registro de forma fiable.','assistant.ltdTitle':'La configuración de {company} no está terminada','assistant.ltdReason':'Completa los datos de la sociedad antes de usar sus resultados contables y fiscales.','assistant.receiptTitle':'{n} gastos necesitan recibos','assistant.receiptReason':'Añade fotos para {business} u oculta este recordatorio de {year}.',
+  'assistant.addExactDate':'Añadir fecha exacta','assistant.keepEstimated':'Conservar fecha estimada','assistant.fixEntry':'Corregir registro','assistant.resumeLtd':'Continuar configuración','assistant.removeLtd':'Eliminar esta configuración de sociedad','assistant.removeLtdTitle':'¿Eliminar esta configuración de sociedad?','assistant.removeLtdBody':'Solo elimina la configuración sin terminar y no modifica la contabilidad personal.','assistant.openReceipts':'Añadir recibos','assistant.income':'ingreso','assistant.expense':'gasto','assistant.amount':'importe','assistant.business':'negocio','assistant.category':'categoría'
+});
+Object.assign(I18N.ur,{
+  'home.selfProfit':'آپ کا ذاتی کاروباری منافع · {y}','home.ltdSeparate':'Limited Company کے اعداد الگ دکھائے گئے ہیں۔','home.ltdHeroTitle':'آپ کی Limited Company','home.accountsPeriod':'اکاؤنٹس کی مدت','home.setupPending':'ترتیب نامکمل ہے','home.openCompany':'کمپنی کھولیں ←',
+  'assistant.title':'TaxMate اسسٹنٹ','assistant.countOne':'1 چیز آپ کی توجہ چاہتی ہے','assistant.countMany':'{n} چیزیں آپ کی توجہ چاہتی ہیں','assistant.review':'جائزہ لیں ←','assistant.none':'ابھی کسی چیز کو آپ کی توجہ درکار نہیں۔','assistant.actionRequired':'کارروائی ضروری','assistant.needsDecision':'آپ کا فیصلہ درکار ہے','assistant.helpful':'مددگار یاد دہانی','assistant.hiddenTitle':'چھپی ہوئی یاد دہانیاں','assistant.showHidden':'چھپی یاد دہانیاں دکھائیں','assistant.hideHidden':'چھپی یاد دہانیاں بند کریں','assistant.restore':'یاد دہانی بحال کریں','assistant.dismiss':'یاد دہانی چھپائیں',
+  'assistant.dateTitle':'{amount} {kind} — درست تاریخ غائب','assistant.dateReason':'{business} کے لیے درست تاریخ شامل کریں یا تخمینی تاریخ برقرار رکھیں۔','assistant.requiredTitle':'{amount} {kind} کی جانچ ضروری ہے','assistant.requiredReason':'TaxMate کے درست استعمال کے لیے {fields} شامل کریں۔','assistant.ltdTitle':'{company} کی ترتیب مکمل نہیں','assistant.ltdReason':'اکاؤنٹس اور ٹیکس نتائج استعمال کرنے سے پہلے کمپنی کی معلومات مکمل کریں۔','assistant.receiptTitle':'{n} اخراجات کے لیے رسیدیں درکار ہیں','assistant.receiptReason':'{business} کے لیے رسیدیں شامل کریں یا {year} کی یاد دہانی چھپائیں۔',
+  'assistant.addExactDate':'درست تاریخ شامل کریں','assistant.keepEstimated':'تخمینی تاریخ رکھیں','assistant.fixEntry':'ریکارڈ درست کریں','assistant.resumeLtd':'ترتیب جاری رکھیں','assistant.removeLtd':'یہ Limited Company ترتیب ہٹائیں','assistant.removeLtdTitle':'یہ Limited Company ترتیب ہٹائیں؟','assistant.removeLtdBody':'صرف نامکمل کمپنی ترتیب ہٹتی ہے؛ ذاتی ریکارڈ تبدیل نہیں ہوتے۔','assistant.openReceipts':'رسیدیں شامل کریں','assistant.income':'آمدنی','assistant.expense':'خرچ','assistant.amount':'رقم','assistant.business':'کاروبار','assistant.category':'زمرہ'
+});
+
 const HEALTH_COPY={
   'promo.signIn':'Sign in with Google first, then redeem this code.',
   'promo.title':'Redeem promotion code','promo.body':'Enter the code exactly as you received it.','promo.placeholder':'Promotion code','promo.apply':'Redeem code','promo.invalid':"This promotion code isn't valid.",'promo.notStarted':"This promotion isn't available yet.",'promo.expired':'This promotion has ended.','promo.full':'This promotion has reached its limit.','promo.duplicate':"You've already used this promotion code.",'promo.service':'Promotion access is temporarily unavailable. Please try again.','promo.success':'Promotion applied',
@@ -3822,7 +3861,7 @@ function renderNav(){
     return `<button class="${on?'on':''}" data-tm-click="go('${n}')">${NAV_ICONS[n]}<span>${t('nav.'+n)}</span></button>`;
   }).join('');
 }
-function go(tab){ S.tab=tab; save(); render(); window.scrollTo(0,0); }
+function go(tab){ if(tab!=='receipts'&&typeof RCB!=='undefined')RCB.bizId=null;S.tab=tab; save(); render(); window.scrollTo(0,0); }
 function setYear(y){ S.year=y; save(); render(); }
 function renderYearSel(){
   document.getElementById('yearSel').innerHTML =
@@ -3858,20 +3897,84 @@ function welcome(){
   </div>`;
 }
 
-/* Home cards from onboarding: review reminder + catch-up re-entry */
-function obReviewCard(){
-  const ids = (S.obReview||[]).filter(id=>S.entries.find(e=>e.id===id && e._review));
-  if(!ids.length){ if(S.obReview&&S.obReview.length){ S.obReview=[]; } return ''; }
-  return `<div class="card" style="border:1px solid var(--amber);background:var(--amber-soft);cursor:pointer" data-tm-click="go('expenses')">
-    <div class="row" style="align-items:flex-start">
-      <div class="ico" style="background:rgba(180,125,18,.18)">🔔</div>
-      <div class="grow">
-        <div class="t" style="color:var(--amber)">${ids.length} item${ids.length>1?'s':''} to review</div>
-        <div class="s">Add dates or categories when you have a moment — it keeps your tax estimate accurate.</div>
-      </div>
-      <div class="chev">›</div>
-    </div>
-  </div>`;
+/* TaxMate Assistant derives every task from canonical entries, receipt references and
+   Ltd profile state. Decisions live inside versioned yearData, so the existing app/meta
+   and durable personal-state outbox synchronize them without a second cloud contract. */
+let ASSISTANT_SHOW_HIDDEN=false;
+function assistantStoredState(create=false){
+  let year=S.yearData&&S.yearData[S.year];
+  if(!year&&create){if(!S.yearData)S.yearData={};year=S.yearData[S.year]={poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};}
+  if(!year)return TaxMateAssistant.emptyState();
+  const normalized=TaxMateAssistant.normalizeState(year.assistant);
+  if(create)year.assistant=normalized;
+  return normalized;
+}
+function assistantAllTasks(){return TaxMateAssistant.deriveTasks({state:S,taxYear:S.year,assistantState:assistantStoredState(false),receiptReminders:hasFeature('receiptPhoto')});}
+function assistantVisibleTasks(){return TaxMateAssistant.visibleTasks(assistantAllTasks());}
+function assistantCountText(count){return count===1?t('assistant.countOne'):t('assistant.countMany',{n:count});}
+function assistantHomeCard(){
+  const count=assistantVisibleTasks().length;if(!count)return'';
+  return `<div class="card assistant-home-card" data-tm-click="assistantOpen()" data-assistant-home-count="${count}"><div class="row"><div class="ico" style="background:var(--amber-soft)">✨</div><div class="grow"><div class="t">${t('assistant.title')}</div><div class="assistant-count">${assistantCountText(count)}</div></div><div class="link">${t('assistant.review')}</div></div></div>`;
+}
+function assistantTask(encoded){let id='';try{id=decodeURIComponent(String(encoded||''));}catch(_){return null;}return TaxMateAssistant.taskById(assistantAllTasks(),id);}
+function assistantEntryLabel(task){return task.entryKind==='income'?t('assistant.income'):t('assistant.expense');}
+function assistantTaskTitle(task){
+  if(task.kind==='entry_exact_date')return t('assistant.dateTitle',{amount:fmt(task.amount),kind:assistantEntryLabel(task)});
+  if(task.kind==='entry_required')return t('assistant.requiredTitle',{amount:fmt(task.amount),kind:assistantEntryLabel(task)});
+  if(task.kind==='ltd_setup')return t('assistant.ltdTitle',{company:task.companyName});
+  if(task.kind==='receipt_missing')return t('assistant.receiptTitle',{n:task.count});
+  return task.reasonCode||t('assistant.title');
+}
+function assistantTaskReason(task){
+  if(task.kind==='entry_exact_date')return t('assistant.dateReason',{business:task.businessName||t('assistant.business')});
+  if(task.kind==='entry_required')return t('assistant.requiredReason',{fields:(task.fields||[]).map(field=>t('assistant.'+field)).join(', ')});
+  if(task.kind==='ltd_setup')return t('assistant.ltdReason');
+  if(task.kind==='receipt_missing')return t('assistant.receiptReason',{business:task.businessName,year:task.taxYear});
+  return'';
+}
+function assistantBadge(task){const key=task.category==='action_required'?'assistant.actionRequired':task.category==='needs_decision'?'assistant.needsDecision':'assistant.helpful';return`<span class="assistant-badge ${task.category.replace('_','-')}">${t(key)}</span>`;}
+function assistantTaskActions(task,hidden=false){
+  const encoded=encodeURIComponent(task.id),buttons=[];
+  if(hidden)buttons.push(`<button class="btn ghost" data-tm-click="assistantRestore('${encoded}')">${t('assistant.restore')}</button>`);
+  else if(task.kind==='entry_exact_date')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.addExactDate')}</button><button class="btn ghost" data-tm-click="assistantKeepEstimated('${encoded}')">${t('assistant.keepEstimated')}</button>`);
+  else if(task.kind==='entry_required')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.fixEntry')}</button>`);
+  else if(task.kind==='ltd_setup')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.resumeLtd')}</button><button class="btn ghost" data-tm-click="assistantRemoveLtd('${encoded}')">${t('assistant.removeLtd')}</button>`);
+  else if(task.kind==='receipt_missing')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.openReceipts')}</button>`);
+  return buttons.join('');
+}
+function assistantTaskCard(task,hidden=false){
+  const encoded=encodeURIComponent(task.id),dismiss=task.dismissible&&!hidden?`<button class="assistant-task-dismiss" aria-label="${t('assistant.dismiss')}" title="${t('assistant.dismiss')}" data-tm-click="assistantDismiss('${encoded}')">×</button>`:'';
+  return `<section class="assistant-task" data-assistant-task-id="${esc(task.id)}" data-assistant-category="${task.category}"><div class="assistant-task-head"><div class="assistant-task-copy">${assistantBadge(task)}<div class="assistant-task-title">${assistantTaskTitle(task)}</div><div class="assistant-task-reason">${assistantTaskReason(task)}</div></div>${dismiss}</div><div class="assistant-task-actions">${assistantTaskActions(task,hidden)}</div></section>`;
+}
+function paintAssistantSheet(){
+  const all=assistantAllTasks(),visible=TaxMateAssistant.visibleTasks(all),hidden=TaxMateAssistant.hiddenTasks(all),list=document.getElementById('assistant-task-list'),wrap=document.getElementById('assistant-hidden-wrap'),hiddenList=document.getElementById('assistant-hidden-list'),toggle=document.getElementById('assistant-show-hidden');
+  document.getElementById('assistant-title').textContent=t('assistant.title');document.getElementById('assistant-summary').textContent=visible.length?assistantCountText(visible.length):t('assistant.none');document.getElementById('assistant-hidden-title').textContent=t('assistant.hiddenTitle');
+  list.innerHTML=visible.map(task=>assistantTaskCard(task,false)).join('')||`<div class="notice green">${t('assistant.none')}</div>`;
+  hiddenList.innerHTML=ASSISTANT_SHOW_HIDDEN?hidden.map(task=>assistantTaskCard(task,true)).join(''):'';wrap.hidden=!ASSISTANT_SHOW_HIDDEN||!hidden.length;toggle.style.display=hidden.length?'flex':'none';toggle.textContent=ASSISTANT_SHOW_HIDDEN?t('assistant.hideHidden'):t('assistant.showHidden');
+}
+function assistantOpen(){ASSISTANT_SHOW_HIDDEN=false;paintAssistantSheet();openSheet('assistant');}
+function assistantToggleHidden(){ASSISTANT_SHOW_HIDDEN=!ASSISTANT_SHOW_HIDDEN;paintAssistantSheet();}
+function assistantSaveState(mutator){const state=assistantStoredState(true);mutator(state);S.yearData[S.year].assistant=state;save();render();if(document.getElementById('sb-assistant').classList.contains('open'))paintAssistantSheet();}
+function assistantKeepEstimated(encoded){const task=assistantTask(encoded);if(!task||task.kind!=='entry_exact_date')return;assistantSaveState(state=>{state.decisions[task.id]='keep_estimated_date';});}
+function assistantDismiss(encoded){const task=assistantTask(encoded);if(!task||task.category!=='helpful_reminder'||task.dismissible!==true)return;assistantSaveState(state=>{state.hiddenReminders[task.id]=true;});}
+function assistantRestore(encoded){const task=assistantTask(encoded);if(!task||task.hidden!==true)return;assistantSaveState(state=>{delete state.hiddenReminders[task.id];});}
+function assistantHighlight(field){const id=field==='date'?'en-date':field==='amount'?'en-amount':field==='business'?'en-biz':'en-cats',target=document.getElementById(id);if(!target)return;target.classList.add('assistant-highlight');target.scrollIntoView({block:'center'});if(typeof target.focus==='function')target.focus();}
+function assistantOpenTask(encoded){
+  const task=assistantTask(encoded);if(!task)return;
+  closeSheet('assistant');
+  if(task.kind==='ltd_setup'){openLtdCompany();return;}
+  if(task.kind==='receipt_missing'){RCB.bizId=task.businessId;RCB.cat='all';RCB.month='all';go('receipts');return;}
+  const entry=S.entries.find(item=>item.id===task.entryId);if(!entry)return;
+  const field=task.kind==='entry_exact_date'?'date':task.fields&&task.fields[0]||'date';openEntry(entry.kind,entry.id);setTimeout(()=>assistantHighlight(field),80);
+}
+function assistantRemoveLtd(encoded){
+  const task=assistantTask(encoded);if(!task||task.kind!=='ltd_setup')return;
+  closeSheet('assistant');
+  confirmAction(t('assistant.removeLtdTitle'),t('assistant.removeLtdBody'),async()=>{
+    const result=await TaxMateLtdUIFacade.onRemoveCompany({confirmed:true});
+    if(result.status!=='ok'){showNotice(t('assistant.title'),t('assistant.ltdReason'));return;}
+    render();toast(t('toast.saved'));
+  });
 }
 function obCatchupCard(){
   // show only to people who skipped onboarding (explore) — gentle re-entry
@@ -4032,6 +4135,10 @@ function openLtdCompany(){
   if(!window.TaxMateLtdProductionAdapter){showNotice('Limited company','The company workspace could not be loaded. Reload TaxMate and try again.');return;}
   TaxMateLtdProductionAdapter.openExistingCompany().catch(error=>{console.error(error);showNotice('Limited company','The company workspace could not be opened. Your data was not changed.');});
 }
+function ltdHomeHero(profile){
+  const period=profile&&profile.accountingPeriod,periodText=period&&period.startDate&&period.endDate?`${new Date(period.startDate+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})} – ${new Date(period.endDate+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})}`:t('home.setupPending');
+  return `<div class="hero" data-home-ltd-only-hero><div class="hi">${t('home.ltdHeroTitle')}</div><div style="font-size:24px;font-weight:800;line-height:1.25;margin:4px 0 18px">${esc(profile.legalName||'Limited company')}</div><div class="hero-owe" style="cursor:default"><span class="ho-label">${t('home.accountsPeriod')}</span><span class="ho-val">${esc(periodText)}</span></div><button class="pill" style="width:100%;min-height:48px;text-align:center;font-weight:800" data-tm-click="openLtdCompany()">${t('home.openCompany')}</button></div>`;
+}
 function pageHome(){
   const tx = calcTax(S.year);
   const ledger=homeLedgerSnapshot(S.year);
@@ -4059,11 +4166,10 @@ function pageHome(){
     <div class="h2">${t('home.recent')}</div>
     <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
 
-  return `
-  ${homeCarousel()}
-  <div class="hero">
+  const ltdProfile=activeLtdProfile(),hasPersonal=S.businesses.some(b=>b.structure==='sole'||b.structure==='sole-trader'||b.structure==='partnership');
+  const personalHero=`<div class="hero" data-home-personal-hero>
     <div class="hi">${t('home.hi')}</div>
-    <div class="label">${t('home.profit',{y:S.year})}</div>
+    <div class="label">${t('home.selfProfit',{y:S.year})}</div>
     <div class="big num" data-home-ledger-profit>${fmt(ledger.profit)}</div>
     <div class="hero-owe" data-tm-click="go('tax')">
       <span class="ho-label">🐷 ${t('home.oweLine')}</span>
@@ -4073,28 +4179,24 @@ function pageHome(){
       <button class="pill" data-tm-click="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
       <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
     </div>
-    ${(()=>{
-      const ci=currentQuarterIdx(S.year);
-      if(ci<0) return '';
-      const qr=quarterRange(ci,S.year);
-      const qP=homeLedgerSnapshot(S.year,null,qr).profit;
-      return '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.2)">'
-        +'<span style="font-size:12px;font-weight:600;opacity:.85">'+qr.id+'</span>'
-        +'<span class="num" style="font-size:13px;font-weight:800">'+(qP>=0?'':'−')+'\xa3'+Math.abs(qP).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>';
-    })()}
-  </div>
+    ${ltdProfile?`<div style="font-size:12px;font-weight:700;line-height:1.45;margin-top:12px;opacity:.9">${t('home.ltdSeparate')}</div>`:''}
+  </div>`;
 
-  ${deadlineBanner()}
+  return `
+  ${hasPersonal?homeCarousel():''}
+  ${hasPersonal?personalHero:(ltdProfile?ltdHomeHero(ltdProfile):'')}
+
+  ${hasPersonal?deadlineBanner():''}
   ${entitlementBanner()}
 
-  <div class="homecta">
+  ${hasPersonal?`<div class="homecta">
     <button class="btn" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
     <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
-  </div>
+  </div>`:''}
 
   ${homeInstallCard()}
 
-  ${obReviewCard()}
+  ${assistantHomeCard()}
 
   <div class="h2">${t('home.biz')}</div>
   <div class="card" data-home-business-list>${bizCards}</div>
@@ -4301,7 +4403,7 @@ function setTaMode(m){ yd().taMode=m; save(); render(); }
    補收據頁：揀分類＋月份 → 列出「同類、未有收據」嘅開支 → 逐行影相貼上。
    唔製造新 data（純補相落已存在嘅開支），一筆一相。Pro 功能。*/
 function receiptsUI(){ return {cat: RCB.cat, month: RCB.month}; }
-let RCB = { cat:'all', month:'all' };
+let RCB = { cat:'all', month:'all', bizId:null };
 function rcbSetCat(v){ RCB.cat=v; render(); }
 function rcbSetMonth(v){ RCB.month=v; render(); }
 
@@ -4322,7 +4424,7 @@ function pageReceipts(){
   }
 
   // 所有「開支 + 未有收據」entries（本年度）
-  let missing = entriesFor(yr,null,'expense').filter(e=>!e.receiptUrl);
+  let missing = entriesFor(yr,RCB.bizId||null,'expense').filter(e=>!e.receiptUrl&&!e.receiptPath);
 
   // 分類選項（由「未補相」嗰堆開支本身抽出，唔會列出無關分類）
   const catIds = [...new Set(missing.map(e=>e.cat))];

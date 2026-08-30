@@ -1,6 +1,6 @@
 {
   "name": "taxmate-web",
-  "version": "2.1.7",
+  "version": "2.1.8",
   "private": true,
   "description": "TaxMate bookkeeping and tax planning web app",
   "scripts": {

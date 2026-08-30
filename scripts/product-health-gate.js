@@ -28,6 +28,9 @@ assert.doesNotMatch(publicText,/car\.proTitle|activateTrial|Free Pro access|Limi
 assert.doesNotMatch(publicText,/sk_(?:live|test)_[A-Za-z0-9]+|whsec_[A-Za-z0-9]+|BEGIN (?:RSA |EC |OPENSSH )?PRIVATE KEY/i);
 assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','legal.js')),false,'obsolete legal runtime must not ship');
 assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','product-content.js')),true,'canonical content runtime missing');
-assert.match(read('src/core/versions.js'),/APP_VERSION:\s*'2\.1\.7'/);
+const versions=read('src/core/versions.js');
+assert.match(versions,/APP_VERSION:\s*'2\.1\.8'/);
+assert.match(versions,/BUILD_ID:\s*'2026-08-30\.home-assistant-founder-preview-correction\.1'/);
+assert.match(versions,/PWA_CACHE_VERSION:\s*'taxmate-v2-home-assistant-founder-preview-correction-1'/);
 assert.match(read('index.html'),/src\/core\/product-content\.js/);
 console.log(`PRODUCT_FUNCTION_HEALTH_GATE PASS REAL_DURABLE=${totals.REAL_DURABLE} INTENTIONALLY_HIDDEN=${totals.INTENTIONALLY_HIDDEN} BROKEN=0 SHELL=0 DEAD_VISIBLE=0 DUPLICATE_VISIBLE=0 MISPLACED=0 MISLABELLED=0`);
