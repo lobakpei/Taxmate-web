@@ -2,7 +2,7 @@
 const test=require('node:test');const assert=require('node:assert/strict');
 const path=require('node:path');const {createRequire}=require('node:module');const requireFunctions=createRequire(path.resolve(__dirname,'../../functions/package.json'));
 const {initializeApp}=requireFunctions('firebase-admin/app');const {getFirestore}=requireFunctions('firebase-admin/firestore');const Stripe=requireFunctions('stripe');
-const stripe=new Stripe(process.env.STRIPE_SECRET_KEY);const sessionId=process.env.STRIPE_HOSTED_SESSION_ID;const expectedUid=process.env.STRIPE_HOSTED_UID;const expectedTier=process.env.STRIPE_HOSTED_TIER||'pro',expectedCadence=process.env.STRIPE_HOSTED_CADENCE||'monthly';const expectedAmount={plus:{monthly:399,yearly:2999},pro:{monthly:799,yearly:5999}}[expectedTier][expectedCadence];const expectedPrice=process.env[`STRIPE_${expectedTier.toUpperCase()}_${expectedCadence==='yearly'?'ANNUAL':'MONTHLY'}_PRICE_ID`];
+const stripe=new Stripe(process.env.STRIPE_SECRET_KEY);const sessionId=process.env.STRIPE_HOSTED_SESSION_ID;const expectedUid=process.env.STRIPE_HOSTED_UID;const expectedTier=process.env.STRIPE_HOSTED_TIER||'pro',expectedCadence=process.env.STRIPE_HOSTED_CADENCE||'monthly';const expectedAmount={plus:{monthly:399,yearly:2999},pro:{monthly:999,yearly:9999}}[expectedTier][expectedCadence];const expectedPrice=process.env[`STRIPE_${expectedTier.toUpperCase()}_${expectedCadence==='yearly'?'ANNUAL':'MONTHLY'}_PRICE_ID`];
 const delay=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 async function waitFor(read,predicate,label){for(let i=0;i<60;i++){const value=await read();if(predicate(value))return value;await delay(250);}throw new Error(`Timed out waiting for ${label}`);}
 

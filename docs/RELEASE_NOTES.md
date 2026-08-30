@@ -1,5 +1,7 @@
 # TaxMate Release Notes
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Build `2026-08-20.healthy-production.1` implements the Healthy Operating App Master Pack without redesigning the Founder-approved UI. Every audited visible function is classified in the Product Function Health Matrix: 85 are real and durable, six obsolete functions are intentionally hidden, and broken, shell, dead-visible, duplicate-visible, misplaced and mislabelled counts are all zero. The exact Free/Plus/Pro contract is enforced in client, Functions, Firestore rules and Storage rules; downgrade keeps data while closing premium create/write actions.
 
 Help, Privacy and Terms now use one canonical content source with 37 Help answers, layered legal disclosure, independent public URLs and coherent light/dark behavior. Native browser dialogs, trial/fake unlocks, SA103 PDF, global partnership controls, debug/candidate copy and stale legal implementation language are absent from the production artifact. Google Sign-In remains frozen and Apple Sign-In remains absent.

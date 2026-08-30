@@ -1,14 +1,10 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-29.sync-runtime-integrity.2 -->
+<!-- build: 2026-08-30.home-assistant-founder-preview-correction.1 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
 <script src="src/core/telemetry.js"></script>
 <script src="src/app/sentry-bootstrap.js"></script>
-<script
-  src="https://js-de.sentry-cdn.com/95145fe82ff528333c69e34ee61f6d86.min.js"
-  crossorigin="anonymous"
-></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <meta name="theme-color" content="#F5F7F9" media="(prefers-color-scheme: light)">
@@ -19,25 +15,31 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta property="og:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta property="og:image" content="https://www.taxmate.uk/og-image.png">
-<meta property="og:image:secure_url" content="https://www.taxmate.uk/og-image.png">
+<meta property="og:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
+<meta property="og:image:secure_url" content="https://www.taxmate.uk/taxmate-share-20260829.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TaxMate UK bookkeeping and estimated tax app">
+<meta property="og:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
 <meta property="og:url" content="https://www.taxmate.uk/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta name="twitter:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta name="twitter:image" content="https://www.taxmate.uk/og-image.png">
-<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
+<meta name="twitter:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
+<meta name="twitter:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","image":"https://www.taxmate.uk/icon-512.png","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
 <link rel="manifest" href="manifest.json">
+<link rel="stylesheet" href="src/ui/ltd/workbench.css">
 <link rel="icon" href="/favicon.ico" sizes="any">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-light.svg" media="(prefers-color-scheme: light)">
+<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-dark.svg" media="(prefers-color-scheme: dark)">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
 <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
 <link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-<link rel="apple-touch-icon" href="/icon-192.png">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TaxMate">
@@ -68,6 +70,7 @@ html{ touch-action:auto; }
   --amber:#B47D12;
   --amber-soft:#FCF3DF;
   --btn-dark:#16202B;
+  --brand-action-ink:#10231B;
   --r-lg:24px; --r-md:18px; --r-sm:12px;
   --shadow:0 1px 2px rgba(22,32,43,.05),0 10px 30px rgba(22,32,43,.07);
   --shadow-sm:0 1px 2px rgba(22,32,43,.06);
@@ -88,12 +91,28 @@ button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid 
 
 /* ── header ── */
 .top{padding:18px 20px 4px;display:flex;align-items:center;gap:10px;max-width:640px;margin:0 auto}
-.logo{width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));
-  display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:19px;flex-shrink:0;
-  box-shadow:0 4px 12px rgba(10,169,104,.3)}
-.top .name{font-weight:800;font-size:19px;letter-spacing:-.4px}
-.beta-badge{font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-left:6px;vertical-align:super;text-transform:uppercase}
-.top .name span{color:var(--brand)}
+.brand-lockup{display:block;position:relative;flex-shrink:0}
+.brand-lockup img{display:block;width:100%;height:100%;object-fit:contain;object-position:left center}
+.brand-lockup .brand-logo-dark{display:none}
+:root[data-theme="dark"] .brand-lockup .brand-logo-light{display:none}
+:root[data-theme="dark"] .brand-lockup .brand-logo-dark{display:block}
+@media (prefers-color-scheme:dark){
+  :root:not([data-theme]) .brand-lockup .brand-logo-light{display:none}
+  :root:not([data-theme]) .brand-lockup .brand-logo-dark{display:block}
+}
+.header-brand-lockup{width:136px;height:40px}
+.ltd-active>.top,.ltd-active>#page,.ltd-active>#nav{display:none!important}
+body:not(.ltd-active)>#taxmate-ltd-ui-root{display:none!important}
+body.ltd-active>#taxmate-ltd-ui-root:not([hidden]){display:block!important}
+/* Ltd is a separate application surface. Personal sheets/overlays are closed
+   by the production bridge; this is the fail-safe if stale classes or inline
+   lightbox display state survive an interrupted personal-shell transition. */
+body.ltd-active .sb,
+body.ltd-active>#taxmate-lightbox,
+body.ltd-active>#taxmate-toast,
+body.ltd-active>#ob-root{display:none!important;visibility:hidden!important;pointer-events:none!important}
+body.ltd-active .sb *,body.ltd-active>#taxmate-lightbox *{pointer-events:none!important}
+body.ltd-active.sheet-open{overflow:auto}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
@@ -121,6 +140,24 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .hero .pill{flex:1;min-width:0;background:rgba(255,255,255,.16);backdrop-filter:blur(4px);border-radius:16px;padding:10px 14px;cursor:pointer;border:0;text-align:start;color:#fff}
 .hero .pill .pl{font-size:12px;font-weight:600;opacity:.85}
 .hero .pill .pv{font-size:17px;font-weight:800;margin-top:1px;white-space:nowrap}
+.assistant-home-card{border:1px solid var(--line);background:var(--card);cursor:pointer}
+.assistant-home-card .assistant-count{font-size:13px;color:var(--muted);margin-top:3px;line-height:1.45}
+.assistant-task-list{display:grid;gap:12px}
+.assistant-task{border:1px solid var(--line);border-radius:16px;background:var(--card);padding:14px}
+.assistant-task-head{display:flex;gap:10px;align-items:flex-start}
+.assistant-task-copy{min-width:0;flex:1}
+.assistant-task-title{font-size:15px;font-weight:800;color:var(--ink);line-height:1.4}
+.assistant-task-reason{font-size:13px;color:var(--muted);line-height:1.5;margin-top:4px}
+.assistant-badge{display:inline-flex;align-items:center;min-height:26px;padding:3px 9px;border-radius:999px;font-size:11px;font-weight:800;margin-bottom:8px}
+.assistant-badge.action-required{background:var(--coral-soft);color:var(--coral)}
+.assistant-badge.needs-decision{background:var(--amber-soft);color:var(--amber)}
+.assistant-badge.helpful-reminder{background:var(--blue-soft);color:var(--blue)}
+.assistant-task-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+.assistant-task-actions .btn{width:auto;min-height:44px;padding:10px 15px;font-size:13px;box-shadow:none}
+.assistant-task-dismiss{display:inline-flex;align-items:center;justify-content:center;width:44px;height:44px;border:0;border-radius:50%;background:var(--bg);color:var(--muted);font-size:18px;cursor:pointer;flex:0 0 44px}
+.assistant-task-dismiss:hover{color:var(--ink);background:var(--line)}
+.assistant-highlight{outline:3px solid var(--amber)!important;outline-offset:4px;border-radius:14px;scroll-margin-top:90px}
+.assistant-hidden-wrap{margin-top:18px;padding-top:16px;border-top:1px solid var(--line)}
 
 /* ── cards ── */
 .card{background:var(--card);border-radius:var(--r-lg);box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
@@ -146,10 +183,12 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .frow.total{border-top:2px solid var(--ink);border-bottom:0;margin-top:4px;padding-top:12px}
 
 /* ── buttons ── */
-.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:15px 20px;border:0;cursor:pointer;
-  border-radius:999px;font-size:16px;font-weight:800;color:#fff;background:var(--brand);
+.btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;padding:15px 20px;border:0;cursor:pointer;
+  border-radius:999px;font-size:16px;font-weight:800;color:var(--brand-action-ink);background:var(--brand);
   box-shadow:0 6px 16px rgba(10,169,104,.32);transition:transform .12s}
-.btn:active{transform:scale(.97)}
+.btn:hover:not(:disabled){filter:saturate(1.08) brightness(.98)}
+.btn:active{transform:scale(.97);filter:brightness(.94)}
+.btn:disabled{cursor:not-allowed;opacity:.48;box-shadow:none}
 .btn.ink{background:var(--btn-dark);color:#fff;box-shadow:0 6px 16px rgba(22,32,43,.25)}
 .btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
 .btn.danger-soft{background:var(--coral-soft);color:var(--coral);box-shadow:none}
@@ -395,6 +434,27 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .hero .pill .pv{font-size:14.5px}
   .seg button{padding:9px 2px;font-size:12px}
 }
+/* At 200% browser zoom a 390px phone has roughly a 195px CSS viewport.
+   Keep the approved components and reading order, but let their content reflow
+   instead of widening the document beyond the visible viewport. */
+@media (max-width:240px){
+  .top{padding:12px 8px 4px;gap:6px}
+  .header-brand-lockup{width:82px;height:30px}
+  .year-pill select{max-width:82px;padding:6px 20px 6px 7px;font-size:11px}
+  [dir=rtl] .year-pill select{padding:6px 7px 6px 20px}
+  .year-pill::after{inset-inline-end:7px}
+  main{padding-inline:8px}
+  .hero{padding:14px}
+  .hero .big{font-size:30px;letter-spacing:-1px}
+  .hero .hero-owe{align-items:flex-start;flex-direction:column;gap:3px;padding:9px 10px}
+  .hero .hero-owe .ho-val{white-space:normal;overflow-wrap:anywhere}
+  .hero .pills{display:grid;grid-template-columns:minmax(0,1fr)}
+  .assistant-home-card .row{align-items:flex-start;flex-wrap:wrap}
+  .assistant-home-card .link{margin-inline-start:55px}
+  [data-home-business-list] .row{align-items:flex-start;flex-wrap:wrap}
+  [data-home-business-list] .v{margin-inline-start:55px;white-space:normal}
+  nav button{min-width:0;font-size:8px;overflow-wrap:anywhere;overflow:hidden}
+}
 /* A single long word in a squeezed list row must wrap, not overflow its box. */
 .grow .t,.grow .s{overflow-wrap:break-word}
 /* Desktop: present sheets as centred dialogs rather than an enlarged phone
@@ -428,8 +488,10 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <body>
 
 <div class="top">
-  <div class="logo">£</div>
-  <div class="name">Tax<span>Mate</span></div>
+  <div class="brand-lockup header-brand-lockup">
+    <img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate">
+    <img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate">
+  </div>
   <div class="year-pill"><select id="yearSel" data-tm-change="setYear(this.value)"></select></div>
 </div>
 
@@ -441,6 +503,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <nav aria-label="Public information"><a href="/help.html">Help</a><a href="/privacy.html">Privacy Policy</a><a href="/terms.html">Terms of Use</a></nav>
 </section></main>
 <nav id="nav"></nav>
+<div id="taxmate-ltd-ui-root" hidden aria-live="polite"></div>
 
 <!-- entry sheet -->
 <div class="sb" id="sb-entry"><div class="sheet">
@@ -757,6 +820,20 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
 </div></div>
 
+<!-- TaxMate Assistant uses the existing TaxMate sheet pattern and canonical task state. -->
+<div class="sb" id="sb-assistant"><div class="sheet">
+  <div class="grab" data-tm-click="closeParentSheet(this)"></div>
+  <div class="stitle" id="assistant-title"></div>
+  <div class="sub" id="assistant-summary" style="margin-bottom:16px"></div>
+  <div class="assistant-task-list" id="assistant-task-list"></div>
+  <div class="assistant-hidden-wrap" id="assistant-hidden-wrap" hidden>
+    <div class="t" id="assistant-hidden-title" style="margin-bottom:10px"></div>
+    <div class="assistant-task-list" id="assistant-hidden-list"></div>
+  </div>
+  <button class="btn ghost" id="assistant-show-hidden" style="margin-top:14px" data-tm-click="assistantToggleHidden()"></button>
+  <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('assistant')" data-i18n="c.cancel"></button>
+</div></div>
+
 <!-- Deterministic onboarding mount: present before deferred application startup. -->
 <div id="ob-root" aria-hidden="true"></div>
 
@@ -774,15 +851,45 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/tax-engine.js"></script>
 <script src="src/core/mtd.js"></script>
 <script src="src/core/form-mappings.js"></script>
+<script src="src/core/money.js"></script>
 <script src="src/core/state-schema.js"></script>
+<script src="src/core/assistant.js"></script>
+<script src="src/core/domain-schema.js"></script>
+<script src="src/core/revision-sync.js"></script>
+<script src="src/core/partnership.js"></script>
+<script src="src/core/company-profile.js"></script>
+<script src="src/core/company-identity.js"></script>
+<script src="src/core/company-tax-rules.js"></script>
+<script src="src/core/company-profile-history.js"></script>
+<script src="src/core/company-treatment.js"></script>
+<script src="src/core/company-ledger.js"></script>
+<script src="src/core/company-remuneration-rules.js"></script>
+<script src="src/core/company-remuneration.js"></script>
+<script src="src/core/company-scenario.js"></script>
+<script src="src/core/company-tax.js"></script>
+<script src="src/core/company-deadlines.js"></script>
+<script src="src/core/company-workspace.js"></script>
+<script src="src/core/domain-migration.js"></script>
+<script src="src/integration/ltd/company-state.js"></script>
+<script src="src/integration/ltd/company-state-repository.js"></script>
+<script src="src/integration/ltd/company-structural-state.js"></script>
+<script src="src/integration/ltd/company-transaction-adapter.js"></script>
+<script src="src/integration/ltd/companies-house-provider.js"></script>
+<script src="src/core/ltd-sync.js"></script>
+<script src="src/core/company-evidence.js"></script>
 <script src="src/core/portable-backup.js"></script>
 <script src="src/core/onboarding-root.js"></script>
 <script src="src/core/sync.js"></script>
 <script src="src/core/entitlement.js"></script>
+<script src="src/core/company-access.js"></script>
+<script src="src/integration/ltd/CanonicalCompanyDriver.js"></script>
+<script src="src/integration/ltd/TaxMateLtdUIFacade.js"></script>
+<script src="src/ui/ltd/workbench-renderer.js"></script>
 <script src="src/core/pwa-install.js"></script>
 <script src="src/core/product-content.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>
+<script defer src="src/integration/ltd/TaxMateLtdProductionAdapter.js"></script>
 <script defer src="src/app/audit.js"></script>
 <!-- ═══════════ ONBOARDING OVERLAY (catch-up flow) ═══════════ -->
 <style>
@@ -794,7 +901,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-scroll{padding-bottom:130px}
   .ob-scroll .ob-wrap{padding:0 18px}
   .ob-prow{display:flex;align-items:center;gap:12px;margin-bottom:11px}
-  .ob-back{font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;line-height:1;padding:2px 4px}
+  .ob-back{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;line-height:1;padding:2px 4px}
   .ob-plabel{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
   .ob-ptrack{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
   .ob-pfill{height:100%;background:linear-gradient(90deg,var(--brand),var(--teal));border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
@@ -816,35 +923,49 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-sheet-tick{color:var(--brand);font-weight:800}
   @keyframes obFade{from{opacity:0}to{opacity:1}}
   @keyframes obSlideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
-  .ob-logo{display:flex;align-items:center;gap:10px;margin-bottom:14px}
-  .ob-logo .lo-mark{width:40px;height:40px;border-radius:12px;background:linear-gradient(135deg,var(--brand),var(--teal));display:flex;align-items:center;justify-content:center;color:#fff;font-weight:800;font-size:20px}
-  .ob-logo .lo-name{font-size:20px;font-weight:800;letter-spacing:-.4px;color:var(--ink)}
-  .ob-logo .lo-name span{color:var(--brand)}
+  .ob-logo{display:flex;align-items:center;margin-bottom:14px}
+  .onboarding-brand-lockup{width:184px;height:58px}
   .ob-tile{display:flex;align-items:center;gap:14px;width:100%;text-align:left;background:var(--card);border:1.5px solid var(--line);border-radius:18px;padding:18px;cursor:pointer;margin-bottom:12px;transition:border-color .15s,transform .12s;font-family:inherit}
   .ob-tile:active{transform:scale(.985)}
   .ob-tile.solid{border-color:var(--brand);background:var(--brand-soft)}
   .ob-seg{display:flex;gap:0;background:var(--bg);border:1.5px solid var(--line);border-radius:999px;padding:4px}
-  .ob-seg button{flex:1;border:0;background:none;border-radius:999px;padding:11px 8px;font-family:inherit;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;transition:background .15s,color .15s}
-  .ob-seg button.on{background:var(--brand);color:#fff;box-shadow:0 4px 12px rgba(10,169,104,.28)}
+  .ob-seg button{flex:1;min-height:44px;border:0;background:none;border-radius:999px;padding:11px 8px;font-family:inherit;font-size:15px;font-weight:800;color:var(--muted);cursor:pointer;transition:background .15s,color .15s,transform .12s}
+  .ob-seg button.on{background:var(--brand);color:var(--brand-action-ink);box-shadow:0 4px 12px rgba(10,169,104,.28)}
+  .ob-seg button:hover:not(:disabled){color:var(--ink)}
+  .ob-seg button:active{transform:scale(.97)}
   .ob-tile .ob-emoji{font-size:26px;flex-shrink:0;line-height:1}
   .ob-tile .ob-tt{display:block;font-size:16px;font-weight:800;color:var(--ink);line-height:1.25}
   .ob-tile .ob-ts{display:block;font-size:13px;color:var(--muted);line-height:1.35;margin-top:3px}
+  .ob-entry-pro{display:inline-block;font-size:9px;font-weight:800;letter-spacing:.5px;color:var(--brand-deep);background:var(--brand-soft);border:1px solid var(--brand);padding:2px 5px;border-radius:6px;margin-inline-start:6px;text-transform:uppercase;vertical-align:1px}
+  .ob-skiprow{text-align:center;margin-top:18px}
+  .ob-codevalue{font-size:19px;font-weight:800;letter-spacing:3px;text-align:center;color:var(--ink);font-variant-numeric:tabular-nums;margin:14px 0}
+  .ob-error{display:none;color:var(--coral);font-size:13px;font-weight:700;line-height:1.45;margin:8px 2px 0}
+  .ob-error.show{display:block}
+  .ob-busy{color:var(--muted);font-size:13px;line-height:1.45;margin-top:8px;text-align:center}
+  .tm-pro-price{display:flex;align-items:baseline;gap:7px;flex-wrap:wrap;color:var(--brand-deep);font-weight:800}
+  .tm-pro-price s{color:var(--muted);font-size:13px;font-weight:700;text-decoration-thickness:1.5px}
+  .tm-pro-price .current{font-size:17px}
+  .tm-pro-price .launch{font-size:10px;letter-spacing:.2px;color:var(--muted);font-weight:700}
+  .tm-pro-price.yearly .current{font-size:15px}
+  .tm-visually-hidden{position:absolute!important;width:1px!important;height:1px!important;padding:0!important;margin:-1px!important;overflow:hidden!important;clip:rect(0,0,0,0)!important;white-space:nowrap!important;border:0!important}
+  #ob-root .ob-gate-price{padding:14px 16px;border:1px solid var(--line);border-radius:14px;background:var(--bg);margin:12px 0}
   #ob-root .ob-card{background:var(--card);border-radius:18px;box-shadow:var(--shadow);padding:18px;margin-bottom:14px}
   #ob-root .ob-card.flat{box-shadow:none;border:1px solid var(--line)}
   #ob-root label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--ink)}
-  #ob-root input[type=text],#ob-root input[type=number]{width:100%;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none}
-  #ob-root input:focus{border-color:var(--brand)}
+  #ob-root input[type=text],#ob-root input[type=number]{width:100%;min-height:48px;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none}
+  #ob-root input:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 24%,transparent)}
   .ob-amt{position:relative}
   .ob-amt .ob-cur{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:var(--muted)}
   .ob-amt input{padding-left:34px}
   .ob-hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
-  #ob-root .ob-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:16px 20px;border:0;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;border-radius:14px;background:var(--brand);color:#fff;box-shadow:0 6px 16px rgba(10,169,104,.28);transition:transform .12s}
-  #ob-root .ob-btn:active{transform:scale(.97)}
+  #ob-root .ob-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;padding:16px 20px;border:0;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;border-radius:14px;background:var(--brand);color:var(--brand-action-ink);box-shadow:0 6px 16px rgba(10,169,104,.28);transition:transform .12s,filter .12s}
+  #ob-root .ob-btn:hover:not(:disabled){filter:saturate(1.08) brightness(.98)}
+  #ob-root .ob-btn:active{transform:scale(.97);filter:brightness(.94)}
   #ob-root .ob-btn.ghost{background:var(--card);color:var(--ink);box-shadow:var(--shadow-sm);border:1.5px solid var(--line)}
   #ob-root .ob-btn.soft{background:var(--brand-soft);color:var(--brand-deep);box-shadow:none}
-  #ob-root .ob-btn:disabled{opacity:.4;pointer-events:none}
+  #ob-root .ob-btn:disabled{opacity:.46;cursor:not-allowed;box-shadow:none}
   #ob-root .ob-btn.sm{width:auto;padding:10px 18px;font-size:14px}
-  .ob-link{background:none;border:0;color:var(--brand-deep);font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;padding:4px 0;text-decoration:underline;text-underline-offset:2px}
+  .ob-link{display:inline-flex;align-items:center;justify-content:center;min-height:44px;background:none;border:0;color:var(--brand-deep);font-family:inherit;font-weight:700;font-size:13.5px;cursor:pointer;padding:4px 8px;text-decoration:underline;text-underline-offset:2px}
   .ob-link.muted{color:var(--muted)}
   .ob-seclabel{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:800;margin:0 0 8px;color:var(--ink)}
   .ob-dot{width:9px;height:9px;border-radius:50%}
@@ -916,6 +1037,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-foot{position:fixed;left:0;right:0;bottom:0;background:var(--bg);box-shadow:0 -8px 20px -6px rgba(0,0,0,.3);padding:14px 18px calc(16px + env(safe-area-inset-bottom));z-index:10000}
   .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0}
   .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0 0}
+  .partner-success-card{margin-bottom:4px!important}
+  .local-review-note{text-align:center;margin-top:8px;color:var(--muted)}
   .ob-center{text-align:center}.ob-mt8{margin-top:8px}
   .ob-donehero{background:linear-gradient(135deg,var(--brand),var(--teal));color:#fff;border-radius:24px;padding:30px 24px;text-align:center;margin-bottom:18px;box-shadow:0 12px 30px rgba(10,169,104,.3)}
   .ob-donehero .ob-big{font-size:42px;font-weight:800;letter-spacing:-1px;margin:6px 0}

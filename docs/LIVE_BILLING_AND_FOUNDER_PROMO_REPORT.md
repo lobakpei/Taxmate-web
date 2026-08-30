@@ -1,5 +1,7 @@
 # LIVE Billing and Founder Promo Report
 
+> **SUPERSEDED HISTORICAL EVIDENCE — NOT CURRENT CONTRACT TRUTH.** This report records the earlier release state and its then-valid £7.99/month / £59.99/year Pro evidence. Founder superseded that commercial contract on 29 August 2026 with launch £9.99/month, standard £11.99/month and £99.99/year. The historical evidence below is preserved unchanged and must not be used by a current pricing gate.
+
 Status captured on 20 August 2026. No secret value is included in this report.
 
 ## Stripe LIVE identity and objects

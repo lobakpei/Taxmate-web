@@ -17,6 +17,9 @@ if (!destination.startsWith(buildRoot + path.sep)) throw new Error('Unsafe Hosti
 
 const rootFiles = [
   '404.html',
+  'apple-touch-icon.png',
+  'favicon-16x16.png',
+  'favicon-32x32.png',
   'favicon-48x48.png',
   'favicon.ico',
   'icon-192.png',
@@ -25,6 +28,7 @@ const rootFiles = [
   'index.html',
   'manifest.json',
   'og-image.png',
+  'taxmate-share-20260829.png',
   'robots.txt',
   'sitemap.xml',
   'sw.js',
@@ -38,6 +42,7 @@ const content = require(path.join(root, 'src', 'core', 'product-content.js'));
 for (const kind of ['help', 'privacy', 'terms']) fs.writeFileSync(path.join(destination, `${kind}.html`), content.publicPage(kind));
 fs.cpSync(path.join(root, 'src'), path.join(destination, 'src'), {recursive: true});
 fs.rmSync(path.join(destination, 'src', 'core', 'legal.js'), {force: true});
+fs.cpSync(path.join(root, 'assets', 'brand', 'derived'), path.join(destination, 'assets', 'brand', 'derived'), {recursive: true});
 fs.mkdirSync(path.join(destination, 'vendor'), {recursive: true});
 fs.copyFileSync(path.join(root, 'vendor', 'jszip-3.10.1.min.js'), path.join(destination, 'vendor', 'jszip-3.10.1.min.js'));
 

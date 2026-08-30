@@ -42,12 +42,45 @@ service cloud.firestore {
         && request.resource.data.deviceId is string
         && request.resource.data.schemaVersion == 5;
     }
+    function validLtdRecord(collection, recordId) {
+      return collection in ['persons', 'entities', 'companyProfiles', 'companyProfileRevisions', 'companyOwnershipVersions', 'projects', 'paymentAccounts', 'economicEvents', 'companyTaxPeriods', 'companyLossRecords', 'salaryRecords', 'dividendDeclarations', 'personalIncomeLinks']
+        && request.resource.data.keys().hasOnly(['schemaVersion', 'companyId', 'collection', 'documentId', 'recordId', 'revision', 'updatedAt', 'deviceId', 'deletedAt', 'payload', 'checksum'])
+        && request.resource.data.schemaVersion == 1
+        && request.resource.data.companyId is string
+        && request.resource.data.companyId.size() > 0
+        && request.resource.data.collection == collection
+        && request.resource.data.documentId == recordId
+        && request.resource.data.recordId is string
+        && request.resource.data.recordId.size() > 0
+        && request.resource.data.payload is map
+        && request.resource.data.payload.id == request.resource.data.recordId
+        && request.resource.data.updatedAt is number
+        && request.resource.data.updatedAt >= 0
+        && request.resource.data.revision is number
+        && (request.resource.data.deletedAt == null || request.resource.data.deletedAt is number)
+        && request.resource.data.deviceId is string
+        && request.resource.data.deviceId.size() <= 128
+        && request.resource.data.checksum is string
+        && request.resource.data.checksum.size() <= 128;
+    }
+    function activeLtdAnchorPath(uid) { return /databases/$(database)/documents/users/$(uid)/ltdControl/activeCompany; }
+    function activeLtdMatches(uid) {
+      return exists(activeLtdAnchorPath(uid))
+        && get(activeLtdAnchorPath(uid)).data.status == 'active_slot_claimed'
+        && get(activeLtdAnchorPath(uid)).data.activeCompanyId == request.resource.data.companyId;
+    }
 
     match /users/{uid} {
       allow read, write: if owner(uid);
       match /entries/{entryId} { allow read: if owner(uid); allow create, update: if owner(uid) && validRecord() && request.resource.data.id == entryId; allow delete: if false; }
       match /app/{document=**} { allow read, write: if owner(uid); }
       match /entitlements/{document=**} { allow read: if owner(uid); allow write: if false; }
+      match /ltdControl/{document=**} { allow read: if owner(uid); allow write: if false; }
+      match /ltd/v1/{collection}/{recordId} {
+        allow read: if owner(uid);
+        allow create, update: if owner(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId);
+        allow delete: if false;
+      }
     }
 
     match /partnerships/{partnershipId} {

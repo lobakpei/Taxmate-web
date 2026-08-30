@@ -1,0 +1,13 @@
+{
+  "schemaVersion": 1,
+  "authority": "authenticated_audit_package_source_manifest",
+  "authorizedProductionCommit": "41252f319d6c695dcb96105f524282a4e916145c",
+  "authorizedProductionTree": "b5a7d00f4333bd17ee3e41e592c4972a7d5a98a9",
+  "part1ProductionBaseCommit": "da7092c15ff4eb565c46d0153f2a9e08cadc8079",
+  "part1ProductionBaseTree": "0d72fd6d52d6206c62179a66f44b215934154415",
+  "preservedAssets": {
+    "evidence/w0/live-index.html": "73d6b65db4f12b8f7f3edf99a953db8087f9c797415eda0a888352a4ddd12642",
+    "evidence/w0/live-manifest.json": "ac80212cf9c2b9f9d0b9cfcb87b8ef5462770b4d8256361d542aff46c1e74e89",
+    "evidence/w0/live-sw.js": "53a6cb17af99c4606ed423730fc4c2bc710e461851cdc06a4729629b271025ce"
+  }
+}

@@ -12,7 +12,7 @@ const root=path.resolve(__dirname,'../..');
 const artifact=path.join(root,'.hosting-build','sync-runtime-browser');
 const evidence=path.resolve(process.env.TAXMATE_SYNC_RUNTIME_EVIDENCE||path.join(root,'.sync-runtime-browser-evidence'));
 const resultPath=path.join(evidence,'sync-runtime-browser-result.json');
-const currentCache='taxmate-v2-sync-runtime-integrity-2';
+const currentCache=require('../../src/core/versions').VERSIONS.PWA_CACHE_VERSION;
 const oldCache='taxmate-test-old-shell';
 const pendingRaw=' {"version":1,"items":[{"kind":"partnership-entry","key":"partnership-entry:owner:biz:pending-1","ownerUid":"owner","code":"TESTBIZ1","record":{"id":"pending-1","updatedAt":1},"status":"waiting"}],"lastSuccessAt":0}\r\n';
 const cases=[],externalRequests=[],sentryRequests=[],contexts=new Set(),servers=new Set(),profiles=new Set();

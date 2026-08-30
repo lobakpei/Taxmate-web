@@ -40,16 +40,44 @@ test('promotion redemption is independent and appears before every plan card', (
   assert.doesNotMatch(app, /if\(tier==='pro'\)[^\n]*promo\.redeem/);
 });
 
-test('monthly and yearly cadence extends the approved Plans UI without changing plan structure',()=>{
+test('Plans UI keeps Plus cadence and exposes the complete Founder-approved Pro pricing',()=>{
   assert.match(app,/data-billing-cadence="monthly"/);
   assert.match(app,/data-billing-cadence="yearly"/);
   assert.match(app,/min-height:19px/);
   assert.match(app,/style\.visibility=cadence==='yearly'\?'visible':'hidden'/);
   assert.match(app,/£3\.99 \/ month/);
   assert.match(app,/£29\.99 \/ year/);
-  assert.match(app,/£7\.99 \/ month/);
-  assert.match(app,/£59\.99 \/ year/);
+  assert.match(app,/const accessible=t\('billing\.monthlyAria'\)/);
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99\/month<\/bdi>/);
+  assert.match(app,/£99\.99\/year/);
+  assert.doesNotMatch(app,/Pro annual price not yet available|Annual Pro price pending|Founder decision pending/i);
+  assert.doesNotMatch(app,/Was £11\.99/);
   assert.match(app,/BILLING_CADENCE/);
+  assert.match(app,/!isCurrent&&tier==='pro'/);
   assert.match(app,/createCheckoutSession',\{tier,cadence:BILLING_CADENCE\}/);
-  assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year/i);
+  assert.doesNotMatch(app,/BEST VALUE|MOST POPULAR|Pay once for the year|Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);
+});
+
+test('draft persistence has one-shot suppression while canonical emits always repaint',()=>{
+  const renderer=fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8');
+  const adapter=fs.readFileSync('src/integration/ltd/TaxMateLtdProductionAdapter.js','utf8');
+  assert.match(renderer,/UI\.skipNextDraftEmitRender\+=1;\s*try\{\s*run\('onDraftChanged'/);
+  assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)\{\s*UI\.skipNextDraftEmitRender-=1;\s*return; \/\/ consume only the draft persistence emit/);
+  assert.match(renderer,/finally \{[\s\S]*if\(UI\.skipNextDraftEmitRender>0\) UI\.skipNextDraftEmitRender-=1;/);
+  assert.match(renderer,/onDraftChanged[^\n]*\{skipPaint:true\}/);
+  assert.match(renderer,/else if\(!opts\.skipPaint\) paint\(\)/);
+  assert.doesNotMatch(renderer,/if\s*\(\s*key\s*===\s*UI\.mountedKey\s*\)\s*\{?\s*return/);
+  assert.match(adapter,/taxmate:canonical-state-updated'[\s\S]*driver\.reload\(\);facade\.emit\(\)/);
+  assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
+  assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)[\s\S]*paint\(\);\s*\}\s*\n\s*function paint/);
+});
+
+test('Ltd entry clears personal overlays without scheduling a personal prompt and has a CSS fail-safe',()=>{
+  assert.match(app,/function closePersonalSurfacesForLtd\(\)\{[\s\S]*querySelectorAll\('\.sb\.open'\)[\s\S]*classList\.remove\('sheet-open'\)[\s\S]*taxmate-lightbox[\s\S]*pwaProactivePending=false;[\s\S]*sheetOpener=null;[\s\S]*LB=\{url:'',path:''\};/);
+  assert.match(app,/enterLtd\(\)\{closePersonalSurfacesForLtd\(\);/);
+  assert.match(app,/function openSheet\(id\)\{ if\(document\.body\.classList\.contains\('ltd-active'\)\)return false;/);
+  const cleanup=app.match(/function closePersonalSurfacesForLtd\(\)\{[\s\S]*?\n\}/)[0];
+  assert.doesNotMatch(cleanup,/maybeOpenPendingPwaSuggestion|openSheet\(/);
+  assert.match(html,/body\.ltd-active \.sb,[\s\S]*body\.ltd-active>#taxmate-lightbox,[\s\S]*body\.ltd-active>#taxmate-toast,[\s\S]*body\.ltd-active>#ob-root\{display:none!important;visibility:hidden!important;pointer-events:none!important\}/);
+  assert.match(html,/body\.ltd-active\.sheet-open\{overflow:auto\}/);
 });

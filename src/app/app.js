@@ -358,10 +358,16 @@ en:{
  'ob.codeLogin':'Got a partner sync code? — please sign in first.',
  'ob.howStart':'How would you like to get started?',
  'ob.together':'Let\'s do this together',
- 'ob.togetherS':'I\'ll walk you through it — then you\'ll know what you owe.',
+ 'ob.togetherS':'Sole trader or partnership',
+ 'ob.ltdEntry':'Set up a Limited Company','ob.ltdEntryS':'New or existing company',
+ 'ob.partnerEntry':'Enter a Partner Sync code','ob.partnerEntryS':'Connect an existing business',
  'ob.dash':'Go straight to dashboard',
  'ob.dashS':'I know what I\'m doing.',
  'ob.codeEntry':'Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
+ 'ob.ltdChoiceTitle':'Which best describes your company?','ob.ltdExisting':'I already have a company','ob.ltdExistingS':'Add its Companies House details','ob.ltdForming':'I’m setting one up','ob.ltdFormingS':'Start before registration is complete',
+ 'ob.registrationTitle':'Where are you up to?','ob.notRegistered':'Not registered yet','ob.notRegisteredS':'Save a working company name and continue later','ob.registered':'I have registered it','ob.registeredS':'Check the company using its Companies House number',
+ 'ob.partnerTitle':'Enter your Partner Sync code','ob.partnerBody':'Use the 8-character code shared by the business owner.','ob.partnerConfirmTitle':'Connect this business?','ob.partnerConfirmBody':'TaxMate will use this code to connect the partnership and sync its business records. Your personal records stay private.','ob.confirmConnect':'Confirm & connect','ob.connecting':'Connecting…','ob.connected':'Business connected',
+ 'ob.proRequired':'Pro required','ob.proRequiredBody':'Limited companies and Partner Sync are included in Pro.','ob.havePromo':'Have a promotion code?','ob.upgrade':'Upgrade to Pro','ob.entitlementPending':'Checking your Pro access…','ob.promoNoPro':'The code was accepted, but Pro access is not active yet. Please try again shortly.','ob.back':'Back',
  'ob.run':'How do you run it?',
  'ob.partner':'With a partner',
  'ob.shareLabel':'Your share of the profit',
@@ -843,10 +849,16 @@ zh:{
  'ob.codeLogin':'有 partner sync code？請先登入。',
  'ob.howStart':'想點樣開始？',
  'ob.together':'一齊嚟啦',
- 'ob.togetherS':'我會一步步陪你行——跟住你就知要交幾多稅。',
+ 'ob.togetherS':'自僱人士或合夥業務',
+ 'ob.ltdEntry':'設定有限公司','ob.ltdEntryS':'新公司或現有公司',
+ 'ob.partnerEntry':'輸入 Partner Sync 代碼','ob.partnerEntryS':'連接現有業務',
  'ob.dash':'直接去主頁',
  'ob.dashS':'我識㗎喇。',
  'ob.codeEntry':'有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
+ 'ob.ltdChoiceTitle':'邊項最符合你間公司？','ob.ltdExisting':'我已經有一間公司','ob.ltdExistingS':'加入 Companies House 資料','ob.ltdForming':'我正在成立公司','ob.ltdFormingS':'註冊完成前先開始',
+ 'ob.registrationTitle':'而家進行到邊一步？','ob.notRegistered':'尚未註冊','ob.notRegisteredS':'先保存暫用公司名稱，之後繼續','ob.registered':'我已經完成註冊','ob.registeredS':'用 Companies House 編號核對公司',
+ 'ob.partnerTitle':'輸入 Partner Sync 代碼','ob.partnerBody':'輸入業務擁有人提供嘅8位代碼。','ob.partnerConfirmTitle':'連接呢個業務？','ob.partnerConfirmBody':'TaxMate會用呢個代碼連接合夥業務並同步業務記錄。你嘅私人記錄會保持私隱。','ob.confirmConnect':'確認並連接','ob.connecting':'連接中…','ob.connected':'業務已連接',
+ 'ob.proRequired':'需要 Pro','ob.proRequiredBody':'有限公司及 Partner Sync 已包括喺 Pro。','ob.havePromo':'有推廣代碼？','ob.upgrade':'升級至 Pro','ob.entitlementPending':'正在核對 Pro 權限…','ob.promoNoPro':'代碼已接受，但 Pro 權限尚未生效。請稍後再試。','ob.back':'返回',
  'ob.run':'你點樣經營？',
  'ob.partner':'同拍檔一齊',
  'ob.shareLabel':'你佔利潤幾多',
@@ -1328,10 +1340,16 @@ pl:{
  'ob.codeLogin':'Masz partner sync code? Najpierw się zaloguj.',
  'ob.howStart':'Jak chcesz zacząć?',
  'ob.together':'Zróbmy to razem',
- 'ob.togetherS':'Poprowadzę Cię krok po kroku — zobaczysz, ile podatku odłożyć.',
+ 'ob.togetherS':'Samozatrudnienie lub spółka osobowa',
+ 'ob.ltdEntry':'Skonfiguruj spółkę z o.o.','ob.ltdEntryS':'Nowa lub istniejąca spółka',
+ 'ob.partnerEntry':'Wpisz kod Partner Sync','ob.partnerEntryS':'Połącz istniejącą firmę',
  'ob.dash':'Przejdź od razu do pulpitu',
  'ob.dashS':'Wiem, co robię.',
  'ob.codeEntry':'Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
+ 'ob.ltdChoiceTitle':'Która opcja opisuje Twoją spółkę?','ob.ltdExisting':'Mam już spółkę','ob.ltdExistingS':'Dodaj dane z Companies House','ob.ltdForming':'Zakładam spółkę','ob.ltdFormingS':'Zacznij przed zakończeniem rejestracji',
+ 'ob.registrationTitle':'Na jakim jesteś etapie?','ob.notRegistered':'Jeszcze niezarejestrowana','ob.notRegisteredS':'Zapisz roboczą nazwę i wróć później','ob.registered':'Spółka jest zarejestrowana','ob.registeredS':'Sprawdź spółkę po numerze Companies House',
+ 'ob.partnerTitle':'Wpisz kod Partner Sync','ob.partnerBody':'Użyj 8-znakowego kodu od właściciela firmy.','ob.partnerConfirmTitle':'Połączyć tę firmę?','ob.partnerConfirmBody':'TaxMate użyje kodu do połączenia spółki osobowej i synchronizacji danych firmy. Twoje dane osobiste pozostaną prywatne.','ob.confirmConnect':'Potwierdź i połącz','ob.connecting':'Łączenie…','ob.connected':'Firma połączona',
+ 'ob.proRequired':'Wymagany Pro','ob.proRequiredBody':'Spółki z o.o. i Partner Sync są dostępne w Pro.','ob.havePromo':'Masz kod promocyjny?','ob.upgrade':'Przejdź na Pro','ob.entitlementPending':'Sprawdzanie dostępu Pro…','ob.promoNoPro':'Kod został przyjęty, ale dostęp Pro nie jest jeszcze aktywny. Spróbuj ponownie za chwilę.','ob.back':'Wstecz',
  'ob.run':'Jak prowadzisz działalność?',
  'ob.partner':'Ze wspólnikiem',
  'ob.shareLabel':'Twój udział w zysku',
@@ -1813,10 +1831,16 @@ ro:{
  'ob.codeLogin':'Ai un partner sync code? Conectează-te mai întâi.',
  'ob.howStart':'Cum vrei să începi?',
  'ob.together':'Hai să o facem împreună',
- 'ob.togetherS':'Te ghidez pas cu pas — apoi știi exact cât ai de plătit.',
+ 'ob.togetherS':'Activitate independentă sau parteneriat',
+ 'ob.ltdEntry':'Configurează o societate limitată','ob.ltdEntryS':'Societate nouă sau existentă',
+ 'ob.partnerEntry':'Introdu un cod Partner Sync','ob.partnerEntryS':'Conectează o afacere existentă',
  'ob.dash':'Direct la panou',
  'ob.dashS':'Știu ce fac.',
  'ob.codeEntry':'Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
+ 'ob.ltdChoiceTitle':'Ce descrie cel mai bine societatea?','ob.ltdExisting':'Am deja o societate','ob.ltdExistingS':'Adaugă datele Companies House','ob.ltdForming':'Înființez una','ob.ltdFormingS':'Începe înainte de finalizarea înregistrării',
+ 'ob.registrationTitle':'În ce etapă ești?','ob.notRegistered':'Încă neînregistrată','ob.notRegisteredS':'Salvează o denumire de lucru și continuă mai târziu','ob.registered':'Am înregistrat-o','ob.registeredS':'Verifică societatea cu numărul Companies House',
+ 'ob.partnerTitle':'Introdu codul Partner Sync','ob.partnerBody':'Folosește codul de 8 caractere oferit de proprietarul afacerii.','ob.partnerConfirmTitle':'Conectezi această afacere?','ob.partnerConfirmBody':'TaxMate va folosi codul pentru a conecta parteneriatul și a sincroniza datele afacerii. Datele personale rămân private.','ob.confirmConnect':'Confirmă și conectează','ob.connecting':'Se conectează…','ob.connected':'Afacere conectată',
+ 'ob.proRequired':'Este necesar Pro','ob.proRequiredBody':'Societățile limitate și Partner Sync sunt incluse în Pro.','ob.havePromo':'Ai un cod promoțional?','ob.upgrade':'Treci la Pro','ob.entitlementPending':'Se verifică accesul Pro…','ob.promoNoPro':'Codul a fost acceptat, dar accesul Pro nu este încă activ. Încearcă din nou în curând.','ob.back':'Înapoi',
  'ob.run':'Cum lucrezi?',
  'ob.partner':'Cu un partener',
  'ob.shareLabel':'Partea ta din profit',
@@ -2298,10 +2322,16 @@ es:{
  'ob.codeLogin':'¿Tienes un partner sync code? Inicia sesión primero.',
  'ob.howStart':'¿Cómo quieres empezar?',
  'ob.together':'Hagámoslo juntos',
- 'ob.togetherS':'Te guío paso a paso — y sabrás exactamente cuánto debes.',
+ 'ob.togetherS':'Autónomo o sociedad colectiva',
+ 'ob.ltdEntry':'Configurar una sociedad limitada','ob.ltdEntryS':'Sociedad nueva o existente',
+ 'ob.partnerEntry':'Introducir un código Partner Sync','ob.partnerEntryS':'Conectar una empresa existente',
  'ob.dash':'Ir directo al panel',
  'ob.dashS':'Sé lo que hago.',
  'ob.codeEntry':'¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
+ 'ob.ltdChoiceTitle':'¿Qué describe mejor tu sociedad?','ob.ltdExisting':'Ya tengo una sociedad','ob.ltdExistingS':'Añadir sus datos de Companies House','ob.ltdForming':'Estoy creando una','ob.ltdFormingS':'Empezar antes de completar el registro',
+ 'ob.registrationTitle':'¿En qué punto estás?','ob.notRegistered':'Aún no está registrada','ob.notRegisteredS':'Guarda un nombre provisional y continúa después','ob.registered':'Ya la he registrado','ob.registeredS':'Comprobar la sociedad con su número de Companies House',
+ 'ob.partnerTitle':'Introduce el código Partner Sync','ob.partnerBody':'Usa el código de 8 caracteres facilitado por el propietario.','ob.partnerConfirmTitle':'¿Conectar esta empresa?','ob.partnerConfirmBody':'TaxMate usará el código para conectar la sociedad y sincronizar sus datos. Tus registros personales seguirán siendo privados.','ob.confirmConnect':'Confirmar y conectar','ob.connecting':'Conectando…','ob.connected':'Empresa conectada',
+ 'ob.proRequired':'Se necesita Pro','ob.proRequiredBody':'Las sociedades limitadas y Partner Sync están incluidos en Pro.','ob.havePromo':'¿Tienes un código promocional?','ob.upgrade':'Mejorar a Pro','ob.entitlementPending':'Comprobando tu acceso Pro…','ob.promoNoPro':'El código se aceptó, pero el acceso Pro aún no está activo. Vuelve a intentarlo en breve.','ob.back':'Atrás',
  'ob.run':'¿Cómo trabajas?',
  'ob.partner':'Con un socio',
  'ob.shareLabel':'Tu parte del beneficio',
@@ -2781,10 +2811,16 @@ ur:{
  'ob.codeLogin':'partner sync code ہے؟ پہلے سائن ان کریں۔',
  'ob.howStart':'آپ کیسے شروع کرنا چاہیں گے؟',
  'ob.together':'آئیں مل کر کریں',
- 'ob.togetherS':'میں قدم بہ قدم ساتھ چلوں گا — پھر آپ کو معلوم ہوگا کہ کتنا ٹیکس بنتا ہے۔',
+ 'ob.togetherS':'سیلف ایمپلائڈ یا پارٹنرشپ',
+ 'ob.ltdEntry':'لمیٹڈ کمپنی سیٹ اپ کریں','ob.ltdEntryS':'نئی یا موجودہ کمپنی',
+ 'ob.partnerEntry':'Partner Sync کوڈ درج کریں','ob.partnerEntryS':'موجودہ کاروبار جوڑیں',
  'ob.dash':'سیدھا ڈیش بورڈ پر جائیں',
  'ob.dashS':'مجھے معلوم ہے۔',
  'ob.codeEntry':'partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
+ 'ob.ltdChoiceTitle':'آپ کی کمپنی کی بہتر وضاحت کون سی ہے؟','ob.ltdExisting':'میری کمپنی پہلے سے موجود ہے','ob.ltdExistingS':'Companies House کی تفصیلات شامل کریں','ob.ltdForming':'میں کمپنی بنا رہا ہوں','ob.ltdFormingS':'رجسٹریشن مکمل ہونے سے پہلے شروع کریں',
+ 'ob.registrationTitle':'آپ کس مرحلے پر ہیں؟','ob.notRegistered':'ابھی رجسٹرڈ نہیں','ob.notRegisteredS':'عارضی نام محفوظ کریں اور بعد میں جاری رکھیں','ob.registered':'میں نے اسے رجسٹر کر لیا ہے','ob.registeredS':'Companies House نمبر سے کمپنی چیک کریں',
+ 'ob.partnerTitle':'Partner Sync کوڈ درج کریں','ob.partnerBody':'کاروبار کے مالک کا دیا ہوا 8 حروف کا کوڈ استعمال کریں۔','ob.partnerConfirmTitle':'یہ کاروبار جوڑیں؟','ob.partnerConfirmBody':'TaxMate اس کوڈ سے پارٹنرشپ جوڑے گا اور کاروباری ریکارڈ sync کرے گا۔ آپ کے ذاتی ریکارڈ نجی رہیں گے۔','ob.confirmConnect':'تصدیق کریں اور جوڑیں','ob.connecting':'جوڑا جا رہا ہے…','ob.connected':'کاروبار جڑ گیا',
+ 'ob.proRequired':'Pro درکار ہے','ob.proRequiredBody':'لمیٹڈ کمپنیاں اور Partner Sync، Pro میں شامل ہیں۔','ob.havePromo':'پروموشن کوڈ ہے؟','ob.upgrade':'Pro میں اپ گریڈ کریں','ob.entitlementPending':'Pro رسائی چیک ہو رہی ہے…','ob.promoNoPro':'کوڈ قبول ہو گیا، مگر Pro رسائی ابھی فعال نہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔','ob.back':'واپس',
  'ob.run':'آپ کام کیسے چلاتے ہیں؟',
  'ob.partner':'پارٹنر کے ساتھ',
  'ob.shareLabel':'منافع میں آپ کا حصہ',
@@ -2947,10 +2983,49 @@ Object.assign(I18N.ur,{
   'sug.title':'تجویز کردہ زمرے','sug.hint':'آپ کے کام کی قسم کی بنیاد پر۔ جن زمروں کی ضرورت ہو انہیں شامل کرنے کے لیے چھوئیں۔','sug.add':'منتخب زمرے شامل کریں','sug.skip':'چھوڑ دیں','sug.added':'{n} زمرے شامل ہو گئے','ob.partnerSync':'پارٹنر سنک','rep.desc':'آپ، آپ کے اکاؤنٹنٹ یا رہن کے لیے مکمل سالانہ خلاصہ۔','tax.emptyT':'اپنا تخمینہ دیکھنے کے لیے کاروبار شامل کریں','tax.emptyS':'کاروبار شامل کرنے اور آمدنی درج کرنے کے بعد آپ کی ٹیکس صورتحال یہاں دکھائی دے گی۔'
 });
 
+// Home business-type truth and TaxMate Assistant. English is canonical and every
+// user-facing key has an explicit value in all six supported locales.
+Object.assign(I18N.en,{
+  'home.selfProfit':'Your self-employed profit · {y}','home.ltdSeparate':'Limited Company figures are shown separately.','home.ltdHeroTitle':'Your Limited Company','home.accountsPeriod':'Accounts period','home.setupPending':'Setup pending','home.openCompany':'Open company →',
+  'assistant.title':'TaxMate assistant','assistant.countOne':'1 thing needs your attention','assistant.countMany':'{n} things need your attention','assistant.review':'Review →','assistant.none':'Nothing needs your attention right now.','assistant.actionRequired':'Action required','assistant.needsDecision':'Needs your decision','assistant.helpful':'Helpful reminder','assistant.hiddenTitle':'Hidden reminders','assistant.showHidden':'Show hidden reminders','assistant.hideHidden':'Hide hidden reminders','assistant.restore':'Restore reminder','assistant.dismiss':'Hide reminder',
+  'assistant.dateTitle':'{amount} {kind} — exact date missing','assistant.dateReason':'{business} needs an exact date, or your decision to keep the estimated date.','assistant.requiredTitle':'{amount} {kind} needs checking','assistant.requiredReason':'Add the missing {fields} so TaxMate can use this record reliably.','assistant.ltdTitle':'{company} setup isn’t finished','assistant.ltdReason':'Finish the company facts before relying on its accounts and tax position.','assistant.receiptTitle':'{n} expenses need receipts','assistant.receiptReason':'Add receipt photos for {business}, or hide this reminder for {year}.',
+  'assistant.addExactDate':'Add exact date','assistant.keepEstimated':'Keep estimated date','assistant.fixEntry':'Fix this entry','assistant.resumeLtd':'Resume setup','assistant.removeLtd':'Remove this Limited Company setup','assistant.removeLtdTitle':'Remove this Limited Company setup?','assistant.removeLtdBody':'This removes the unfinished company setup. It does not hide a completed company or change personal bookkeeping.','assistant.openReceipts':'Add receipts','assistant.income':'income','assistant.expense':'expense','assistant.amount':'amount','assistant.business':'business','assistant.category':'category'
+});
+Object.assign(I18N.zh,{
+  'home.selfProfit':'你嘅自僱利潤 · {y}','home.ltdSeparate':'有限公司數字會分開顯示。','home.ltdHeroTitle':'你嘅有限公司','home.accountsPeriod':'會計期間','home.setupPending':'設定未完成','home.openCompany':'開啟公司 →',
+  'assistant.title':'TaxMate 助手','assistant.countOne':'有 1 件事需要你處理','assistant.countMany':'有 {n} 件事需要你處理','assistant.review':'查看 →','assistant.none':'目前冇需要你處理嘅事項。','assistant.actionRequired':'必須處理','assistant.needsDecision':'需要你決定','assistant.helpful':'實用提醒','assistant.hiddenTitle':'已隱藏提醒','assistant.showHidden':'顯示已隱藏提醒','assistant.hideHidden':'收起已隱藏提醒','assistant.restore':'恢復提醒','assistant.dismiss':'隱藏提醒',
+  'assistant.dateTitle':'{amount} {kind} — 未有確實日期','assistant.dateReason':'{business}需要確實日期，或者由你確認保留估算日期。','assistant.requiredTitle':'{amount} {kind}需要核對','assistant.requiredReason':'請補上{fields}，TaxMate先可以可靠使用呢筆記錄。','assistant.ltdTitle':'{company}設定未完成','assistant.ltdReason':'請完成公司資料，先好依賴相關帳目同稅務結果。','assistant.receiptTitle':'有 {n} 筆開支需要收據','assistant.receiptReason':'為{business}加入收據相片，或者隱藏{year}年度呢個提醒。',
+  'assistant.addExactDate':'加入確實日期','assistant.keepEstimated':'保留估算日期','assistant.fixEntry':'修正呢筆記錄','assistant.resumeLtd':'繼續設定','assistant.removeLtd':'移除呢個有限公司設定','assistant.removeLtdTitle':'移除呢個有限公司設定？','assistant.removeLtdBody':'呢個操作只會移除未完成嘅公司設定，唔會隱藏已完成公司或改動個人記帳。','assistant.openReceipts':'加入收據','assistant.income':'收入','assistant.expense':'開支','assistant.amount':'金額','assistant.business':'業務','assistant.category':'分類'
+});
+Object.assign(I18N.pl,{
+  'home.selfProfit':'Twój zysk z samozatrudnienia · {y}','home.ltdSeparate':'Dane spółki Limited Company są pokazane osobno.','home.ltdHeroTitle':'Twoja spółka Limited Company','home.accountsPeriod':'Okres rozliczeniowy','home.setupPending':'Konfiguracja nieukończona','home.openCompany':'Otwórz spółkę →',
+  'assistant.title':'Asystent TaxMate','assistant.countOne':'1 sprawa wymaga uwagi','assistant.countMany':'{n} spraw wymaga uwagi','assistant.review':'Sprawdź →','assistant.none':'Obecnie nic nie wymaga Twojej uwagi.','assistant.actionRequired':'Wymagane działanie','assistant.needsDecision':'Potrzebna decyzja','assistant.helpful':'Przydatne przypomnienie','assistant.hiddenTitle':'Ukryte przypomnienia','assistant.showHidden':'Pokaż ukryte przypomnienia','assistant.hideHidden':'Ukryj przypomnienia','assistant.restore':'Przywróć przypomnienie','assistant.dismiss':'Ukryj przypomnienie',
+  'assistant.dateTitle':'{amount} {kind} — brak dokładnej daty','assistant.dateReason':'Dla {business} dodaj dokładną datę albo zachowaj datę szacunkową.','assistant.requiredTitle':'{amount} {kind} wymaga sprawdzenia','assistant.requiredReason':'Uzupełnij: {fields}, aby TaxMate mógł bezpiecznie użyć wpisu.','assistant.ltdTitle':'Konfiguracja {company} nie jest ukończona','assistant.ltdReason':'Uzupełnij dane spółki przed użyciem wyników księgowych i podatkowych.','assistant.receiptTitle':'{n} wydatków wymaga paragonów','assistant.receiptReason':'Dodaj zdjęcia paragonów dla {business} albo ukryj przypomnienie za {year}.',
+  'assistant.addExactDate':'Dodaj dokładną datę','assistant.keepEstimated':'Zachowaj datę szacunkową','assistant.fixEntry':'Popraw wpis','assistant.resumeLtd':'Wznów konfigurację','assistant.removeLtd':'Usuń tę konfigurację Limited Company','assistant.removeLtdTitle':'Usunąć tę konfigurację Limited Company?','assistant.removeLtdBody':'Usuwa tylko nieukończoną konfigurację spółki. Nie zmienia księgowości osobistej.','assistant.openReceipts':'Dodaj paragony','assistant.income':'przychód','assistant.expense':'wydatek','assistant.amount':'kwota','assistant.business':'firma','assistant.category':'kategoria'
+});
+Object.assign(I18N.ro,{
+  'home.selfProfit':'Profitul tău din activitatea independentă · {y}','home.ltdSeparate':'Cifrele societății sunt afișate separat.','home.ltdHeroTitle':'Societatea ta','home.accountsPeriod':'Perioada contabilă','home.setupPending':'Configurare nefinalizată','home.openCompany':'Deschide societatea →',
+  'assistant.title':'Asistent TaxMate','assistant.countOne':'1 lucru necesită atenție','assistant.countMany':'{n} lucruri necesită atenție','assistant.review':'Verifică →','assistant.none':'Nimic nu necesită atenție acum.','assistant.actionRequired':'Acțiune necesară','assistant.needsDecision':'Decizia ta este necesară','assistant.helpful':'Memento util','assistant.hiddenTitle':'Mementouri ascunse','assistant.showHidden':'Arată mementourile ascunse','assistant.hideHidden':'Ascunde mementourile','assistant.restore':'Restaurează mementoul','assistant.dismiss':'Ascunde mementoul',
+  'assistant.dateTitle':'{amount} {kind} — lipsește data exactă','assistant.dateReason':'Pentru {business}, adaugă data exactă sau păstrează data estimată.','assistant.requiredTitle':'{amount} {kind} necesită verificare','assistant.requiredReason':'Completează {fields} pentru ca TaxMate să folosească sigur înregistrarea.','assistant.ltdTitle':'Configurarea {company} nu este finalizată','assistant.ltdReason':'Finalizează datele societății înainte de a folosi rezultatele contabile și fiscale.','assistant.receiptTitle':'{n} cheltuieli necesită bonuri','assistant.receiptReason':'Adaugă fotografii pentru {business} sau ascunde mementoul pentru {year}.',
+  'assistant.addExactDate':'Adaugă data exactă','assistant.keepEstimated':'Păstrează data estimată','assistant.fixEntry':'Corectează înregistrarea','assistant.resumeLtd':'Continuă configurarea','assistant.removeLtd':'Elimină această configurare de societate','assistant.removeLtdTitle':'Elimini această configurare de societate?','assistant.removeLtdBody':'Elimină doar configurarea nefinalizată și nu modifică evidența personală.','assistant.openReceipts':'Adaugă bonuri','assistant.income':'venit','assistant.expense':'cheltuială','assistant.amount':'suma','assistant.business':'afacerea','assistant.category':'categoria'
+});
+Object.assign(I18N.es,{
+  'home.selfProfit':'Tu beneficio por cuenta propia · {y}','home.ltdSeparate':'Las cifras de la sociedad se muestran por separado.','home.ltdHeroTitle':'Tu sociedad limitada','home.accountsPeriod':'Período contable','home.setupPending':'Configuración pendiente','home.openCompany':'Abrir sociedad →',
+  'assistant.title':'Asistente TaxMate','assistant.countOne':'1 asunto requiere tu atención','assistant.countMany':'{n} asuntos requieren tu atención','assistant.review':'Revisar →','assistant.none':'Ahora mismo nada requiere tu atención.','assistant.actionRequired':'Acción necesaria','assistant.needsDecision':'Necesita tu decisión','assistant.helpful':'Recordatorio útil','assistant.hiddenTitle':'Recordatorios ocultos','assistant.showHidden':'Mostrar recordatorios ocultos','assistant.hideHidden':'Ocultar recordatorios','assistant.restore':'Restaurar recordatorio','assistant.dismiss':'Ocultar recordatorio',
+  'assistant.dateTitle':'{amount} {kind} — falta la fecha exacta','assistant.dateReason':'Para {business}, añade la fecha exacta o conserva la fecha estimada.','assistant.requiredTitle':'{amount} {kind} necesita revisión','assistant.requiredReason':'Añade {fields} para que TaxMate use este registro de forma fiable.','assistant.ltdTitle':'La configuración de {company} no está terminada','assistant.ltdReason':'Completa los datos de la sociedad antes de usar sus resultados contables y fiscales.','assistant.receiptTitle':'{n} gastos necesitan recibos','assistant.receiptReason':'Añade fotos para {business} u oculta este recordatorio de {year}.',
+  'assistant.addExactDate':'Añadir fecha exacta','assistant.keepEstimated':'Conservar fecha estimada','assistant.fixEntry':'Corregir registro','assistant.resumeLtd':'Continuar configuración','assistant.removeLtd':'Eliminar esta configuración de sociedad','assistant.removeLtdTitle':'¿Eliminar esta configuración de sociedad?','assistant.removeLtdBody':'Solo elimina la configuración sin terminar y no modifica la contabilidad personal.','assistant.openReceipts':'Añadir recibos','assistant.income':'ingreso','assistant.expense':'gasto','assistant.amount':'importe','assistant.business':'negocio','assistant.category':'categoría'
+});
+Object.assign(I18N.ur,{
+  'home.selfProfit':'آپ کا ذاتی کاروباری منافع · {y}','home.ltdSeparate':'Limited Company کے اعداد الگ دکھائے گئے ہیں۔','home.ltdHeroTitle':'آپ کی Limited Company','home.accountsPeriod':'اکاؤنٹس کی مدت','home.setupPending':'ترتیب نامکمل ہے','home.openCompany':'کمپنی کھولیں ←',
+  'assistant.title':'TaxMate اسسٹنٹ','assistant.countOne':'1 چیز آپ کی توجہ چاہتی ہے','assistant.countMany':'{n} چیزیں آپ کی توجہ چاہتی ہیں','assistant.review':'جائزہ لیں ←','assistant.none':'ابھی کسی چیز کو آپ کی توجہ درکار نہیں۔','assistant.actionRequired':'کارروائی ضروری','assistant.needsDecision':'آپ کا فیصلہ درکار ہے','assistant.helpful':'مددگار یاد دہانی','assistant.hiddenTitle':'چھپی ہوئی یاد دہانیاں','assistant.showHidden':'چھپی یاد دہانیاں دکھائیں','assistant.hideHidden':'چھپی یاد دہانیاں بند کریں','assistant.restore':'یاد دہانی بحال کریں','assistant.dismiss':'یاد دہانی چھپائیں',
+  'assistant.dateTitle':'{amount} {kind} — درست تاریخ غائب','assistant.dateReason':'{business} کے لیے درست تاریخ شامل کریں یا تخمینی تاریخ برقرار رکھیں۔','assistant.requiredTitle':'{amount} {kind} کی جانچ ضروری ہے','assistant.requiredReason':'TaxMate کے درست استعمال کے لیے {fields} شامل کریں۔','assistant.ltdTitle':'{company} کی ترتیب مکمل نہیں','assistant.ltdReason':'اکاؤنٹس اور ٹیکس نتائج استعمال کرنے سے پہلے کمپنی کی معلومات مکمل کریں۔','assistant.receiptTitle':'{n} اخراجات کے لیے رسیدیں درکار ہیں','assistant.receiptReason':'{business} کے لیے رسیدیں شامل کریں یا {year} کی یاد دہانی چھپائیں۔',
+  'assistant.addExactDate':'درست تاریخ شامل کریں','assistant.keepEstimated':'تخمینی تاریخ رکھیں','assistant.fixEntry':'ریکارڈ درست کریں','assistant.resumeLtd':'ترتیب جاری رکھیں','assistant.removeLtd':'یہ Limited Company ترتیب ہٹائیں','assistant.removeLtdTitle':'یہ Limited Company ترتیب ہٹائیں؟','assistant.removeLtdBody':'صرف نامکمل کمپنی ترتیب ہٹتی ہے؛ ذاتی ریکارڈ تبدیل نہیں ہوتے۔','assistant.openReceipts':'رسیدیں شامل کریں','assistant.income':'آمدنی','assistant.expense':'خرچ','assistant.amount':'رقم','assistant.business':'کاروبار','assistant.category':'زمرہ'
+});
+
 const HEALTH_COPY={
   'promo.signIn':'Sign in with Google first, then redeem this code.',
   'promo.title':'Redeem promotion code','promo.body':'Enter the code exactly as you received it.','promo.placeholder':'Promotion code','promo.apply':'Redeem code','promo.invalid':"This promotion code isn't valid.",'promo.notStarted':"This promotion isn't available yet.",'promo.expired':'This promotion has ended.','promo.full':'This promotion has reached its limit.','promo.duplicate':"You've already used this promotion code.",'promo.service':'Promotion access is temporarily unavailable. Please try again.','promo.success':'Promotion applied',
-  'billing.unavailable':'Payments are temporarily unavailable. Please try again.','tier.manage':'Manage subscription','tier.permanent':'Permanent Pro access','plan.freeSub':'Bookkeeping and tax estimates for one business.','plan.plusSub':'For receipts, reports and more than one business.','plan.proSub':'For partnerships and advanced records.','plan.includesFree':'Everything in Free, plus:','plan.includesPlus':'Everything in Plus, plus:','plan.renewal':'Monthly and yearly subscriptions renew until cancelled.','plan.promoUntil':'{p} access until {d}','plan.renews':'{p} renews on {d}','plan.ends':'{p} ends on {d}','sec.help':'Help & support','sy.joinTitle':'Join a partnership','sy.readOnly':'Shared partnership records are read-only without Pro. Your data is still here.','biz.readOnly':'This business is read-only on your current plan. Your data is still here.'
+  'billing.unavailable':'Payments are temporarily unavailable. Please try again.','tier.manage':'Manage subscription','tier.permanent':'Permanent Pro access','plan.freeSub':'Bookkeeping and tax estimates for one business.','plan.plusSub':'For receipts, reports and more than one business.','plan.proSub':'For partnerships and one active Limited Company.','plan.includesFree':'Everything in Free, plus:','plan.includesPlus':'Everything in Plus, plus:','plan.renewal':'Subscriptions renew on the interval shown at Checkout until cancelled.','plan.promoUntil':'{p} access until {d}','plan.renews':'{p} renews on {d}','plan.ends':'{p} ends on {d}','plan.proBillingPending':'Pro checkout will open after launch billing is configured','feat.ltd':'One active Limited Company','sec.help':'Help & support','sy.joinTitle':'Join a partnership','sy.readOnly':'Shared partnership records are read-only without Pro. Your data is still here.','biz.readOnly':'This business is read-only on your current plan. Your data is still here.','ltd.backupProOnly':'Limited company sync, backup and restore are available on Pro. Your local data was not changed.'
 };
 Object.assign(I18N.en,HEALTH_COPY);
 for(const language of ['zh','pl','ro','es','ur'])Object.assign(I18N[language],HEALTH_COPY);
@@ -2959,11 +3034,56 @@ Object.assign(I18N.pl,{'promo.title':'Zrealizuj kod promocyjny','promo.body':'Wp
 Object.assign(I18N.ro,{'promo.title':'Folosește codul promoțional','promo.body':'Introdu codul exact așa cum l-ai primit.','promo.placeholder':'Cod promoțional','promo.apply':'Folosește codul','promo.invalid':'Acest cod promoțional nu este valid.','promo.notStarted':'Această promoție nu este încă disponibilă.','promo.expired':'Această promoție s-a încheiat.','promo.full':'Această promoție și-a atins limita.','promo.duplicate':'Ai folosit deja acest cod promoțional.','promo.service':'Accesul promoțional este indisponibil momentan. Încearcă din nou.','promo.success':'Promoție aplicată','billing.unavailable':'Plățile sunt indisponibile momentan. Încearcă din nou.','tier.manage':'Gestionează abonamentul','tier.permanent':'Acces Pro permanent','plan.freeSub':'Evidență și estimări fiscale pentru o afacere.','plan.plusSub':'Pentru bonuri, rapoarte și mai multe afaceri.','plan.proSub':'Pentru parteneriate și evidențe avansate.','plan.includesFree':'Tot ce include Gratuit, plus:','plan.includesPlus':'Tot ce include Plus, plus:','plan.renewal':'Abonamentele lunare și anuale se reînnoiesc până la anulare.','plan.promoUntil':'Acces {p} până la {d}','plan.renews':'{p} se reînnoiește la {d}','plan.ends':'{p} se termină la {d}','sec.help':'Ajutor și asistență','sy.joinTitle':'Alătură-te unui parteneriat','sy.readOnly':'Înregistrările comune sunt doar pentru citire fără Pro. Datele rămân aici.','biz.readOnly':'Această afacere este doar pentru citire în planul curent. Datele rămân aici.'});
 Object.assign(I18N.es,{'promo.title':'Canjear código promocional','promo.body':'Introduce el código exactamente como lo recibiste.','promo.placeholder':'Código promocional','promo.apply':'Canjear código','promo.invalid':'Este código promocional no es válido.','promo.notStarted':'Esta promoción aún no está disponible.','promo.expired':'Esta promoción ha terminado.','promo.full':'Esta promoción ha alcanzado su límite.','promo.duplicate':'Ya has usado este código promocional.','promo.service':'El acceso promocional no está disponible temporalmente. Inténtalo de nuevo.','promo.success':'Promoción aplicada','billing.unavailable':'Los pagos no están disponibles temporalmente. Inténtalo de nuevo.','tier.manage':'Gestionar suscripción','tier.permanent':'Acceso Pro permanente','plan.freeSub':'Contabilidad y estimación fiscal para un negocio.','plan.plusSub':'Para recibos, informes y más de un negocio.','plan.proSub':'Para sociedades y registros avanzados.','plan.includesFree':'Todo lo de Gratis, más:','plan.includesPlus':'Todo lo de Plus, más:','plan.renewal':'Las suscripciones mensuales y anuales se renuevan hasta su cancelación.','plan.promoUntil':'Acceso {p} hasta {d}','plan.renews':'{p} se renueva el {d}','plan.ends':'{p} termina el {d}','sec.help':'Ayuda y soporte','sy.joinTitle':'Unirse a una sociedad','sy.readOnly':'Los registros compartidos son de solo lectura sin Pro. Tus datos siguen aquí.','biz.readOnly':'Este negocio es de solo lectura con tu plan actual. Tus datos siguen aquí.'});
 Object.assign(I18N.ur,{'promo.title':'پروموشن کوڈ استعمال کریں','promo.body':'کوڈ بالکل ویسے درج کریں جیسے آپ کو ملا۔','promo.placeholder':'پروموشن کوڈ','promo.apply':'کوڈ استعمال کریں','promo.invalid':'یہ پروموشن کوڈ درست نہیں۔','promo.notStarted':'یہ پروموشن ابھی دستیاب نہیں۔','promo.expired':'یہ پروموشن ختم ہو چکی ہے۔','promo.full':'یہ پروموشن اپنی حد تک پہنچ چکی ہے۔','promo.duplicate':'آپ یہ پروموشن کوڈ پہلے استعمال کر چکے ہیں۔','promo.service':'پروموشن رسائی عارضی طور پر دستیاب نہیں۔ دوبارہ کوشش کریں۔','promo.success':'پروموشن لاگو ہو گئی','billing.unavailable':'ادائیگیاں عارضی طور پر دستیاب نہیں۔ دوبارہ کوشش کریں۔','tier.manage':'سبسکرپشن سنبھالیں','tier.permanent':'مستقل Pro رسائی','plan.freeSub':'ایک کاروبار کے لیے حساب کتاب اور ٹیکس تخمینہ۔','plan.plusSub':'رسیدوں، رپورٹس اور ایک سے زیادہ کاروبار کے لیے۔','plan.proSub':'شراکت اور جدید ریکارڈز کے لیے۔','plan.includesFree':'مفت پلان کی سب خصوصیات، مزید:','plan.includesPlus':'Plus کی سب خصوصیات، مزید:','plan.renewal':'ماہانہ اور سالانہ سبسکرپشن منسوخی تک تجدید ہوتی ہیں۔','plan.promoUntil':'{p} رسائی {d} تک','plan.renews':'{p} کی تجدید {d} کو','plan.ends':'{p} {d} کو ختم ہوگا','sec.help':'مدد اور معاونت','sy.joinTitle':'شراکت میں شامل ہوں','sy.readOnly':'Pro کے بغیر مشترکہ ریکارڈ صرف پڑھنے کے لیے ہیں۔ ڈیٹا موجود رہے گا۔','biz.readOnly':'موجودہ پلان پر یہ کاروبار صرف پڑھنے کے لیے ہے۔ ڈیٹا موجود رہے گا۔'});
+
+// Complete Founder Preview correction copy. English remains canonical; every key below has
+// an explicit six-locale value so onboarding, billing accessibility and sync status never
+// fall back to English in Urdu/RTL or another supported locale.
+Object.assign(I18N.en,{
+  'billing.cadenceAria':'Billing cadence','billing.launch':'Launch price','billing.monthlyAria':'Standard price £11.99; launch price £9.99 per month.','billing.reviewPurchase':'Review Pro purchase locally','billing.reviewNote':'Local review only — no payment or production request.','billing.purchaseUnavailable':'Pro purchase is not available yet. Promotion codes still work.',
+  'sync.offline':'Offline','sync.offlinePending':'Offline — {n} change(s) waiting','sync.signIn':'Waiting for sign-in','sync.signInPending':'Waiting for sign-in — {n} pending','sync.restoreFailed':'Cloud restore failed — will retry','sync.restoring':'Restoring cloud data…','sync.checking':'Checking cloud data…','sync.readFailed':'Cloud sync read failed — will retry','sync.partnerDenied':'Partnership sync access failed — local data is safe','sync.writeDenied':'Sync write access failed — local data is safe','sync.retrying':'Sync retrying — {n} change(s) waiting','sync.syncing':'Syncing — {n} change(s) waiting','sync.finishing':'Finishing sync…','sync.synced':'Synced',
+  'ob.signInLtdContext':'Sign in to continue setting up your Limited Company.','ob.signInPartnerContext':'Sign in to continue connecting with Partner Sync.','ob.bizRequired':'Enter a business name to continue.','ob.partnerConnectedResult':'This partnership is now connected.','ob.continueDashboard':'Continue to dashboard','ob.localPurchaseWorking':'Updating your local review entitlement…',
+  'help.title':'Help & support','help.body':'Task-based help for records, tax estimates, receipts, plans, backups and partnerships.','help.open':'Open Help & support'
+});
+Object.assign(I18N.zh,{
+  'billing.cadenceAria':'收費週期','billing.launch':'推出優惠價','billing.monthlyAria':'標準價每月 £11.99；推出優惠價每月 £9.99。','billing.reviewPurchase':'本機預覽 Pro 購買流程','billing.reviewNote':'只供本機預覽，不會付款或連接 production。','billing.purchaseUnavailable':'Pro 購買暫未開放；推廣代碼仍可使用。',
+  'sync.offline':'離線','sync.offlinePending':'離線 — {n} 項變更等候中','sync.signIn':'等待登入','sync.signInPending':'等待登入 — {n} 項等候中','sync.restoreFailed':'雲端還原失敗 — 將會重試','sync.restoring':'正在還原雲端資料…','sync.checking':'正在核對雲端資料…','sync.readFailed':'讀取雲端同步失敗 — 將會重試','sync.partnerDenied':'合夥同步權限失敗 — 本機資料安全','sync.writeDenied':'同步寫入權限失敗 — 本機資料安全','sync.retrying':'同步重試中 — {n} 項變更等候中','sync.syncing':'同步中 — {n} 項變更等候中','sync.finishing':'正在完成同步…','sync.synced':'已同步',
+  'ob.signInLtdContext':'登入以繼續設定你嘅有限公司。','ob.signInPartnerContext':'登入以繼續連接 Partner Sync。','ob.bizRequired':'請輸入業務名稱先繼續。','ob.partnerConnectedResult':'呢個合夥業務已經連接。','ob.continueDashboard':'繼續前往主頁','ob.localPurchaseWorking':'正在更新本機預覽權限…','help.title':'幫助與支援','help.body':'查看記錄、稅務估算、收據、方案、備份及合夥功能指引。','help.open':'開啟幫助與支援'
+});
+Object.assign(I18N.pl,{
+  'billing.cadenceAria':'Okres rozliczeniowy','billing.launch':'Cena startowa','billing.monthlyAria':'Cena standardowa 11,99 GBP; cena startowa 9,99 GBP miesięcznie.','billing.reviewPurchase':'Sprawdź zakup Pro lokalnie','billing.reviewNote':'Tylko podgląd lokalny — bez płatności i żądań produkcyjnych.','billing.purchaseUnavailable':'Zakup Pro nie jest jeszcze dostępny. Kody promocyjne nadal działają.',
+  'sync.offline':'Offline','sync.offlinePending':'Offline — oczekujące zmiany: {n}','sync.signIn':'Oczekiwanie na logowanie','sync.signInPending':'Oczekiwanie na logowanie — oczekuje: {n}','sync.restoreFailed':'Przywracanie z chmury nie powiodło się — ponowimy próbę','sync.restoring':'Przywracanie danych z chmury…','sync.checking':'Sprawdzanie danych w chmurze…','sync.readFailed':'Odczyt synchronizacji nie powiódł się — ponowimy próbę','sync.partnerDenied':'Brak dostępu do synchronizacji spółki — dane lokalne są bezpieczne','sync.writeDenied':'Brak dostępu do zapisu synchronizacji — dane lokalne są bezpieczne','sync.retrying':'Ponawianie synchronizacji — oczekujące zmiany: {n}','sync.syncing':'Synchronizacja — oczekujące zmiany: {n}','sync.finishing':'Kończenie synchronizacji…','sync.synced':'Zsynchronizowano',
+  'ob.signInLtdContext':'Zaloguj się, aby kontynuować konfigurację spółki z o.o.','ob.signInPartnerContext':'Zaloguj się, aby kontynuować łączenie przez Partner Sync.','ob.bizRequired':'Wpisz nazwę firmy, aby kontynuować.','ob.partnerConnectedResult':'Ta spółka jest teraz połączona.','ob.continueDashboard':'Przejdź do pulpitu','ob.localPurchaseWorking':'Aktualizowanie lokalnego uprawnienia testowego…','help.title':'Pomoc i wsparcie','help.body':'Pomoc dotycząca ewidencji, podatków, paragonów, planów, kopii i spółek.','help.open':'Otwórz pomoc i wsparcie'
+});
+Object.assign(I18N.ro,{
+  'billing.cadenceAria':'Frecvența facturării','billing.launch':'Preț de lansare','billing.monthlyAria':'Preț standard 11,99 GBP; preț de lansare 9,99 GBP pe lună.','billing.reviewPurchase':'Testează local achiziția Pro','billing.reviewNote':'Doar verificare locală — fără plată sau cerere de producție.','billing.purchaseUnavailable':'Achiziția Pro nu este disponibilă încă. Codurile promoționale funcționează în continuare.',
+  'sync.offline':'Offline','sync.offlinePending':'Offline — {n} modificări în așteptare','sync.signIn':'Se așteaptă autentificarea','sync.signInPending':'Se așteaptă autentificarea — {n} în așteptare','sync.restoreFailed':'Restaurarea din cloud a eșuat — se va reîncerca','sync.restoring':'Se restaurează datele din cloud…','sync.checking':'Se verifică datele din cloud…','sync.readFailed':'Citirea sincronizării a eșuat — se va reîncerca','sync.partnerDenied':'Accesul la sincronizarea parteneriatului a eșuat — datele locale sunt în siguranță','sync.writeDenied':'Accesul la scrierea sincronizării a eșuat — datele locale sunt în siguranță','sync.retrying':'Se reîncearcă sincronizarea — {n} modificări în așteptare','sync.syncing':'Se sincronizează — {n} modificări în așteptare','sync.finishing':'Se finalizează sincronizarea…','sync.synced':'Sincronizat',
+  'ob.signInLtdContext':'Autentifică-te pentru a continua configurarea societății.','ob.signInPartnerContext':'Autentifică-te pentru a continua conectarea prin Partner Sync.','ob.bizRequired':'Introdu numele afacerii pentru a continua.','ob.partnerConnectedResult':'Acest parteneriat este acum conectat.','ob.continueDashboard':'Continuă la panou','ob.localPurchaseWorking':'Se actualizează dreptul local de verificare…','help.title':'Ajutor și asistență','help.body':'Ajutor pentru evidențe, taxe, bonuri, planuri, copii și parteneriate.','help.open':'Deschide ajutor și asistență'
+});
+Object.assign(I18N.es,{
+  'billing.cadenceAria':'Frecuencia de facturación','billing.launch':'Precio de lanzamiento','billing.monthlyAria':'Precio estándar 11,99 GBP; precio de lanzamiento 9,99 GBP al mes.','billing.reviewPurchase':'Revisar compra Pro localmente','billing.reviewNote':'Solo revisión local, sin pagos ni solicitudes de producción.','billing.purchaseUnavailable':'La compra de Pro aún no está disponible. Los códigos promocionales siguen funcionando.',
+  'sync.offline':'Sin conexión','sync.offlinePending':'Sin conexión — {n} cambios en espera','sync.signIn':'Esperando inicio de sesión','sync.signInPending':'Esperando inicio de sesión — {n} pendientes','sync.restoreFailed':'La restauración desde la nube falló — se reintentará','sync.restoring':'Restaurando datos de la nube…','sync.checking':'Comprobando datos de la nube…','sync.readFailed':'La lectura de sincronización falló — se reintentará','sync.partnerDenied':'El acceso a la sincronización de la sociedad falló — los datos locales están seguros','sync.writeDenied':'El acceso de escritura falló — los datos locales están seguros','sync.retrying':'Reintentando sincronización — {n} cambios en espera','sync.syncing':'Sincronizando — {n} cambios en espera','sync.finishing':'Finalizando sincronización…','sync.synced':'Sincronizado',
+  'ob.signInLtdContext':'Inicia sesión para continuar configurando tu sociedad limitada.','ob.signInPartnerContext':'Inicia sesión para continuar conectando Partner Sync.','ob.bizRequired':'Introduce el nombre del negocio para continuar.','ob.partnerConnectedResult':'Esta sociedad ya está conectada.','ob.continueDashboard':'Continuar al panel','ob.localPurchaseWorking':'Actualizando el acceso de revisión local…','help.title':'Ayuda y soporte','help.body':'Ayuda para registros, impuestos, recibos, planes, copias y sociedades.','help.open':'Abrir Ayuda y soporte'
+});
+Object.assign(I18N.ur,{
+  'billing.cadenceAria':'بلنگ کی مدت','billing.launch':'ابتدائی قیمت','billing.monthlyAria':'معیاری قیمت £11.99؛ ابتدائی قیمت £9.99 فی ماہ۔','billing.reviewPurchase':'مقامی طور پر Pro خریداری دیکھیں','billing.reviewNote':'صرف مقامی جائزہ — کوئی ادائیگی یا پروڈکشن درخواست نہیں۔','billing.purchaseUnavailable':'Pro خریداری ابھی دستیاب نہیں۔ پروموشن کوڈ بدستور کام کرتے ہیں۔',
+  'sync.offline':'آف لائن','sync.offlinePending':'آف لائن — {n} تبدیلیاں منتظر ہیں','sync.signIn':'سائن اِن کا انتظار ہے','sync.signInPending':'سائن اِن کا انتظار — {n} منتظر','sync.restoreFailed':'کلاؤڈ بحالی ناکام — دوبارہ کوشش ہوگی','sync.restoring':'کلاؤڈ ڈیٹا بحال ہو رہا ہے…','sync.checking':'کلاؤڈ ڈیٹا چیک ہو رہا ہے…','sync.readFailed':'کلاؤڈ سنک پڑھنے میں ناکامی — دوبارہ کوشش ہوگی','sync.partnerDenied':'پارٹنرشپ سنک رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.writeDenied':'سنک لکھنے کی رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.retrying':'سنک کی دوبارہ کوشش — {n} تبدیلیاں منتظر','sync.syncing':'سنک ہو رہا ہے — {n} تبدیلیاں منتظر','sync.finishing':'سنک مکمل ہو رہا ہے…','sync.synced':'سنک ہو گیا',
+  'ob.signInLtdContext':'اپنی لمیٹڈ کمپنی کی ترتیب جاری رکھنے کے لیے سائن اِن کریں۔','ob.signInPartnerContext':'Partner Sync سے جڑنا جاری رکھنے کے لیے سائن اِن کریں۔','ob.bizRequired':'جاری رکھنے کے لیے کاروبار کا نام درج کریں۔','ob.partnerConnectedResult':'یہ پارٹنرشپ اب منسلک ہے۔','ob.continueDashboard':'ڈیش بورڈ پر جاری رکھیں','ob.localPurchaseWorking':'مقامی جائزہ رسائی اپ ڈیٹ ہو رہی ہے…','help.title':'مدد اور معاونت','help.body':'ریکارڈ، ٹیکس، رسید، پلان، بیک اپ اور پارٹنرشپ کے لیے مدد۔','help.open':'مدد اور معاونت کھولیں'
+});
 Object.assign(I18N.zh,{'promo.signIn':'請先用 Google 登入，再兌換呢個代碼。'});
 Object.assign(I18N.pl,{'promo.signIn':'Najpierw zaloguj się przez Google, a następnie użyj kodu.'});
 Object.assign(I18N.ro,{'promo.signIn':'Conectează-te mai întâi cu Google, apoi folosește codul.'});
 Object.assign(I18N.es,{'promo.signIn':'Primero inicia sesión con Google y luego canjea el código.'});
 Object.assign(I18N.ur,{'promo.signIn':'پہلے Google سے سائن ان کریں، پھر یہ کوڈ استعمال کریں۔'});
+Object.assign(I18N.zh,{'ltd.backupProOnly':'有限公司同步、備份同還原只供 Pro 使用；你嘅本機資料冇被更改。'});
+Object.assign(I18N.pl,{'ltd.backupProOnly':'Synchronizacja, kopia zapasowa i przywracanie danych spółki z o.o. są dostępne w Pro. Dane lokalne nie zostały zmienione.'});
+Object.assign(I18N.ro,{'ltd.backupProOnly':'Sincronizarea, backupul și restaurarea societății cu răspundere limitată sunt disponibile în Pro. Datele locale nu au fost modificate.'});
+Object.assign(I18N.es,{'ltd.backupProOnly':'La sincronización, copia de seguridad y restauración de la sociedad limitada están disponibles en Pro. Tus datos locales no se han modificado.'});
+Object.assign(I18N.ur,{'ltd.backupProOnly':'لمیٹڈ کمپنی کی سنک، بیک اپ اور بحالی Pro میں دستیاب ہیں۔ آپ کا مقامی ڈیٹا تبدیل نہیں ہوا۔'});
+Object.assign(I18N.zh,{'plan.proBillingPending':'設定好推出收費後先會開放 Pro 結帳','feat.ltd':'一間營運中有限公司'});
+Object.assign(I18N.pl,{'plan.proBillingPending':'Płatność Pro będzie dostępna po skonfigurowaniu ceny startowej','feat.ltd':'Jedna aktywna spółka z o.o.'});
+Object.assign(I18N.ro,{'plan.proBillingPending':'Plata Pro va fi disponibilă după configurarea prețului de lansare','feat.ltd':'O societate cu răspundere limitată activă'});
+Object.assign(I18N.es,{'plan.proBillingPending':'El pago de Pro se abrirá tras configurar el precio de lanzamiento','feat.ltd':'Una sociedad limitada activa'});
+Object.assign(I18N.ur,{'plan.proBillingPending':'لانچ بلنگ ترتیب دینے کے بعد Pro چیک آؤٹ کھلے گا','feat.ltd':'ایک فعال لمیٹڈ کمپنی'});
 
 Object.assign(I18N.en,{
   'pwa.homeTitle':'Install TaxMate',
@@ -3106,14 +3226,22 @@ function catById(id){
 // ─────────── Pro tier system ───────────
 // free < plus < pro. Each tier unlocks the ones below it.
 const TIER_RANK = { free:0, plus:1, pro:2 };
-const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'£7.99 / month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£59.99 / year'}});
+const PRO_PRICE_CONTRACT = Object.freeze({currency:'GBP',monthly:Object.freeze({launchMinor:999,standardMinor:1199}),annual:Object.freeze({amountMinor:9999})});
+const TIER_PRICE = Object.freeze({monthly:{free:'£0',plus:'£3.99 / month',pro:'£9.99/month'},yearly:{free:'£0',plus:'£29.99 / year',pro:'£99.99/year'}});
 let BILLING_CADENCE='monthly';
 function tierPrice(tier){return TIER_PRICE[BILLING_CADENCE][tier];}
+function proPriceMarkup(cadence=BILLING_CADENCE){
+  if(cadence==='yearly')return `<span class="tm-pro-price yearly"><bdi class="current" dir="ltr">£99.99/year</bdi></span>`;
+  const accessible=t('billing.monthlyAria');
+  return `<span class="tm-pro-price" aria-label="${esc(accessible)}"><span aria-hidden="true"><s><bdi dir="ltr">£11.99</bdi></s> <bdi class="current" dir="ltr">£9.99/month</bdi></span><span class="launch" aria-hidden="true">${t('billing.launch')}</span><span class="tm-visually-hidden">${esc(accessible)}</span></span>`;
+}
+function tierPriceMarkup(tier,cadence=BILLING_CADENCE){return tier==='pro'?proPriceMarkup(cadence):esc(TIER_PRICE[cadence][tier]);}
+function updatePlanPriceNode(node){node.innerHTML=tierPriceMarkup(node.dataset.planPrice,BILLING_CADENCE);}
 function setBillingCadence(cadence){
   if(!['monthly','yearly'].includes(cadence)||cadence===BILLING_CADENCE)return;
   BILLING_CADENCE=cadence;
   document.querySelectorAll('[data-billing-cadence]').forEach(button=>{const on=button.dataset.billingCadence===cadence;button.classList.toggle('on',on);button.setAttribute('aria-pressed',String(on));});
-  document.querySelectorAll('[data-plan-price]').forEach(node=>{node.textContent=tierPrice(node.dataset.planPrice);});
+  document.querySelectorAll('[data-plan-price]').forEach(updatePlanPriceNode);
   const note=document.querySelector('[data-billing-yearly]');if(note){note.textContent=cadence==='yearly'?t('billing.billedYearly'):'';note.style.visibility=cadence==='yearly'?'visible':'hidden';note.setAttribute('aria-hidden',String(cadence!=='yearly'));}
 }
 // Which tier each gated feature needs
@@ -3126,7 +3254,8 @@ const FEATURE_TIER = {
   partnerSync:'pro',       // partner sync
   sa104:'pro',             // SA104 partnership
   receiptPack:'pro',       // Receipt Pack PDF
-  mtdReady:'pro'           // quarterly record summary; no HMRC submission
+  mtdReady:'pro',          // quarterly record summary; no HMRC submission
+  ltd:'pro'                // one active Limited Company
 };
 let ENTITLEMENT={snapshot:null,loaded:false};
 function trackEvent(name){try{if(!window.TaxMateAnalytics||!TaxMateAnalytics.enabled())return;const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
@@ -3148,6 +3277,9 @@ async function loadEntitlementFromCloud(uid){
 function currentTier(){
   return TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine).tier;
 }
+function ltdAccessDecision(action,state=S){return TaxMateCompanyAccess.decide({action,snapshot:ENTITLEMENT.snapshot,now:Date.now(),offline:typeof navigator!=='undefined'&&navigator.onLine===false,hasExistingLtdData:ltdStateHasRecords(state)});}
+function ltdStateHasRecords(state=S){const domain=state&&state.domain||{};return TaxMateLtdSync.COLLECTIONS.some(collection=>collection==='companyProfileRevisions'||collection==='companyOwnershipVersions'?false:Array.isArray(domain[collection])&&domain[collection].length>0)||Array.isArray(domain.companyProfiles)&&domain.companyProfiles.some(profile=>Array.isArray(profile.profileRevisionHistory)&&profile.profileRevisionHistory.length||Array.isArray(profile.ownershipHistory)&&profile.ownershipHistory.length);}
+function ltdBackupAllowed(action,state=S){if(!ltdStateHasRecords(state))return true;const decision=ltdAccessDecision(action,state);if(decision.allowed)return true;showNotice(t('tier.pro'),t('ltd.backupProOnly'));return false;}
 function hasFeature(key){
   const need = FEATURE_TIER[key];
   if(!need) return true; // ungated = free
@@ -3156,7 +3288,7 @@ function hasFeature(key){
 function tierFeatureList(tier){
   const free = ['feat.records','feat.taxcalc','feat.onebiz','feat.mileageBasic','feat.sa103view','feat.sync','feat.backup'];
   const plus = ['feat.multiBiz','feat.receiptPhoto','feat.mileageCompare','feat.pdfReport'];
-  const pro  = ['feat.partnerSync','feat.sa104','feat.receiptPack','feat.mtdReady'];
+  const pro  = ['feat.partnerSync','feat.sa104','feat.receiptPack','feat.mtdReady','feat.ltd'];
   if(tier==='free') return free;
   if(tier==='plus') return plus;
   return pro;
@@ -3181,20 +3313,26 @@ function planBlock(tier){
   else if(isCurrent&&paid&&snapshot.currentPeriodEnd){const date=new Date(Number(snapshot.currentPeriodEnd)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});status=t(snapshot.cancelAtPeriodEnd?'plan.ends':'plan.renews',{p:name,d:date});}
   let btn='';
   if(paid&&tier!=='free')btn=`<button class="btn ghost" style="margin-top:12px;width:100%" data-tm-click="openBillingPortal()">${t('tier.manage')}</button>`;
+  else if(!permanent&&!isCurrent&&tier==='pro'){
+    const availability=proBillingAvailability();
+    btn=availability.purchaseEnabled
+      ? `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
+      : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
+  }
   else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
-  return `<div class="card" style="${ring}margin-bottom:12px">
+  return `<section class="card plan-card" data-plan-card="${tier}" aria-labelledby="plan-${tier}-title" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
-      <div class="t" style="font-size:17px">${name}</div>
+      <div class="t" id="plan-${tier}-title" style="font-size:17px">${name}</div>
       ${badge}
     </div>
-    <div class="t" data-plan-price="${tier}" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${tierPrice(tier)}</div>
+    <div class="t" data-plan-price="${tier}" style="font-size:15px;color:var(--brand-deep);margin-bottom:4px">${tierPriceMarkup(tier)}</div>
     <div class="s" style="margin-bottom:10px">${sub}</div>
     ${includes?`<div class="s" style="font-weight:700;margin-bottom:5px">${includes}</div>`:''}
-    ${feats}
+    <div data-plan-features="${tier}">${feats}</div>
     ${status?`<div class="notice green" style="margin-top:10px">${status}</div>`:''}
     ${btn}
-  </div>`;
+  </section>`;
 }
 function tierTick(tier){ return '✓'; }
 function lockGuard(key){
@@ -3237,7 +3375,30 @@ function setTier(tier){
   if(tier!=='free' && !requireLoginForTier()) return;
   if(tier==='free'){ openBillingPortal(); return; }
   if(TaxMateEntitlement.hasPermanentPro(ENTITLEMENT.snapshot,Date.now())){ toast('You already have permanent Pro access.'); return; }
+  if(tier==='pro'){startProPurchase('settings');return;}
   startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});
+}
+function proBillingAvailability(){
+  const local=/^(?:localhost|127\.0\.0\.1)$/.test(location.hostname),provider=window.TaxMateLocalBillingReview;
+  if(local&&provider&&provider.enabled===true&&typeof provider.purchasePro==='function')return Object.freeze({mode:'local_review',purchaseEnabled:true});
+  return Object.freeze({mode:'unavailable',purchaseEnabled:false});
+}
+async function startProPurchase(source='settings'){
+  const availability=proBillingAvailability();
+  if(!availability.purchaseEnabled){if(source!=='onboarding')showNotice(t('pro.title'),t('billing.purchaseUnavailable'));return{status:'unavailable'};}
+  if(BILLING_ACTION_PENDING)return{status:'busy'};
+  BILLING_ACTION_PENDING=true;
+  try{
+    if(OB&&source==='onboarding'){OB._intentMessage=t('ob.localPurchaseWorking');obRender();}
+    const result=await window.TaxMateLocalBillingReview.purchasePro({cadence:BILLING_CADENCE});
+    const user=cloudUser();if(!result||result.status!=='ok'||!user)throw new Error('local-review-purchase-failed');
+    await loadEntitlementFromCloud(user.uid);
+    if(currentTier()!=='pro')throw new Error('local-review-entitlement-not-active');
+    if(OB&&OB.pendingIntent){OB._intentMessage='';obResumePendingIntentAfterHydration({state:'converged',existingCloudAccount:true});}
+    else render();
+    return{status:'ok',tier:'pro',mode:'local_review'};
+  }catch(_){if(OB){OB._intentMessage='';OB._intentError=t('billing.unavailable');obRender();}else showNotice(t('pro.title'),t('billing.unavailable'));return{status:'failure'};}
+  finally{BILLING_ACTION_PENDING=false;}
 }
 function openPromotionSheet(){
   const input=document.getElementById('promo-code'),error=document.getElementById('promo-error');
@@ -3250,7 +3411,9 @@ async function callSecureFunction(name,data){
     let token;try{token=await u.getIdToken();}catch(_){throw secureFunctionError('auth-required','UNAUTHENTICATED');}
     let appCheck;try{appCheck=await firebase.appCheck().getToken(false);}catch(_){throw secureFunctionError('app-check-unavailable');}
     if(!appCheck||!appCheck.token)throw secureFunctionError('app-check-unavailable');
-    let res;try{res=await fetch('https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});}catch(_){throw secureFunctionError('network');}
+    const configuredOrigin=String(FIREBASE_ENVIRONMENT.functionsOrigin||'').replace(/\/$/,'');
+    const endpoint=configuredOrigin?configuredOrigin+'/'+FIREBASE_CONFIG.projectId+'/europe-west2/'+name:'https://europe-west2-'+FIREBASE_CONFIG.projectId+'.cloudfunctions.net/'+name;
+    let res;try{res=await fetch(endpoint,{method:'POST',headers:{'content-type':'application/json','authorization':'Bearer '+token,'X-Firebase-AppCheck':appCheck.token},body:JSON.stringify({data})});}catch(_){throw secureFunctionError('network');}
     let body;try{body=await res.json();}catch(_){throw secureFunctionError('network');}
     if(!res.ok||body.error){const code=body.error&&body.error.status||'UNKNOWN',reason=body.error&&body.error.details&&body.error.details.reason||null,category=SAFE_BILLING_FAILURES.has(reason)?reason:code==='UNAUTHENTICATED'?'app-check-rejected':code==='FAILED_PRECONDITION'?'billing-config':'network';throw secureFunctionError(category,code,reason);}
     return body.result||{};
@@ -3276,6 +3439,15 @@ async function startBillingAction(name,data){
   }
 }
 function openBillingPortal(){ if(requireLoginForTier()) startBillingAction('createBillingPortal',{}); }
+function promotionFailureMessage(error){return error&&error.reason==='not-started'?t('promo.notStarted'):error&&error.reason==='expired'?t('promo.expired'):error&&error.reason==='redemption-limit-reached'?t('promo.full'):error&&(error.reason==='duplicate'||error.code==='ALREADY_EXISTS')?t('promo.duplicate'):error&&(error.reason==='invalid'||error.code==='NOT_FOUND'||error.code==='INVALID_ARGUMENT')?t('promo.invalid'):t('promo.service');}
+async function redeemPromotionThroughCanonicalBackend(code){
+  const normalized=String(code||'').trim().toUpperCase();
+  if(!TaxMateEntitlement.validatePromotionCode(normalized))throw Object.assign(new Error('promotion-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'});
+  const user=cloudUser();if(!user)throw Object.assign(new Error('promotion-sign-in-required'),{code:'UNAUTHENTICATED',reason:'sign-in'});
+  const result=await callSecureFunction('redeemPromotion',{code:normalized});
+  await loadEntitlementFromCloud(user.uid);
+  return result;
+}
 async function redeemPromotionCode(){
   const input=document.getElementById('promo-code'),error=document.getElementById('promo-error'),button=document.getElementById('promo-submit'),code=(input.value||'').trim().toUpperCase();
   const fail=message=>{error.textContent=message;error.classList.add('show');};
@@ -3283,8 +3455,8 @@ async function redeemPromotionCode(){
   if(!TaxMateEntitlement.validatePromotionCode(code)){fail(t('promo.invalid'));return;}
   if(!cloudUser()){fail(t('promo.signIn'));return;}
   button.disabled=true;
-  try{const result=await callSecureFunction('redeemPromotion',{code}),user=cloudUser();await loadEntitlementFromCloud(user.uid);closeSheet('promo');render();showNotice(t('promo.success'),result.message||t('promo.success'));}
-  catch(e){const message=e.reason==='not-started'?t('promo.notStarted'):e.reason==='expired'?t('promo.expired'):e.reason==='redemption-limit-reached'?t('promo.full'):e.reason==='duplicate'||e.code==='ALREADY_EXISTS'?t('promo.duplicate'):e.reason==='invalid'||e.code==='NOT_FOUND'?t('promo.invalid'):t('promo.service');fail(message);}
+  try{const result=await redeemPromotionThroughCanonicalBackend(code);closeSheet('promo');render();showNotice(t('promo.success'),result.message||t('promo.success'));}
+  catch(e){fail(e&&e.reason==='sign-in'?t('promo.signIn'):promotionFailureMessage(e));}
   finally{button.disabled=false;}
 }
 const PWA_KEYS=TaxMatePwaInstall.KEYS;
@@ -3391,11 +3563,8 @@ function schedulePwaInstallSuggestion(firstMeaningfulAction){
 }
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
-    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;padding:0 2px">
-      <div class="t">${t('pro.title')}</div>
-    </div>
     <div class="s" style="margin:0 2px 14px">${t('pro.sub')}</div>
-    <div class="seg" role="group" aria-label="Billing cadence" style="margin-bottom:8px">
+    <div class="seg" role="group" aria-label="${t('billing.cadenceAria')}" style="margin-bottom:8px">
       <button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button>
       <button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button>
     </div>
@@ -3436,13 +3605,16 @@ const DEFAULT_STATE = {
   v:5, tab:'home', year:currentTaxYear(), incFilter:'all', expFilter:'all', incCat:'all', expCat:'all',
   businesses:[], businessTombstones:[], entries:[], tombstones:[], yearData:{}, customCats:{}, folders:[], folderTombstones:[], expFolder:'all', catRenames:{}, activeCats:{}, metaVersions:{}, metaUpdatedAt:0, settings:{lang:'en', tier:'free', theme:'auto'}
 };
+let STATE_LOAD_ERROR = null;
 let S = load();
 let META_SYNC_SHADOW = metaSyncSnapshot(S);
 function load(){
   try{
     const raw = localStorage.getItem(STORE_KEY);
-    if(!raw) return JSON.parse(JSON.stringify(DEFAULT_STATE));
+    const pendingKey=STORE_KEY+':atomic-pending';
+    if(!raw){try{localStorage.removeItem(pendingKey);}catch(_){}return TaxMateState.migrate(JSON.parse(JSON.stringify(DEFAULT_STATE)),Date.now(),DEVICE_ID);}
     const s = JSON.parse(raw);
+    if(Number(s.v||1)>Number(TaxMateState.STATE_SCHEMA_VERSION)||Number(s.companyStateSchemaVersion||0)>Number(TaxMateState.COMPANY_STATE_SCHEMA_VERSION)||Number(s.domain&&s.domain.schemaVersion||0)>Number(TaxMateDomain.DOMAIN_SCHEMA_VERSION))throw Object.assign(new Error('This TaxMate data was created by a newer app version.'),{code:'future-state-schema'});
     const merged = Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)), s);
     merged.settings = Object.assign({lang:'en', pro:false}, s.settings||{});
     merged.catRenames = s.catRenames || {};
@@ -3480,8 +3652,11 @@ function load(){
       merged.yearData[year] = Object.assign({grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0}, merged.yearData[year]||{});
     });
     merged.v = 5;
-    return TaxMateState.migrate(merged,Date.now(),DEVICE_ID);
-  }catch(e){ return JSON.parse(JSON.stringify(DEFAULT_STATE)); }
+    const migrated=TaxMateState.migrate(merged,Date.now(),DEVICE_ID);TaxMateState.validateState(migrated);
+    if(JSON.stringify(s)!==JSON.stringify(migrated))persistCanonicalState(migrated);
+    try{localStorage.removeItem(pendingKey);}catch(_){}
+    return migrated;
+  }catch(e){STATE_LOAD_ERROR=e;console.error('TaxMate state load blocked',e&&e.code||e);return TaxMateState.migrate(JSON.parse(JSON.stringify(DEFAULT_STATE)),Date.now(),DEVICE_ID);}
 }
 function metaSyncSnapshot(state){
   return {
@@ -3512,14 +3687,68 @@ function stampVersionedMetaChanges(now){
 function persistRemoteState(){
   S=TaxMateState.migrate(S,Date.now(),DEVICE_ID);
   META_SYNC_SHADOW=metaSyncSnapshot(S);
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+  try{ persistCanonicalState(S); }catch(e){}
+  window.dispatchEvent(new CustomEvent('taxmate:canonical-state-updated'));
+}
+function persistCanonicalState(state){
+  if(STATE_LOAD_ERROR)throw Object.assign(new Error('Canonical state writes are blocked until the stored data is recovered safely.'),{code:'state-load-blocked'});
+  TaxMateState.validateState(state);const encoded=JSON.stringify(state),prior=localStorage.getItem(STORE_KEY),rollbackKey='taxmateuk_pre_ltd_v15_migration',pendingKey=STORE_KEY+':atomic-pending';
+  localStorage.setItem(pendingKey,encoded);if(prior){try{const previous=JSON.parse(prior);if(Number(previous.companyStateSchemaVersion||0)<Number(state.companyStateSchemaVersion||0)&&!localStorage.getItem(rollbackKey))localStorage.setItem(rollbackKey,prior);}catch(_){}}
+  localStorage.setItem(STORE_KEY,encoded);localStorage.removeItem(pendingKey);
 }
 function save(){
-  const now=Date.now(); stampVersionedMetaChanges(now); S=TaxMateState.migrate(S,now,DEVICE_ID);
-  try{ localStorage.setItem(STORE_KEY, JSON.stringify(S)); }catch(e){}
+  if(STATE_LOAD_ERROR){showNotice('TaxMate data needs checking','This device contains data from an unsupported or damaged state. TaxMate has not replaced it. Update or recover the data before making changes.');return false;}
+  const now=Date.now(),persistedBefore=localStorage.getItem(STORE_KEY); stampVersionedMetaChanges(now); S=TaxMateState.migrate(S,now,DEVICE_ID);const encodedAfter=JSON.stringify(S),stateChanged=persistedBefore!==encodedAfter;
+  try{ persistCanonicalState(S); }catch(e){
+    showNotice('TaxMate could not save this change','Your existing data is still on this device. Check the information and try again before closing TaxMate.');
+    return false;
+  }
+  if(!stateChanged)return true;
   CLOUD.localEditAt=now;
-  if(typeof scheduleCloudPush==='function') scheduleCloudPush();
+  if(typeof scheduleCloudPush==='function') scheduleCloudPush();return true;
 }
+function closePersonalSurfacesForLtd(){
+  const active=document.activeElement;
+  if(active&&active.closest&&active.closest('.sb,#taxmate-lightbox,#ob-root')&&typeof active.blur==='function')active.blur();
+  document.querySelectorAll('.sb.open').forEach(surface=>surface.classList.remove('open'));
+  document.body.classList.remove('sheet-open');
+  const lightbox=document.getElementById('taxmate-lightbox');
+  if(lightbox){lightbox.style.display='none';const image=lightbox.querySelector('img');if(image)image.removeAttribute('src');}
+  const personalToast=document.getElementById('taxmate-toast');
+  if(personalToast)personalToast.classList.remove('show');
+  const onboarding=document.getElementById('ob-root');
+  if(onboarding)onboarding.classList.remove('active');
+  pwaProactivePending=false;
+  if(_toastTimer){clearTimeout(_toastTimer);_toastTimer=null;}
+  sheetOpener=null;
+  LB={url:'',path:''};
+}
+window.TaxMateLtdProductionBridge=Object.freeze({
+  loadState:()=>JSON.parse(JSON.stringify(S)),
+  replaceState(next){
+    const migrated=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(migrated);persistCanonicalState(migrated);S=migrated;CLOUD.localEditAt=Date.now();
+    window.dispatchEvent(new CustomEvent('taxmate:canonical-state-updated'));
+    if(typeof scheduleCloudPush==='function')scheduleCloudPush();
+    return JSON.parse(JSON.stringify(S));
+  },
+  rollbackSnapshot(){try{return JSON.parse(localStorage.getItem('taxmateuk_pre_ltd_v15_migration')||'null');}catch(_){return null;}},
+  entitlementSnapshot:()=>JSON.parse(JSON.stringify(ENTITLEMENT.snapshot||{})),
+  hasExistingCompany:()=>!!activeLtdProfile(),
+  activeCompanyId:()=>CLOUD.ltdAnchor&&CLOUD.ltdAnchor.activeCompanyId||null,
+  personalTaxJurisdiction:()=>{const rules=TaxMateCore.TAX_RULESETS&&TaxMateCore.TAX_RULESETS[S.year];return rules&&rules.jurisdiction||null;},
+  deviceId:()=>DEVICE_ID,
+  locale:()=>({en:'en',zh:'zh-HK',pl:'pl',ro:'ro',es:'es',ur:'ur'})[S.settings.lang]||'en',
+  theme:()=>S.settings.theme==='dark'?'dark':S.settings.theme==='light'?'light':matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',
+  mount:()=>document.getElementById('taxmate-ltd-ui-root'),
+  enterLtd(){closePersonalSurfacesForLtd();for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
+  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
+  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
+  callTrusted:(name,data)=>callSecureFunction(name,data),
+  downloadWorkingPack(data){const blob=new Blob([JSON.stringify(data.payload,null,2)],{type:data.mimeType||'application/json'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=data.fileName||'taxmate-company-working-pack.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},
+  refreshShell:()=>render(),
+  sentryEnabled:()=>typeof window.Sentry!=='undefined',
+  analyticsEnabled:()=>{try{return localStorage.getItem('taxmateuk_analytics_consent')==='granted';}catch(_){return false;}}
+});
 function yd(){
   if(!S.yearData[S.year]) S.yearData[S.year] = {poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};
   return S.yearData[S.year];
@@ -3573,9 +3802,13 @@ function bizColor(b){ const i = S.businesses.indexOf(b); return AVATAR_COLORS[(i
 
 /* ═══════════ tax engine (tested) ═══════════ */
 function bizFigures(b,yr){
-  const inc = entriesFor(yr,b.id,'income').reduce((s,e)=>s+e.amount,0);
-  const exp = entriesFor(yr,b.id,'expense').reduce((s,e)=>s+effExact(e),0);
-  return {income:inc, expenses:exp, profit:inc-exp};
+  return homeLedgerSnapshot(yr,b.id);
+}
+function homeLedgerSnapshot(yr,bizId=null,period=null){
+  const rows=entriesFor(yr,bizId,null).filter(entry=>!period||(entry.date>=period.from&&entry.date<=period.to));
+  const income=rows.filter(entry=>entry.kind==='income').reduce((sum,entry)=>sum+Math.max(0,Number(entry.amount)||0),0);
+  const expenses=rows.filter(entry=>entry.kind==='expense').reduce((sum,entry)=>sum+Math.max(0,effExact(entry)),0);
+  return Object.freeze({taxYear:yr,businessId:bizId,period:period?Object.freeze({...period}):null,income,expenses,profit:income-expenses,recordCount:rows.length});
 }
 function calcTax(yr){
   const cfg = cfgFor(yr);
@@ -3628,7 +3861,7 @@ function renderNav(){
     return `<button class="${on?'on':''}" data-tm-click="go('${n}')">${NAV_ICONS[n]}<span>${t('nav.'+n)}</span></button>`;
   }).join('');
 }
-function go(tab){ S.tab=tab; save(); render(); window.scrollTo(0,0); }
+function go(tab){ if(tab!=='receipts'&&typeof RCB!=='undefined')RCB.bizId=null;S.tab=tab; save(); render(); window.scrollTo(0,0); }
 function setYear(y){ S.year=y; save(); render(); }
 function renderYearSel(){
   document.getElementById('yearSel').innerHTML =
@@ -3638,7 +3871,8 @@ function renderYearSel(){
 function render(){
   applyStaticI18n(); renderYearSel(); renderNav();
   const page = document.getElementById('page');
-  if(!S.businesses.length && S.tab!=='more'){ page.innerHTML = welcome(); return; }
+  if(STATE_LOAD_ERROR){page.innerHTML='<div class="notice amber"><strong>TaxMate data needs checking</strong><br>This device contains data from an unsupported or damaged state. Your stored data has not been replaced and cloud sync is paused on this device.</div>';renderSyncStatus();return;}
+  if(!S.businesses.length && !activeLtdProfile() && S.tab!=='more'){ page.innerHTML = welcome(); return; }
   if(S.tab==='home') page.innerHTML = pageHome();
   else if(S.tab==='income') page.innerHTML = pageList('income');
   else if(S.tab==='expenses') page.innerHTML = pageList('expense');
@@ -3659,24 +3893,88 @@ function welcome(){
   </div>
   <div class="notice green">${t('w.priv')}</div>
   <div class="card">${steps}
-    <button class="btn" style="margin-top:14px" data-tm-click="openBiz()">${t('w.start')}</button>
+    <button class="btn" style="margin-top:14px" data-tm-click="openAddBusinessFlow()">${t('w.start')}</button>
   </div>`;
 }
 
-/* Home cards from onboarding: review reminder + catch-up re-entry */
-function obReviewCard(){
-  const ids = (S.obReview||[]).filter(id=>S.entries.find(e=>e.id===id && e._review));
-  if(!ids.length){ if(S.obReview&&S.obReview.length){ S.obReview=[]; } return ''; }
-  return `<div class="card" style="border:1px solid var(--amber);background:var(--amber-soft);cursor:pointer" data-tm-click="go('expenses')">
-    <div class="row" style="align-items:flex-start">
-      <div class="ico" style="background:rgba(180,125,18,.18)">🔔</div>
-      <div class="grow">
-        <div class="t" style="color:var(--amber)">${ids.length} item${ids.length>1?'s':''} to review</div>
-        <div class="s">Add dates or categories when you have a moment — it keeps your tax estimate accurate.</div>
-      </div>
-      <div class="chev">›</div>
-    </div>
-  </div>`;
+/* TaxMate Assistant derives every task from canonical entries, receipt references and
+   Ltd profile state. Decisions live inside versioned yearData, so the existing app/meta
+   and durable personal-state outbox synchronize them without a second cloud contract. */
+let ASSISTANT_SHOW_HIDDEN=false;
+function assistantStoredState(create=false){
+  let year=S.yearData&&S.yearData[S.year];
+  if(!year&&create){if(!S.yearData)S.yearData={};year=S.yearData[S.year]={poaPaid:0,priorAdj:0,taMode:'auto',mileage:0,dismissedTips:[],grossPropertyIncome:0,propertyIncomeComplete:false,poaOutsidePercent:0};}
+  if(!year)return TaxMateAssistant.emptyState();
+  const normalized=TaxMateAssistant.normalizeState(year.assistant);
+  if(create)year.assistant=normalized;
+  return normalized;
+}
+function assistantAllTasks(){return TaxMateAssistant.deriveTasks({state:S,taxYear:S.year,assistantState:assistantStoredState(false),receiptReminders:hasFeature('receiptPhoto')});}
+function assistantVisibleTasks(){return TaxMateAssistant.visibleTasks(assistantAllTasks());}
+function assistantCountText(count){return count===1?t('assistant.countOne'):t('assistant.countMany',{n:count});}
+function assistantHomeCard(){
+  const count=assistantVisibleTasks().length;if(!count)return'';
+  return `<div class="card assistant-home-card" data-tm-click="assistantOpen()" data-assistant-home-count="${count}"><div class="row"><div class="ico" style="background:var(--amber-soft)">✨</div><div class="grow"><div class="t">${t('assistant.title')}</div><div class="assistant-count">${assistantCountText(count)}</div></div><div class="link">${t('assistant.review')}</div></div></div>`;
+}
+function assistantTask(encoded){let id='';try{id=decodeURIComponent(String(encoded||''));}catch(_){return null;}return TaxMateAssistant.taskById(assistantAllTasks(),id);}
+function assistantEntryLabel(task){return task.entryKind==='income'?t('assistant.income'):t('assistant.expense');}
+function assistantTaskTitle(task){
+  if(task.kind==='entry_exact_date')return t('assistant.dateTitle',{amount:fmt(task.amount),kind:assistantEntryLabel(task)});
+  if(task.kind==='entry_required')return t('assistant.requiredTitle',{amount:fmt(task.amount),kind:assistantEntryLabel(task)});
+  if(task.kind==='ltd_setup')return t('assistant.ltdTitle',{company:task.companyName});
+  if(task.kind==='receipt_missing')return t('assistant.receiptTitle',{n:task.count});
+  return task.reasonCode||t('assistant.title');
+}
+function assistantTaskReason(task){
+  if(task.kind==='entry_exact_date')return t('assistant.dateReason',{business:task.businessName||t('assistant.business')});
+  if(task.kind==='entry_required')return t('assistant.requiredReason',{fields:(task.fields||[]).map(field=>t('assistant.'+field)).join(', ')});
+  if(task.kind==='ltd_setup')return t('assistant.ltdReason');
+  if(task.kind==='receipt_missing')return t('assistant.receiptReason',{business:task.businessName,year:task.taxYear});
+  return'';
+}
+function assistantBadge(task){const key=task.category==='action_required'?'assistant.actionRequired':task.category==='needs_decision'?'assistant.needsDecision':'assistant.helpful';return`<span class="assistant-badge ${task.category.replace('_','-')}">${t(key)}</span>`;}
+function assistantTaskActions(task,hidden=false){
+  const encoded=encodeURIComponent(task.id),buttons=[];
+  if(hidden)buttons.push(`<button class="btn ghost" data-tm-click="assistantRestore('${encoded}')">${t('assistant.restore')}</button>`);
+  else if(task.kind==='entry_exact_date')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.addExactDate')}</button><button class="btn ghost" data-tm-click="assistantKeepEstimated('${encoded}')">${t('assistant.keepEstimated')}</button>`);
+  else if(task.kind==='entry_required')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.fixEntry')}</button>`);
+  else if(task.kind==='ltd_setup')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.resumeLtd')}</button><button class="btn ghost" data-tm-click="assistantRemoveLtd('${encoded}')">${t('assistant.removeLtd')}</button>`);
+  else if(task.kind==='receipt_missing')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.openReceipts')}</button>`);
+  return buttons.join('');
+}
+function assistantTaskCard(task,hidden=false){
+  const encoded=encodeURIComponent(task.id),dismiss=task.dismissible&&!hidden?`<button class="assistant-task-dismiss" aria-label="${t('assistant.dismiss')}" title="${t('assistant.dismiss')}" data-tm-click="assistantDismiss('${encoded}')">×</button>`:'';
+  return `<section class="assistant-task" data-assistant-task-id="${esc(task.id)}" data-assistant-category="${task.category}"><div class="assistant-task-head"><div class="assistant-task-copy">${assistantBadge(task)}<div class="assistant-task-title">${assistantTaskTitle(task)}</div><div class="assistant-task-reason">${assistantTaskReason(task)}</div></div>${dismiss}</div><div class="assistant-task-actions">${assistantTaskActions(task,hidden)}</div></section>`;
+}
+function paintAssistantSheet(){
+  const all=assistantAllTasks(),visible=TaxMateAssistant.visibleTasks(all),hidden=TaxMateAssistant.hiddenTasks(all),list=document.getElementById('assistant-task-list'),wrap=document.getElementById('assistant-hidden-wrap'),hiddenList=document.getElementById('assistant-hidden-list'),toggle=document.getElementById('assistant-show-hidden');
+  document.getElementById('assistant-title').textContent=t('assistant.title');document.getElementById('assistant-summary').textContent=visible.length?assistantCountText(visible.length):t('assistant.none');document.getElementById('assistant-hidden-title').textContent=t('assistant.hiddenTitle');
+  list.innerHTML=visible.map(task=>assistantTaskCard(task,false)).join('')||`<div class="notice green">${t('assistant.none')}</div>`;
+  hiddenList.innerHTML=ASSISTANT_SHOW_HIDDEN?hidden.map(task=>assistantTaskCard(task,true)).join(''):'';wrap.hidden=!ASSISTANT_SHOW_HIDDEN||!hidden.length;toggle.style.display=hidden.length?'flex':'none';toggle.textContent=ASSISTANT_SHOW_HIDDEN?t('assistant.hideHidden'):t('assistant.showHidden');
+}
+function assistantOpen(){ASSISTANT_SHOW_HIDDEN=false;paintAssistantSheet();openSheet('assistant');}
+function assistantToggleHidden(){ASSISTANT_SHOW_HIDDEN=!ASSISTANT_SHOW_HIDDEN;paintAssistantSheet();}
+function assistantSaveState(mutator){const state=assistantStoredState(true);mutator(state);S.yearData[S.year].assistant=state;save();render();if(document.getElementById('sb-assistant').classList.contains('open'))paintAssistantSheet();}
+function assistantKeepEstimated(encoded){const task=assistantTask(encoded);if(!task||task.kind!=='entry_exact_date')return;assistantSaveState(state=>{state.decisions[task.id]='keep_estimated_date';});}
+function assistantDismiss(encoded){const task=assistantTask(encoded);if(!task||task.category!=='helpful_reminder'||task.dismissible!==true)return;assistantSaveState(state=>{state.hiddenReminders[task.id]=true;});}
+function assistantRestore(encoded){const task=assistantTask(encoded);if(!task||task.hidden!==true)return;assistantSaveState(state=>{delete state.hiddenReminders[task.id];});}
+function assistantHighlight(field){const id=field==='date'?'en-date':field==='amount'?'en-amount':field==='business'?'en-biz':'en-cats',target=document.getElementById(id);if(!target)return;target.classList.add('assistant-highlight');target.scrollIntoView({block:'center'});if(typeof target.focus==='function')target.focus();}
+function assistantOpenTask(encoded){
+  const task=assistantTask(encoded);if(!task)return;
+  closeSheet('assistant');
+  if(task.kind==='ltd_setup'){openLtdCompany();return;}
+  if(task.kind==='receipt_missing'){RCB.bizId=task.businessId;RCB.cat='all';RCB.month='all';go('receipts');return;}
+  const entry=S.entries.find(item=>item.id===task.entryId);if(!entry)return;
+  const field=task.kind==='entry_exact_date'?'date':task.fields&&task.fields[0]||'date';openEntry(entry.kind,entry.id);setTimeout(()=>assistantHighlight(field),80);
+}
+function assistantRemoveLtd(encoded){
+  const task=assistantTask(encoded);if(!task||task.kind!=='ltd_setup')return;
+  closeSheet('assistant');
+  confirmAction(t('assistant.removeLtdTitle'),t('assistant.removeLtdBody'),async()=>{
+    const result=await TaxMateLtdUIFacade.onRemoveCompany({confirmed:true});
+    if(result.status!=='ok'){showNotice(t('assistant.title'),t('assistant.ltdReason'));return;}
+    render();toast(t('toast.saved'));
+  });
 }
 function obCatchupCard(){
   // show only to people who skipped onboarding (explore) — gentle re-entry
@@ -3816,10 +4114,36 @@ function topContextTip(){
     return {icon:'📱', t:t('tip.phone_t'), b:t('tip.phone_b')};
   return null;
 }
+function activeLtdProfile(state=S){return(state&&state.domain&&state.domain.companyProfiles||[]).find(profile=>profile.deletedAt==null)||null;}
+function ltdHomeBusinessCards(){
+  const profile=activeLtdProfile();if(!profile)return'';
+  const snapshot=window.TaxMateLtdProductionAdapter&&TaxMateLtdProductionAdapter.getSnapshot&&TaxMateLtdProductionAdapter.getSnapshot();
+  const row=snapshot&&snapshot.businessList&&snapshot.businessList.find(item=>item.businessType==='limited_company')||null;
+  const name=row&&row.name||profile.legalName||'Limited company',draft=profile.lifecycleStatus!=='confirmed',amount=row&&row.summary&&Number.isSafeInteger(row.summary.amountMinor)?row.summary.amountMinor:null,share=row&&row.share&&row.share.percent;
+  const readOnly=currentTier()!=='pro';
+  return `<div class="row">
+    <div class="avatar" style="background:var(--brand-soft);color:var(--brand-deep)">${esc(name.trim().charAt(0).toUpperCase()||'L')}</div>
+    <div class="grow"><div class="t">${esc(name)}</div><div class="s">Limited company${share!=null?' · '+esc(String(share))+'%':''}${draft?' · Setup pending':''}${readOnly?' · Read-only':''}</div></div>
+    <div style="text-align:end">${amount==null?'':`<div class="v num ${amount>=0?'pos':'neg'}">${fmt(amount/100)}</div>`}<button class="link" data-tm-click="openLtdCompany()">${draft?'Finish setup':'Open'}</button></div>
+  </div>`;
+}
+function openAddBusinessFlow(){
+  if(!window.TaxMateLtdProductionAdapter){showNotice('Limited company','The company workspace could not be loaded. Reload TaxMate and try again.');return;}
+  TaxMateLtdProductionAdapter.openAddBusiness().catch(error=>{console.error(error);showNotice('Limited company','The company workspace could not be opened. Your data was not changed.');});
+}
+function openLtdCompany(){
+  if(!window.TaxMateLtdProductionAdapter){showNotice('Limited company','The company workspace could not be loaded. Reload TaxMate and try again.');return;}
+  TaxMateLtdProductionAdapter.openExistingCompany().catch(error=>{console.error(error);showNotice('Limited company','The company workspace could not be opened. Your data was not changed.');});
+}
+function ltdHomeHero(profile){
+  const period=profile&&profile.accountingPeriod,periodText=period&&period.startDate&&period.endDate?`${new Date(period.startDate+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})} – ${new Date(period.endDate+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})}`:t('home.setupPending');
+  return `<div class="hero" data-home-ltd-only-hero><div class="hi">${t('home.ltdHeroTitle')}</div><div style="font-size:24px;font-weight:800;line-height:1.25;margin:4px 0 18px">${esc(profile.legalName||'Limited company')}</div><div class="hero-owe" style="cursor:default"><span class="ho-label">${t('home.accountsPeriod')}</span><span class="ho-val">${esc(periodText)}</span></div><button class="pill" style="width:100%;min-height:48px;text-align:center;font-weight:800" data-tm-click="openLtdCompany()">${t('home.openCompany')}</button></div>`;
+}
 function pageHome(){
   const tx = calcTax(S.year);
-  const totalIn = entriesFor(S.year,null,'income').reduce((s,e)=>s+e.amount,0);
-  const totalOut = entriesFor(S.year,null,'expense').reduce((s,e)=>s+effExact(e),0);
+  const ledger=homeLedgerSnapshot(S.year);
+  const totalIn = ledger.income;
+  const totalOut = ledger.expenses;
   const owe = Math.max(0,tx.liability);
 
   const bizCards = tx.perBiz.map(p=>{
@@ -3835,19 +4159,18 @@ function pageHome(){
         <button class="link" data-tm-click="openBiz('${p.biz.id}')">${t('c.edit')}</button>
       </div>
     </div>`;
-  }).join('');
+  }).join('')+ltdHomeBusinessCards();
 
   const recent = S.entries.filter(e=>inYear(e.date,S.year)).sort((a,b)=>b.date.localeCompare(a.date)).slice(0,4);
   const recentHTML = recent.length ? `
     <div class="h2">${t('home.recent')}</div>
     <div class="elist">${recent.map(entryRow).join('')}</div>` : '';
 
-  return `
-  ${homeCarousel()}
-  <div class="hero">
+  const ltdProfile=activeLtdProfile(),hasPersonal=S.businesses.some(b=>b.structure==='sole'||b.structure==='sole-trader'||b.structure==='partnership');
+  const personalHero=`<div class="hero" data-home-personal-hero>
     <div class="hi">${t('home.hi')}</div>
-    <div class="label">${t('home.profit',{y:S.year})}</div>
-    <div class="big num">${fmt(tx.myProfit)}</div>
+    <div class="label">${t('home.selfProfit',{y:S.year})}</div>
+    <div class="big num" data-home-ledger-profit>${fmt(ledger.profit)}</div>
     <div class="hero-owe" data-tm-click="go('tax')">
       <span class="ho-label">🐷 ${t('home.oweLine')}</span>
       <span class="ho-val num">${fmt0(owe)} ›</span>
@@ -3856,32 +4179,28 @@ function pageHome(){
       <button class="pill" data-tm-click="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
       <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
     </div>
-    ${(()=>{
-      const ci=currentQuarterIdx(S.year);
-      if(ci<0) return '';
-      const qr=quarterRange(ci,S.year);
-      const qP=S.entries.filter(e=>e.date>=qr.from&&e.date<=qr.to).reduce((a,e)=>e.kind==='income'?a+Math.max(0,e.amount):a-Math.max(0,effExact(e)),0);
-      return '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:11px;border-top:1px solid rgba(255,255,255,.2)">'
-        +'<span style="font-size:12px;font-weight:600;opacity:.85">'+qr.id+'</span>'
-        +'<span class="num" style="font-size:13px;font-weight:800">'+(qP>=0?'':'−')+'\xa3'+Math.abs(qP).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2})+'</span></div>';
-    })()}
-  </div>
+    ${ltdProfile?`<div style="font-size:12px;font-weight:700;line-height:1.45;margin-top:12px;opacity:.9">${t('home.ltdSeparate')}</div>`:''}
+  </div>`;
 
-  ${deadlineBanner()}
+  return `
+  ${hasPersonal?homeCarousel():''}
+  ${hasPersonal?personalHero:(ltdProfile?ltdHomeHero(ltdProfile):'')}
+
+  ${hasPersonal?deadlineBanner():''}
   ${entitlementBanner()}
 
-  <div class="homecta">
+  ${hasPersonal?`<div class="homecta">
     <button class="btn" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
     <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
-  </div>
+  </div>`:''}
 
   ${homeInstallCard()}
 
-  ${obReviewCard()}
+  ${assistantHomeCard()}
 
   <div class="h2">${t('home.biz')}</div>
-  <div class="card">${bizCards}</div>
-  <button class="btn soft home-add-business" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
+  <div class="card" data-home-business-list>${bizCards}</div>
+  <button class="btn soft home-add-business" data-tm-click="openAddBusinessFlow()">+ ${t('home.addBiz')}</button>
 
   ${recentHTML}
 
@@ -4084,7 +4403,7 @@ function setTaMode(m){ yd().taMode=m; save(); render(); }
    補收據頁：揀分類＋月份 → 列出「同類、未有收據」嘅開支 → 逐行影相貼上。
    唔製造新 data（純補相落已存在嘅開支），一筆一相。Pro 功能。*/
 function receiptsUI(){ return {cat: RCB.cat, month: RCB.month}; }
-let RCB = { cat:'all', month:'all' };
+let RCB = { cat:'all', month:'all', bizId:null };
 function rcbSetCat(v){ RCB.cat=v; render(); }
 function rcbSetMonth(v){ RCB.month=v; render(); }
 
@@ -4105,7 +4424,7 @@ function pageReceipts(){
   }
 
   // 所有「開支 + 未有收據」entries（本年度）
-  let missing = entriesFor(yr,null,'expense').filter(e=>!e.receiptUrl);
+  let missing = entriesFor(yr,RCB.bizId||null,'expense').filter(e=>!e.receiptUrl&&!e.receiptPath);
 
   // 分類選項（由「未補相」嗰堆開支本身抽出，唔會列出無關分類）
   const catIds = [...new Set(missing.map(e=>e.cat))];
@@ -4231,7 +4550,7 @@ function pageMore(){
         <div class="grow">
           <div class="t" style="font-size:14.5px">${esc(cloudUser().displayName||t('ac.signedAs'))}</div>
           <div class="s">${esc(cloudUser().email||'')}</div>
-          <div class="s" id="cloud-sync-status" style="font-weight:700;margin-top:2px">${esc(syncStatus().message)}</div>
+          <div class="s" id="cloud-sync-status" style="font-weight:700;margin-top:2px">${esc(syncStatusMessage())}</div>
         </div>
       </div>
       <div class="notice green" style="margin-top:12px;font-size:12.5px">
@@ -4257,7 +4576,8 @@ function pageMore(){
         </div>
         <button class="link" data-tm-click="openBiz('${b.id}')">${t('c.edit')}</button>
       </div>`).join(''):''}
-    <button class="btn soft" style="margin-top:${S.businesses.length?14:0}px" data-tm-click="openBiz()">+ ${t('home.addBiz')}</button>
+    ${activeLtdProfile()?ltdHomeBusinessCards():''}
+    <button class="btn soft" style="margin-top:${S.businesses.length||activeLtdProfile()?14:0}px" data-tm-click="openAddBusinessFlow()">+ ${t('home.addBiz')}</button>
     <div class="frow" style="margin-top:12px;padding-top:12px;border-top:1px solid var(--line)">
       <span class="fl">${t('sy.joinTitle')}${featBadge('partnerSync')}</span>
       <button class="link" data-tm-click="${hasFeature('partnerSync')?'openJoinPartnership()':`lockGuard('partnerSync')`}">${hasFeature('partnerSync')?'›':'🔒'}</button>
@@ -4356,7 +4676,7 @@ function pageMore(){
       <div class="card">
         <div class="t" style="margin-bottom:6px">${t('m.backup')}</div>
         <div class="s" style="margin-bottom:12px">${cloudUser()
-          ? '<span data-cloud-sync-status style=\"font-weight:700\">'+esc(syncStatus().message)+'</span> — '
+          ? '<span data-cloud-sync-status style=\"font-weight:700\">'+esc(syncStatusMessage())+'</span> — '
           : ''}${t('m.backupHint')}</div>
         <button class="btn soft" data-tm-click="exportPortableBackup()">${t('m.backupFull')}</button>
         <div class="s" style="margin:6px 2px 12px">${t('m.backupFullS')}</div>
@@ -4378,9 +4698,9 @@ function pageMore(){
     <summary>${t('sec.help')}</summary>
     <div class="sec-body">
       <div class="card">
-        <div class="t" style="margin-bottom:6px">Help & support</div>
-        <div class="s" style="margin-bottom:12px">Task-based help for records, tax estimates, receipts, plans, backups and partnerships.</div>
-        <button class="btn soft" data-tm-click="openLegal('help')">Open Help & support</button>
+        <div class="t" style="margin-bottom:6px">${t('help.title')}</div>
+        <div class="s" style="margin-bottom:12px">${t('help.body')}</div>
+        <button class="btn soft" data-tm-click="openLegal('help')">${t('help.open')}</button>
         <a href="mailto:support@taxmate.uk" style="display:block;margin-top:10px;color:var(--brand-deep);font-weight:700;text-align:center">support@taxmate.uk</a>
       </div>
     </div>
@@ -4431,7 +4751,7 @@ function setAnalyticsConsent(enabled){
   render();
 }
 function setLang(l){ S.settings.lang=l; save(); render(); }
-function obSetLang(l){ S.settings.lang=l; save(); OB._langOpen=false; obRender(); }
+function obSetLang(l){ S.settings.lang=l; save(); applyStaticI18n(); OB._langOpen=false; obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
 let EN = {id:null, kind:'expense', cat:null, pct:100};
@@ -4894,12 +5214,12 @@ function deleteEntry(){
 let BZ = {id:null, structure:'sole'};
 // suggested-categories feature removed — businesses start empty, users add their own
 function paintTrades(){ /* trade selector removed */ }
-function openBiz(id){
+function openBiz(id,initialStructure){
   // Gate: more than one business needs Plus
   if(!id && S.businesses.length>=1 && lockGuard('multiBiz')) return;
   const b = id?bizById(id):null;
   if(b&&((S.businesses.indexOf(b)>0&&!hasFeature('multiBiz'))||(b.syncCode&&!hasFeature('partnerSync')))){showNotice(t('sec.biz'),b.syncCode?t('sy.readOnly'):t('biz.readOnly'));return;}
-  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null, trade:b.trade||null} : {id:null, structure:'sole', pendingCode:null, trade:null};
+  BZ = b ? {id:b.id, structure:b.structure||'sole', pendingCode:null, trade:b.trade||null} : {id:null, structure:initialStructure==='partnership'?'partnership':'sole', pendingCode:null, trade:null};
   document.getElementById('bz-title').textContent = b?t('b.edit'):t('b.add');
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
@@ -5107,7 +5427,7 @@ function sheetSnapshot(sheetEl){
   }).join('\u0001');
 }
 let sheetOpener=null;
-function openSheet(id){ const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); }
+function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); setTimeout(maybeOpenPendingPwaSuggestion,0); }
@@ -5150,6 +5470,7 @@ function toast(msg){
 
 /* ═══════════ export / import ═══════════ */
 function exportJSON(){
+  if(!ltdBackupAllowed('portable_backup'))return;
   trackEvent('backup_exported');
   // GDPR data portability: structured, machine-readable export of the user's own data
   const u = (fbConfigured() && FB.ready && firebase.auth().currentUser) ? firebase.auth().currentUser : null;
@@ -5164,23 +5485,23 @@ function exportJSON(){
 function downloadBackupBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);}
 async function receiptBytesFromUrl(url){const response=await fetch(url);if(!response.ok)throw new Error('A receipt could not be downloaded');return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
 async function collectPortableReceipts(){
-  const result=[],seen=new Set(),linkedPaths=new Set((S.entries||[]).map(e=>e.receiptPath).filter(Boolean));
-  for(const entry of S.entries||[]){if(!entry.receiptPath&&!entry.receiptUrl)continue;let url=entry.receiptUrl;if(entry.receiptPath){if(!fbConfigured()||!firebase.auth().currentUser)throw new Error('Sign in and connect to the internet to back up cloud receipts');url=await firebase.storage().ref(entry.receiptPath).getDownloadURL();}if(!url)throw new Error('Receipt is referenced but unavailable');const binary=await receiptBytesFromUrl(url);result.push({entryId:entry.id,originalPath:entry.receiptPath||url,...binary});if(entry.receiptPath)seen.add(entry.receiptPath);}
+  const result=[],seen=new Set(),byPath=new Map();for(const item of TaxMateCompanyEvidence.requiredReceiptAssociations(S)){const list=byPath.get(item.originalPath)||[];list.push(item);byPath.set(item.originalPath,list);}for(const entry of S.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(!source)continue;const list=byPath.get(source)||[];list.push({recordType:'legacy_entry',recordId:entry.id,originalPath:source});byPath.set(source,list);}const linkedPaths=new Set(byPath.keys());
+  for(const [source,associations] of byPath){let url=/^https?:\/\//i.test(source)?source:null;if(!url){if(!fbConfigured()||!firebase.auth().currentUser)throw new Error('Sign in and connect to the internet to back up cloud receipts and Ltd evidence');url=await firebase.storage().ref(source).getDownloadURL();}if(!url)throw new Error('Receipt is referenced but unavailable');const binary=await receiptBytesFromUrl(url),legacy=associations.filter(item=>item.recordType==='legacy_entry');result.push({entryId:associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations,...binary});if(!/^https?:\/\//i.test(source))seen.add(source);}
   if(fbConfigured()&&FB.ready&&firebase.auth().currentUser){const uid=firebase.auth().currentUser.uid,listing=await firebase.storage().ref('receipts/'+uid).listAll();for(const item of listing.items){if(seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;const binary=await receiptBytesFromUrl(await item.getDownloadURL());result.push({entryId:null,originalPath:item.fullPath,...binary});}}
   return result;
 }
-async function buildPortableArchive(state=S){const receipts=state===S?await collectPortableReceipts():[];return TaxMatePortableBackup.createArchive({state,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts});}
-async function exportPortableBackup(){try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');}catch(error){console.error(error);showNotice(t('m.backup'),"A full backup couldn't be created. Your data was not changed.");}}
+async function buildPortableArchive(state=S){if(state===S&&!ltdBackupAllowed('full_backup',state))throw Object.assign(new Error('pro_required'),{code:'pro_required'});const receipts=state===S?await collectPortableReceipts():[];return TaxMatePortableBackup.createArchive({state,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts});}
+async function exportPortableBackup(){if(!ltdBackupAllowed('full_backup'))return;try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');}catch(error){console.error(error);showNotice(t('m.backup'),"A full backup couldn't be created. Your data was not changed.");}}
 function replaceStateSafely(candidate){const before=JSON.stringify(S);try{localStorage.setItem('taxmateuk_preimport_backup',before);S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),candidate);S.settings=Object.assign({lang:'en',tier:'free'},candidate.settings||{});save();render();toast(t('toast.restored'));}catch(error){S=JSON.parse(before);try{localStorage.setItem(STORE_KEY,before);}catch(_){}throw error;}}
 async function restorePortableBackup(inspected){
   const needsStorage=inspected.receipts.length>0;if(needsStorage&&(!fbConfigured()||!FB.ready||!firebase.auth().currentUser))throw new Error('Sign in before restoring receipt files');
   const pre=await buildPortableArchive();downloadBackupBlob(pre.archive,'taxmate-pre-restore-'+todayISO()+'.zip');
-  const candidate=JSON.parse(JSON.stringify(inspected.state)),uploaded=[];
-  try{if(needsStorage){const uid=firebase.auth().currentUser.uid;for(let i=0;i<inspected.receipts.length;i++){const receipt=inspected.receipts[i],ext=(receipt.archivePath.split('.').pop()||'bin').toLowerCase(),entry=receipt.entryId&&candidate.entries.find(e=>e.id===receipt.entryId),name=entry?`restore-${inspected.metadata.backupId}-${entry.id}`:`orphan-${inspected.metadata.backupId}-${i}`,path=`receipts/${uid}/${name}.${ext}`,ref=firebase.storage().ref(path),blob=new Blob([receipt.bytes],{type:receipt.mimeType});await ref.put(blob,{contentType:receipt.mimeType});uploaded.push(path);if(entry){entry.receiptPath=path;entry.receiptUrl=await ref.getDownloadURL();}}}replaceStateSafely(candidate);}catch(error){await Promise.all(uploaded.map(path=>firebase.storage().ref(path).delete().catch(()=>{})));throw error;}
+  let candidate=JSON.parse(JSON.stringify(inspected.state));const uploaded=[];
+  try{if(needsStorage){const uid=firebase.auth().currentUser.uid;for(let i=0;i<inspected.receipts.length;i++){const receipt=inspected.receipts[i],ext=(receipt.archivePath.split('.').pop()||'bin').toLowerCase(),entry=receipt.entryId&&candidate.entries.find(e=>e.id===receipt.entryId),name=entry?`restore-${inspected.metadata.backupId}-${entry.id}`:`evidence-${inspected.metadata.backupId}-${i}`,path=`receipts/${uid}/${name}.${ext}`,ref=firebase.storage().ref(path),blob=new Blob([receipt.bytes],{type:receipt.mimeType});await ref.put(blob,{contentType:receipt.mimeType});uploaded.push(path);if(entry){entry.receiptPath=path;entry.receiptUrl=await ref.getDownloadURL();}for(const association of receipt.associations||[])if(association.recordType!=='legacy_entry')candidate=TaxMateCompanyEvidence.replaceReceiptReference(candidate,association,path);}}replaceStateSafely(candidate);}catch(error){await Promise.all(uploaded.map(path=>firebase.storage().ref(path).delete().catch(()=>{})));throw error;}
 }
 function importBackupFile(ev){
   const file=ev.target.files[0];ev.target.value='';if(!file)return;
-  (async()=>{try{if(file.name.toLowerCase().endsWith('.json')){const candidate=TaxMateState.importBackup(JSON.parse(await file.text()),Date.now(),DEVICE_ID);confirmAction(t('r.title'),t('r.msg')+'\n\n'+candidate.businesses.length+' business(es), '+candidate.entries.length+' record(s). Receipt image binaries are not included in JSON backups.',()=>{try{replaceStateSafely(candidate);}catch(_){showNotice(t('r.title'),t('r.bad'));}});return;}const inspected=await TaxMatePortableBackup.inspectArchive(await file.arrayBuffer());if(inspected.receipts.length&&!hasFeature('receiptPhoto')){lockGuard('receiptPhoto');return;}const p=inspected.preview,msg=`Restore ${p.businesses} business(es), ${p.entries} record(s), ${p.receipts} linked receipt(s) and ${p.orphans} orphan receipt file(s)?\n\nA complete pre-restore ZIP will download first. Nothing is replaced unless every receipt validates and uploads successfully.`;confirmAction(t('r.title'),msg,async()=>{try{await restorePortableBackup(inspected);}catch(error){console.error(error);showNotice(t('r.title'),'Restore stopped safely. Your existing data was not changed.');}});}catch(error){console.error(error);showNotice(t('r.title'),t('r.bad'));}})();
+  (async()=>{try{if(file.name.toLowerCase().endsWith('.json')){const candidate=TaxMateState.importBackup(JSON.parse(await file.text()),Date.now(),DEVICE_ID);if(!ltdBackupAllowed('restore',candidate))return;confirmAction(t('r.title'),t('r.msg')+'\n\n'+candidate.businesses.length+' business(es), '+candidate.entries.length+' record(s). Receipt image binaries are not included in JSON backups.',()=>{try{replaceStateSafely(candidate);}catch(_){showNotice(t('r.title'),t('r.bad'));}});return;}const inspected=await TaxMatePortableBackup.inspectArchive(await file.arrayBuffer());if(!ltdBackupAllowed('restore',inspected.state))return;if(inspected.receipts.length&&!hasFeature('receiptPhoto')){lockGuard('receiptPhoto');return;}const p=inspected.preview,msg=`Restore ${p.businesses} business(es), ${p.entries} record(s), ${p.receipts} linked receipt(s) and ${p.orphans} orphan receipt file(s)?\n\nA complete pre-restore ZIP will download first. Nothing is replaced unless every receipt validates and uploads successfully.`;confirmAction(t('r.title'),msg,async()=>{try{await restorePortableBackup(inspected);}catch(error){console.error(error);showNotice(t('r.title'),'Restore stopped safely. Your existing data was not changed.');}});}catch(error){console.error(error);showNotice(t('r.title'),t('r.bad'));}})();
 }
 
 /* ═══════════ Firebase partner sync ═══════════ */
@@ -5293,27 +5614,38 @@ function openJoinPartnership(){
   if(lockGuard('partnerSync')||!requireLoginForTier())return;
   const input=document.getElementById('join-code'),msg=document.getElementById('join-msg');input.value='';msg.textContent='';msg.classList.remove('show');openSheet('partner');
 }
+let PARTNER_JOIN_IN_FLIGHT=null;
+function normalisePartnerCode(value){return String(value||'').trim().toUpperCase();}
+function partnerCodeValid(code){return code.length===6||code.length===8;}
+function partnerJoinErrorMessage(error){return (error&&error.reason==='invalid')||(error&&error.code==='INVALID_ARGUMENT')?t('sy.enterCode'):error&&(error.reason==='expired'||error.code==='NOT_FOUND')?t('sy.badCode'):error&&error.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet');}
+function joinPartnershipByCode(value){
+  const code=normalisePartnerCode(value);
+  if(!partnerCodeValid(code))return Promise.reject(Object.assign(new Error('partner-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'}));
+  if(!hasFeature('partnerSync'))return Promise.reject(Object.assign(new Error('partner-pro-required'),{code:'PERMISSION_DENIED',reason:'tier-required'}));
+  if(PARTNER_JOIN_IN_FLIGHT&&PARTNER_JOIN_IN_FLIGHT.code===code)return PARTNER_JOIN_IN_FLIGHT.promise;
+  if(PARTNER_JOIN_IN_FLIGHT)return Promise.reject(Object.assign(new Error('partner-join-in-progress'),{code:'ABORTED'}));
+  const promise=(async()=>{
+    const db=await ensureFB();if(!db)throw Object.assign(new Error('partner-sync-unavailable'),{code:'UNAVAILABLE'});
+    const user=await ensureAuth();if(!user)throw Object.assign(new Error('partner-auth-unavailable'),{code:'UNAUTHENTICATED'});
+    const joined=await callSecureFunction('joinPartnership',{code});
+    const existing=bizById(joined.bizId);
+    if(!existing)S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
+    else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
+    save();await subscribeSync(code,joined.bizId);return joined;
+  })().finally(()=>{if(PARTNER_JOIN_IN_FLIGHT&&PARTNER_JOIN_IN_FLIGHT.promise===promise)PARTNER_JOIN_IN_FLIGHT=null;});
+  PARTNER_JOIN_IN_FLIGHT={code,promise};return promise;
+}
 async function joinPartnership(){
   const input = document.getElementById('join-code');
   const msg = document.getElementById('join-msg');
-  const code = (input && input.value || '').trim().toUpperCase();
+  const code = normalisePartnerCode(input && input.value || '');
   // Code 由 6 位升級到 8 位；接受兩者（8=新，6=舊兼容）
   const fail=message=>{if(msg){msg.textContent=message;msg.classList.add('show');}};
-  if(code.length !== 6 && code.length !== 8){fail(t('sy.enterCode'));return;}
-  if(!hasFeature('partnerSync')){fail(t('sy.needPro'));return;}
-  const db = await ensureFB();
-  if(!db){fail(t(fbConfigured()?'sy.needNet':'sy.setup'));return;}
-  const u = await ensureAuth();
-  if(!u){fail(t('sy.needNet'));return;}
+  if(!partnerCodeValid(code)){fail(t('sy.enterCode'));return;}
   try{
-    const joined=await callSecureFunction('joinPartnership',{code});
-    const existing = bizById(joined.bizId);
-    if(!existing) S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
-    else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
-    save();
-    await subscribeSync(code, joined.bizId);
+    await joinPartnershipByCode(code);
     closeSheet('partner');render();toast(t('sy.synced'));
-  }catch(e){console.warn(e);fail(e&&e.code==='NOT_FOUND'?t('sy.badCode'):e&&e.code==='PERMISSION_DENIED'?t('sy.needPro'):t('sy.needNet'));}
+  }catch(e){console.warn(e);fail(partnerJoinErrorMessage(e));}
 }
 async function leaveSync(bizId){
   const b = bizById(bizId); if(!b || !b.syncCode) return;
@@ -5373,7 +5705,7 @@ function loadSyncOutbox(){
   catch(_){return blockSyncRuntime('outbox-format',raw);}
 }
 let SYNC_OUTBOX=loadSyncOutbox();
-let CLOUD = { metaUnsub:null, entUnsub:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
+let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0 };
 function persistSyncOutbox(){
   if(SYNC_RUNTIME.blocked||!SYNC_OUTBOX){renderSyncStatus();return false;}
   try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));return true;}
@@ -5386,10 +5718,26 @@ function syncStatus(){
   if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
   return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,partnershipHydrationState:CLOUD.partnershipHydrationState,reconciliationState:CLOUD.reconciliationState,ackState:CLOUD.ackState,hydrationError:CLOUD.hydrationError,inboundError:CLOUD.inboundError,writeError:CLOUD.writeError,writeErrorKind:CLOUD.writeErrorKind});
 }
+function syncStatusMessage(current=syncStatus()){
+  const n=Number(current&&current.pending)||0,message=String(current&&current.message||'');
+  if(current.state==='synced')return t('sync.synced');
+  if(current.state==='offline')return n?t('sync.offlinePending',{n}):t('sync.offline');
+  if(message.startsWith('Waiting for sign-in'))return n?t('sync.signInPending',{n}):t('sync.signIn');
+  if(message.startsWith('Cloud restore failed'))return t('sync.restoreFailed');
+  if(message.startsWith('Restoring cloud data'))return t('sync.restoring');
+  if(message.startsWith('Checking cloud data'))return t('sync.checking');
+  if(message.startsWith('Cloud sync read failed'))return t('sync.readFailed');
+  if(message.startsWith('Partnership sync access failed'))return t('sync.partnerDenied');
+  if(message.startsWith('Sync write access failed'))return t('sync.writeDenied');
+  if(message.startsWith('Sync retrying'))return t('sync.retrying',{n});
+  if(message.startsWith('Syncing'))return t('sync.syncing',{n});
+  if(message.startsWith('Finishing sync'))return t('sync.finishing');
+  return message;
+}
 function renderSyncStatus(){
   const current=syncStatus(),col=current.state==='synced'?'var(--brand)':current.state==='failed'||current.state==='update-required'?'var(--coral)':'var(--muted)';
   const elements=Array.from(document.querySelectorAll('#cloud-sync-status,[data-cloud-sync-status]'));
-  elements.forEach(el=>{el.textContent=current.message;el.style.color=col;el.dataset.state=current.state;});
+  elements.forEach(el=>{el.textContent=syncStatusMessage(current);el.style.color=col;el.dataset.state=current.state;});
 }
 function scheduleOutboxFlush(delay,reason){
   if(SYNC_RUNTIME.blocked){renderSyncStatus();return;}
@@ -5406,6 +5754,7 @@ function cloudUser(){
 function onboardingDoneFlag(){try{return localStorage.getItem('tmOnboardDone');}catch(e){return null;}}
 function applyHydratedAccountResult(result){
   if(!result||result.state!=='converged')return;
+  if(OB&&OB.pendingIntent){OB._signingInFlow=false;OB.loggedIn=true;obResumePendingIntentAfterHydration(result);render();return;}
   if(result.existingCloudAccount){
     const exitingOnboarding=!!OB;
     if(exitingOnboarding){OB._signingInFlow=false;try{obClose();}catch(e){}S.tab='home';}
@@ -5455,6 +5804,26 @@ function doSignOut(){
   render();
 }
 function userRoot(uid){ return FB.db.collection('users').doc(uid); }
+function ltdCollectionRef(uid,collection){return userRoot(uid).collection('ltd').doc('v1').collection(collection);}
+function normaliseLtdAnchor(value){if(!value)return null;if(value.schemaVersion!==1||value.status!=='active_slot_claimed'||typeof value.activeCompanyId!=='string'||!value.activeCompanyId)throw Object.assign(new Error('ltd-anchor-invalid'),{code:'ltd-anchor-invalid'});return{schemaVersion:1,status:value.status,activeCompanyId:value.activeCompanyId,releasePolicy:value.releasePolicy||null};}
+function validateLtdAnchorConsistency(anchor,envelopes){const ids=new Set((envelopes||[]).map(item=>item.companyId)),localIds=new Set((S.domain&&S.domain.entities||[]).filter(item=>item.type==='limited_company'&&item.deletedAt==null).map(item=>item.id));if((ids.size||localIds.size)&&!anchor)throw Object.assign(new Error('ltd-anchor-missing'),{code:'ltd-anchor-missing'});if(anchor&&[...ids,...localIds].some(id=>id!==anchor.activeCompanyId))throw Object.assign(new Error('ltd-anchor-mismatch'),{code:'ltd-anchor-mismatch'});return true;}
+function setLtdRemote(envelopes){CLOUD.ltdRemote=envelopes.slice().sort((a,b)=>String(a.collection).localeCompare(String(b.collection))||String(a.recordId).localeCompare(String(b.recordId)));}
+function reconcileLtdState(uid,envelopes,{queue=true}={}){
+  const hydrate=ltdAccessDecision('cloud_hydrate'),write=ltdAccessDecision('cloud_sync');
+  if(!hydrate.allowed)return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
+  const result=TaxMateLtdSync.reconcile(S,envelopes,uid);if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
+  if(result.downloads.length){const next=TaxMateLtdSync.applyDownloads(S,result.downloads);S=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(S);persistCanonicalState(S);}
+  if(queue&&write.allowed)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
+  return{...result,uploads:write.allowed?result.uploads:[],retainedLocalOnlyUploads:write.allowed?0:result.uploads.length,readOnly:!write.allowed};
+}
+async function readLtdCloud(uid){
+  if(!ltdAccessDecision('cloud_hydrate').allowed){setLtdRemote([]);return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};}
+  const anchorDoc=await userRoot(uid).collection('ltdControl').doc('activeCompany').get(),anchor=anchorDoc.exists?normaliseLtdAnchor(anchorDoc.data()):null,batches=await Promise.all(TaxMateLtdSync.COLLECTIONS.map(async collection=>{const snap=await ltdCollectionRef(uid,collection).get(),rows=[];snap.forEach(doc=>rows.push(doc.data()));return rows;})),remote=batches.flat();remote.forEach(TaxMateLtdSync.validateEnvelope);validateLtdAnchorConsistency(anchor,remote);CLOUD.ltdAnchor=anchor;setLtdRemote(remote);return{...reconcileLtdState(uid,remote),anchor:anchor?{...anchor}:null};
+}
+function installLtdListeners(uid){
+  if(!ltdAccessDecision('cloud_hydrate').allowed){(CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=[];return;}
+  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=TaxMateLtdSync.COLLECTIONS.map(collection=>ltdCollectionRef(uid,collection).onSnapshot(snap=>{if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;const other=(CLOUD.ltdRemote||[]).filter(item=>item.collection!==collection),rows=[];snap.forEach(doc=>rows.push(doc.data()));try{rows.forEach(TaxMateLtdSync.validateEnvelope);setLtdRemote(other.concat(rows));CLOUD.applying=true;reconcileLtdState(uid,CLOUD.ltdRemote);CLOUD.applying=false;persistRemoteState();render();scheduleOutboxFlush(0,'ltd-reconciliation');}catch(error){CLOUD.applying=false;handleSyncListenerError(error);}},handleSyncListenerError));
+}
 
 function cloudMetaFromState(){
   return {
@@ -5493,6 +5862,17 @@ async function writeRecordIfNewer(ref,record){
     if(TaxMateSync.shouldWriteRecord(remote,record)) tx.set(ref,record);
   });
 }
+async function writeLtdRecordIfNewer(ref,envelope){
+  TaxMateLtdSync.validateEnvelope(envelope);
+  return FB.db.runTransaction(async tx=>{
+    const snap=await tx.get(ref),remote=snap.exists?snap.data():null;
+    if(!remote){tx.set(ref,envelope);return;}
+    TaxMateLtdSync.validateEnvelope(remote);
+    const order=TaxMateLtdSync.compare(envelope,remote);
+    if(order>0){tx.set(ref,envelope);return;}
+    if(order===0&&envelope.checksum!==remote.checksum)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',collection:envelope.collection,recordId:envelope.recordId});
+  });
+}
 async function sendSyncOperation(operation){
   if(operation.kind==='partnership-entry'){
     const ref=FB.db.collection('partnerships').doc(operation.code).collection('entries').doc(operation.record.id);
@@ -5521,6 +5901,10 @@ async function sendSyncOperation(operation){
     }
     applyCloudMeta(serverMeta);return;
   }
+  if(operation.kind==='ltd-record'){
+    if(!ltdAccessDecision('cloud_sync').allowed)throw Object.assign(new Error('pro_required'),{code:'pro_required'});
+    TaxMateLtdSync.validateEnvelope(operation.record);await writeLtdRecordIfNewer(ltdCollectionRef(operation.uid||operation.ownerUid,operation.collection).doc(TaxMateLtdSync.docId(operation.recordId)),operation.record);return;
+  }
   throw new Error('unsupported-sync-operation');
 }
 async function flushSyncOutbox(reason){
@@ -5531,7 +5915,7 @@ async function flushSyncOutbox(reason){
     const db=await ensureFB();const user=cloudUser();
     if(!db||!user){renderSyncStatus();return;}
     SYNC_OUTBOX=loadSyncOutbox();
-    const pending=TaxMateSync.due(SYNC_OUTBOX,Date.now()).filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
+    const ltdAllowed=ltdAccessDecision('cloud_sync').allowed,pending=TaxMateSync.due(SYNC_OUTBOX,Date.now()).filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid)&&(operation.kind!=='ltd-record'||ltdAllowed));
     for(const operation of pending){
       SYNC_OUTBOX=TaxMateSync.markAttempt(loadSyncOutbox(),operation.key,Date.now());persistSyncOutbox();renderSyncStatus();
       try{
@@ -5558,7 +5942,7 @@ function handleSyncListenerError(error){
 }
 
 function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
-function syncOperationsForUser(uid){if(SYNC_RUNTIME.blocked)return[];const outbox=loadSyncOutbox();if(!outbox)return[];return TaxMateSync.normalizeOutbox(outbox).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));}
+function syncOperationsForUser(uid){if(SYNC_RUNTIME.blocked)return[];const outbox=loadSyncOutbox();if(!outbox)return[];const ltdAllowed=ltdAccessDecision('cloud_sync').allowed;return TaxMateSync.normalizeOutbox(outbox).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid)&&(operation.kind!=='ltd-record'||ltdAllowed));}
 function outboundConvergenceState(uid){
   if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason,kind:'runtime'};
   const remaining=syncOperationsForUser(uid),failed=remaining.find(operation=>operation.status==='failed');
@@ -5580,11 +5964,13 @@ async function flushSyncForConvergence(uid){
 function clearUserSyncListeners(){
   if(CLOUD.metaUnsub){try{CLOUD.metaUnsub();}catch(e){}CLOUD.metaUnsub=null;}
   if(CLOUD.entUnsub){try{CLOUD.entUnsub();}catch(e){}CLOUD.entUnsub=null;}
+  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(e){}});CLOUD.ltdUnsubs=[];CLOUD.ltdRemote=[];CLOUD.ltdAnchor=null;
   Object.keys(FB.subs).forEach(code=>{const sub=FB.subs[code],unsubs=Array.isArray(sub)?sub:(sub&&Array.isArray(sub.unsubs)?sub.unsubs:[]);unsubs.forEach(unsub=>{try{unsub();}catch(e){}});});
   FB.subs={};
 }
 function startUserSync(u){
   if(SYNC_RUNTIME.blocked){renderSyncStatus();return Promise.resolve({state:'update-required',existingCloudAccount:false,error:SYNC_RUNTIME.reason});}
+  if(STATE_LOAD_ERROR)return Promise.resolve({state:'blocked',existingCloudAccount:false,error:'state-load-blocked'});
   if(!u||u.isAnonymous)return Promise.resolve({state:'idle',existingCloudAccount:false});
   const uid=u.uid;
   if(CLOUD.hydrationUid===uid&&CLOUD.hydrationState==='converged'&&CLOUD.hydrationResult)return Promise.resolve(CLOUD.hydrationResult);
@@ -5609,6 +5995,8 @@ function startUserSync(u){
       S.entries=TaxMateSync.visible(mergedEntries);
       S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
       persistRemoteState();
+      const ltdReconciliation=ltdAccessDecision('cloud_hydrate').allowed?await readLtdCloud(uid):{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
+      if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
 
       /* 2 ── Install live personal listeners, then await every partnership's first snapshots. */
       CLOUD.metaUnsub=userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
@@ -5628,15 +6016,16 @@ function startUserSync(u){
         S.tombstones=(S.tombstones||[]).filter(e=>partnerBiz.has(e.bizId)).concat(merged.filter(e=>e.deletedAt!=null));
         persistRemoteState();CLOUD.applying=false;render();
       },handleSyncListenerError);
+      if(ltdAccessDecision('cloud_hydrate').allowed)installLtdListeners(uid);
       const partnershipSubscriptions=S.businesses.filter(b=>b.syncCode).map(b=>subscribeSync(b.syncCode,b.id));
       const partnershipResults=await Promise.all(partnershipSubscriptions);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
       const partnershipRecordCount=partnershipResults.reduce((sum,row)=>sum+Number(row&&row.entries||0),0);
-      const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount});
+      const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount+(CLOUD.ltdRemote||[]).length+(CLOUD.ltdAnchor?1:0)});
 
       /* 3 ── Inbound account and partnership snapshots are complete before outbound reconciliation begins. */
       CLOUD.hydrationState='converged';CLOUD.partnershipHydrationState='converged';CLOUD.hydrationError=null;CLOUD.inboundError=null;
-      const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length,syncState:{state:'pending',pending:syncOperationsForUser(uid).length}};
+      const result={state:'converged',existingCloudAccount:account.established,account,businesses:S.businesses.length,records:S.entries.length,ltdRecords:(CLOUD.ltdRemote||[]).length,ltdReconciliation:{downloads:ltdReconciliation.downloads.length,uploads:ltdReconciliation.uploads.length,conflicts:0},syncState:{state:'pending',pending:syncOperationsForUser(uid).length}};
       CLOUD.hydrationResult=result;renderSyncStatus();
 
       /* 4 ── Only the fully merged state may enter the durable outbound queue. Pending writes do not invalidate inbound restore. */
@@ -5669,7 +6058,7 @@ function stopUserSync(){
 }
 async function pushUserState(uid, force){
   if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason};
-  uid=queuePersonalState(uid);if(!uid)return;
+  uid=queuePersonalState(uid);if(!uid)return;if(ltdAccessDecision('cloud_sync').allowed)reconcileLtdState(uid,CLOUD.ltdRemote||[]);
   if(force) return flushSyncForConvergence(uid);
 }
 function scheduleCloudPush(){
@@ -5677,6 +6066,7 @@ function scheduleCloudPush(){
   if(!cloudUser() || CLOUD.applying) return;
   CLOUD.localEditAt = Date.now();
   queuePersonalState();
+  const current=cloudUser();if(current&&ltdAccessDecision('cloud_sync').allowed)reconcileLtdState(current.uid,CLOUD.ltdRemote||[]);
   clearTimeout(CLOUD.pushTimer);
   CLOUD.pushTimer = setTimeout(()=>flushSyncOutbox('local-edit'), 1200);
 }
@@ -6568,6 +6958,7 @@ const OB_SUGGEST = [
 ];
 
 let OB = null; // active onboarding state
+const OB_DRAFT_KEY='taxmateuk_onboarding_draft_v1';
 
 function obStartMonthList(){
   // months from the start of the CURRENT UK tax year up to this month
@@ -6589,13 +6980,24 @@ function obStartMonthList(){
 function obDefaultState(loggedIn){
   return {
     screen:'login', loggedIn:!!loggedIn,
-    bizName:'', structure:'sole', share:50, partnerCode:'',
+    bizName:'', structure:'sole', share:50, partnerCode:'', connectCode:'', promoCode:'', pendingIntent:null,
     cats:[],                 // (no longer chosen in onboarding; kept for compat)
     monthsAll: obStartMonthList(),
     startIdx:0,
     cursor:0,
     data:{}
   };
+}
+function obPersistDraft(){
+  if(!OB)return;
+  try{const safe=JSON.parse(JSON.stringify(OB));delete safe._partnerBusy;delete safe._promoBusy;delete safe._signingInFlow;delete safe._intentLaunching;localStorage.setItem(OB_DRAFT_KEY,JSON.stringify(safe));}catch(_){}
+}
+function obRestoreDraft(){
+  try{
+    const raw=JSON.parse(localStorage.getItem(OB_DRAFT_KEY)||'null'),allowed=new Set(['login','entry','ltd-choice','ltd-registration','partner-code','partner-confirm','partner-success','pro-gate','biz','pickbiz','start','month','done']);
+    if(!raw||!allowed.has(raw.screen)||!Array.isArray(raw.monthsAll)||!raw.data||typeof raw.data!=='object')return null;
+    return Object.assign(obDefaultState(false),raw,{_partnerBusy:false,_promoBusy:false,_signingInFlow:false,_intentLaunching:false});
+  }catch(_){return null;}
 }
 function obKey(mObj){ return mObj.year+'-'+mObj.m; }
 function obMonthData(mObj){
@@ -6622,16 +7024,17 @@ function obEnsureRoot(){
   return TaxMateOnboardingRoot.ensure(document);
 }
 function startOnboarding(){
-  OB = obDefaultState(false);
+  OB = obRestoreDraft()||obDefaultState(false);
   TaxMateOnboardingRoot.open(document);
   obRender();
 }
 function obClose(){
   TaxMateOnboardingRoot.close(document);
+  try{localStorage.removeItem(OB_DRAFT_KEY);}catch(_){}
   OB=null;
 }
 function obRender(){
-  const fns={login:obScrLogin,entry:obScrEntry,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
+  const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
@@ -6639,6 +7042,7 @@ function obRender(){
   r.innerHTML = fns[OB.screen]();
   OB._lastView = view;
   r.scrollTop = keep;
+  obPersistDraft();
 }
 function obGo(s){ TaxMateOnboardingRoot.progress(OB,s,obRender); }
 function obProgress(pct,label,back){
@@ -6656,13 +7060,16 @@ function obShell(progHTML, bodyHTML, footHTML){
 
 /* LOGIN */
 function obScrLogin(){
+  const required=!!(OB&&OB._authReturnScreen);
+  const source=OB&&OB.pendingIntent&&OB.pendingIntent.source;
+  const context=source==='ltd'?t('ob.signInLtdContext'):source==='partner_sync'?t('ob.signInPartnerContext'):t('ob.lede');
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
-    <div class="ob-logo"><div class="lo-mark">£</div><div class="lo-name">Tax<span>Mate</span></div></div>
-    <h1>${t('ob.h1')}</h1>
-    <p class="ob-lede">${t('ob.lede')}</p>
+    <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
+    <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
+    <p class="ob-lede">${context}</p>
     <button class="ob-tile solid" data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>
-    <div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>
+    ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
+    ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
   </div></div>${obLangSheet()}`;
 }
@@ -6679,32 +7086,146 @@ function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Keep onboarding pending until cloud account detection has finished. A successful Google
   // popup alone does not mean this is a new user.
-  OB && (OB._signingInFlow = true);
+  const returnScreen=OB&&OB._authReturnScreen;OB && (OB._signingInFlow = true);
   if(typeof signIn==='function' && fbConfigured()){
     try{
-      await signIn('google');
+      const signedIn=await signIn('google');
+      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
       const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
+      if(OB&&OB.pendingIntent){applyHydratedAccountResult(result);return;}
       if(result.existingCloudAccount){applyHydratedAccountResult(result);return;}
       if(!OB)return;
-      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;renderSyncStatus();return;}
+      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
       OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;}return; }
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return; }
   } else {
     if(OB) OB.loggedIn = true;
   }
-  if(OB){ OB._signingInFlow = false; obGo('entry'); }
+  if(OB){ OB._signingInFlow = false; if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry'); }
 }
 function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
+function obCancelRequiredSignIn(){if(!OB)return;const screen=OB._authReturnScreen||'entry';OB._authReturnScreen=null;OB._signingInFlow=false;obGo(screen);}
 
 /* ENTRY */
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <h1>${t('ob.howStart')}</h1>
     <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obExplore()"><span><span class="ob-tt">${t('ob.dash')}</span><span class="ob-ts">${t('ob.dashS')}</span></span></button>
-    <div style="margin-top:14px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeEntry')}</div>
+    <button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
+    <div class="ob-skiprow"><button class="ob-link muted" data-tm-click="obExplore()">${t('ob.dash')}</button></div>
   </div></div>`;
+}
+function obIntentCopy(value){return value==null?value:JSON.parse(JSON.stringify(value));}
+function obSetPendingIntent(source,details={}){
+  if(!OB)return null;
+  OB.pendingIntent=Object.assign({source,returnScreen:OB.screen,formState:{}},obIntentCopy(details));
+  return OB.pendingIntent;
+}
+function obScrLtdChoice(){
+  return obShell(obProgress(10,t('ob.ltdEntry'),"obGo('entry')"),`<h1>${t('ob.ltdChoiceTitle')}</h1>
+    <button class="ob-tile" data-tm-click="obChooseLtdPath('existing')"><span><span class="ob-tt">${t('ob.ltdExisting')}</span><span class="ob-ts">${t('ob.ltdExistingS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obChooseLtdPath('forming')"><span><span class="ob-tt">${t('ob.ltdForming')}</span><span class="ob-ts">${t('ob.ltdFormingS')}</span></span></button>`,'');
+}
+function obChooseLtdPath(choice){
+  if(choice==='existing'){
+    obSetPendingIntent('ltd',{ltdChoice:'existing',companyNumberStatus:'provided',returnScreen:'ltd-choice',formState:{}});
+    obContinuePendingIntent();return;
+  }
+  OB.pendingIntent=null;obGo('ltd-registration');
+}
+function obScrLtdRegistration(){
+  return obShell(obProgress(15,t('ob.ltdEntry'),"obGo('ltd-choice')"),`<h1>${t('ob.registrationTitle')}</h1>
+    <button class="ob-tile" data-tm-click="obChooseLtdRegistration('not_available')"><span><span class="ob-tt">${t('ob.notRegistered')}</span><span class="ob-ts">${t('ob.notRegisteredS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obChooseLtdRegistration('provided')"><span><span class="ob-tt">${t('ob.registered')}</span><span class="ob-ts">${t('ob.registeredS')}</span></span></button>`,'');
+}
+function obChooseLtdRegistration(companyNumberStatus){
+  if(!['not_available','provided'].includes(companyNumberStatus))return;
+  obSetPendingIntent('ltd',{ltdChoice:'forming',companyNumberStatus,returnScreen:'ltd-registration',formState:{companyNumberStatus}});
+  obContinuePendingIntent();
+}
+function obStartPartnerSync(){if(!OB)return;OB._intentError='';OB.pendingIntent=null;obGo('partner-code');}
+function obSetConnectCode(value){if(!OB)return;OB.connectCode=normalisePartnerCode(value).slice(0,8);OB._intentError='';obPersistDraft();}
+function obSetPromoCode(value){if(!OB)return;OB.promoCode=String(value||'').toUpperCase();OB._promoError='';obPersistDraft();}
+function obScrPartnerCode(){
+  return obShell(obProgress(10,t('ob.partnerEntry'),"obGo('entry')"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
+    <div class="ob-card"><label for="ob-partner-code">${t('sy.code')}</label><input type="text" id="ob-partner-code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD2345" value="${esc(OB.connectCode||'')}" style="text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px" data-tm-input="obSetConnectCode(this.value)" data-tm-keydown="if(event.key==='Enter')obPartnerContinue()"><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div></div>`,
+    `<button class="ob-btn" data-tm-click="obPartnerContinue()">${t('ob.continue')}</button>`);
+}
+function obPartnerContinue(){
+  const code=normalisePartnerCode(OB&&OB.connectCode||'');
+  if(!partnerCodeValid(code)){OB._intentError=t('sy.enterCode');obRender();return;}
+  OB.connectCode=code;obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});obContinuePendingIntent();
+}
+function obScrIntentLoading(){return obShell('',`<h1>${t('ob.entitlementPending')}</h1><div class="ob-card flat"><div data-cloud-sync-status>${esc(syncStatusMessage())}</div></div>${OB._intentError?`<div class="ob-error show">${esc(OB._intentError)}</div>`:''}`,'');}
+async function obContinuePendingIntent(){
+  if(!OB||!OB.pendingIntent)return;
+  const user=cloudUser();
+  if(!user){OB._authReturnScreen=OB.pendingIntent.returnScreen||OB.screen;obGo('login');return;}
+  const returnScreen=OB.screen;OB._intentError='';OB.screen='intent-loading';obRender();
+  try{
+    const result=CLOUD.hydrationState==='converged'&&ENTITLEMENT.loaded?{state:'converged',existingCloudAccount:true}:await startUserSync(user);
+    if(!OB)return;
+    if(!result||result.state!=='converged'){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();return;}
+    obResumePendingIntentAfterHydration(result);
+  }catch(_){if(OB){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();}}
+}
+function obResumePendingIntentAfterHydration(result){
+  if(!OB||!OB.pendingIntent||!result||result.state!=='converged'||OB._intentLaunching)return false;
+  OB.loggedIn=true;OB._authReturnScreen=null;OB._signingInFlow=false;
+  if(currentTier()!=='pro'){OB.screen='pro-gate';obRender();return true;}
+  obExecutePendingIntent();return true;
+}
+async function obExecutePendingIntent(){
+  if(!OB||!OB.pendingIntent||OB._intentLaunching)return;
+  const intent=obIntentCopy(OB.pendingIntent);
+  if(intent.source==='partner_sync'){OB.screen='partner-confirm';OB._intentError='';obRender();return;}
+  if(intent.source!=='ltd')return;
+  OB._intentLaunching=true;const preserved=OB;obClose();
+  try{
+    if(!window.TaxMateLtdProductionAdapter||typeof TaxMateLtdProductionAdapter.openNewLimitedCompany!=='function')throw new Error('ltd-adapter-unavailable');
+    await TaxMateLtdProductionAdapter.openNewLimitedCompany({companyNumberStatus:intent.companyNumberStatus});
+  }catch(error){
+    console.error('Connected Ltd onboarding could not open',error);OB=preserved;OB._intentLaunching=false;OB.screen='pro-gate';OB._intentError=t('sy.needNet');TaxMateOnboardingRoot.open(document);obRender();
+  }
+}
+function obScrPartnerConfirm(){
+  const code=OB&&OB.pendingIntent&&OB.pendingIntent.partnerCode||OB.connectCode||'';
+  return obShell(obProgress(20,t('ob.partnerEntry'),"obGo('partner-code')"),`<h1>${t('ob.partnerConfirmTitle')}</h1><p class="ob-lede">${t('ob.partnerConfirmBody')}</p><div class="ob-card flat"><div class="ob-codevalue">${esc(code)}</div></div><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div>${OB._partnerBusy?`<div class="ob-busy">${t('ob.connecting')}</div>`:''}`,
+    `<button class="ob-btn" ${OB._partnerBusy?'disabled':''} data-tm-click="obConfirmPartnerConnection()">${OB._partnerBusy?t('ob.connecting'):t('ob.confirmConnect')}</button><button class="ob-btn ghost" ${OB._partnerBusy?'disabled':''} data-tm-click="obGo('partner-code')">${t('ob.back')}</button>`);
+}
+async function obConfirmPartnerConnection(){
+  if(!OB||OB._partnerBusy||!OB.pendingIntent)return;
+  const code=OB.pendingIntent.partnerCode;OB._partnerBusy=true;OB._intentError='';obRender();
+  try{
+    const joined=await joinPartnershipByCode(code);if(!OB)return;
+    OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;OB.screen='partner-success';obRender();
+  }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
+}
+function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell('',`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
+function obFinishPartnerConnection(){try{localStorage.setItem('tmOnboardDone','partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
+function obScrProGate(){
+  const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
+  const availability=proBillingAvailability();
+  return obShell(obProgress(20,t('ob.proRequired'),"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
+    <div class="ob-seg" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
+    <div class="ob-gate-price"><div data-plan-price="pro">${tierPriceMarkup('pro')}</div></div>
+    <button class="ob-btn" ${availability.purchaseEnabled?'':'disabled aria-disabled="true"'} data-tm-click="obProUpgrade()">${availability.purchaseEnabled?t('billing.reviewPurchase'):t('plan.proBillingPending')}</button><div class="ob-busy">${availability.purchaseEnabled?t('billing.reviewNote'):t('billing.purchaseUnavailable')}</div>${message?`<div class="ob-busy">${esc(message)}</div>`:''}
+    <div class="ob-card" style="margin-top:18px"><label for="ob-promo-code">${t('ob.havePromo')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${t('promo.placeholder')}" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)" data-tm-keydown="if(event.key==='Enter')obRedeemPromotionCode()"><div class="ob-error ${error?'show':''}">${esc(error)}</div><button class="ob-btn soft" style="margin-top:12px" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button></div>`,
+    `<button class="ob-btn ghost" ${OB._promoBusy?'disabled':''} data-tm-click="obReturnFromProGate()">${t('ob.back')}</button>`);
+}
+function obReturnFromProGate(){if(!OB||!OB.pendingIntent)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent.returnScreen||'entry');}
+function obProUpgrade(){if(!OB)return;startProPurchase('onboarding');}
+async function obRedeemPromotionCode(){
+  if(!OB||OB._promoBusy)return;const code=normalisePartnerCode(OB.promoCode||'');OB.promoCode=code;OB._promoError='';OB._intentMessage='';
+  if(!TaxMateEntitlement.validatePromotionCode(code)){OB._promoError=t('promo.invalid');obRender();return;}
+  OB._promoBusy=true;obRender();
+  try{
+    await redeemPromotionThroughCanonicalBackend(code);if(!OB)return;OB._promoBusy=false;
+    if(currentTier()!=='pro'){OB._promoError=t('ob.promoNoPro');obRender();return;}
+    obResumePendingIntentAfterHydration({state:'converged',existingCloudAccount:true});
+  }catch(error){if(OB){OB._promoBusy=false;OB._promoError=promotionFailureMessage(error);obRender();}}
 }
 function obExplore(){
   // mark onboarding as skipped (explore), close, land on app welcome/home
@@ -6745,15 +7266,18 @@ function obScrBiz(){
     <p class="ob-lede">${t('ob.bizLede')}</p>
     <div class="ob-card">
       <label>${t('ob.bizName')}</label>
-      <input type="text" id="ob-bizname" placeholder="${t('ob.bizPh')}" value="${esc(OB.bizName)}" data-tm-input="OB.bizName=this.value;document.getElementById('ob-s1next').disabled=!this.value.trim()">
+      <input type="text" id="ob-bizname" placeholder="${t('ob.bizPh')}" value="${esc(OB.bizName)}" aria-describedby="ob-biz-error" data-tm-input="obSetBizName(this.value)" data-tm-keydown="if(event.key==='Enter')obContinueBusiness()">
       <div class="ob-hint">${t('ob.bizEg')}</div>
+      <div id="ob-biz-error" class="ob-error ${OB._bizError?'show':''}">${esc(OB._bizError||'')}</div>
     </div>
     ${structureCard}`,
-    `<button class="ob-btn" id="ob-s1next" ${OB.bizName.trim()?'':'disabled'} data-tm-click="obGo('start')">${t('ob.continue')}</button>`
+    `<button class="ob-btn" id="ob-s1next" ${OB.bizName.trim()?'':'disabled'} data-tm-click="obContinueBusiness()">${t('ob.continue')}</button>`
   );
 }
+function obSetBizName(value){if(!OB)return;OB.bizName=String(value||'');OB._bizError='';const button=document.getElementById('ob-s1next');if(button)button.disabled=!OB.bizName.trim();const error=document.getElementById('ob-biz-error');if(error){error.textContent='';error.classList.remove('show');}obPersistDraft();}
+function obContinueBusiness(){if(!OB)return;if(!OB.bizName.trim()){OB._bizError=t('ob.bizRequired');obRender();document.getElementById('ob-bizname')?.focus();return;}OB.bizName=OB.bizName.trim();OB._bizError='';obGo('start');}
 function obSetStruct(s){ OB.structure=s; if(s==='sole') OB.partnerCode=''; obRender(); }
-function obSetShare(v){ let n=parseInt(v,10); if(isNaN(n)) n=50; n=Math.max(1,Math.min(100,n)); OB.share=n; }
+function obSetShare(v){ let n=parseInt(v,10); if(isNaN(n)) n=50; n=Math.max(1,Math.min(100,n)); OB.share=n; obPersistDraft(); }
 
 /* STEP 2 — start month */
 /* CATCH-UP: pick which business to add past months to (only shown when >1 business) */
@@ -6908,7 +7432,7 @@ function obGroups(kind){ const d=obMonthData(obCurMonth()); return kind==='in'?d
 /* simple (ungrouped) income rows */
 function obAddSimpleRow(){ const d=obMonthData(obCurMonth()); d.inRows.push({d:'',v:'',day:''}); obRender(); }
 function obDelSimpleRow(ri){ const d=obMonthData(obCurMonth()); d.inRows.splice(ri,1); if(!d.inRows.length) d.inRows.push({d:'',v:'',day:''}); obRender(); }
-function obSetSimpleRow(ri,field,val){ const d=obMonthData(obCurMonth()); if(!d.inRows[ri])return; d.inRows[ri][field]=val; if(field==='day') obRender(); else obRefreshPill(); }
+function obSetSimpleRow(ri,field,val){ const d=obMonthData(obCurMonth()); if(!d.inRows[ri])return; d.inRows[ri][field]=val; if(field==='day') obRender(); else{obRefreshPill();obPersistDraft();} }
 /* switch income into category mode — immediately show the name input (no auto folder) */
 function obGroupIncome(){
   const d=obMonthData(obCurMonth());
@@ -6949,7 +7473,7 @@ function obCancelAddCat(kind){
   if(kind==='in' && !d.inGroups.length) d.inGrouped=false; // nothing added → back to simple rows
   obRender();
 }
-function obTypeNewCat(kind,val){ const d=obMonthData(obCurMonth()); d.newCat[kind]=val; }
+function obTypeNewCat(kind,val){ const d=obMonthData(obCurMonth()); d.newCat[kind]=val; obPersistDraft(); }
 // 判斷係咪真係一個 emoji(唔係普通字母/數字)。用 Extended_Pictographic 唔用 \p{Emoji} ——
 // \p{Emoji} 因為歷史原因連 0-9、#、* 都算(keycap sequence 嘅底),\p{Extended_Pictographic} 先啱用嚟分真假 emoji
 function isEmojiIcon(s){
@@ -6992,6 +7516,7 @@ function obTypeNewCatEmoji(kind,el){
   d.newCatE[kind]=g;
   el.value=g;
   el.classList.remove('err');
+  obPersistDraft();
   // 用戶自己用鍵盤打咗個有效 emoji ——個 grid 都可以收埋喇,直接郁 DOM 唔使成頁 obRender(),唔會累事甩焦點
   if(g && d.emojiPickerOpen && d.emojiPickerOpen[kind]){
     d.emojiPickerOpen[kind]=false;
@@ -7021,9 +7546,9 @@ function obDelRow(kind,gi,ri){ const g=obGroups(kind)[gi]; if(g){ g.rows.splice(
 function obSetRow(kind,gi,ri,field,val){
   const g=obGroups(kind)[gi]; if(!g||!g.rows[ri]) return;
   g.rows[ri][field]=val;
-  if(field==='day') obRender(); else obRefreshPill();
+  if(field==='day') obRender(); else{obRefreshPill();obPersistDraft();}
 }
-function obMiles(v){ obMonthData(obCurMonth()).miles=v; }
+function obMiles(v){ obMonthData(obCurMonth()).miles=v; obPersistDraft(); }
 function obOpenMiles(){ obMonthData(obCurMonth()).milesOpen=true; obRender(); }
 function obCloseMiles(){ const d=obMonthData(obCurMonth()); d.milesOpen=false; d.miles=''; obRender(); }
 function obRefreshPill(){ const mObj=obCurMonth(); const p=document.querySelector('#ob-root .ob-tpv'); if(p) p.textContent='£'+(obMonthTotal(mObj,'in')-obMonthTotal(mObj,'out')).toFixed(2); }
@@ -7164,6 +7689,7 @@ function obFinish(){
 applyCachedRates();
 applyTheme();
 render();
+if(window.TaxMateLtdProductionAdapter)TaxMateLtdProductionAdapter.initialise().then(()=>render()).catch(error=>console.error('Ltd runtime initialisation failed',error));
 setupBackButton();
 // First run: no businesses and never onboarded → launch catch-up flow
 // ⚠️ 已登入（或正在還原登入）嘅用戶係「返嚟嘅用戶」，資料喺雲端，唔可以即刻彈新手流程，
@@ -7246,7 +7772,7 @@ document.addEventListener('touchend', e=>{
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
-  window.addEventListener('load', ()=>{
-    navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW reg failed', err));
-  });
+  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW reg failed', err));
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
+  else registerTaxMateServiceWorker();
 }

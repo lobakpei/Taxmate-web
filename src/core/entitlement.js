@@ -30,7 +30,7 @@
     const t=Number(now)||Date.now(),access=resolve(snapshot,t,false);
     if(snapshot&&snapshot.billingCadence==='yearly'&&ACTIVE.has(snapshot.subscriptionStatus)&&Number(snapshot.currentPeriodEnd)>t){
       const days=Math.ceil((Number(snapshot.currentPeriodEnd)-t)/DAY);
-      if(days<=30){const tier=snapshot.paidTier==='pro'?'Pro':'Plus',date=new Date(Number(snapshot.currentPeriodEnd)).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});return snapshot.cancelAtPeriodEnd?{id:`paid-end-${snapshot.currentPeriodEnd}`,stage:'paid-end',message:`Your ${tier} plan ends on ${date}.`,cta:'Manage subscription'}:{id:`paid-renew-${snapshot.currentPeriodEnd}`,stage:'paid-renew',message:`Your ${tier} plan renews on ${date} for ${snapshot.paidTier==='pro'?'£59.99':'£29.99'}.`,cta:'Manage subscription'};}
+      if(days<=30){const tier=snapshot.paidTier==='pro'?'Pro':'Plus',date=new Date(Number(snapshot.currentPeriodEnd)).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});return snapshot.cancelAtPeriodEnd?{id:`paid-end-${snapshot.currentPeriodEnd}`,stage:'paid-end',message:`Your ${tier} plan ends on ${date}.`,cta:'Manage subscription'}:{id:`paid-renew-${snapshot.currentPeriodEnd}`,stage:'paid-renew',message:`Your ${tier} plan renews on ${date} for ${snapshot.paidTier==='pro'?'£99.99':'£29.99'}.`,cta:'Manage subscription'};}
     }
     const promotions=snapshot&&snapshot.promotions&&typeof snapshot.promotions==='object'?Object.entries(snapshot.promotions):[];
     const active=activePromotion(snapshot||{},t);
