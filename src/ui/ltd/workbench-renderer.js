@@ -623,7 +623,7 @@
       body.push(h('div',{class:'tm-company-identity-stack'},[
         textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text'}),
         h('div',{},[btn(t('s1.check_ch'),'s',function(){
-          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){toast(t('s1.lookup_unavailable'));},onOk:function(r){var co=r.data&&r.data.company||{};if(co.name)setField(sid,'legalName',co.name);if(co.incorporationDate)setField(sid,'incorporationDate',co.incorporationDate);paint();}});
+          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.name)setField(sid,'legalName',co.name);if(co.incorporationDate)setField(sid,'incorporationDate',co.incorporationDate);paint();}});
         })]),
         lookupState(),
         textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text'}),

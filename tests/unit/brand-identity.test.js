@@ -91,7 +91,8 @@ test('social preview is a real 1200 by 630 composition containing the approved i
   assert.deepEqual(pngDimensions('taxmate-share-20260829.png'),{width:1200,height:630,bitDepth:8,colourType:2});
   const source=text('assets/brand/derived/taxmate-share-20260829.svg');
   assert.ok(source.includes(Buffer.from(text('assets/brand/source/light_icon.svg')).toString('base64')),'social composition embeds the immutable light icon');
-  assert.ok(source.includes(Buffer.from(text('assets/brand/derived/taxmate-brand-logo-light.svg')).toString('base64')),'social composition embeds the transparent Brand Logo');
+  const logo=text('assets/brand/derived/taxmate-brand-logo-light.svg').replace(/\r\n/g,'\n');
+  assert.ok(source.includes(Buffer.from(logo).toString('base64')),'social composition embeds the EOL-normalised transparent Brand Logo');
   assert.match(source,/Simple bookkeeping and tax planning/);
 });
 

@@ -3,6 +3,7 @@ const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
+const {VERSIONS}=require('../../src/core/versions');
 
 const source=fs.readFileSync('src/app/sentry-bootstrap.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
@@ -10,7 +11,7 @@ const productionEnvironment={firebaseConfig:{projectId:'production-project'},hos
 
 function runtime({host='www.taxmate.uk',webdriver=false,environment=productionEnvironment}={}){
   const appended=[],initialised=[];
-  const window={location:{hostname:host},navigator:{webdriver},TAXMATE_FIREBASE_ENVIRONMENT:environment,TaxMateCore:{VERSIONS:{APP_VERSION:'2.1.5',BUILD_ID:'2026-08-29.founder-brand-sync-runtime-integrity.2',PWA_CACHE_VERSION:'taxmate-v2-founder-brand-sync-runtime-integrity-2'}},TaxMateTelemetry:{scrubSentryEvent:event=>event},Sentry:{init:options=>initialised.push(options)},document:{readyState:'complete',createElement:tag=>({tag}),head:{appendChild:node=>appended.push(node)},addEventListener(){throw new Error('unexpected listener');}},queueMicrotask:callback=>callback()};
+  const window={location:{hostname:host},navigator:{webdriver},TAXMATE_FIREBASE_ENVIRONMENT:environment,TaxMateCore:{VERSIONS},TaxMateTelemetry:{scrubSentryEvent:event=>event},Sentry:{init:options=>initialised.push(options)},document:{readyState:'complete',createElement:tag=>({tag}),head:{appendChild:node=>appended.push(node)},addEventListener(){throw new Error('unexpected listener');}},queueMicrotask:callback=>callback()};
   vm.runInNewContext(source,{window,Set,Object,String});
   return{window,appended,initialised};
 }
@@ -28,5 +29,5 @@ test('loopback, emulator and automated browser runtimes never request the produc
 
 test('production runtime requests and initialises Sentry with immutable release identity and privacy scrubber',()=>{
   const result=runtime();assert.equal(result.appended.length,1);assert.match(result.appended[0].src,/^https:\/\/js-de\.sentry-cdn\.com\//);assert.equal(result.appended[0].crossOrigin,'anonymous');assert.equal(typeof result.window.sentryOnLoad,'function');result.window.sentryOnLoad();assert.equal(result.initialised.length,1);
-  const options=result.initialised[0];assert.equal(options.environment,'production');assert.equal(options.release,'taxmate-web@2.1.5');assert.equal(options.dist,'2026-08-29.founder-brand-sync-runtime-integrity.2');assert.deepEqual({...options.initialScope.tags},{app_version:'2.1.5',build_id:'2026-08-29.founder-brand-sync-runtime-integrity.2',pwa_cache:'taxmate-v2-founder-brand-sync-runtime-integrity-2'});assert.equal(options.sendDefaultPii,false);assert.equal(options.maxBreadcrumbs,0);assert.equal(options.beforeSend,result.window.TaxMateTelemetry.scrubSentryEvent);
+  const options=result.initialised[0];assert.equal(options.environment,'production');assert.equal(options.release,`taxmate-web@${VERSIONS.APP_VERSION}`);assert.equal(options.dist,VERSIONS.BUILD_ID);assert.deepEqual({...options.initialScope.tags},{app_version:VERSIONS.APP_VERSION,build_id:VERSIONS.BUILD_ID,pwa_cache:VERSIONS.PWA_CACHE_VERSION});assert.equal(options.sendDefaultPii,false);assert.equal(options.maxBreadcrumbs,0);assert.equal(options.beforeSend,result.window.TaxMateTelemetry.scrubSentryEvent);
 });

@@ -126,7 +126,7 @@ body{
   transition:transform .04s ease, background .15s ease, opacity .15s ease}
 .tm-btn:active{transform:translateY(1px)}
 .tm-btn:disabled{opacity:.5; cursor:not-allowed}
-.tm-btn.p{background:var(--brand); color:#fff}
+.tm-btn.p{background:var(--brand); color:#10231B}
 .tm-btn.p:hover:not(:disabled){background:var(--brand-deep)}
 [data-theme="dark"] .tm-btn.p{color:#06231A}
 .tm-btn.s{background:var(--brand-soft); color:var(--brand-deep)}

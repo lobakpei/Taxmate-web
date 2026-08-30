@@ -47,8 +47,8 @@ test('Plans UI keeps Plus cadence and exposes the complete Founder-approved Pro 
   assert.match(app,/style\.visibility=cadence==='yearly'\?'visible':'hidden'/);
   assert.match(app,/£3\.99 \/ month/);
   assert.match(app,/£29\.99 \/ year/);
-  assert.match(app,/aria-label="Standard price £11\.99; launch price £9\.99 per month\."/);
-  assert.match(app,/<s>£11\.99<\/s> <span class="current">£9\.99\/month<\/span>/);
+  assert.match(app,/const accessible=t\('billing\.monthlyAria'\)/);
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99\/month<\/bdi>/);
   assert.match(app,/£99\.99\/year/);
   assert.doesNotMatch(app,/Pro annual price not yet available|Annual Pro price pending|Founder decision pending/i);
   assert.doesNotMatch(app,/Was £11\.99/);

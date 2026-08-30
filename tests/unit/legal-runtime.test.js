@@ -34,7 +34,12 @@ test('public and in-app legal surfaces share the current policy identity and cor
   assert.match(terms,/Free, Plus (?:&|&amp;) Pro/i);
   assert.match(terms,/14 days/i);
   assert.match(terms,/mandatory statutory rights/i);
-  for(const text of [app,terms,Legal.termsHtml]){
+  assert.match(app,/£3\.99/);
+  assert.match(app,/£29\.99/);
+  assert.match(app,/£9\.99\/month/);
+  assert.match(app,/£11\.99/);
+  assert.match(app,/£99\.99\/year/);
+  for(const text of [terms,Legal.termsHtml]){
     assert.match(text,/£3\.99\s*\/\s*month|£3\.99 per month/);
     assert.match(text,/£29\.99\s*\/\s*year|£29\.99 per year/);
     assert.match(text,/£9\.99\s*\/\s*month|£9\.99 per month/);

@@ -46,13 +46,15 @@ test('Partner Sync stores only code intent and writes membership only after expl
 test('shared Pro gate uses the canonical promotion backend and approved pricing formatter',()=>{
   const proGate=app.match(/function obScrProGate\(\)\{[\s\S]*?\n\}/)[0];
   assert.match(app,/const PRO_PRICE_CONTRACT = Object\.freeze\(\{currency:'GBP',monthly:Object\.freeze\(\{launchMinor:999,standardMinor:1199\}\),annual:Object\.freeze\(\{amountMinor:9999\}\)\}\)/);
-  assert.match(app,/aria-label="Standard price £11\.99; launch price £9\.99 per month\."/);
-  assert.match(app,/<s>£11\.99<\/s> <span class="current">£9\.99\/month<\/span>/);
+  assert.match(app,/const accessible=t\('billing\.monthlyAria'\)/);
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99\/month<\/bdi>/);
   assert.match(app,/£99\.99\/year/);
   assert.equal((app.match(/await redeemPromotionThroughCanonicalBackend\(code\)/g)||[]).length,2);
   assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized\}\);\s*await loadEntitlementFromCloud\(user\.uid\)/);
   assert.match(app,/if\(currentTier\(\)!=='pro'\)\{OB\._promoError=t\('ob\.promoNoPro'\)/);
-  assert.match(app,/function obProUpgrade\(\)\{if\(!OB\)return;setTier\('pro'\);\}/);
+  assert.match(app,/function obProUpgrade\(\)\{if\(!OB\)return;startProPurchase\('onboarding'\);\}/);
+  assert.match(app,/function proBillingAvailability\(\)/);
+  assert.match(app,/provider&&provider\.enabled===true&&typeof provider\.purchasePro==='function'/);
   assert.doesNotMatch(proGate,/free.month|savings|grandfather|previous.price/i);
 });
 
@@ -65,6 +67,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.6',build:'2026-08-30.onboarding-connected-founder-review.1',cache:'taxmate-v2-onboarding-connected-founder-review-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.7',build:'2026-08-30.complete-founder-preview-correction.1',cache:'taxmate-v2-complete-founder-preview-correction-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });
