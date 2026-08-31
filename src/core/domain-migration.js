@@ -30,7 +30,7 @@
     domain.companyTaxPeriods=(prior.companyTaxPeriods||[]).map(clone);domain.companyLossRecords=(prior.companyLossRecords||[]).map(clone);domain.salaryRecords=(prior.salaryRecords||[]).map(clone);domain.dividendDeclarations=(prior.dividendDeclarations||[]).map(clone);domain.personalIncomeLinks=(prior.personalIncomeLinks||[]).map(clone);
     const businesses=(state.businesses||[]).map(original=>{
       const business=clone(original),type=business.structure==='partnership'?'partnership':'sole_trade';
-      if(type==='partnership'){business.share=Partnership.sharePercent(business)||50;business.partnershipAmountBasis=Partnership.normalizedBasis(business,provenance);business.partnershipBasisSource=business.partnershipAmountBasis===Partnership.UNCONFIRMED?'unknown_legacy_import':(business.partnershipBasisSource||'taxmate_v5_contract');}
+      if(type==='partnership'){const confirmedShare=Partnership.sharePercent(business);business.share=confirmedShare||50;business.partnershipAmountBasis=confirmedShare==null?Partnership.UNCONFIRMED:Partnership.normalizedBasis(business,provenance);business.partnershipBasisSource=business.partnershipAmountBasis===Partnership.UNCONFIRMED?'unknown_legacy_import':(business.partnershipBasisSource||'taxmate_v5_contract');}
       else{delete business.partnershipAmountBasis;delete business.partnershipBasisSource;}
       const id='entity:'+business.id,basis=type==='partnership'?business.partnershipAmountBasis:undefined,old=priorEntities.get(id);
       const entity={id,name:business.name,type,currency:'GBP',legacyBusinessId:business.id,origin:'legacy_v5',createdAt:Number(old&&old.createdAt)||Number(business.createdAt)||now,updatedAt:Number(business.updatedAt)||now,deviceId:business.deviceId||deviceId};

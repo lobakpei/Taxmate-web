@@ -363,7 +363,6 @@ en:{
  'ob.partnerEntry':'Enter a Partner Sync code','ob.partnerEntryS':'Connect an existing business',
  'ob.dash':'Go straight to dashboard',
  'ob.dashS':'I know what I\'m doing.',
- 'ob.codeEntry':'Got a partner sync code? Choose “Go straight to dashboard”, then go to Settings to enter it.',
  'ob.ltdChoiceTitle':'Which best describes your company?','ob.ltdExisting':'I already have a company','ob.ltdExistingS':'Add its Companies House details','ob.ltdForming':'I’m setting one up','ob.ltdFormingS':'Start before registration is complete',
  'ob.registrationTitle':'Where are you up to?','ob.notRegistered':'Not registered yet','ob.notRegisteredS':'Save a working company name and continue later','ob.registered':'I have registered it','ob.registeredS':'Check the company using its Companies House number',
  'ob.partnerTitle':'Enter your Partner Sync code','ob.partnerBody':'Use the 8-character code shared by the business owner.','ob.partnerConfirmTitle':'Connect this business?','ob.partnerConfirmBody':'TaxMate will use this code to connect the partnership and sync its business records. Your personal records stay private.','ob.confirmConnect':'Confirm & connect','ob.connecting':'Connecting…','ob.connected':'Business connected',
@@ -476,9 +475,8 @@ en:{
  'pro.sub':'Free for the essentials. Upgrade when you need more.',
  'sy.title':'Partner sync',
  'sy.enable':'Sync with my partner',
- 'sy.code':'Partnership code',
+ 'sy.code':'Partnership code','sy.readyToActivate':'Ready to activate','sy.inviteAfterSave':'Save this business, then use Invite my partner to share the secure link.',
  'sy.invite':'Invite my partner',
- 'sy.inviteMsg':'Hey! This is the partner sync code for "{n}" on TaxMate UK. 🤝\nGo to taxmate.uk\n1. Tap "Sign in"\n2. Choose "🚀 Go straight to dashboard"\n3. Tap "Settings" — lower right corner 😉\n4. Upgrade to Pro\n5. Then enter code: {c}',
  'sy.join':'Got a code from your partner? Enter it and everything syncs automatically.',
  'sy.enterCode':'Enter the code',
  'sy.synced':'Synced',
@@ -854,7 +852,6 @@ zh:{
  'ob.partnerEntry':'輸入 Partner Sync 代碼','ob.partnerEntryS':'連接現有業務',
  'ob.dash':'直接去主頁',
  'ob.dashS':'我識㗎喇。',
- 'ob.codeEntry':'有 partner sync code？揀「直接去主頁」，然後去「設定」輸入。',
  'ob.ltdChoiceTitle':'邊項最符合你間公司？','ob.ltdExisting':'我已經有一間公司','ob.ltdExistingS':'加入 Companies House 資料','ob.ltdForming':'我正在成立公司','ob.ltdFormingS':'註冊完成前先開始',
  'ob.registrationTitle':'而家進行到邊一步？','ob.notRegistered':'尚未註冊','ob.notRegisteredS':'先保存暫用公司名稱，之後繼續','ob.registered':'我已經完成註冊','ob.registeredS':'用 Companies House 編號核對公司',
  'ob.partnerTitle':'輸入 Partner Sync 代碼','ob.partnerBody':'輸入業務擁有人提供嘅8位代碼。','ob.partnerConfirmTitle':'連接呢個業務？','ob.partnerConfirmBody':'TaxMate會用呢個代碼連接合夥業務並同步業務記錄。你嘅私人記錄會保持私隱。','ob.confirmConnect':'確認並連接','ob.connecting':'連接中…','ob.connected':'業務已連接',
@@ -967,9 +964,8 @@ zh:{
  'pro.sub':'基本功能免費；有需要時先升級。',
  'sy.title':'合夥人同步',
  'sy.enable':'與合夥人同步',
- 'sy.code':'合夥代碼',
+ 'sy.code':'合夥代碼','sy.readyToActivate':'準備啟用','sy.inviteAfterSave':'先儲存呢個業務，再用「邀請我嘅合夥人」分享安全連結。',
  'sy.invite':'邀請合夥人',
- 'sy.inviteMsg':'Hey！呢個係 TaxMate UK 上面「{n}」嘅 partner sync code。🤝\n去 taxmate.uk\n1. 撳「Sign in」\n2. 揀「🚀 Go straight to dashboard」\n3. 撳「Settings」——右下角 😉\n4. 升級做 Pro\n5. 然後輸入代碼：{c}',
  'sy.join':'收到合夥人的代碼？輸入後所有數據將自動同步。',
  'sy.enterCode':'輸入代碼',
  'sy.synced':'已同步',
@@ -1345,7 +1341,6 @@ pl:{
  'ob.partnerEntry':'Wpisz kod Partner Sync','ob.partnerEntryS':'Połącz istniejącą firmę',
  'ob.dash':'Przejdź od razu do pulpitu',
  'ob.dashS':'Wiem, co robię.',
- 'ob.codeEntry':'Masz partner sync code? Wybierz „Przejdź od razu do pulpitu”, a potem wpisz go w Ustawieniach.',
  'ob.ltdChoiceTitle':'Która opcja opisuje Twoją spółkę?','ob.ltdExisting':'Mam już spółkę','ob.ltdExistingS':'Dodaj dane z Companies House','ob.ltdForming':'Zakładam spółkę','ob.ltdFormingS':'Zacznij przed zakończeniem rejestracji',
  'ob.registrationTitle':'Na jakim jesteś etapie?','ob.notRegistered':'Jeszcze niezarejestrowana','ob.notRegisteredS':'Zapisz roboczą nazwę i wróć później','ob.registered':'Spółka jest zarejestrowana','ob.registeredS':'Sprawdź spółkę po numerze Companies House',
  'ob.partnerTitle':'Wpisz kod Partner Sync','ob.partnerBody':'Użyj 8-znakowego kodu od właściciela firmy.','ob.partnerConfirmTitle':'Połączyć tę firmę?','ob.partnerConfirmBody':'TaxMate użyje kodu do połączenia spółki osobowej i synchronizacji danych firmy. Twoje dane osobiste pozostaną prywatne.','ob.confirmConnect':'Potwierdź i połącz','ob.connecting':'Łączenie…','ob.connected':'Firma połączona',
@@ -1458,9 +1453,8 @@ pl:{
  'pro.sub':'Podstawy są bezpłatne. Ulepsz, gdy potrzebujesz więcej.',
  'sy.title':'Synchronizacja z partnerem',
  'sy.enable':'Synchronizuj z partnerem',
- 'sy.code':'Kod spółki',
+ 'sy.code':'Kod spółki','sy.readyToActivate':'Gotowe do aktywacji','sy.inviteAfterSave':'Zapisz tę firmę, a następnie użyj opcji „Zaproś mojego partnera”, aby udostępnić bezpieczny link.',
  'sy.invite':'Zaproś partnera',
- 'sy.inviteMsg':'Cześć! To jest kod synchronizacji partnera dla „{n}" w TaxMate UK. 🤝\nWejdź na taxmate.uk\n1. Kliknij „Sign in"\n2. Wybierz „🚀 Go straight to dashboard"\n3. Kliknij „Settings" — prawy dolny róg 😉\n4. Przejdź na Pro\n5. Następnie wpisz kod: {c}',
  'sy.join':'Masz kod od partnera? Wpisz go, a wszystko zsynchronizuje się automatycznie.',
  'sy.enterCode':'Wpisz kod',
  'sy.synced':'Zsynchronizowano',
@@ -1836,7 +1830,6 @@ ro:{
  'ob.partnerEntry':'Introdu un cod Partner Sync','ob.partnerEntryS':'Conectează o afacere existentă',
  'ob.dash':'Direct la panou',
  'ob.dashS':'Știu ce fac.',
- 'ob.codeEntry':'Ai un partner sync code? Alege „Direct la panou”, apoi introdu-l în Setări.',
  'ob.ltdChoiceTitle':'Ce descrie cel mai bine societatea?','ob.ltdExisting':'Am deja o societate','ob.ltdExistingS':'Adaugă datele Companies House','ob.ltdForming':'Înființez una','ob.ltdFormingS':'Începe înainte de finalizarea înregistrării',
  'ob.registrationTitle':'În ce etapă ești?','ob.notRegistered':'Încă neînregistrată','ob.notRegisteredS':'Salvează o denumire de lucru și continuă mai târziu','ob.registered':'Am înregistrat-o','ob.registeredS':'Verifică societatea cu numărul Companies House',
  'ob.partnerTitle':'Introdu codul Partner Sync','ob.partnerBody':'Folosește codul de 8 caractere oferit de proprietarul afacerii.','ob.partnerConfirmTitle':'Conectezi această afacere?','ob.partnerConfirmBody':'TaxMate va folosi codul pentru a conecta parteneriatul și a sincroniza datele afacerii. Datele personale rămân private.','ob.confirmConnect':'Confirmă și conectează','ob.connecting':'Se conectează…','ob.connected':'Afacere conectată',
@@ -1949,9 +1942,8 @@ ro:{
  'pro.sub':'Funcțiile esențiale sunt gratuite. Fă upgrade când ai nevoie.',
  'sy.title':'Sincronizare cu partenerul',
  'sy.enable':'Sincronizează cu partenerul meu',
- 'sy.code':'Cod de parteneriat',
+ 'sy.code':'Cod de parteneriat','sy.readyToActivate':'Gata de activare','sy.inviteAfterSave':'Salvează această afacere, apoi folosește „Invită partenerul meu” pentru a distribui linkul securizat.',
  'sy.invite':'Invită partenerul',
- 'sy.inviteMsg':'Salut! Acesta este codul de sincronizare pentru „{n}" pe TaxMate UK. 🤝\nMergi pe taxmate.uk\n1. Apasă „Sign in"\n2. Alege „🚀 Go straight to dashboard"\n3. Apasă „Settings" — colțul din dreapta jos 😉\n4. Treci la Pro\n5. Apoi introdu codul: {c}',
  'sy.join':'Ai un cod de la partener? Introdu-l și totul se sincronizează automat.',
  'sy.enterCode':'Introdu codul',
  'sy.synced':'Sincronizat',
@@ -2327,7 +2319,6 @@ es:{
  'ob.partnerEntry':'Introducir un código Partner Sync','ob.partnerEntryS':'Conectar una empresa existente',
  'ob.dash':'Ir directo al panel',
  'ob.dashS':'Sé lo que hago.',
- 'ob.codeEntry':'¿Tienes un partner sync code? Elige «Ir directo al panel» y luego introdúcelo en Ajustes.',
  'ob.ltdChoiceTitle':'¿Qué describe mejor tu sociedad?','ob.ltdExisting':'Ya tengo una sociedad','ob.ltdExistingS':'Añadir sus datos de Companies House','ob.ltdForming':'Estoy creando una','ob.ltdFormingS':'Empezar antes de completar el registro',
  'ob.registrationTitle':'¿En qué punto estás?','ob.notRegistered':'Aún no está registrada','ob.notRegisteredS':'Guarda un nombre provisional y continúa después','ob.registered':'Ya la he registrado','ob.registeredS':'Comprobar la sociedad con su número de Companies House',
  'ob.partnerTitle':'Introduce el código Partner Sync','ob.partnerBody':'Usa el código de 8 caracteres facilitado por el propietario.','ob.partnerConfirmTitle':'¿Conectar esta empresa?','ob.partnerConfirmBody':'TaxMate usará el código para conectar la sociedad y sincronizar sus datos. Tus registros personales seguirán siendo privados.','ob.confirmConnect':'Confirmar y conectar','ob.connecting':'Conectando…','ob.connected':'Empresa conectada',
@@ -2440,9 +2431,8 @@ es:{
  'pro.sub':'Lo esencial es gratis. Mejora cuando necesites más.',
  'sy.title':'Sincronización con socio',
  'sy.enable':'Sincronizar con mi socio',
- 'sy.code':'Código de la sociedad',
+ 'sy.code':'Código de la sociedad','sy.readyToActivate':'Listo para activar','sy.inviteAfterSave':'Guarda esta empresa y después usa «Invitar a mi socio» para compartir el enlace seguro.',
  'sy.invite':'Invitar a mi socio',
- 'sy.inviteMsg':'¡Hola! Este es el código de sincronización para «{n}» en TaxMate UK. 🤝\nEntra en taxmate.uk\n1. Toca «Sign in»\n2. Elige «🚀 Go straight to dashboard»\n3. Toca «Settings» — esquina inferior derecha 😉\n4. Cambia a Pro\n5. Luego introduce el código: {c}',
  'sy.join':'¿Tienes un código de tu socio? Introdúcelo y todo se sincroniza automáticamente.',
  'sy.enterCode':'Introduce el código',
  'sy.synced':'Sincronizado',
@@ -2816,7 +2806,6 @@ ur:{
  'ob.partnerEntry':'Partner Sync کوڈ درج کریں','ob.partnerEntryS':'موجودہ کاروبار جوڑیں',
  'ob.dash':'سیدھا ڈیش بورڈ پر جائیں',
  'ob.dashS':'مجھے معلوم ہے۔',
- 'ob.codeEntry':'partner sync code ہے؟ «سیدھا ڈیش بورڈ پر جائیں» چنیں، پھر Settings میں درج کریں۔',
  'ob.ltdChoiceTitle':'آپ کی کمپنی کی بہتر وضاحت کون سی ہے؟','ob.ltdExisting':'میری کمپنی پہلے سے موجود ہے','ob.ltdExistingS':'Companies House کی تفصیلات شامل کریں','ob.ltdForming':'میں کمپنی بنا رہا ہوں','ob.ltdFormingS':'رجسٹریشن مکمل ہونے سے پہلے شروع کریں',
  'ob.registrationTitle':'آپ کس مرحلے پر ہیں؟','ob.notRegistered':'ابھی رجسٹرڈ نہیں','ob.notRegisteredS':'عارضی نام محفوظ کریں اور بعد میں جاری رکھیں','ob.registered':'میں نے اسے رجسٹر کر لیا ہے','ob.registeredS':'Companies House نمبر سے کمپنی چیک کریں',
  'ob.partnerTitle':'Partner Sync کوڈ درج کریں','ob.partnerBody':'کاروبار کے مالک کا دیا ہوا 8 حروف کا کوڈ استعمال کریں۔','ob.partnerConfirmTitle':'یہ کاروبار جوڑیں؟','ob.partnerConfirmBody':'TaxMate اس کوڈ سے پارٹنرشپ جوڑے گا اور کاروباری ریکارڈ sync کرے گا۔ آپ کے ذاتی ریکارڈ نجی رہیں گے۔','ob.confirmConnect':'تصدیق کریں اور جوڑیں','ob.connecting':'جوڑا جا رہا ہے…','ob.connected':'کاروبار جڑ گیا',
@@ -2929,9 +2918,8 @@ ur:{
  'pro.sub':'بنیادی ضروریات مفت ہیں۔ ضرورت پر اپ گریڈ کریں۔',
  'sy.title':'پارٹنر سنک',
  'sy.enable':'اپنے پارٹنر سے سنک کریں',
- 'sy.code':'پارٹنرشپ کوڈ',
+ 'sy.code':'پارٹنرشپ کوڈ','sy.readyToActivate':'فعال کرنے کے لیے تیار','sy.inviteAfterSave':'اس کاروبار کو محفوظ کریں، پھر محفوظ لنک شیئر کرنے کے لیے ”میرے پارٹنر کو مدعو کریں“ استعمال کریں۔',
  'sy.invite':'پارٹنر کو دعوت دیں',
- 'sy.inviteMsg':'Hey! یہ TaxMate UK پر «{n}» کے لیے پارٹنر سنک کوڈ ہے۔ 🤝\ntaxmate.uk پر جائیں\n1. «Sign in» پر ٹیپ کریں\n2. «🚀 Go straight to dashboard» منتخب کریں\n3. «Settings» پر ٹیپ کریں — نیچے دائیں کونہ 😉\n4. Pro میں اپ گریڈ کریں\n5. پھر کوڈ درج کریں: {c}',
  'sy.join':'پارٹنر سے کوڈ ملا؟ درج کریں اور سب کچھ خودبخود سنک ہو جائے گا۔',
  'sy.enterCode':'کوڈ درج کریں',
  'sy.synced':'سنک ہو گیا',
@@ -3069,6 +3057,12 @@ Object.assign(I18N.ur,{
   'sync.offline':'آف لائن','sync.offlinePending':'آف لائن — {n} تبدیلیاں منتظر ہیں','sync.signIn':'سائن اِن کا انتظار ہے','sync.signInPending':'سائن اِن کا انتظار — {n} منتظر','sync.restoreFailed':'کلاؤڈ بحالی ناکام — دوبارہ کوشش ہوگی','sync.restoring':'کلاؤڈ ڈیٹا بحال ہو رہا ہے…','sync.checking':'کلاؤڈ ڈیٹا چیک ہو رہا ہے…','sync.readFailed':'کلاؤڈ سنک پڑھنے میں ناکامی — دوبارہ کوشش ہوگی','sync.partnerDenied':'پارٹنرشپ سنک رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.writeDenied':'سنک لکھنے کی رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.retrying':'سنک کی دوبارہ کوشش — {n} تبدیلیاں منتظر','sync.syncing':'سنک ہو رہا ہے — {n} تبدیلیاں منتظر','sync.finishing':'سنک مکمل ہو رہا ہے…','sync.synced':'سنک ہو گیا',
   'ob.signInLtdContext':'اپنی لمیٹڈ کمپنی کی ترتیب جاری رکھنے کے لیے سائن اِن کریں۔','ob.signInPartnerContext':'Partner Sync سے جڑنا جاری رکھنے کے لیے سائن اِن کریں۔','ob.bizRequired':'جاری رکھنے کے لیے کاروبار کا نام درج کریں۔','ob.partnerConnectedResult':'یہ پارٹنرشپ اب منسلک ہے۔','ob.continueDashboard':'ڈیش بورڈ پر جاری رکھیں','ob.localPurchaseWorking':'مقامی جائزہ رسائی اپ ڈیٹ ہو رہی ہے…','help.title':'مدد اور معاونت','help.body':'ریکارڈ، ٹیکس، رسید، پلان، بیک اپ اور پارٹنرشپ کے لیے مدد۔','help.open':'مدد اور معاونت کھولیں'
 });
+Object.assign(I18N.en,{'home.includesPartnershipShare':'Includes your share of partnership profits.','home.shareIn':'Your share of money in','home.shareOut':'Your share of money out','part.details':'Partnership figures','part.totalProfit':'Total partnership profit','part.yourShare':'Your {n}% share','part.yourShareUnknown':'Your share','part.needsReview':'Needs review','part.reviewShare':'Confirm your partnership share before relying on these personal figures.','part.reviewTax':'Confirm your partnership share before relying on this tax estimate.','part.shareRequired':'Enter a whole percentage from 1 to 100.'});
+Object.assign(I18N.zh,{'home.includesPartnershipShare':'包括你應佔嘅合夥利潤。','home.shareIn':'你應佔嘅收入','home.shareOut':'你應佔嘅支出','part.details':'合夥數字','part.totalProfit':'合夥總利潤','part.yourShare':'你嘅 {n}% 份額','part.yourShareUnknown':'你嘅份額','part.needsReview':'需要檢查','part.reviewShare':'請先確認你嘅合夥份額，先依賴呢啲個人數字。','part.reviewTax':'請先確認你嘅合夥份額，先依賴呢個稅務估算。','part.shareRequired':'請輸入1至100嘅整數百分比。'});
+Object.assign(I18N.pl,{'home.includesPartnershipShare':'Obejmuje Twój udział w zyskach spółek.','home.shareIn':'Twój udział we wpływach','home.shareOut':'Twój udział w wydatkach','part.details':'Dane spółki','part.totalProfit':'Łączny zysk spółki','part.yourShare':'Twój udział {n}%','part.yourShareUnknown':'Twój udział','part.needsReview':'Wymaga sprawdzenia','part.reviewShare':'Potwierdź swój udział w spółce, zanim oprzesz się na tych kwotach osobistych.','part.reviewTax':'Potwierdź swój udział w spółce, zanim oprzesz się na tym oszacowaniu podatku.','part.shareRequired':'Wpisz pełny procent od 1 do 100.'});
+Object.assign(I18N.ro,{'home.includesPartnershipShare':'Include partea ta din profiturile parteneriatelor.','home.shareIn':'Partea ta din încasări','home.shareOut':'Partea ta din plăți','part.details':'Cifrele parteneriatului','part.totalProfit':'Profitul total al parteneriatului','part.yourShare':'Partea ta de {n}%','part.yourShareUnknown':'Partea ta','part.needsReview':'Necesită verificare','part.reviewShare':'Confirmă partea ta din parteneriat înainte de a te baza pe aceste cifre personale.','part.reviewTax':'Confirmă partea ta din parteneriat înainte de a te baza pe această estimare fiscală.','part.shareRequired':'Introdu un procent întreg între 1 și 100.'});
+Object.assign(I18N.es,{'home.includesPartnershipShare':'Incluye tu parte de los beneficios de las sociedades.','home.shareIn':'Tu parte del dinero recibido','home.shareOut':'Tu parte del dinero pagado','part.details':'Cifras de la sociedad','part.totalProfit':'Beneficio total de la sociedad','part.yourShare':'Tu parte del {n}%','part.yourShareUnknown':'Tu parte','part.needsReview':'Debe revisarse','part.reviewShare':'Confirma tu participación antes de basarte en estas cifras personales.','part.reviewTax':'Confirma tu participación antes de basarte en esta estimación fiscal.','part.shareRequired':'Introduce un porcentaje entero entre 1 y 100.'});
+Object.assign(I18N.ur,{'home.includesPartnershipShare':'اس میں شراکت کے منافع میں آپ کا حصہ شامل ہے۔','home.shareIn':'آمدنی میں آپ کا حصہ','home.shareOut':'اخراجات میں آپ کا حصہ','part.details':'شراکت کے اعداد','part.totalProfit':'شراکت کا کل منافع','part.yourShare':'آپ کا {n}% حصہ','part.yourShareUnknown':'آپ کا حصہ','part.needsReview':'جائزہ درکار','part.reviewShare':'ان ذاتی اعداد پر انحصار کرنے سے پہلے شراکت میں اپنا حصہ تصدیق کریں۔','part.reviewTax':'اس ٹیکس تخمینے پر انحصار کرنے سے پہلے شراکت میں اپنا حصہ تصدیق کریں۔','part.shareRequired':'1 سے 100 تک مکمل فیصد درج کریں۔'});
 Object.assign(I18N.zh,{'promo.signIn':'請先用 Google 登入，再兌換呢個代碼。'});
 Object.assign(I18N.pl,{'promo.signIn':'Najpierw zaloguj się przez Google, a następnie użyj kodu.'});
 Object.assign(I18N.ro,{'promo.signIn':'Conectează-te mai întâi cu Google, apoi folosește codul.'});
@@ -3138,6 +3132,31 @@ Object.assign(I18N.ur,{
   'pwa.iosStep1':'شیئر دبائیں',
   'pwa.iosStep2':'”ہوم اسکرین پر شامل کریں“ دبائیں',
   'pwa.iosStep3':'”شامل کریں“ دبائیں'
+});
+
+Object.assign(I18N.en,{
+  'sy.inviteTitle':'Invite partner','sy.inviteBody':'Share this invitation. Your partner opens TaxMate, chooses Partner Sync and enters the code manually.','sy.inviteShare':'Share invitation','sy.copyLink':'Copy link','sy.copyInvitation':'Copy invitation','sy.inviteLinkLabel':'TaxMate link','sy.invitePreviewLabel':'Invitation message','sy.inviteShareFailed':"Couldn't open sharing. Copy the link or invitation instead.",'sy.linkCopied':'TaxMate link copied','sy.invitationCopied':'Invitation copied',
+  'sy.inviteMsg':'I’ve invited you to connect to ‘{n}’ on TaxMate. 🤝\n\nOpen TaxMate, choose “Enter a Partner Sync code” and enter this code:\n\n{c}\n\n{u}'
+});
+Object.assign(I18N.zh,{
+  'sy.inviteTitle':'邀請合夥人','sy.inviteBody':'分享呢個邀請。你嘅合夥人開啟 TaxMate、選擇 Partner Sync，再手動輸入代碼。','sy.inviteShare':'分享邀請','sy.copyLink':'複製連結','sy.copyInvitation':'複製邀請內容','sy.inviteLinkLabel':'TaxMate 連結','sy.invitePreviewLabel':'邀請內容','sy.inviteShareFailed':'暫時未能開啟分享；請改為複製連結或邀請內容。','sy.linkCopied':'已複製 TaxMate 連結','sy.invitationCopied':'已複製邀請內容',
+  'sy.inviteMsg':'我已邀請你喺 TaxMate 連接「{n}」。🤝\n\n開啟 TaxMate，揀「輸入 Partner Sync 代碼」，再輸入以下代碼：\n\n{c}\n\n{u}'
+});
+Object.assign(I18N.pl,{
+  'sy.inviteTitle':'Zaproś partnera','sy.inviteBody':'Udostępnij to zaproszenie. Partner otwiera TaxMate, wybiera Partner Sync i ręcznie wpisuje kod.','sy.inviteShare':'Udostępnij zaproszenie','sy.copyLink':'Kopiuj link','sy.copyInvitation':'Kopiuj zaproszenie','sy.inviteLinkLabel':'Link do TaxMate','sy.invitePreviewLabel':'Treść zaproszenia','sy.inviteShareFailed':'Nie udało się otworzyć udostępniania. Skopiuj link lub zaproszenie.','sy.linkCopied':'Link do TaxMate skopiowany','sy.invitationCopied':'Zaproszenie skopiowane',
+  'sy.inviteMsg':'Zapraszam Cię do połączenia z „{n}” w TaxMate. 🤝\n\nOtwórz TaxMate, wybierz „Wpisz kod Partner Sync” i wpisz ten kod:\n\n{c}\n\n{u}'
+});
+Object.assign(I18N.ro,{
+  'sy.inviteTitle':'Invită un partener','sy.inviteBody':'Distribuie această invitație. Partenerul deschide TaxMate, alege Partner Sync și introduce manual codul.','sy.inviteShare':'Distribuie invitația','sy.copyLink':'Copiază linkul','sy.copyInvitation':'Copiază invitația','sy.inviteLinkLabel':'Link TaxMate','sy.invitePreviewLabel':'Mesajul invitației','sy.inviteShareFailed':'Distribuirea nu s-a putut deschide. Copiază linkul sau invitația.','sy.linkCopied':'Linkul TaxMate a fost copiat','sy.invitationCopied':'Invitația a fost copiată',
+  'sy.inviteMsg':'Te-am invitat să te conectezi la „{n}” în TaxMate. 🤝\n\nDeschide TaxMate, alege „Introdu un cod Partner Sync” și introdu acest cod:\n\n{c}\n\n{u}'
+});
+Object.assign(I18N.es,{
+  'sy.inviteTitle':'Invitar a un socio','sy.inviteBody':'Comparte esta invitación. Tu socio abre TaxMate, elige Partner Sync e introduce el código manualmente.','sy.inviteShare':'Compartir invitación','sy.copyLink':'Copiar enlace','sy.copyInvitation':'Copiar invitación','sy.inviteLinkLabel':'Enlace de TaxMate','sy.invitePreviewLabel':'Mensaje de invitación','sy.inviteShareFailed':'No se pudo abrir Compartir. Copia el enlace o la invitación.','sy.linkCopied':'Enlace de TaxMate copiado','sy.invitationCopied':'Invitación copiada',
+  'sy.inviteMsg':'Te he invitado a conectarte a «{n}» en TaxMate. 🤝\n\nAbre TaxMate, elige «Introducir un código Partner Sync» e introduce este código:\n\n{c}\n\n{u}'
+});
+Object.assign(I18N.ur,{
+  'sy.inviteTitle':'پارٹنر کو دعوت دیں','sy.inviteBody':'یہ دعوت شیئر کریں۔ آپ کا پارٹنر TaxMate کھولتا ہے، Partner Sync منتخب کرتا ہے اور کوڈ خود درج کرتا ہے۔','sy.inviteShare':'دعوت شیئر کریں','sy.copyLink':'لنک کاپی کریں','sy.copyInvitation':'دعوت کاپی کریں','sy.inviteLinkLabel':'TaxMate لنک','sy.invitePreviewLabel':'دعوتی پیغام','sy.inviteShareFailed':'شیئرنگ نہیں کھل سکی۔ اس کے بجائے لنک یا دعوت کاپی کریں۔','sy.linkCopied':'TaxMate لنک کاپی ہو گیا','sy.invitationCopied':'دعوت کاپی ہو گئی',
+  'sy.inviteMsg':'میں نے آپ کو TaxMate پر ”{n}“ سے منسلک ہونے کی دعوت دی ہے۔ 🤝\n\nTaxMate کھولیں، ”Partner Sync کوڈ درج کریں“ منتخب کریں اور یہ کوڈ درج کریں:\n\n\u2066{c}\u2069\n\n{u}'
 });
 
 function t(key, vars){
@@ -3817,20 +3836,35 @@ function bizFigures(b,yr){
 }
 function homeLedgerSnapshot(yr,bizId=null,period=null){
   const rows=entriesFor(yr,bizId,null).filter(entry=>!period||(entry.date>=period.from&&entry.date<=period.to));
-  const income=rows.filter(entry=>entry.kind==='income').reduce((sum,entry)=>sum+Math.max(0,Number(entry.amount)||0),0);
-  const expenses=rows.filter(entry=>entry.kind==='expense').reduce((sum,entry)=>sum+Math.max(0,effExact(entry)),0);
-  return Object.freeze({taxYear:yr,businessId:bizId,period:period?Object.freeze({...period}):null,income,expenses,profit:income-expenses,recordCount:rows.length});
+  const amountMinor=entry=>{
+    const value=Math.round(Math.max(0,Number(entry.amount)||0)*100);
+    if(!Number.isSafeInteger(value))throw new Error('Bookkeeping amount exceeds the safe pence range');
+    return value;
+  };
+  const incomeMinor=TaxMateMoney.sumMinor(rows.filter(entry=>entry.kind==='income').map(amountMinor),'Bookkeeping income');
+  const expensesMinor=TaxMateMoney.sumMinor(rows.filter(entry=>entry.kind==='expense').map(entry=>{
+    const pct=Number(entry.pct==null?100:entry.pct);
+    const value=Math.round(amountMinor(entry)*Math.max(0,pct)/100);
+    if(!Number.isSafeInteger(value))throw new Error('Bookkeeping expense exceeds the safe pence range');
+    return value;
+  }),'Bookkeeping expenses');
+  const profitMinor=incomeMinor-expensesMinor;
+  return Object.freeze({taxYear:yr,businessId:bizId,period:period?Object.freeze({...period}):null,income:incomeMinor/100,expenses:expensesMinor/100,profit:profitMinor/100,incomeMinor,expensesMinor,profitMinor,recordCount:rows.length});
 }
 function calcTax(yr){
   const cfg = cfgFor(yr);
   const d = S.yearData[yr] || {poaPaid:0,priorAdj:0,taMode:'auto'};
-  let soleIncome=0, soleExpenses=0, partShareProfit=0;
+  let soleIncome=0, soleExpenses=0;
   const perBiz = S.businesses.map(b=>{
     const f = bizFigures(b,yr);
-    if(b.structure==='partnership') partShareProfit += f.profit*(b.share||50)/100;
-    else { soleIncome+=Math.max(0,f.income); soleExpenses+=Math.max(0,f.expenses); }
+    if(b.structure!=='partnership'){ soleIncome+=Math.max(0,f.income); soleExpenses+=Math.max(0,f.expenses); }
     return Object.assign({biz:b},f);
   });
+  const personalPortfolio=TaxMatePartnership.personalPortfolio(perBiz.map(row=>({business:row.biz,incomeMinor:row.incomeMinor,expensesMinor:row.expensesMinor,profitMinor:row.profitMinor})));
+  const personalById=new Map(personalPortfolio.rows.map(row=>[row.business.id,row]));
+  perBiz.forEach(row=>{row.personal=personalById.get(row.biz.id);});
+  const partShareProfitMinor=TaxMateMoney.sumMinor(personalPortfolio.rows.filter(row=>row.business.structure==='partnership'&&row.supported).map(row=>row.profitMinor),'Attributable partnership profit');
+  const partShareProfit=partShareProfitMinor/100;
   const profitActual = soleIncome - soleExpenses;
   const profitAllowance = Math.max(0, soleIncome - Math.min(cfg.tradingAllowance, soleIncome));
   const allowanceAvailable = soleIncome>0;
@@ -3852,7 +3886,7 @@ function calcTax(yr){
   const liability = coreTax.liability, balancing = coreTax.balancing;
   const poaRequired = coreTax.paymentsOnAccount.required, poaEach = coreTax.paymentsOnAccount.each;
   const poaReason = coreTax.paymentsOnAccount.reason, janTotal = coreTax.januaryTotal;
-  return {cfg,perBiz,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
+  return {cfg,perBiz,personalPortfolio,taxEstimateSupported:personalPortfolio.supported,partnershipReviewReasons:personalPortfolio.reasons,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
           taUsed,taMode,soleProfit,partShareProfit,myProfit,pa,taxable,basicAmt,higherAmt,addlAmt,
           incomeTax,class4:c4,class2TreatedPaid,class2Voluntary,liability,priorAdj,poaPaid,balancing,
           poaRequired,poaEach,poaReason,poaOutsidePercent:Number(d.poaOutsidePercent)||0,janTotal};
@@ -4152,21 +4186,23 @@ function ltdHomeHero(profile){
 }
 function pageHome(){
   const tx = calcTax(S.year);
-  const ledger=homeLedgerSnapshot(S.year);
-  const totalIn = ledger.income;
-  const totalOut = ledger.expenses;
-  const owe = Math.max(0,tx.liability);
+  const personal=tx.personalPortfolio;
+  const totalIn = personal.incomeMinor==null?null:personal.incomeMinor/100;
+  const totalOut = personal.expensesMinor==null?null:personal.expensesMinor/100;
+  const personalProfit=personal.profitMinor==null?null:personal.profitMinor/100;
+  const owe = tx.taxEstimateSupported?Math.max(0,tx.liability):null;
+  const summaryAmount=value=>value==null?'—':fmt(value);
 
   const bizCards = tx.perBiz.map(p=>{
-    const col = bizColor(p.biz);
-    return `<div class="row">
+    const col = bizColor(p.biz),personalRow=p.personal,amountMinor=personalRow&&personalRow.profitMinor,amount=amountMinor==null?null:amountMinor/100,amountClass=amountMinor>0?'pos':amountMinor<0?'neg':'';
+    return `<div class="row" data-home-business-row="${esc(p.biz.id)}" data-business-structure="${esc(p.biz.structure)}" data-personal-profit-minor="${amountMinor==null?'':amountMinor}">
       <div class="avatar" style="background:${col}">${esc((p.biz.name||'?').trim().charAt(0).toUpperCase())}</div>
       <div class="grow">
         <div class="t">${esc(p.biz.name)}</div>
-        <div class="s">${p.biz.structure==='partnership' ? t('tag.part')+' · '+t('tag.your',{n:p.biz.share||50}) : t('tag.sole')}</div>
+        <div class="s">${p.biz.structure==='partnership' ? t('tag.part')+' · '+(personalRow&&personalRow.sharePercent!=null?t('tag.your',{n:personalRow.sharePercent}):t('part.needsReview')) : t('tag.sole')}</div>
       </div>
       <div style="text-align:end">
-        <div class="v num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</div>
+        <div class="v num ${amountClass}">${amount==null?esc(t('part.needsReview')):fmt(amount)}</div>
         <button class="link" data-tm-click="openBiz('${p.biz.id}')">${t('c.edit')}</button>
       </div>
     </div>`;
@@ -4181,15 +4217,17 @@ function pageHome(){
   const personalHero=`<div class="hero" data-home-personal-hero>
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.selfProfit',{y:S.year})}</div>
-    <div class="big num" data-home-ledger-profit>${fmt(ledger.profit)}</div>
+    <div class="big num" data-home-ledger-profit data-personal-profit-minor="${personal.profitMinor==null?'':personal.profitMinor}">${summaryAmount(personalProfit)}</div>
+    ${personal.hasPartnership?`<div class="hi" data-home-partnership-share-note>${t('home.includesPartnershipShare')}</div>`:''}
     <div class="hero-owe" data-tm-click="go('tax')">
       <span class="ho-label">🐷 ${t('home.oweLine')}</span>
-      <span class="ho-val num">${fmt0(owe)} ›</span>
+      <span class="ho-val num">${owe==null?'—':fmt0(owe)} ›</span>
     </div>
     <div class="pills">
-      <button class="pill" data-tm-click="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
-      <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
+      <button class="pill" data-tm-click="go('income')"><div class="pl">${t(personal.hasPartnership?'home.shareIn':'home.in')}</div><div class="pv num" data-personal-income-minor="${personal.incomeMinor==null?'':personal.incomeMinor}">${summaryAmount(totalIn)}</div></button>
+      <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t(personal.hasPartnership?'home.shareOut':'home.out')}</div><div class="pv num" data-personal-expenses-minor="${personal.expensesMinor==null?'':personal.expensesMinor}">${totalOut==null?'—':'−'+fmt(totalOut).replace('−','')}</div></button>
     </div>
+    ${!personal.supported?`<div class="hi" data-home-partnership-review style="margin-top:12px">${t('part.reviewShare')}</div>`:''}
     ${ltdProfile?`<div style="font-size:12px;font-weight:700;line-height:1.45;margin-top:12px;opacity:.9">${t('home.ltdSeparate')}</div>`:''}
   </div>`;
 
@@ -4347,22 +4385,24 @@ function pageTax(){
   const class2Row = tx.class2TreatedPaid
     ? `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Paid',{x:cfg.c2SmallProfits.toLocaleString()})}</small></span><span class="fv num">£0.00</span></div>`
     : `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Vol',{x:cfg.c2SmallProfits.toLocaleString(),v:tx.class2Voluntary.toFixed(2)})}</small></span><span class="fv mut">${t('tax.opt')}</span></div>`;
+  const taxReviewNotice=tx.taxEstimateSupported?'':`<div class="notice amber" data-partnership-tax-review>${t('part.reviewTax')}</div>`;
 
   return `
   <div class="hero tax-hero">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
-    <div class="big num">${fmt(Math.max(tx.liability,0))}</div>
-    <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
+    <div class="big num">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
+    <div class="hi" style="opacity:.8">${tx.taxEstimateSupported?t('tax.it')+' '+fmt(tx.incomeTax)+' · '+t('tax.c4')+' '+fmt(tx.class4):t('part.needsReview')}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
     <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,.12);border-radius:10px;font-size:12.5px;font-weight:600;opacity:.95">⚠️ ${t('tax.estimateWarn')}</div>
   </div>
 
+  ${taxReviewNotice}
   ${deadlineBanner()}
   ${taBlock}
   ${mileageCard()}
 <div class="card">
     <div class="t" style="margin-bottom:10px">${t('tax.how')}</div>
-    ${tx.perBiz.map(p=>`<div class="frow"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('tag.your',{n:p.biz.share||50})} = ${fmt(p.profit*(p.biz.share||50)/100)}</small>`:''}</span><span class="fv num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</span></div>`).join('')}
-    <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num">${fmt(tx.myProfit)}</span></div>
+    ${tx.perBiz.map(p=>{const personal=p.personal,amountMinor=personal&&personal.profitMinor,amount=amountMinor==null?null:amountMinor/100,amountClass=amountMinor>0?'pos':amountMinor<0?'neg':'';return `<div class="frow" data-tax-business-row="${esc(p.biz.id)}"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('part.totalProfit')}: ${fmt(p.profit)} · ${personal&&personal.sharePercent!=null?t('part.yourShare',{n:personal.sharePercent}):t('part.needsReview')}</small>`:''}</span><span class="fv num ${amountClass}" data-tax-attributable-profit-minor="${amountMinor==null?'':amountMinor}">${amount==null?esc(t('part.needsReview')):fmt(amount)}</span></div>`;}).join('')}
+    <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num" data-tax-attributable-total-minor="${tx.taxEstimateSupported?Math.round(tx.myProfit*100):''}">${tx.taxEstimateSupported?fmt(tx.myProfit):'—'}</span></div>
   </div>
 
   <div class="card">
@@ -4583,7 +4623,7 @@ function pageMore(){
         <div class="avatar" style="background:${bizColor(b)};width:38px;height:38px;font-size:15px">${esc((b.name||'?').trim().charAt(0).toUpperCase())}</div>
         <div class="grow">
           <div class="t" style="font-size:14.5px">${esc(b.name)}</div>
-          <div class="s">${b.structure==='partnership'?t('tag.part')+' · '+t('tag.your',{n:b.share||50}):t('tag.sole')}${b.syncCode?' · <span style="color:var(--brand);font-weight:700">🔗 '+t('sy.synced')+'</span>':''}</div>
+          <div class="s">${b.structure==='partnership'?(()=>{const profile=TaxMatePartnership.profile(b);return t('tag.part')+' · '+(profile.sharePercent!=null?t('tag.your',{n:profile.sharePercent}):t('part.needsReview'));})():t('tag.sole')}${b.syncCode?' · <span style="color:var(--brand);font-weight:700">🔗 '+t('sy.synced')+'</span>':''}</div>
         </div>
         <button class="link" data-tm-click="openBiz('${b.id}')">${t('c.edit')}</button>
       </div>`).join(''):''}
@@ -4761,7 +4801,7 @@ function setAnalyticsConsent(enabled){
   if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(enabled===true);
   render();
 }
-function setLang(l){ S.settings.lang=l; save(); render(); }
+function setLang(l){ S.settings.lang=l; save(); render(); if(typeof refreshPartnerInvitation==='function')refreshPartnerInvitation(); }
 function obSetLang(l){ S.settings.lang=l; save(); applyStaticI18n(); OB._langOpen=false; obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
@@ -5235,7 +5275,10 @@ function openBiz(id,initialStructure){
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
   document.getElementById('bz-name-err').classList.remove('show');
-  document.getElementById('bz-share').value = b?(b.share||50):50;
+  const savedShare=b&&Number.isSafeInteger(Number(b.share))&&Number(b.share)>=1&&Number(b.share)<=100?Number(b.share):null;
+  document.getElementById('bz-share').value = b?(savedShare==null?'':savedShare):50;
+  document.getElementById('bz-share').classList.remove('err');
+  document.getElementById('bz-share-err').classList.remove('show');
   document.getElementById('bz-delete').style.display = b?'inline':'none';
   paintTrades(); paintStruct(); paintSync(); openSheet('biz');
 }
@@ -5250,7 +5293,19 @@ function paintStruct(){
     BZ.pendingCode = genCode();
   }
   if(BZ.structure==='sole') BZ.pendingCode = null;
+  paintPartnershipFigures();
   paintSync();
+}
+function paintPartnershipFigures(){
+  const el=document.getElementById('bz-partnership-figures');if(!el)return;
+  const b=BZ.id?bizById(BZ.id):null;
+  if(!b||b.structure!=='partnership'||BZ.structure!=='partnership'){el.style.display='none';el.innerHTML='';return;}
+  const figures=bizFigures(b,S.year),personal=TaxMatePartnership.personalBusinessFigures(b,figures);
+  el.style.display='block';
+  el.innerHTML=`<div class="t" style="margin-bottom:8px">${t('part.details')}</div>
+    <div class="frow"><span class="fl">${t('part.totalProfit')}</span><span class="fv num ${figures.profitMinor>0?'pos':figures.profitMinor<0?'neg':''}" data-partnership-total-profit-minor="${figures.profitMinor}">${fmt(figures.profit)}</span></div>
+    <div class="frow"><span class="fl">${personal.sharePercent!=null?t('part.yourShare',{n:personal.sharePercent}):t('part.yourShareUnknown')}</span><span class="fv num ${personal.profitMinor>0?'pos':personal.profitMinor<0?'neg':''}" data-partnership-personal-profit-minor="${personal.profitMinor==null?'':personal.profitMinor}">${personal.profitMinor==null?esc(t('part.needsReview')):fmt(personal.profitMinor/100)}</span></div>
+    ${personal.supported?'':`<div class="notice amber" style="margin-top:10px">${t('part.reviewShare')}</div>`}`;
 }
 function paintSync(){
   const el = document.getElementById('bz-sync');
@@ -5265,9 +5320,9 @@ function paintSync(){
   if(!BZ.id && BZ.pendingCode){
     el.innerHTML = `
       <div class="notice green" style="text-align:center">
-        <div style="font-size:12px;font-weight:700">🤝 ${t('sy.code')} · Ready to activate</div>
+        <div style="font-size:12px;font-weight:700">🤝 ${t('sy.code')} · ${t('sy.readyToActivate')}</div>
         <div class="num" style="font-size:34px;font-weight:800;letter-spacing:7px;margin:8px 0 6px">${BZ.pendingCode}</div>
-        <div style="font-size:12px;opacity:.8">Share this code with your partner — it activates when you save.</div>
+        <div style="font-size:12px;opacity:.8">${t('sy.inviteAfterSave')}</div>
       </div>`;
     return;
   }
@@ -5290,8 +5345,12 @@ function saveBiz(){
     document.getElementById('bz-name-err').classList.add('show');
     return;
   }
-  let share = parseInt(document.getElementById('bz-share').value,10);
-  if(!(share>=1&&share<=100)) share=50;
+  const shareInput=document.getElementById('bz-share'),shareText=String(shareInput.value||'').trim();
+  let share = /^\d+$/.test(shareText)?Number(shareText):NaN;
+  if(BZ.structure==='partnership'&&(!Number.isSafeInteger(share)||share<1||share>100)){
+    shareInput.classList.add('err');document.getElementById('bz-share-err').classList.add('show');shareInput.focus();return;
+  }
+  if(BZ.structure!=='partnership')share=100;
   let newId = null;
   const firstMeaningfulBusiness=!BZ.id&&S.businesses.length===0;
   if(BZ.id){
@@ -5669,12 +5728,42 @@ async function leaveSync(bizId){
   delete b.syncCode;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
   save(); paintSync(); render();
 }
+let ACTIVE_PARTNER_INVITE=null,PARTNER_SHARE_IN_FLIGHT=null;
+function partnerInvitationPayload(business){
+  return TaxMatePartnerInvite.payload({businessName:business.name,code:business.syncCode,title:t('sy.inviteTitle'),message:t('sy.inviteMsg')});
+}
+function refreshPartnerInvitation(){
+  if(!ACTIVE_PARTNER_INVITE)return;
+  const business=bizById(ACTIVE_PARTNER_INVITE.bizId);if(!business||!business.syncCode)return;
+  ACTIVE_PARTNER_INVITE={bizId:business.id,payload:partnerInvitationPayload(business)};
+  const link=document.getElementById('partner-invite-link'),text=document.getElementById('partner-invite-text'),error=document.getElementById('partner-invite-error');
+  if(link)link.value=ACTIVE_PARTNER_INVITE.payload.url;if(text)text.value=ACTIVE_PARTNER_INVITE.payload.text;if(error){error.textContent='';error.classList.remove('show');}
+}
 function invitePartner(bizId){
-  const b = bizById(bizId); if(!b || !b.syncCode) return;
-  const text = t('sy.inviteMsg',{n:b.name, c:b.syncCode}) + '\n' + location.href.split('#')[0];
-  if(navigator.share){ navigator.share({text}).catch(()=>{}); }
-  else if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(text).then(()=>toast(t('sy.copied'))).catch(()=>showNotice(t('sy.code'),t('sy.invite'),text));}
-  else showNotice(t('sy.code'),t('sy.invite'),text);
+  const business=bizById(bizId);if(!business||!business.syncCode)return;
+  ACTIVE_PARTNER_INVITE={bizId:business.id,payload:partnerInvitationPayload(business)};applyStaticI18n();refreshPartnerInvitation();const businessSheet=document.getElementById('sb-biz');if(businessSheet)businessSheet.classList.remove('open');openSheet('partner-invite');
+}
+async function writePartnerInviteClipboard(value,successKey){
+  try{
+    if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function')await navigator.clipboard.writeText(value);
+    else{const field=document.createElement('textarea');field.value=value;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();if(!document.execCommand('copy'))throw new Error('clipboard-unavailable');field.remove();}
+    toast(t(successKey));return true;
+  }catch(_){const error=document.getElementById('partner-invite-error');if(error){error.textContent=t('sy.inviteShareFailed');error.classList.add('show');}return false;}
+}
+function copyPartnerInviteLink(){return ACTIVE_PARTNER_INVITE&&writePartnerInviteClipboard(ACTIVE_PARTNER_INVITE.payload.url,'sy.linkCopied');}
+function copyPartnerInvitation(){return ACTIVE_PARTNER_INVITE&&writePartnerInviteClipboard(ACTIVE_PARTNER_INVITE.payload.text,'sy.invitationCopied');}
+function sharePartnerInvitation(){
+  if(PARTNER_SHARE_IN_FLIGHT)return PARTNER_SHARE_IN_FLIGHT;
+  if(!ACTIVE_PARTNER_INVITE)return Promise.resolve(false);
+  const payload=ACTIVE_PARTNER_INVITE.payload,error=document.getElementById('partner-invite-error'),button=document.getElementById('partner-invite-share');
+  if(error){error.textContent='';error.classList.remove('show');}
+  if(typeof navigator.share!=='function')return writePartnerInviteClipboard(payload.text,'sy.invitationCopied');
+  if(button)button.disabled=true;
+  PARTNER_SHARE_IN_FLIGHT=Promise.resolve().then(()=>navigator.share(payload)).then(()=>true).catch(reason=>{
+    if(reason&&reason.name==='AbortError')return false;
+    if(error){error.textContent=t('sy.inviteShareFailed');error.classList.add('show');}return false;
+  }).finally(()=>{PARTNER_SHARE_IN_FLIGHT=null;if(button)button.disabled=false;});
+  return PARTNER_SHARE_IN_FLIGHT;
 }
 function pushEntryRemote(rec){
   const b = bizById(rec.bizId);
@@ -6330,11 +6419,13 @@ function sa104Card(){
     +'<div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div>';
 
   partBiz.forEach(b=>{
-    const fig = bizFiguresRaw(b,yr);
-    const myShare = fig.profit * (b.share||50)/100;
+    const fig = bizFigures(b,yr);
+    const personal=TaxMatePartnership.personalBusinessFigures(b,fig);
+    if(!personal.supported){html += '<div class="notice amber" style="margin-top:8px">'+t('part.reviewTax')+'</div>';return;}
+    const myShare = personal.profitMinor/100;
     const isLoss = myShare < 0;
 
-    html += '<div style="font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px">'+esc(b.name)+' ('+t('tag.your',{n:b.share||50})+')</div>';
+    html += '<div style="font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px">'+esc(b.name)+' ('+t('tag.your',{n:personal.sharePercent})+')</div>';
     html += saBoxRow(boxes.description, 'Description of partnership business', b.name);
     html += saBoxRow(boxes.statementProfitOrLoss, 'Your share from Partnership Statement box 11 (profit) or 12 (loss) — confirm against the Statement', myShare);
     html += saBoxRow(boxes.adjustedProfit, 'Adjusted partnership profit estimate', isLoss?0:myShare);
@@ -7311,7 +7402,7 @@ function obScrPickBiz(){
   const tiles = S.businesses.map(b=>{
     const col = bizColor(b);
     const letter = esc((b.name||'?').trim().charAt(0).toUpperCase());
-    const sub = b.structure==='partnership' ? t('ob.partTag',{s:(b.share||50)}) : t('ob.soleTag');
+    const profile=TaxMatePartnership.profile(b),sub = b.structure==='partnership' ? (profile.sharePercent!=null?t('ob.partTag',{s:profile.sharePercent}):t('part.needsReview')) : t('ob.soleTag');
     return `<button class="ob-tile" data-tm-click="obPickCatchupBiz('${b.id}')">
       <span class="ob-emoji" style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">${letter}</span>
       <span><span class="ob-tt">${esc(b.name)}</span><span class="ob-ts">${sub}</span></span>

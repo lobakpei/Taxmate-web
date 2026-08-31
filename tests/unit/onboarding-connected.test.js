@@ -43,6 +43,20 @@ test('Partner Sync stores only code intent and writes membership only after expl
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
 
+test('Partner invite sharing preserves the existing manual-code Connected Onboarding contract',()=>{
+  const invite=fs.readFileSync('src/core/partner-invite.js','utf8');
+  assert.match(invite,/PRODUCTION_ORIGIN = 'https:\/\/www\.taxmate\.uk\/'/);
+  assert.doesNotMatch(invite,/FRAGMENT_KEY|codeFromHash|URLSearchParams|location\.hash/);
+  assert.doesNotMatch(app,/PARTNER_INVITE_DRAFT_KEY|PARTNER_INVITE_BOOT_CODE|startPartnerInviteOnboarding|capturePartnerInviteLaunch|storePartnerInviteCode|clearPartnerInviteCode/);
+  assert.match(app,/function obStartPartnerSync\(\)\{if\(!OB\)return;OB\._intentError='';OB\.pendingIntent=null;obGo\('partner-code'\);\}/);
+  assert.match(app,/function obSetConnectCode\(value\)/);
+  assert.match(app,/function obPartnerContinue\(\)[\s\S]*obSetPendingIntent\('partner_sync',\{partnerCode:code/);
+  assert.match(app,/navigator\.share\(payload\)/);
+  assert.doesNotMatch(app,/#partner-invite=|partner-invite=CONNECT8/);
+  assert.doesNotMatch(invite,/inviter|sharePercent|membership|uid|token/i);
+  assert.doesNotMatch(functions,/previewPartnershipInvitation/);
+});
+
 test('shared Pro gate uses the canonical promotion backend and approved pricing formatter',()=>{
   const proGate=app.match(/function obScrProGate\(\)\{[\s\S]*?\n\}/)[0];
   assert.match(app,/const PRO_PRICE_CONTRACT = Object\.freeze\(\{currency:'GBP',monthly:Object\.freeze\(\{launchMinor:999,standardMinor:1199\}\),annual:Object\.freeze\(\{amountMinor:9999\}\)\}\)/);
@@ -67,6 +81,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.9',build:'2026-08-31.pro-checkout-enablement.1',cache:'taxmate-v2-pro-checkout-enablement-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.11',build:'2026-08-31.partner-invite-manual-code-founder-preview.2',cache:'taxmate-v2-partner-invite-manual-code-founder-preview-2'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

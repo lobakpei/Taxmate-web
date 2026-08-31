@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-31.pro-checkout-enablement.1 -->
+<!-- build: 2026-08-31.partner-invite-manual-code-founder-preview.2 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -592,7 +592,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="fg" id="bz-share-group" style="display:none">
     <label for="bz-share" data-i18n="b.share"></label>
     <input type="number" id="bz-share" inputmode="numeric" min="1" max="100" value="50" data-tm-click="event.stopPropagation()" data-tm-focus="event.stopPropagation()">
+    <div class="ferr" id="bz-share-err" data-i18n="part.shareRequired"></div>
   </div>
+  <div id="bz-partnership-figures" class="card flat" style="display:none;margin-bottom:14px"></div>
   <div id="bz-sync" style="margin-bottom:4px"></div>
   <div class="sact">
     <button class="btn ghost" data-tm-click="closeSheet('biz')" data-i18n="c.cancel"></button>
@@ -810,6 +812,21 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('partner')" data-i18n="c.cancel"></button>
 </div></div>
 
+<div class="sb" id="sb-partner-invite"><div class="sheet">
+  <div class="grab" data-tm-click="closeParentSheet(this)"></div>
+  <div class="stitle" data-i18n="sy.inviteTitle"></div>
+  <div class="s" style="margin:6px 0 16px" data-i18n="sy.inviteBody"></div>
+  <div class="fg"><label for="partner-invite-link" data-i18n="sy.inviteLinkLabel"></label><input id="partner-invite-link" type="text" readonly dir="ltr"></div>
+  <div class="fg"><label for="partner-invite-text" data-i18n="sy.invitePreviewLabel"></label><textarea id="partner-invite-text" readonly rows="8" style="width:100%;resize:vertical;white-space:pre-wrap"></textarea></div>
+  <div class="ferr" id="partner-invite-error" style="margin:0 0 10px"></div>
+  <button class="btn" id="partner-invite-share" data-tm-click="sharePartnerInvitation()" data-i18n="sy.inviteShare"></button>
+  <div class="sact" style="margin-top:8px">
+    <button class="btn ghost" data-tm-click="copyPartnerInviteLink()" data-i18n="sy.copyLink"></button>
+    <button class="btn ghost" data-tm-click="copyPartnerInvitation()" data-i18n="sy.copyInvitation"></button>
+  </div>
+  <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('partner-invite')" data-i18n="c.cancel"></button>
+</div></div>
+
 <div class="sb" id="sb-confirm"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div class="stitle" id="cf-title"></div>
@@ -857,6 +874,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/domain-schema.js"></script>
 <script src="src/core/revision-sync.js"></script>
 <script src="src/core/partnership.js"></script>
+<script src="src/core/partner-invite.js"></script>
 <script src="src/core/company-profile.js"></script>
 <script src="src/core/company-identity.js"></script>
 <script src="src/core/company-tax-rules.js"></script>

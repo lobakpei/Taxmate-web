@@ -23,8 +23,10 @@ test('personal onboarding uses an explicit lexical-state action and durable draf
 
 test('Home Hero reconciles from the same canonical ledger rows and keeps quarterly metrics off ordinary Home',()=>{
   assert.match(app,/function homeLedgerSnapshot\(yr,bizId=null,period=null\)/);
-  assert.match(app,/const ledger=homeLedgerSnapshot\(S\.year\)/);
-  assert.match(app,/data-home-ledger-profit>\$\{fmt\(ledger\.profit\)\}/);
+  assert.match(app,/const tx = calcTax\(S\.year\);\s*const personal=tx\.personalPortfolio/);
+  assert.match(app,/const personalPortfolio=TaxMatePartnership\.personalPortfolio/);
+  assert.match(app,/data-home-ledger-profit data-personal-profit-minor="\$\{personal\.profitMinor/);
+  assert.match(app,/\$\{summaryAmount\(personalProfit\)\}/);
   const pageHome=app.match(/function pageHome\(\)\{[\s\S]*?\/\* ═+ INCOME \/ EXPENSES lists/)[0];
   assert.doesNotMatch(pageHome,/quarterRange|qP|home\.qLabel|Q[1-4]/);
   assert.match(app,/function bizFigures\(b,yr\)\{\s*return homeLedgerSnapshot\(yr,b\.id\)/);
