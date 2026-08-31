@@ -43,6 +43,18 @@ test('Partner Sync stores only code intent and writes membership only after expl
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
 
+test('Partner invite deep link and sharing stay on the existing code-only contract',()=>{
+  const invite=fs.readFileSync('src/core/partner-invite.js','utf8');
+  assert.match(invite,/PRODUCTION_ORIGIN = 'https:\/\/www\.taxmate\.uk\/'/);
+  assert.match(invite,/FRAGMENT_KEY = 'partner-invite'/);
+  assert.match(app,/PARTNER_INVITE_DRAFT_KEY='taxmateuk_partner_invite_v1'/);
+  assert.match(app,/startPartnerInviteOnboarding\(PARTNER_INVITE_BOOT_CODE\)/);
+  assert.match(app,/navigator\.share\(payload\)/);
+  assert.match(app,/clearPartnerInviteCode\(\);OB\.pendingIntent=null;OB\.connectCode=''/);
+  assert.doesNotMatch(invite,/inviter|sharePercent|membership|uid|token/i);
+  assert.doesNotMatch(functions,/previewPartnershipInvitation/);
+});
+
 test('shared Pro gate uses the canonical promotion backend and approved pricing formatter',()=>{
   const proGate=app.match(/function obScrProGate\(\)\{[\s\S]*?\n\}/)[0];
   assert.match(app,/const PRO_PRICE_CONTRACT = Object\.freeze\(\{currency:'GBP',monthly:Object\.freeze\(\{launchMinor:999,standardMinor:1199\}\),annual:Object\.freeze\(\{amountMinor:9999\}\)\}\)/);
@@ -67,6 +79,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.10',build:'2026-08-31.partnership-personal-share-founder-preview.1',cache:'taxmate-v2-partnership-personal-share-founder-preview-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.11',build:'2026-08-31.partner-invite-share-identity-founder-preview.1',cache:'taxmate-v2-partner-invite-share-identity-founder-preview-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });
