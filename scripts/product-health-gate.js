@@ -30,7 +30,7 @@ assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','legal.js')),false
 assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','product-content.js')),true,'canonical content runtime missing');
 const versions=read('src/core/versions.js');
 assert.match(versions,/APP_VERSION:\s*'2\.1\.11'/);
-assert.match(versions,/BUILD_ID:\s*'2026-08-31\.partner-invite-share-identity-founder-preview\.1'/);
-assert.match(versions,/PWA_CACHE_VERSION:\s*'taxmate-v2-partner-invite-share-identity-founder-preview-1'/);
+assert.match(versions,/BUILD_ID:\s*'2026-08-31\.partner-invite-manual-code-founder-preview\.2'/);
+assert.match(versions,/PWA_CACHE_VERSION:\s*'taxmate-v2-partner-invite-manual-code-founder-preview-2'/);
 assert.match(read('index.html'),/src\/core\/product-content\.js/);
 console.log(`PRODUCT_FUNCTION_HEALTH_GATE PASS REAL_DURABLE=${totals.REAL_DURABLE} INTENTIONALLY_HIDDEN=${totals.INTENTIONALLY_HIDDEN} BROKEN=0 SHELL=0 DEAD_VISIBLE=0 DUPLICATE_VISIBLE=0 MISPLACED=0 MISLABELLED=0`);

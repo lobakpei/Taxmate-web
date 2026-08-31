@@ -43,14 +43,16 @@ test('Partner Sync stores only code intent and writes membership only after expl
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
 
-test('Partner invite deep link and sharing stay on the existing code-only contract',()=>{
+test('Partner invite sharing preserves the existing manual-code Connected Onboarding contract',()=>{
   const invite=fs.readFileSync('src/core/partner-invite.js','utf8');
   assert.match(invite,/PRODUCTION_ORIGIN = 'https:\/\/www\.taxmate\.uk\/'/);
-  assert.match(invite,/FRAGMENT_KEY = 'partner-invite'/);
-  assert.match(app,/PARTNER_INVITE_DRAFT_KEY='taxmateuk_partner_invite_v1'/);
-  assert.match(app,/startPartnerInviteOnboarding\(PARTNER_INVITE_BOOT_CODE\)/);
+  assert.doesNotMatch(invite,/FRAGMENT_KEY|codeFromHash|URLSearchParams|location\.hash/);
+  assert.doesNotMatch(app,/PARTNER_INVITE_DRAFT_KEY|PARTNER_INVITE_BOOT_CODE|startPartnerInviteOnboarding|capturePartnerInviteLaunch|storePartnerInviteCode|clearPartnerInviteCode/);
+  assert.match(app,/function obStartPartnerSync\(\)\{if\(!OB\)return;OB\._intentError='';OB\.pendingIntent=null;obGo\('partner-code'\);\}/);
+  assert.match(app,/function obSetConnectCode\(value\)/);
+  assert.match(app,/function obPartnerContinue\(\)[\s\S]*obSetPendingIntent\('partner_sync',\{partnerCode:code/);
   assert.match(app,/navigator\.share\(payload\)/);
-  assert.match(app,/clearPartnerInviteCode\(\);OB\.pendingIntent=null;OB\.connectCode=''/);
+  assert.doesNotMatch(app,/#partner-invite=|partner-invite=CONNECT8/);
   assert.doesNotMatch(invite,/inviter|sharePercent|membership|uid|token/i);
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
@@ -79,6 +81,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.11',build:'2026-08-31.partner-invite-share-identity-founder-preview.1',cache:'taxmate-v2-partner-invite-share-identity-founder-preview-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.11',build:'2026-08-31.partner-invite-manual-code-founder-preview.2',cache:'taxmate-v2-partner-invite-manual-code-founder-preview-2'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

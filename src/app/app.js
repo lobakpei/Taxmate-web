@@ -3135,28 +3135,28 @@ Object.assign(I18N.ur,{
 });
 
 Object.assign(I18N.en,{
-  'sy.inviteTitle':'Invite partner','sy.inviteBody':'Share this private invitation. TaxMate will ask the recipient to sign in and confirm before anything is connected.','sy.inviteShare':'Share invitation','sy.copyLink':'Copy link','sy.copyInvitation':'Copy invitation','sy.inviteLinkLabel':'Invite link','sy.invitePreviewLabel':'Invitation message','sy.inviteShareFailed':"Couldn't open sharing. Copy the link or invitation instead.",'sy.linkCopied':'Invite link copied','sy.invitationCopied':'Invitation copied',
-  'sy.inviteMsg':'I’ve invited you to connect to ‘{n}’ on TaxMate. 🤝\n\nOpen the link and TaxMate will guide you through sign-in and Pro access.\n\n{u}\n\nCode: {c}'
+  'sy.inviteTitle':'Invite partner','sy.inviteBody':'Share this invitation. Your partner opens TaxMate, chooses Partner Sync and enters the code manually.','sy.inviteShare':'Share invitation','sy.copyLink':'Copy link','sy.copyInvitation':'Copy invitation','sy.inviteLinkLabel':'TaxMate link','sy.invitePreviewLabel':'Invitation message','sy.inviteShareFailed':"Couldn't open sharing. Copy the link or invitation instead.",'sy.linkCopied':'TaxMate link copied','sy.invitationCopied':'Invitation copied',
+  'sy.inviteMsg':'I’ve invited you to connect to ‘{n}’ on TaxMate. 🤝\n\nOpen TaxMate, choose “Enter a Partner Sync code” and enter this code:\n\n{c}\n\n{u}'
 });
 Object.assign(I18N.zh,{
-  'sy.inviteTitle':'邀請合夥人','sy.inviteBody':'分享呢個私人邀請。對方要先登入並確認，TaxMate 先會連接任何資料。','sy.inviteShare':'分享邀請','sy.copyLink':'複製連結','sy.copyInvitation':'複製邀請內容','sy.inviteLinkLabel':'邀請連結','sy.invitePreviewLabel':'邀請內容','sy.inviteShareFailed':'暫時未能開啟分享；請改為複製連結或邀請內容。','sy.linkCopied':'已複製邀請連結','sy.invitationCopied':'已複製邀請內容',
-  'sy.inviteMsg':'我已邀請你喺 TaxMate 連接「{n}」。🤝\n\n打開連結，TaxMate 會引導你登入並取得 Pro 權限。\n\n{u}\n\n代碼：{c}'
+  'sy.inviteTitle':'邀請合夥人','sy.inviteBody':'分享呢個邀請。你嘅合夥人開啟 TaxMate、選擇 Partner Sync，再手動輸入代碼。','sy.inviteShare':'分享邀請','sy.copyLink':'複製連結','sy.copyInvitation':'複製邀請內容','sy.inviteLinkLabel':'TaxMate 連結','sy.invitePreviewLabel':'邀請內容','sy.inviteShareFailed':'暫時未能開啟分享；請改為複製連結或邀請內容。','sy.linkCopied':'已複製 TaxMate 連結','sy.invitationCopied':'已複製邀請內容',
+  'sy.inviteMsg':'我已邀請你喺 TaxMate 連接「{n}」。🤝\n\n開啟 TaxMate，揀「輸入 Partner Sync 代碼」，再輸入以下代碼：\n\n{c}\n\n{u}'
 });
 Object.assign(I18N.pl,{
-  'sy.inviteTitle':'Zaproś partnera','sy.inviteBody':'Udostępnij to prywatne zaproszenie. TaxMate poprosi odbiorcę o zalogowanie i potwierdzenie przed połączeniem.','sy.inviteShare':'Udostępnij zaproszenie','sy.copyLink':'Kopiuj link','sy.copyInvitation':'Kopiuj zaproszenie','sy.inviteLinkLabel':'Link zaproszenia','sy.invitePreviewLabel':'Treść zaproszenia','sy.inviteShareFailed':'Nie udało się otworzyć udostępniania. Skopiuj link lub zaproszenie.','sy.linkCopied':'Link zaproszenia skopiowany','sy.invitationCopied':'Zaproszenie skopiowane',
-  'sy.inviteMsg':'Zapraszam Cię do połączenia z „{n}” w TaxMate. 🤝\n\nOtwórz link, a TaxMate przeprowadzi Cię przez logowanie i dostęp Pro.\n\n{u}\n\nKod: {c}'
+  'sy.inviteTitle':'Zaproś partnera','sy.inviteBody':'Udostępnij to zaproszenie. Partner otwiera TaxMate, wybiera Partner Sync i ręcznie wpisuje kod.','sy.inviteShare':'Udostępnij zaproszenie','sy.copyLink':'Kopiuj link','sy.copyInvitation':'Kopiuj zaproszenie','sy.inviteLinkLabel':'Link do TaxMate','sy.invitePreviewLabel':'Treść zaproszenia','sy.inviteShareFailed':'Nie udało się otworzyć udostępniania. Skopiuj link lub zaproszenie.','sy.linkCopied':'Link do TaxMate skopiowany','sy.invitationCopied':'Zaproszenie skopiowane',
+  'sy.inviteMsg':'Zapraszam Cię do połączenia z „{n}” w TaxMate. 🤝\n\nOtwórz TaxMate, wybierz „Wpisz kod Partner Sync” i wpisz ten kod:\n\n{c}\n\n{u}'
 });
 Object.assign(I18N.ro,{
-  'sy.inviteTitle':'Invită un partener','sy.inviteBody':'Distribuie această invitație privată. TaxMate îi va cere destinatarului să se autentifice și să confirme înainte de conectare.','sy.inviteShare':'Distribuie invitația','sy.copyLink':'Copiază linkul','sy.copyInvitation':'Copiază invitația','sy.inviteLinkLabel':'Link de invitație','sy.invitePreviewLabel':'Mesajul invitației','sy.inviteShareFailed':'Distribuirea nu s-a putut deschide. Copiază linkul sau invitația.','sy.linkCopied':'Linkul invitației a fost copiat','sy.invitationCopied':'Invitația a fost copiată',
-  'sy.inviteMsg':'Te-am invitat să te conectezi la „{n}” în TaxMate. 🤝\n\nDeschide linkul, iar TaxMate te va ghida prin autentificare și accesul Pro.\n\n{u}\n\nCod: {c}'
+  'sy.inviteTitle':'Invită un partener','sy.inviteBody':'Distribuie această invitație. Partenerul deschide TaxMate, alege Partner Sync și introduce manual codul.','sy.inviteShare':'Distribuie invitația','sy.copyLink':'Copiază linkul','sy.copyInvitation':'Copiază invitația','sy.inviteLinkLabel':'Link TaxMate','sy.invitePreviewLabel':'Mesajul invitației','sy.inviteShareFailed':'Distribuirea nu s-a putut deschide. Copiază linkul sau invitația.','sy.linkCopied':'Linkul TaxMate a fost copiat','sy.invitationCopied':'Invitația a fost copiată',
+  'sy.inviteMsg':'Te-am invitat să te conectezi la „{n}” în TaxMate. 🤝\n\nDeschide TaxMate, alege „Introdu un cod Partner Sync” și introdu acest cod:\n\n{c}\n\n{u}'
 });
 Object.assign(I18N.es,{
-  'sy.inviteTitle':'Invitar a un socio','sy.inviteBody':'Comparte esta invitación privada. TaxMate pedirá al destinatario que inicie sesión y confirme antes de conectar nada.','sy.inviteShare':'Compartir invitación','sy.copyLink':'Copiar enlace','sy.copyInvitation':'Copiar invitación','sy.inviteLinkLabel':'Enlace de invitación','sy.invitePreviewLabel':'Mensaje de invitación','sy.inviteShareFailed':'No se pudo abrir Compartir. Copia el enlace o la invitación.','sy.linkCopied':'Enlace de invitación copiado','sy.invitationCopied':'Invitación copiada',
-  'sy.inviteMsg':'Te he invitado a conectarte a «{n}» en TaxMate. 🤝\n\nAbre el enlace y TaxMate te guiará para iniciar sesión y acceder a Pro.\n\n{u}\n\nCódigo: {c}'
+  'sy.inviteTitle':'Invitar a un socio','sy.inviteBody':'Comparte esta invitación. Tu socio abre TaxMate, elige Partner Sync e introduce el código manualmente.','sy.inviteShare':'Compartir invitación','sy.copyLink':'Copiar enlace','sy.copyInvitation':'Copiar invitación','sy.inviteLinkLabel':'Enlace de TaxMate','sy.invitePreviewLabel':'Mensaje de invitación','sy.inviteShareFailed':'No se pudo abrir Compartir. Copia el enlace o la invitación.','sy.linkCopied':'Enlace de TaxMate copiado','sy.invitationCopied':'Invitación copiada',
+  'sy.inviteMsg':'Te he invitado a conectarte a «{n}» en TaxMate. 🤝\n\nAbre TaxMate, elige «Introducir un código Partner Sync» e introduce este código:\n\n{c}\n\n{u}'
 });
 Object.assign(I18N.ur,{
-  'sy.inviteTitle':'پارٹنر کو دعوت دیں','sy.inviteBody':'یہ نجی دعوت شیئر کریں۔ TaxMate منسلک کرنے سے پہلے وصول کنندہ سے سائن اِن اور تصدیق کروائے گا۔','sy.inviteShare':'دعوت شیئر کریں','sy.copyLink':'لنک کاپی کریں','sy.copyInvitation':'دعوت کاپی کریں','sy.inviteLinkLabel':'دعوتی لنک','sy.invitePreviewLabel':'دعوتی پیغام','sy.inviteShareFailed':'شیئرنگ نہیں کھل سکی۔ اس کے بجائے لنک یا دعوت کاپی کریں۔','sy.linkCopied':'دعوتی لنک کاپی ہو گیا','sy.invitationCopied':'دعوت کاپی ہو گئی',
-  'sy.inviteMsg':'میں نے آپ کو TaxMate پر ”{n}“ سے منسلک ہونے کی دعوت دی ہے۔ 🤝\n\nلنک کھولیں، TaxMate سائن اِن اور Pro رسائی میں آپ کی رہنمائی کرے گا۔\n\n{u}\n\nکوڈ: {c}'
+  'sy.inviteTitle':'پارٹنر کو دعوت دیں','sy.inviteBody':'یہ دعوت شیئر کریں۔ آپ کا پارٹنر TaxMate کھولتا ہے، Partner Sync منتخب کرتا ہے اور کوڈ خود درج کرتا ہے۔','sy.inviteShare':'دعوت شیئر کریں','sy.copyLink':'لنک کاپی کریں','sy.copyInvitation':'دعوت کاپی کریں','sy.inviteLinkLabel':'TaxMate لنک','sy.invitePreviewLabel':'دعوتی پیغام','sy.inviteShareFailed':'شیئرنگ نہیں کھل سکی۔ اس کے بجائے لنک یا دعوت کاپی کریں۔','sy.linkCopied':'TaxMate لنک کاپی ہو گیا','sy.invitationCopied':'دعوت کاپی ہو گئی',
+  'sy.inviteMsg':'میں نے آپ کو TaxMate پر ”{n}“ سے منسلک ہونے کی دعوت دی ہے۔ 🤝\n\nTaxMate کھولیں، ”Partner Sync کوڈ درج کریں“ منتخب کریں اور یہ کوڈ درج کریں:\n\n\u2066{c}\u2069\n\n{u}'
 });
 
 function t(key, vars){
@@ -5486,7 +5486,7 @@ function resetAll(){
 }
 function clearLocalTaxMateData(){
   try{if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(false);}catch(_){}
-  [STORE_KEY,DEVICE_KEY,'taxmateuk_entitlement_cache','taxmateuk_preimport_backup','taxmateuk_analytics_consent','tmOnboardDone','tmWasSignedIn',PARTNER_INVITE_DRAFT_KEY,RATES_CACHE_KEY].forEach(key=>{try{localStorage.removeItem(key);}catch(_){}});
+  [STORE_KEY,DEVICE_KEY,'taxmateuk_entitlement_cache','taxmateuk_preimport_backup','taxmateuk_analytics_consent','tmOnboardDone','tmWasSignedIn',RATES_CACHE_KEY].forEach(key=>{try{localStorage.removeItem(key);}catch(_){}});
 }
 function sheetSnapshot(sheetEl){
   if(!sheetEl) return '';
@@ -7074,16 +7074,6 @@ const OB_SUGGEST = [
 
 let OB = null; // active onboarding state
 const OB_DRAFT_KEY='taxmateuk_onboarding_draft_v1';
-const PARTNER_INVITE_DRAFT_KEY='taxmateuk_partner_invite_v1';
-function storePartnerInviteCode(value){const code=TaxMatePartnerInvite.normaliseCode(value);if(!TaxMatePartnerInvite.validCode(code))return null;try{localStorage.setItem(PARTNER_INVITE_DRAFT_KEY,code);}catch(_){}return code;}
-function clearPartnerInviteCode(){try{localStorage.removeItem(PARTNER_INVITE_DRAFT_KEY);}catch(_){}}
-function capturePartnerInviteLaunch(){
-  const parameters=new URLSearchParams(String(location.hash||'').replace(/^#/,'')),hasInvite=parameters.has(TaxMatePartnerInvite.FRAGMENT_KEY);let code=TaxMatePartnerInvite.codeFromHash(location.hash);
-  if(hasInvite){if(code)storePartnerInviteCode(code);else clearPartnerInviteCode();try{const url=new URL(location.href);url.hash='';history.replaceState(history.state,'',url.pathname+(url.searchParams.toString()?'?'+url.searchParams.toString():''));}catch(_){}return code;}
-  try{code=TaxMatePartnerInvite.normaliseCode(localStorage.getItem(PARTNER_INVITE_DRAFT_KEY));}catch(_){code='';}
-  return TaxMatePartnerInvite.validCode(code)?code:null;
-}
-const PARTNER_INVITE_BOOT_CODE=capturePartnerInviteLaunch();
 
 function obStartMonthList(){
   // months from the start of the CURRENT UK tax year up to this month
@@ -7152,12 +7142,6 @@ function startOnboarding(){
   OB = obRestoreDraft()||obDefaultState(false);
   TaxMateOnboardingRoot.open(document);
   obRender();
-}
-function startPartnerInviteOnboarding(value){
-  const code=storePartnerInviteCode(value);if(!code)return false;
-  OB=obRestoreDraft()||obDefaultState(false);OB.screen='partner-code';OB.connectCode=code;OB._intentError='';
-  obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});
-  TaxMateOnboardingRoot.open(document);obContinuePendingIntent();return true;
 }
 function obClose(){
   TaxMateOnboardingRoot.close(document);
@@ -7276,19 +7260,18 @@ function obChooseLtdRegistration(companyNumberStatus){
   obSetPendingIntent('ltd',{ltdChoice:'forming',companyNumberStatus,returnScreen:'ltd-registration',formState:{companyNumberStatus}});
   obContinuePendingIntent();
 }
-function obStartPartnerSync(){if(!OB)return;clearPartnerInviteCode();OB._intentError='';OB.pendingIntent=null;obGo('partner-code');}
-function obCancelPartnerSync(){if(!OB)return;clearPartnerInviteCode();OB.pendingIntent=null;OB.connectCode='';OB._intentError='';obGo('entry');}
+function obStartPartnerSync(){if(!OB)return;OB._intentError='';OB.pendingIntent=null;obGo('partner-code');}
 function obSetConnectCode(value){if(!OB)return;OB.connectCode=normalisePartnerCode(value).slice(0,8);OB._intentError='';obPersistDraft();}
 function obSetPromoCode(value){if(!OB)return;OB.promoCode=String(value||'').toUpperCase();OB._promoError='';obPersistDraft();}
 function obScrPartnerCode(){
-  return obShell(obProgress(10,t('ob.partnerEntry'),"obCancelPartnerSync()"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
+  return obShell(obProgress(10,t('ob.partnerEntry'),"obGo('entry')"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
     <div class="ob-card"><label for="ob-partner-code">${t('sy.code')}</label><input type="text" id="ob-partner-code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD2345" value="${esc(OB.connectCode||'')}" style="text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px" data-tm-input="obSetConnectCode(this.value)" data-tm-keydown="if(event.key==='Enter')obPartnerContinue()"><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div></div>`,
     `<button class="ob-btn" data-tm-click="obPartnerContinue()">${t('ob.continue')}</button>`);
 }
 function obPartnerContinue(){
   const code=normalisePartnerCode(OB&&OB.connectCode||'');
   if(!partnerCodeValid(code)){OB._intentError=t('sy.enterCode');obRender();return;}
-  OB.connectCode=code;storePartnerInviteCode(code);obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});obContinuePendingIntent();
+  OB.connectCode=code;obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});obContinuePendingIntent();
 }
 function obScrIntentLoading(){return obShell('',`<h1>${t('ob.entitlementPending')}</h1><div class="ob-card flat"><div data-cloud-sync-status>${esc(syncStatusMessage())}</div></div>${OB._intentError?`<div class="ob-error show">${esc(OB._intentError)}</div>`:''}`,'');}
 async function obContinuePendingIntent(){
@@ -7332,11 +7315,11 @@ async function obConfirmPartnerConnection(){
   const code=OB.pendingIntent.partnerCode;OB._partnerBusy=true;OB._intentError='';obRender();
   try{
     const joined=await joinPartnershipByCode(code);if(!OB)return;
-    OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;clearPartnerInviteCode();OB.screen='partner-success';obRender();
+    OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;OB.screen='partner-success';obRender();
   }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
 }
 function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell('',`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
-function obFinishPartnerConnection(){clearPartnerInviteCode();try{localStorage.setItem('tmOnboardDone','partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
+function obFinishPartnerConnection(){try{localStorage.setItem('tmOnboardDone','partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
 function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
@@ -7830,7 +7813,6 @@ setupBackButton();
 // ⚠️ 已登入（或正在還原登入）嘅用戶係「返嚟嘅用戶」，資料喺雲端，唔可以即刻彈新手流程，
 //    否則雲端 sync 未完會嚇親人。交俾 startUserSync 完成後先判斷。
 (function(){
-  if(PARTNER_INVITE_BOOT_CODE){if(!OB)startPartnerInviteOnboarding(PARTNER_INVITE_BOOT_CODE);return;}
   let done=null; try{ done=localStorage.getItem('tmOnboardDone'); }catch(e){}
   const signedInOrRestoring = (fbConfigured() && (function(){
     try{ const au=firebase.auth(); return !!(au.currentUser && !au.currentUser.isAnonymous); }catch(e){ return false; }
