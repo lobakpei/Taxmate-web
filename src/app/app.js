@@ -3316,7 +3316,9 @@ function planBlock(tier){
   else if(!permanent&&!isCurrent&&tier==='pro'){
     const availability=proBillingAvailability();
     btn=availability.purchaseEnabled
-      ? `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
+      ? availability.mode==='local_review'
+        ? `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
+        : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('tier.choose',{p:name})}</button>`
       : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   }
   else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
@@ -3381,11 +3383,18 @@ function setTier(tier){
 function proBillingAvailability(){
   const local=/^(?:localhost|127\.0\.0\.1)$/.test(location.hostname),provider=window.TaxMateLocalBillingReview;
   if(local&&provider&&provider.enabled===true&&typeof provider.purchasePro==='function')return Object.freeze({mode:'local_review',purchaseEnabled:true});
+  const productionHosts=Array.isArray(FIREBASE_ENVIRONMENT.hosts)?FIREBASE_ENVIRONMENT.hosts:[];
+  if(location.protocol==='https:'&&productionHosts.includes(location.hostname))return Object.freeze({mode:'production',purchaseEnabled:true});
   return Object.freeze({mode:'unavailable',purchaseEnabled:false});
 }
 async function startProPurchase(source='settings'){
   const availability=proBillingAvailability();
   if(!availability.purchaseEnabled){if(source!=='onboarding')showNotice(t('pro.title'),t('billing.purchaseUnavailable'));return{status:'unavailable'};}
+  if(availability.mode==='production'){
+    if(!requireLoginForTier())return{status:'auth-required'};
+    if(OB&&source==='onboarding'){OB._intentError='';OB._intentMessage='';obPersistDraft();}
+    return startBillingAction('createCheckoutSession',{tier:'pro',cadence:BILLING_CADENCE});
+  }
   if(BILLING_ACTION_PENDING)return{status:'busy'};
   BILLING_ACTION_PENDING=true;
   try{
@@ -3420,20 +3429,22 @@ async function callSecureFunction(name,data){
 }
 let BILLING_ACTION_PENDING=false;
 async function startBillingAction(name,data){
-  if(BILLING_ACTION_PENDING)return;
+  if(BILLING_ACTION_PENDING)return{status:'busy'};
   BILLING_ACTION_PENDING=true;
   try{
     const result=await callSecureFunction(name,data);
-    if(result.url)location.assign(result.url);
+    if(result.url){location.assign(result.url);return{status:'redirecting'};}
+    return{status:'ok'};
   }catch(e){
     if(name==='createCheckoutSession'&&e.code==='ALREADY_EXISTS'){
       if(TaxMateEntitlement.hasPermanentPro(ENTITLEMENT.snapshot,Date.now()))showNotice(t('tier.permanent'),'You already have permanent Pro access.');
       else openBillingPortal();
-      return;
+      return{status:'already-subscribed'};
     }
     const category=SAFE_BILLING_FAILURES.has(e&&e.billingCategory)?e.billingCategory:'network';
     console.warn('billing-failure',{category});
     showNotice(t('pro.title'),t('billing.unavailable'));
+    return{status:'failure',category};
   }finally{
     BILLING_ACTION_PENDING=false;
   }
@@ -5762,6 +5773,19 @@ function applyHydratedAccountResult(result){
   }
   if(!OB&&!S.businesses.length&&!onboardingDoneFlag())startOnboarding();
 }
+function consumeBillingReturn(){
+  let state=null;
+  try{
+    const url=new URL(location.href),value=url.searchParams.get('billing');
+    if(value!=='success'&&value!=='cancelled')return null;
+    state=value;url.searchParams.delete('billing');history.replaceState(history.state,'',url.pathname+(url.searchParams.toString()?'?'+url.searchParams.toString():'')+url.hash);
+    const draft=obRestoreDraft();
+    if(!draft||!draft.pendingIntent)return state;
+    OB=draft;OB._intentError='';OB._intentMessage=state==='success'?t('ob.entitlementPending'):'';OB.screen=state==='success'?'intent-loading':'pro-gate';
+    TaxMateOnboardingRoot.open(document);obRender();
+  }catch(_){}
+  return state;
+}
 function watchAuth(){
   if(watchAuth.done) return; watchAuth.done = true;
   firebase.auth().onAuthStateChanged(async u=>{
@@ -7208,10 +7232,12 @@ function obFinishPartnerConnection(){try{localStorage.setItem('tmOnboardDone','p
 function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
+  const purchaseLabel=availability.mode==='local_review'?t('billing.reviewPurchase'):availability.purchaseEnabled?t('tier.choose',{p:t('tier.pro')}):t('plan.proBillingPending');
+  const purchaseNote=availability.mode==='local_review'?t('billing.reviewNote'):availability.purchaseEnabled?'':t('billing.purchaseUnavailable');
   return obShell(obProgress(20,t('ob.proRequired'),"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
     <div class="ob-seg" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
     <div class="ob-gate-price"><div data-plan-price="pro">${tierPriceMarkup('pro')}</div></div>
-    <button class="ob-btn" ${availability.purchaseEnabled?'':'disabled aria-disabled="true"'} data-tm-click="obProUpgrade()">${availability.purchaseEnabled?t('billing.reviewPurchase'):t('plan.proBillingPending')}</button><div class="ob-busy">${availability.purchaseEnabled?t('billing.reviewNote'):t('billing.purchaseUnavailable')}</div>${message?`<div class="ob-busy">${esc(message)}</div>`:''}
+    <button class="ob-btn" ${availability.purchaseEnabled?'':'disabled aria-disabled="true"'} data-tm-click="obProUpgrade()">${purchaseLabel}</button>${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy">${esc(message)}</div>`:''}
     <div class="ob-card" style="margin-top:18px"><label for="ob-promo-code">${t('ob.havePromo')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${t('promo.placeholder')}" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)" data-tm-keydown="if(event.key==='Enter')obRedeemPromotionCode()"><div class="ob-error ${error?'show':''}">${esc(error)}</div><button class="ob-btn soft" style="margin-top:12px" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button></div>`,
     `<button class="ob-btn ghost" ${OB._promoBusy?'disabled':''} data-tm-click="obReturnFromProGate()">${t('ob.back')}</button>`);
 }
@@ -7689,6 +7715,7 @@ function obFinish(){
 applyCachedRates();
 applyTheme();
 render();
+const BILLING_RETURN_STATE=consumeBillingReturn();
 if(window.TaxMateLtdProductionAdapter)TaxMateLtdProductionAdapter.initialise().then(()=>render()).catch(error=>console.error('Ltd runtime initialisation failed',error));
 setupBackButton();
 // First run: no businesses and never onboarded → launch catch-up flow
@@ -7699,7 +7726,7 @@ setupBackButton();
   const signedInOrRestoring = (fbConfigured() && (function(){
     try{ const au=firebase.auth(); return !!(au.currentUser && !au.currentUser.isAnonymous); }catch(e){ return false; }
   })()) || (fbConfigured() && localStorage.getItem('tmWasSignedIn')==='1');
-  if(!S.businesses.length && !done && !signedInOrRestoring){ startOnboarding(); }
+  if(!OB&&!S.businesses.length && !done && !signedInOrRestoring){ startOnboarding(); }
 })();
 if(fbConfigured()){
   ensureFB().then(db=>{if(db){loadCloudRates();scheduleOutboxFlush(0,'app-open');}});
