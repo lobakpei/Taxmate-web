@@ -43,7 +43,8 @@ test('Settings has exactly three semantic plan render calls and one shared Pro a
   assert.match(app,/startProPurchase\('onboarding'\)/);
 });
 
-test('production Pro checkout remains fail-closed while localhost review is separately injected',()=>{
+test('production Pro checkout is restricted to the configured HTTPS hosts while localhost review is separately injected',()=>{
+  assert.match(app,/location\.protocol==='https:'&&productionHosts\.includes\(location\.hostname\)/);
   assert.match(app,/return Object\.freeze\(\{mode:'unavailable',purchaseEnabled:false\}\)/);
   assert.match(review,/window\.TaxMateLocalBillingReview=Object\.freeze\(\{enabled:true/);
   assert.match(review,/\/__review\/purchase/);
