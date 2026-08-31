@@ -22,6 +22,7 @@
     "test:partner-invite:browser": "node scripts/run-partner-invite-browser.js",
     "test:pro-checkout:browser": "node tests/browser/pro-checkout-enablement.e2e.js",
     "test:partnership-share:browser": "node scripts/run-partnership-personal-share-browser.js",
+    "test:six-issue:browser": "node tests/browser/six-issue-founder-preview.e2e.js",
     "preview:partnership-share": "node scripts/start-partnership-personal-share-founder-preview.js",
     "preview:onboarding:actual-app": "node scripts/start-onboarding-actual-app-review.js",
     "preview:partner-invite": "node scripts/start-onboarding-actual-app-review.js",

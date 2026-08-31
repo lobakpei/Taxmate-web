@@ -3135,28 +3135,28 @@ Object.assign(I18N.ur,{
 });
 
 Object.assign(I18N.en,{
-  'sy.inviteTitle':'Invite partner','sy.inviteBody':'Share this invitation. Your partner opens TaxMate, chooses Partner Sync and enters the code manually.','sy.inviteShare':'Share invitation','sy.copyLink':'Copy link','sy.copyInvitation':'Copy invitation','sy.inviteLinkLabel':'TaxMate link','sy.invitePreviewLabel':'Invitation message','sy.inviteShareFailed':"Couldn't open sharing. Copy the link or invitation instead.",'sy.linkCopied':'TaxMate link copied','sy.invitationCopied':'Invitation copied',
-  'sy.inviteMsg':'I’ve invited you to connect to ‘{n}’ on TaxMate. 🤝\n\nOpen TaxMate, choose “Enter a Partner Sync code” and enter this code:\n\n{c}\n\n{u}'
+  'sy.inviteTitle':'Invite partner','sy.inviteShareFailed':"Couldn't open sharing. Please try again.",'sy.invitationCopied':'Invitation copied',
+  'sy.inviteMsg':'I’ve invited you to connect to ‘{n}’ on TaxMate. 🤝\n\nOpen TaxMate, choose “Enter a Partner Sync code” and enter this code:\n\n{c}'
 });
 Object.assign(I18N.zh,{
-  'sy.inviteTitle':'邀請合夥人','sy.inviteBody':'分享呢個邀請。你嘅合夥人開啟 TaxMate、選擇 Partner Sync，再手動輸入代碼。','sy.inviteShare':'分享邀請','sy.copyLink':'複製連結','sy.copyInvitation':'複製邀請內容','sy.inviteLinkLabel':'TaxMate 連結','sy.invitePreviewLabel':'邀請內容','sy.inviteShareFailed':'暫時未能開啟分享；請改為複製連結或邀請內容。','sy.linkCopied':'已複製 TaxMate 連結','sy.invitationCopied':'已複製邀請內容',
-  'sy.inviteMsg':'我已邀請你喺 TaxMate 連接「{n}」。🤝\n\n開啟 TaxMate，揀「輸入 Partner Sync 代碼」，再輸入以下代碼：\n\n{c}\n\n{u}'
+  'sy.inviteTitle':'邀請合夥人','sy.inviteShareFailed':'暫時未能開啟分享，請再試一次。','sy.invitationCopied':'已複製邀請內容',
+  'sy.inviteMsg':'我已邀請你喺 TaxMate 連接「{n}」。🤝\n\n開啟 TaxMate，揀「輸入 Partner Sync 代碼」，再輸入以下代碼：\n\n{c}'
 });
 Object.assign(I18N.pl,{
-  'sy.inviteTitle':'Zaproś partnera','sy.inviteBody':'Udostępnij to zaproszenie. Partner otwiera TaxMate, wybiera Partner Sync i ręcznie wpisuje kod.','sy.inviteShare':'Udostępnij zaproszenie','sy.copyLink':'Kopiuj link','sy.copyInvitation':'Kopiuj zaproszenie','sy.inviteLinkLabel':'Link do TaxMate','sy.invitePreviewLabel':'Treść zaproszenia','sy.inviteShareFailed':'Nie udało się otworzyć udostępniania. Skopiuj link lub zaproszenie.','sy.linkCopied':'Link do TaxMate skopiowany','sy.invitationCopied':'Zaproszenie skopiowane',
-  'sy.inviteMsg':'Zapraszam Cię do połączenia z „{n}” w TaxMate. 🤝\n\nOtwórz TaxMate, wybierz „Wpisz kod Partner Sync” i wpisz ten kod:\n\n{c}\n\n{u}'
+  'sy.inviteTitle':'Zaproś partnera','sy.inviteShareFailed':'Nie udało się otworzyć udostępniania. Spróbuj ponownie.','sy.invitationCopied':'Zaproszenie skopiowane',
+  'sy.inviteMsg':'Zapraszam Cię do połączenia z „{n}” w TaxMate. 🤝\n\nOtwórz TaxMate, wybierz „Wpisz kod Partner Sync” i wpisz ten kod:\n\n{c}'
 });
 Object.assign(I18N.ro,{
-  'sy.inviteTitle':'Invită un partener','sy.inviteBody':'Distribuie această invitație. Partenerul deschide TaxMate, alege Partner Sync și introduce manual codul.','sy.inviteShare':'Distribuie invitația','sy.copyLink':'Copiază linkul','sy.copyInvitation':'Copiază invitația','sy.inviteLinkLabel':'Link TaxMate','sy.invitePreviewLabel':'Mesajul invitației','sy.inviteShareFailed':'Distribuirea nu s-a putut deschide. Copiază linkul sau invitația.','sy.linkCopied':'Linkul TaxMate a fost copiat','sy.invitationCopied':'Invitația a fost copiată',
-  'sy.inviteMsg':'Te-am invitat să te conectezi la „{n}” în TaxMate. 🤝\n\nDeschide TaxMate, alege „Introdu un cod Partner Sync” și introdu acest cod:\n\n{c}\n\n{u}'
+  'sy.inviteTitle':'Invită un partener','sy.inviteShareFailed':'Distribuirea nu s-a putut deschide. Încearcă din nou.','sy.invitationCopied':'Invitația a fost copiată',
+  'sy.inviteMsg':'Te-am invitat să te conectezi la „{n}” în TaxMate. 🤝\n\nDeschide TaxMate, alege „Introdu un cod Partner Sync” și introdu acest cod:\n\n{c}'
 });
 Object.assign(I18N.es,{
-  'sy.inviteTitle':'Invitar a un socio','sy.inviteBody':'Comparte esta invitación. Tu socio abre TaxMate, elige Partner Sync e introduce el código manualmente.','sy.inviteShare':'Compartir invitación','sy.copyLink':'Copiar enlace','sy.copyInvitation':'Copiar invitación','sy.inviteLinkLabel':'Enlace de TaxMate','sy.invitePreviewLabel':'Mensaje de invitación','sy.inviteShareFailed':'No se pudo abrir Compartir. Copia el enlace o la invitación.','sy.linkCopied':'Enlace de TaxMate copiado','sy.invitationCopied':'Invitación copiada',
-  'sy.inviteMsg':'Te he invitado a conectarte a «{n}» en TaxMate. 🤝\n\nAbre TaxMate, elige «Introducir un código Partner Sync» e introduce este código:\n\n{c}\n\n{u}'
+  'sy.inviteTitle':'Invitar a un socio','sy.inviteShareFailed':'No se pudo abrir Compartir. Inténtalo de nuevo.','sy.invitationCopied':'Invitación copiada',
+  'sy.inviteMsg':'Te he invitado a conectarte a «{n}» en TaxMate. 🤝\n\nAbre TaxMate, elige «Introducir un código Partner Sync» e introduce este código:\n\n{c}'
 });
 Object.assign(I18N.ur,{
-  'sy.inviteTitle':'پارٹنر کو دعوت دیں','sy.inviteBody':'یہ دعوت شیئر کریں۔ آپ کا پارٹنر TaxMate کھولتا ہے، Partner Sync منتخب کرتا ہے اور کوڈ خود درج کرتا ہے۔','sy.inviteShare':'دعوت شیئر کریں','sy.copyLink':'لنک کاپی کریں','sy.copyInvitation':'دعوت کاپی کریں','sy.inviteLinkLabel':'TaxMate لنک','sy.invitePreviewLabel':'دعوتی پیغام','sy.inviteShareFailed':'شیئرنگ نہیں کھل سکی۔ اس کے بجائے لنک یا دعوت کاپی کریں۔','sy.linkCopied':'TaxMate لنک کاپی ہو گیا','sy.invitationCopied':'دعوت کاپی ہو گئی',
-  'sy.inviteMsg':'میں نے آپ کو TaxMate پر ”{n}“ سے منسلک ہونے کی دعوت دی ہے۔ 🤝\n\nTaxMate کھولیں، ”Partner Sync کوڈ درج کریں“ منتخب کریں اور یہ کوڈ درج کریں:\n\n\u2066{c}\u2069\n\n{u}'
+  'sy.inviteTitle':'پارٹنر کو دعوت دیں','sy.inviteShareFailed':'شیئرنگ نہیں کھل سکی۔ دوبارہ کوشش کریں۔','sy.invitationCopied':'دعوت کاپی ہو گئی',
+  'sy.inviteMsg':'میں نے آپ کو TaxMate پر ”{n}“ سے منسلک ہونے کی دعوت دی ہے۔ 🤝\n\nTaxMate کھولیں، ”Partner Sync کوڈ درج کریں“ منتخب کریں اور یہ کوڈ درج کریں:\n\n\u2066{c}\u2069'
 });
 
 function t(key, vars){
@@ -3277,7 +3277,7 @@ const FEATURE_TIER = {
   ltd:'pro'                // one active Limited Company
 };
 let ENTITLEMENT={snapshot:null,loaded:false};
-function trackEvent(name){try{if(!window.TaxMateAnalytics||!TaxMateAnalytics.enabled())return;const e=TaxMateTelemetry.analyticsEvent(name);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
+function trackEvent(name,params){try{if(!window.TaxMateAnalytics||!TaxMateAnalytics.enabled())return;const e=TaxMateTelemetry.analyticsEvent(name,params);if(typeof gtag==='function')gtag('event',e.name,e.params);}catch(_){} }
 
 async function loadEntitlementFromCloud(uid){
   try{
@@ -4239,7 +4239,7 @@ function pageHome(){
   ${entitlementBanner()}
 
   ${hasPersonal?`<div class="homecta">
-    <button class="btn" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
+    <button class="btn home-add-income" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
     <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
   </div>`:''}
 
@@ -5552,16 +5552,21 @@ function exportJSON(){
   a.download = 'taxmate-backup-'+todayISO()+'.json';
   a.click(); URL.revokeObjectURL(a.href);
 }
-function downloadBackupBlob(blob,name){const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),30000);}
-async function receiptBytesFromUrl(url){const response=await fetch(url);if(!response.ok)throw new Error('A receipt could not be downloaded');return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
+function downloadBackupBlob(blob,name){let url;try{const a=document.createElement('a');url=URL.createObjectURL(blob);a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(error){if(url)try{URL.revokeObjectURL(url);}catch(_){}throw TaxMateBackupExport.failure(TaxMateBackupExport.CATEGORIES.BROWSER_DOWNLOAD,{cause:error});}}
+async function receiptBytesFromUrl(url){const response=await fetch(url);if(!response.ok)throw new Error('receipt-download-http-'+response.status);return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
 async function collectPortableReceipts(){
-  const result=[],seen=new Set(),byPath=new Map();for(const item of TaxMateCompanyEvidence.requiredReceiptAssociations(S)){const list=byPath.get(item.originalPath)||[];list.push(item);byPath.set(item.originalPath,list);}for(const entry of S.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(!source)continue;const list=byPath.get(source)||[];list.push({recordType:'legacy_entry',recordId:entry.id,originalPath:source});byPath.set(source,list);}const linkedPaths=new Set(byPath.keys());
-  for(const [source,associations] of byPath){let url=/^https?:\/\//i.test(source)?source:null;if(!url){if(!fbConfigured()||!firebase.auth().currentUser)throw new Error('Sign in and connect to the internet to back up cloud receipts and Ltd evidence');url=await firebase.storage().ref(source).getDownloadURL();}if(!url)throw new Error('Receipt is referenced but unavailable');const binary=await receiptBytesFromUrl(url),legacy=associations.filter(item=>item.recordType==='legacy_entry');result.push({entryId:associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations,...binary});if(!/^https?:\/\//i.test(source))seen.add(source);}
-  if(fbConfigured()&&FB.ready&&firebase.auth().currentUser){const uid=firebase.auth().currentUser.uid,listing=await firebase.storage().ref('receipts/'+uid).listAll();for(const item of listing.items){if(seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;const binary=await receiptBytesFromUrl(await item.getDownloadURL());result.push({entryId:null,originalPath:item.fullPath,...binary});}}
-  return result;
+  const configured=fbConfigured(),user=configured&&typeof firebase!=='undefined'?firebase.auth().currentUser:null;
+  return TaxMateBackupExport.collectReceipts({
+    state:S,
+    evidenceAssociations:TaxMateCompanyEvidence.requiredReceiptAssociations(S),
+    user,
+    storageUrl:user?source=>firebase.storage().ref(source).getDownloadURL():null,
+    listStorage:configured&&FB.ready&&user?async uid=>(await firebase.storage().ref('receipts/'+uid).listAll()).items:null,
+    download:receiptBytesFromUrl
+  });
 }
 async function buildPortableArchive(state=S){if(state===S&&!ltdBackupAllowed('full_backup',state))throw Object.assign(new Error('pro_required'),{code:'pro_required'});const receipts=state===S?await collectPortableReceipts():[];return TaxMatePortableBackup.createArchive({state,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts});}
-async function exportPortableBackup(){if(!ltdBackupAllowed('full_backup'))return;try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');}catch(error){console.error(error);showNotice(t('m.backup'),"A full backup couldn't be created. Your data was not changed.");}}
+async function exportPortableBackup(){if(!ltdBackupAllowed('full_backup'))return;try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');}catch(error){const diagnostic=TaxMateBackupExport.diagnostic(error);console.warn('Full backup failed',diagnostic.code);trackEvent('backup_export_failed',diagnostic);showNotice(t('m.backup'),TaxMateBackupExport.message(error));}}
 function replaceStateSafely(candidate){const before=JSON.stringify(S);try{localStorage.setItem('taxmateuk_preimport_backup',before);S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),candidate);S.settings=Object.assign({lang:'en',tier:'free'},candidate.settings||{});save();render();toast(t('toast.restored'));}catch(error){S=JSON.parse(before);try{localStorage.setItem(STORE_KEY,before);}catch(_){}throw error;}}
 async function restorePortableBackup(inspected){
   const needsStorage=inspected.receipts.length>0;if(needsStorage&&(!fbConfigured()||!FB.ready||!firebase.auth().currentUser))throw new Error('Sign in before restoring receipt files');
@@ -5728,41 +5733,35 @@ async function leaveSync(bizId){
   delete b.syncCode;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
   save(); paintSync(); render();
 }
-let ACTIVE_PARTNER_INVITE=null,PARTNER_SHARE_IN_FLIGHT=null;
+let PARTNER_SHARE_IN_FLIGHT=null;
 function partnerInvitationPayload(business){
   return TaxMatePartnerInvite.payload({businessName:business.name,code:business.syncCode,title:t('sy.inviteTitle'),message:t('sy.inviteMsg')});
 }
-function refreshPartnerInvitation(){
-  if(!ACTIVE_PARTNER_INVITE)return;
-  const business=bizById(ACTIVE_PARTNER_INVITE.bizId);if(!business||!business.syncCode)return;
-  ACTIVE_PARTNER_INVITE={bizId:business.id,payload:partnerInvitationPayload(business)};
-  const link=document.getElementById('partner-invite-link'),text=document.getElementById('partner-invite-text'),error=document.getElementById('partner-invite-error');
-  if(link)link.value=ACTIVE_PARTNER_INVITE.payload.url;if(text)text.value=ACTIVE_PARTNER_INVITE.payload.text;if(error){error.textContent='';error.classList.remove('show');}
-}
 function invitePartner(bizId){
+  if(PARTNER_SHARE_IN_FLIGHT)return PARTNER_SHARE_IN_FLIGHT;
   const business=bizById(bizId);if(!business||!business.syncCode)return;
-  ACTIVE_PARTNER_INVITE={bizId:business.id,payload:partnerInvitationPayload(business)};applyStaticI18n();refreshPartnerInvitation();const businessSheet=document.getElementById('sb-biz');if(businessSheet)businessSheet.classList.remove('open');openSheet('partner-invite');
+  const businessSheet=document.getElementById('sb-biz');if(businessSheet&&businessSheet.classList.contains('open'))closeSheet('biz');
+  return sharePartnerInvitation(partnerInvitationPayload(business));
 }
-async function writePartnerInviteClipboard(value,successKey){
+async function writePartnerInviteClipboard(value){
   try{
     if(navigator.clipboard&&typeof navigator.clipboard.writeText==='function')await navigator.clipboard.writeText(value);
     else{const field=document.createElement('textarea');field.value=value;field.setAttribute('readonly','');field.style.position='fixed';field.style.opacity='0';document.body.appendChild(field);field.select();if(!document.execCommand('copy'))throw new Error('clipboard-unavailable');field.remove();}
-    toast(t(successKey));return true;
-  }catch(_){const error=document.getElementById('partner-invite-error');if(error){error.textContent=t('sy.inviteShareFailed');error.classList.add('show');}return false;}
+    toast(t('sy.invitationCopied'));return true;
+  }catch(_){showNotice(t('sy.title'),t('sy.inviteShareFailed'));return false;}
 }
-function copyPartnerInviteLink(){return ACTIVE_PARTNER_INVITE&&writePartnerInviteClipboard(ACTIVE_PARTNER_INVITE.payload.url,'sy.linkCopied');}
-function copyPartnerInvitation(){return ACTIVE_PARTNER_INVITE&&writePartnerInviteClipboard(ACTIVE_PARTNER_INVITE.payload.text,'sy.invitationCopied');}
-function sharePartnerInvitation(){
+function sharePartnerInvitation(payload){
   if(PARTNER_SHARE_IN_FLIGHT)return PARTNER_SHARE_IN_FLIGHT;
-  if(!ACTIVE_PARTNER_INVITE)return Promise.resolve(false);
-  const payload=ACTIVE_PARTNER_INVITE.payload,error=document.getElementById('partner-invite-error'),button=document.getElementById('partner-invite-share');
-  if(error){error.textContent='';error.classList.remove('show');}
-  if(typeof navigator.share!=='function')return writePartnerInviteClipboard(payload.text,'sy.invitationCopied');
-  if(button)button.disabled=true;
-  PARTNER_SHARE_IN_FLIGHT=Promise.resolve().then(()=>navigator.share(payload)).then(()=>true).catch(reason=>{
+  if(!payload)return Promise.resolve(false);
+  if(typeof navigator.share!=='function'){
+    PARTNER_SHARE_IN_FLIGHT=writePartnerInviteClipboard(payload.clipboardText).finally(()=>{PARTNER_SHARE_IN_FLIGHT=null;});return PARTNER_SHARE_IN_FLIGHT;
+  }
+  const nativePayload={title:payload.title,text:payload.text,url:payload.url};
+  let request;try{request=navigator.share(nativePayload);}catch(reason){request=Promise.reject(reason);}
+  PARTNER_SHARE_IN_FLIGHT=Promise.resolve(request).then(()=>true).catch(reason=>{
     if(reason&&reason.name==='AbortError')return false;
-    if(error){error.textContent=t('sy.inviteShareFailed');error.classList.add('show');}return false;
-  }).finally(()=>{PARTNER_SHARE_IN_FLIGHT=null;if(button)button.disabled=false;});
+    showNotice(t('sy.title'),t('sy.inviteShareFailed'));return false;
+  }).finally(()=>{PARTNER_SHARE_IN_FLIGHT=null;});
   return PARTNER_SHARE_IN_FLIGHT;
 }
 function pushEntryRemote(rec){

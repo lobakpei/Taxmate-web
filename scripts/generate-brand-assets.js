@@ -14,6 +14,8 @@ const sources=Object.freeze({
   dark_icon:{file:'dark_icon.svg',sha256:'12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8'},
   light_icon:{file:'light_icon.svg',sha256:'6CA5D181A5BB18C257642700C2AA2AEB5875A87B0D3BFD0A06A4E11E49905638'}
 });
+const approvedSocial=Object.freeze({file:'taxmate-share-20260831-v2.png',sha256:'132A70B72F79EF6002B6856A3B6FE565D966E68113A1584BAE869D3BACDD6624',width:1200,height:630});
+const iconForeground=Object.freeze({left:0.283203125,top:0.310546875,right:0.6328125,bottom:0.7109375});
 const sha256=value=>crypto.createHash('sha256').update(value).digest('hex').toUpperCase();
 const read=file=>fs.readFileSync(file);
 const write=(file,value)=>{fs.mkdirSync(path.dirname(file),{recursive:true});fs.writeFileSync(file,value);};
@@ -40,6 +42,14 @@ async function raster(page,svg,width,height,output,background='transparent'){
   await page.locator('#asset').screenshot({path:output,omitBackground:true,animations:'disabled'});
   const png=read(output);if(png.toString('ascii',1,4)!=='PNG'||png.readUInt32BE(16)!==width||png.readUInt32BE(20)!==height)throw new Error(`Raster dimension mismatch: ${output}`);return png;
 }
+async function rasterOpticalIcon(page,svg,size,output,maskable=false){
+  const baseWidth=iconForeground.right-iconForeground.left,baseHeight=iconForeground.bottom-iconForeground.top,sourceCenterX=(iconForeground.left+iconForeground.right)/2,sourceCenterY=(iconForeground.top+iconForeground.bottom)/2;
+  const scale=maskable?Math.min(0.63/baseWidth,0.63/baseHeight):0.72/baseWidth,left=(0.5-sourceCenterX*scale)*size,top=(0.5-sourceCenterY*scale)*size;
+  await page.setViewportSize({width:size,height:size});
+  await page.setContent(`<style>html,body{margin:0;width:${size}px;height:${size}px;background:#fdfdfd;overflow:hidden}img{position:absolute;display:block;width:${size*scale}px;height:${size*scale}px;left:${left}px;top:${top}px;max-width:none}</style><img id="asset" alt="" src="${dataUrl(svg)}">`);
+  await page.screenshot({path:output,omitBackground:false,animations:'disabled',clip:{x:0,y:0,width:size,height:size}});
+  const png=read(output);if(png.toString('ascii',1,4)!=='PNG'||png.readUInt32BE(16)!==size||png.readUInt32BE(20)!==size)throw new Error(`Raster dimension mismatch: ${output}`);return png;
+}
 async function compareComposite(page,original,transparent,width,height,background,backgroundRgb){
   return page.evaluate(async input=>{const load=src=>new Promise((resolve,reject)=>{const image=new Image();image.onload=()=>resolve(image);image.onerror=reject;image.src=src;}),[originalImage,transparentImage]=await Promise.all([load(input.original),load(input.transparent)]),canvasA=document.createElement('canvas'),canvasB=document.createElement('canvas');canvasA.width=canvasB.width=input.width;canvasA.height=canvasB.height=input.height;const a=canvasA.getContext('2d',{willReadFrequently:true}),b=canvasB.getContext('2d',{willReadFrequently:true});a.drawImage(originalImage,0,0,input.width,input.height);b.fillStyle=input.background;b.fillRect(0,0,input.width,input.height);b.drawImage(transparentImage,0,0,input.width,input.height);const aa=a.getImageData(0,0,input.width,input.height).data,bb=b.getImageData(0,0,input.width,input.height).data,totalPixels=input.width*input.height;let mismatchPixels=0,maxChannelDelta=0,totalChannelDelta=0,foregroundMaskMismatch=0,originalForegroundPixels=0,compositeForegroundPixels=0;for(let index=0;index<aa.length;index+=4){let mismatch=false;for(let channel=0;channel<4;channel++){const delta=Math.abs(aa[index+channel]-bb[index+channel]);totalChannelDelta+=delta;if(delta){mismatch=true;maxChannelDelta=Math.max(maxChannelDelta,delta);}}if(mismatch)mismatchPixels++;const originalDistance=Math.max(...input.backgroundRgb.map((value,channel)=>Math.abs(aa[index+channel]-value))),compositeDistance=Math.max(...input.backgroundRgb.map((value,channel)=>Math.abs(bb[index+channel]-value))),originalForeground=originalDistance>24,compositeForeground=compositeDistance>24;if(originalForeground)originalForegroundPixels++;if(compositeForeground)compositeForegroundPixels++;if(originalForeground!==compositeForeground)foregroundMaskMismatch++;}const foregroundMaskMismatchRatio=foregroundMaskMismatch/totalPixels,meanChannelDelta=totalChannelDelta/(totalPixels*4),status=foregroundMaskMismatchRatio<=0.005&&meanChannelDelta<=1?'PASS':'FAIL';return{width:input.width,height:input.height,background:input.background,comparisonTolerance:{foregroundMaskMismatchRatio:0.005,meanChannelDelta:1},exactMismatchPixels:mismatchPixels,exactMismatchRatio:mismatchPixels/totalPixels,maxChannelDelta,meanChannelDelta,originalForegroundPixels,compositeForegroundPixels,foregroundMaskMismatch,foregroundMaskMismatchRatio,status};},{original:dataUrl(original),transparent:dataUrl(transparent),width,height,background,backgroundRgb});
 }
@@ -49,17 +59,9 @@ async function scanRaster(page,file,background){
 function ico(images){
   const header=Buffer.alloc(6+images.length*16);header.writeUInt16LE(0,0);header.writeUInt16LE(1,2);header.writeUInt16LE(images.length,4);let offset=header.length;images.forEach((item,index)=>{const entry=6+index*16;header[entry]=item.size===256?0:item.size;header[entry+1]=item.size===256?0:item.size;header[entry+2]=0;header[entry+3]=0;header.writeUInt16LE(1,entry+4);header.writeUInt16LE(32,entry+6);header.writeUInt32LE(item.png.length,entry+8);header.writeUInt32LE(offset,entry+12);offset+=item.png.length;});return Buffer.concat([header,...images.map(item=>item.png)]);
 }
-function socialSvg(lightIcon,lightLogo){return `<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630">
-<rect width="1200" height="630" fill="#f5f7f9"/>
-<rect x="56" y="80" width="340" height="470" rx="44" fill="#ffffff" stroke="#e4e9ee" stroke-width="2"/>
-<image x="96" y="145" width="260" height="260" preserveAspectRatio="xMidYMid meet" href="${dataUrl(lightIcon)}"/>
-<image x="438" y="126" width="690" height="220" preserveAspectRatio="xMidYMid meet" href="${dataUrl(lightLogo)}"/>
-<text x="454" y="390" fill="#16202b" font-family="Arial, Helvetica, sans-serif" font-size="38" font-weight="700">Simple bookkeeping and tax planning</text>
-<text x="454" y="442" fill="#4f5c69" font-family="Arial, Helvetica, sans-serif" font-size="28">for UK sole traders and self-employed people.</text>
-<text x="454" y="493" fill="#067a4b" font-family="Arial, Helvetica, sans-serif" font-size="24" font-weight="700">Record income and expenses. See your estimated tax.</text>
-</svg>\n`;}
 async function main(){
   const source={};for(const [key,identity] of Object.entries(sources)){const file=path.join(sourceRoot,identity.file),buffer=read(file),actual=sha256(buffer);if(actual!==identity.sha256)throw new Error(`${identity.file} SHA-256 drift: ${actual}`);source[key]=buffer.toString('utf8');}
+  const socialBuffer=read(path.join(root,approvedSocial.file));if(sha256(socialBuffer)!==approvedSocial.sha256||socialBuffer.toString('ascii',1,4)!=='PNG'||socialBuffer.readUInt32BE(16)!==approvedSocial.width||socialBuffer.readUInt32BE(20)!==approvedSocial.height)throw new Error('Founder-approved social PNG identity drifted');
   fs.rmSync(derivedRoot,{recursive:true,force:true});fs.mkdirSync(derivedRoot,{recursive:true});
   const logos=transparentLogos(source),files={
     'taxmate-brand-logo-light.svg':logos.light,
@@ -74,15 +76,18 @@ async function main(){
       light:await compareComposite(page,source.light_brandlogo,logos.light,1024,316,'#fcfcfc',[252,252,252]),
       dark:await compareComposite(page,source.dark_brandlogo,logos.dark,1024,334,'#0b121a',[11,18,26])
     };if(comparisons.light.status!=='PASS'||comparisons.dark.status!=='PASS')throw new Error(`Transparent Brand Logo pixel comparison failed: ${JSON.stringify(comparisons)}`);
-    const iconOutputs=[[16,'favicon-16x16.png'],[32,'favicon-32x32.png'],[48,'favicon-48x48.png'],[180,'apple-touch-icon.png'],[192,'icon-192.png'],[512,'icon-512.png'],[512,'icon-512-maskable.png']],pngs={};
-    for(const [size,name] of iconOutputs)pngs[name]=await raster(page,source.light_icon,size,size,path.join(root,name),'#fdfdfd');
+    const approvedSocialValidation=await scanRaster(page,path.join(root,approvedSocial.file),[11,18,26]);if(approvedSocialValidation.transparentPixels!==0||approvedSocialValidation.opaquePixels!==approvedSocial.width*approvedSocial.height)throw new Error(`Founder-approved social PNG is not fully opaque: ${JSON.stringify(approvedSocialValidation)}`);
+    const iconOutputs=[[16,'favicon-16x16.png'],[32,'favicon-32x32.png'],[48,'favicon-48x48.png'],[180,'apple-touch-icon.png'],[192,'icon-192.png'],[512,'icon-512.png']],pngs={};
+    for(const [size,name] of iconOutputs)pngs[name]=await rasterOpticalIcon(page,source.light_icon,size,path.join(root,name),false);
+    pngs['icon-512-maskable.png']=await rasterOpticalIcon(page,source.light_icon,512,path.join(root,'icon-512-maskable.png'),true);
     write(path.join(root,'favicon.ico'),ico([16,32,48].map(size=>({size,png:pngs[`favicon-${size}x${size}.png`]}))));
-    const social=socialSvg(source.light_icon,logos.light);write(path.join(derivedRoot,'taxmate-share-20260829.svg'),social);await raster(page,social,1200,630,path.join(root,'taxmate-share-20260829.png'),'#f5f7f9');
+    const rasterMeasurements={};for(const [,name] of iconOutputs)rasterMeasurements[name]=await scanRaster(page,path.join(root,name),[253,253,253]);
+    for(const [name,value] of Object.entries(rasterMeasurements)){const width=value.foregroundBoundsRatio.right-value.foregroundBoundsRatio.left;if(width<0.70||width>0.75)throw new Error(`Ordinary icon foreground occupancy failed for ${name}: ${JSON.stringify(value)}`);}
     const maskable=await scanRaster(page,path.join(root,'icon-512-maskable.png'),[253,253,253]);
     if(maskable.transparentPixels!==0||maskable.foregroundBoundsRatio.left<0.18||maskable.foregroundBoundsRatio.top<0.18||maskable.foregroundBoundsRatio.right>0.82||maskable.foregroundBoundsRatio.bottom>0.82)throw new Error(`Maskable safe-zone validation failed: ${JSON.stringify(maskable)}`);
-    const derivedNames=[...Object.keys(files),'taxmate-share-20260829.svg','favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png','taxmate-share-20260829.png'],derived={};
+    const derivedNames=[...Object.keys(files),'favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png',approvedSocial.file],derived={};
     for(const name of derivedNames){const file=name.endsWith('.svg')?path.join(derivedRoot,name):path.join(root,name),buffer=read(file);derived[name]={bytes:buffer.length,sha256:sha256(buffer),...(buffer.toString('ascii',1,4)==='PNG'?{width:buffer.readUInt32BE(16),height:buffer.readUInt32BE(20)}:{})};}
-    const manifest={status:'PASS',generator:'scripts/generate-brand-assets.js',source:Object.fromEntries(Object.entries(sources).map(([key,value])=>[value.file,{bytes:read(path.join(sourceRoot,value.file)).length,sha256:value.sha256}])),transparentLogoComparison:comparisons,darkFaceSubpaths:logos.darkFaceSubpaths,maskableValidation:maskable,derived};
+    const manifest={status:'PASS',generator:'scripts/generate-brand-assets.js',source:Object.fromEntries(Object.entries(sources).map(([key,value])=>[value.file,{bytes:read(path.join(sourceRoot,value.file)).length,sha256:value.sha256}])),approvedSocial,approvedSocialValidation,transparentLogoComparison:comparisons,darkFaceSubpaths:logos.darkFaceSubpaths,iconRasterValidation:rasterMeasurements,maskableValidation:maskable,derived};
     write(path.join(derivedRoot,'BRAND_ASSET_MANIFEST.json'),JSON.stringify(manifest,null,2)+'\n');
     process.stdout.write(`BRAND_ASSET_GENERATION_PASS derived=${derivedNames.length} lightMaskMismatch=${comparisons.light.foregroundMaskMismatch} darkMaskMismatch=${comparisons.dark.foregroundMaskMismatch}\n`);
   }finally{await browser.close();}

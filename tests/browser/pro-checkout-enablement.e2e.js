@@ -116,7 +116,7 @@ async function main(){
   await checkoutCadence('monthly');await checkoutCadence('yearly');await signedOutFailClosed();await billingReturnIntent();
   equal(externalRequests.length,0,'browser acceptance made zero external production requests');
   equal(sentryRequests.length,0,'browser acceptance made zero Sentry requests');
-  const result={status:'PASS',assertions:assertionCount,version:'2.1.11',build:'2026-08-31.partner-invite-manual-code-founder-preview.2',cache:'taxmate-v2-partner-invite-manual-code-founder-preview-2',externalRequests,sentryRequests,checks:assertions};
+  const result={status:'PASS',assertions:assertionCount,version:'2.1.11',build:'2026-08-31.six-issue-founder-preview.1',cache:'taxmate-v2-six-issue-founder-preview-1',externalRequests,sentryRequests,checks:assertions};
   fs.writeFileSync(path.join(evidence,'pro-checkout-enablement-browser-result.json'),JSON.stringify(result,null,2)+'\n');
   process.stdout.write(`Pro checkout enablement browser PASS (${assertionCount} assertions)\n`);
 }

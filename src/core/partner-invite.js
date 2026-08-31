@@ -18,7 +18,8 @@
     const cleanCode = normaliseCode(code), url = inviteUrl(), cleanName = String(businessName || '').trim();
     if (!validCode(cleanCode)) throw new Error('partner-invite-code-invalid');
     if (!cleanName) throw new Error('partner-invite-business-name-required');
-    return Object.freeze({title:String(title || 'TaxMate Partner Sync'),text:interpolate(message,{n:cleanName,c:cleanCode,u:url}),url});
+    const text=interpolate(message,{n:cleanName,c:cleanCode,u:''}).split(url).join('').trim(),clipboardText=`${text}\n\n${url}`;
+    return Object.freeze({title:String(title || 'TaxMate Partner Sync'),text,url,clipboardText});
   }
   return Object.freeze({PRODUCTION_ORIGIN,normaliseCode,validCode,inviteUrl,payload});
 });
