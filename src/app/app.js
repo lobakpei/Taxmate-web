@@ -3069,6 +3069,12 @@ Object.assign(I18N.ur,{
   'sync.offline':'آف لائن','sync.offlinePending':'آف لائن — {n} تبدیلیاں منتظر ہیں','sync.signIn':'سائن اِن کا انتظار ہے','sync.signInPending':'سائن اِن کا انتظار — {n} منتظر','sync.restoreFailed':'کلاؤڈ بحالی ناکام — دوبارہ کوشش ہوگی','sync.restoring':'کلاؤڈ ڈیٹا بحال ہو رہا ہے…','sync.checking':'کلاؤڈ ڈیٹا چیک ہو رہا ہے…','sync.readFailed':'کلاؤڈ سنک پڑھنے میں ناکامی — دوبارہ کوشش ہوگی','sync.partnerDenied':'پارٹنرشپ سنک رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.writeDenied':'سنک لکھنے کی رسائی ناکام — مقامی ڈیٹا محفوظ ہے','sync.retrying':'سنک کی دوبارہ کوشش — {n} تبدیلیاں منتظر','sync.syncing':'سنک ہو رہا ہے — {n} تبدیلیاں منتظر','sync.finishing':'سنک مکمل ہو رہا ہے…','sync.synced':'سنک ہو گیا',
   'ob.signInLtdContext':'اپنی لمیٹڈ کمپنی کی ترتیب جاری رکھنے کے لیے سائن اِن کریں۔','ob.signInPartnerContext':'Partner Sync سے جڑنا جاری رکھنے کے لیے سائن اِن کریں۔','ob.bizRequired':'جاری رکھنے کے لیے کاروبار کا نام درج کریں۔','ob.partnerConnectedResult':'یہ پارٹنرشپ اب منسلک ہے۔','ob.continueDashboard':'ڈیش بورڈ پر جاری رکھیں','ob.localPurchaseWorking':'مقامی جائزہ رسائی اپ ڈیٹ ہو رہی ہے…','help.title':'مدد اور معاونت','help.body':'ریکارڈ، ٹیکس، رسید، پلان، بیک اپ اور پارٹنرشپ کے لیے مدد۔','help.open':'مدد اور معاونت کھولیں'
 });
+Object.assign(I18N.en,{'home.includesPartnershipShare':'Includes your share of partnership profits.','home.shareIn':'Your share of money in','home.shareOut':'Your share of money out','part.details':'Partnership figures','part.totalProfit':'Total partnership profit','part.yourShare':'Your {n}% share','part.yourShareUnknown':'Your share','part.needsReview':'Needs review','part.reviewShare':'Confirm your partnership share before relying on these personal figures.','part.reviewTax':'Confirm your partnership share before relying on this tax estimate.','part.shareRequired':'Enter a whole percentage from 1 to 100.'});
+Object.assign(I18N.zh,{'home.includesPartnershipShare':'包括你應佔嘅合夥利潤。','home.shareIn':'你應佔嘅收入','home.shareOut':'你應佔嘅支出','part.details':'合夥數字','part.totalProfit':'合夥總利潤','part.yourShare':'你嘅 {n}% 份額','part.yourShareUnknown':'你嘅份額','part.needsReview':'需要檢查','part.reviewShare':'請先確認你嘅合夥份額，先依賴呢啲個人數字。','part.reviewTax':'請先確認你嘅合夥份額，先依賴呢個稅務估算。','part.shareRequired':'請輸入1至100嘅整數百分比。'});
+Object.assign(I18N.pl,{'home.includesPartnershipShare':'Obejmuje Twój udział w zyskach spółek.','home.shareIn':'Twój udział we wpływach','home.shareOut':'Twój udział w wydatkach','part.details':'Dane spółki','part.totalProfit':'Łączny zysk spółki','part.yourShare':'Twój udział {n}%','part.yourShareUnknown':'Twój udział','part.needsReview':'Wymaga sprawdzenia','part.reviewShare':'Potwierdź swój udział w spółce, zanim oprzesz się na tych kwotach osobistych.','part.reviewTax':'Potwierdź swój udział w spółce, zanim oprzesz się na tym oszacowaniu podatku.','part.shareRequired':'Wpisz pełny procent od 1 do 100.'});
+Object.assign(I18N.ro,{'home.includesPartnershipShare':'Include partea ta din profiturile parteneriatelor.','home.shareIn':'Partea ta din încasări','home.shareOut':'Partea ta din plăți','part.details':'Cifrele parteneriatului','part.totalProfit':'Profitul total al parteneriatului','part.yourShare':'Partea ta de {n}%','part.yourShareUnknown':'Partea ta','part.needsReview':'Necesită verificare','part.reviewShare':'Confirmă partea ta din parteneriat înainte de a te baza pe aceste cifre personale.','part.reviewTax':'Confirmă partea ta din parteneriat înainte de a te baza pe această estimare fiscală.','part.shareRequired':'Introdu un procent întreg între 1 și 100.'});
+Object.assign(I18N.es,{'home.includesPartnershipShare':'Incluye tu parte de los beneficios de las sociedades.','home.shareIn':'Tu parte del dinero recibido','home.shareOut':'Tu parte del dinero pagado','part.details':'Cifras de la sociedad','part.totalProfit':'Beneficio total de la sociedad','part.yourShare':'Tu parte del {n}%','part.yourShareUnknown':'Tu parte','part.needsReview':'Debe revisarse','part.reviewShare':'Confirma tu participación antes de basarte en estas cifras personales.','part.reviewTax':'Confirma tu participación antes de basarte en esta estimación fiscal.','part.shareRequired':'Introduce un porcentaje entero entre 1 y 100.'});
+Object.assign(I18N.ur,{'home.includesPartnershipShare':'اس میں شراکت کے منافع میں آپ کا حصہ شامل ہے۔','home.shareIn':'آمدنی میں آپ کا حصہ','home.shareOut':'اخراجات میں آپ کا حصہ','part.details':'شراکت کے اعداد','part.totalProfit':'شراکت کا کل منافع','part.yourShare':'آپ کا {n}% حصہ','part.yourShareUnknown':'آپ کا حصہ','part.needsReview':'جائزہ درکار','part.reviewShare':'ان ذاتی اعداد پر انحصار کرنے سے پہلے شراکت میں اپنا حصہ تصدیق کریں۔','part.reviewTax':'اس ٹیکس تخمینے پر انحصار کرنے سے پہلے شراکت میں اپنا حصہ تصدیق کریں۔','part.shareRequired':'1 سے 100 تک مکمل فیصد درج کریں۔'});
 Object.assign(I18N.zh,{'promo.signIn':'請先用 Google 登入，再兌換呢個代碼。'});
 Object.assign(I18N.pl,{'promo.signIn':'Najpierw zaloguj się przez Google, a następnie użyj kodu.'});
 Object.assign(I18N.ro,{'promo.signIn':'Conectează-te mai întâi cu Google, apoi folosește codul.'});
@@ -3817,20 +3823,35 @@ function bizFigures(b,yr){
 }
 function homeLedgerSnapshot(yr,bizId=null,period=null){
   const rows=entriesFor(yr,bizId,null).filter(entry=>!period||(entry.date>=period.from&&entry.date<=period.to));
-  const income=rows.filter(entry=>entry.kind==='income').reduce((sum,entry)=>sum+Math.max(0,Number(entry.amount)||0),0);
-  const expenses=rows.filter(entry=>entry.kind==='expense').reduce((sum,entry)=>sum+Math.max(0,effExact(entry)),0);
-  return Object.freeze({taxYear:yr,businessId:bizId,period:period?Object.freeze({...period}):null,income,expenses,profit:income-expenses,recordCount:rows.length});
+  const amountMinor=entry=>{
+    const value=Math.round(Math.max(0,Number(entry.amount)||0)*100);
+    if(!Number.isSafeInteger(value))throw new Error('Bookkeeping amount exceeds the safe pence range');
+    return value;
+  };
+  const incomeMinor=TaxMateMoney.sumMinor(rows.filter(entry=>entry.kind==='income').map(amountMinor),'Bookkeeping income');
+  const expensesMinor=TaxMateMoney.sumMinor(rows.filter(entry=>entry.kind==='expense').map(entry=>{
+    const pct=Number(entry.pct==null?100:entry.pct);
+    const value=Math.round(amountMinor(entry)*Math.max(0,pct)/100);
+    if(!Number.isSafeInteger(value))throw new Error('Bookkeeping expense exceeds the safe pence range');
+    return value;
+  }),'Bookkeeping expenses');
+  const profitMinor=incomeMinor-expensesMinor;
+  return Object.freeze({taxYear:yr,businessId:bizId,period:period?Object.freeze({...period}):null,income:incomeMinor/100,expenses:expensesMinor/100,profit:profitMinor/100,incomeMinor,expensesMinor,profitMinor,recordCount:rows.length});
 }
 function calcTax(yr){
   const cfg = cfgFor(yr);
   const d = S.yearData[yr] || {poaPaid:0,priorAdj:0,taMode:'auto'};
-  let soleIncome=0, soleExpenses=0, partShareProfit=0;
+  let soleIncome=0, soleExpenses=0;
   const perBiz = S.businesses.map(b=>{
     const f = bizFigures(b,yr);
-    if(b.structure==='partnership') partShareProfit += f.profit*(b.share||50)/100;
-    else { soleIncome+=Math.max(0,f.income); soleExpenses+=Math.max(0,f.expenses); }
+    if(b.structure!=='partnership'){ soleIncome+=Math.max(0,f.income); soleExpenses+=Math.max(0,f.expenses); }
     return Object.assign({biz:b},f);
   });
+  const personalPortfolio=TaxMatePartnership.personalPortfolio(perBiz.map(row=>({business:row.biz,incomeMinor:row.incomeMinor,expensesMinor:row.expensesMinor,profitMinor:row.profitMinor})));
+  const personalById=new Map(personalPortfolio.rows.map(row=>[row.business.id,row]));
+  perBiz.forEach(row=>{row.personal=personalById.get(row.biz.id);});
+  const partShareProfitMinor=TaxMateMoney.sumMinor(personalPortfolio.rows.filter(row=>row.business.structure==='partnership'&&row.supported).map(row=>row.profitMinor),'Attributable partnership profit');
+  const partShareProfit=partShareProfitMinor/100;
   const profitActual = soleIncome - soleExpenses;
   const profitAllowance = Math.max(0, soleIncome - Math.min(cfg.tradingAllowance, soleIncome));
   const allowanceAvailable = soleIncome>0;
@@ -3852,7 +3873,7 @@ function calcTax(yr){
   const liability = coreTax.liability, balancing = coreTax.balancing;
   const poaRequired = coreTax.paymentsOnAccount.required, poaEach = coreTax.paymentsOnAccount.each;
   const poaReason = coreTax.paymentsOnAccount.reason, janTotal = coreTax.januaryTotal;
-  return {cfg,perBiz,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
+  return {cfg,perBiz,personalPortfolio,taxEstimateSupported:personalPortfolio.supported,partnershipReviewReasons:personalPortfolio.reasons,soleIncome,soleExpenses,profitActual,profitAllowance,allowanceAvailable,allowanceBetter,
           taUsed,taMode,soleProfit,partShareProfit,myProfit,pa,taxable,basicAmt,higherAmt,addlAmt,
           incomeTax,class4:c4,class2TreatedPaid,class2Voluntary,liability,priorAdj,poaPaid,balancing,
           poaRequired,poaEach,poaReason,poaOutsidePercent:Number(d.poaOutsidePercent)||0,janTotal};
@@ -4152,21 +4173,23 @@ function ltdHomeHero(profile){
 }
 function pageHome(){
   const tx = calcTax(S.year);
-  const ledger=homeLedgerSnapshot(S.year);
-  const totalIn = ledger.income;
-  const totalOut = ledger.expenses;
-  const owe = Math.max(0,tx.liability);
+  const personal=tx.personalPortfolio;
+  const totalIn = personal.incomeMinor==null?null:personal.incomeMinor/100;
+  const totalOut = personal.expensesMinor==null?null:personal.expensesMinor/100;
+  const personalProfit=personal.profitMinor==null?null:personal.profitMinor/100;
+  const owe = tx.taxEstimateSupported?Math.max(0,tx.liability):null;
+  const summaryAmount=value=>value==null?'—':fmt(value);
 
   const bizCards = tx.perBiz.map(p=>{
-    const col = bizColor(p.biz);
-    return `<div class="row">
+    const col = bizColor(p.biz),personalRow=p.personal,amountMinor=personalRow&&personalRow.profitMinor,amount=amountMinor==null?null:amountMinor/100,amountClass=amountMinor>0?'pos':amountMinor<0?'neg':'';
+    return `<div class="row" data-home-business-row="${esc(p.biz.id)}" data-business-structure="${esc(p.biz.structure)}" data-personal-profit-minor="${amountMinor==null?'':amountMinor}">
       <div class="avatar" style="background:${col}">${esc((p.biz.name||'?').trim().charAt(0).toUpperCase())}</div>
       <div class="grow">
         <div class="t">${esc(p.biz.name)}</div>
-        <div class="s">${p.biz.structure==='partnership' ? t('tag.part')+' · '+t('tag.your',{n:p.biz.share||50}) : t('tag.sole')}</div>
+        <div class="s">${p.biz.structure==='partnership' ? t('tag.part')+' · '+(personalRow&&personalRow.sharePercent!=null?t('tag.your',{n:personalRow.sharePercent}):t('part.needsReview')) : t('tag.sole')}</div>
       </div>
       <div style="text-align:end">
-        <div class="v num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</div>
+        <div class="v num ${amountClass}">${amount==null?esc(t('part.needsReview')):fmt(amount)}</div>
         <button class="link" data-tm-click="openBiz('${p.biz.id}')">${t('c.edit')}</button>
       </div>
     </div>`;
@@ -4181,15 +4204,17 @@ function pageHome(){
   const personalHero=`<div class="hero" data-home-personal-hero>
     <div class="hi">${t('home.hi')}</div>
     <div class="label">${t('home.selfProfit',{y:S.year})}</div>
-    <div class="big num" data-home-ledger-profit>${fmt(ledger.profit)}</div>
+    <div class="big num" data-home-ledger-profit data-personal-profit-minor="${personal.profitMinor==null?'':personal.profitMinor}">${summaryAmount(personalProfit)}</div>
+    ${personal.hasPartnership?`<div class="hi" data-home-partnership-share-note>${t('home.includesPartnershipShare')}</div>`:''}
     <div class="hero-owe" data-tm-click="go('tax')">
       <span class="ho-label">🐷 ${t('home.oweLine')}</span>
-      <span class="ho-val num">${fmt0(owe)} ›</span>
+      <span class="ho-val num">${owe==null?'—':fmt0(owe)} ›</span>
     </div>
     <div class="pills">
-      <button class="pill" data-tm-click="go('income')"><div class="pl">${t('home.in')}</div><div class="pv num">${fmt(totalIn)}</div></button>
-      <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t('home.out')}</div><div class="pv num">−${fmt(totalOut).replace('−','')}</div></button>
+      <button class="pill" data-tm-click="go('income')"><div class="pl">${t(personal.hasPartnership?'home.shareIn':'home.in')}</div><div class="pv num" data-personal-income-minor="${personal.incomeMinor==null?'':personal.incomeMinor}">${summaryAmount(totalIn)}</div></button>
+      <button class="pill" data-tm-click="go('expenses')"><div class="pl">${t(personal.hasPartnership?'home.shareOut':'home.out')}</div><div class="pv num" data-personal-expenses-minor="${personal.expensesMinor==null?'':personal.expensesMinor}">${totalOut==null?'—':'−'+fmt(totalOut).replace('−','')}</div></button>
     </div>
+    ${!personal.supported?`<div class="hi" data-home-partnership-review style="margin-top:12px">${t('part.reviewShare')}</div>`:''}
     ${ltdProfile?`<div style="font-size:12px;font-weight:700;line-height:1.45;margin-top:12px;opacity:.9">${t('home.ltdSeparate')}</div>`:''}
   </div>`;
 
@@ -4347,22 +4372,24 @@ function pageTax(){
   const class2Row = tx.class2TreatedPaid
     ? `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Paid',{x:cfg.c2SmallProfits.toLocaleString()})}</small></span><span class="fv num">£0.00</span></div>`
     : `<div class="frow"><span class="fl">${t('tax.c2')} <small>${t('tax.c2Vol',{x:cfg.c2SmallProfits.toLocaleString(),v:tx.class2Voluntary.toFixed(2)})}</small></span><span class="fv mut">${t('tax.opt')}</span></div>`;
+  const taxReviewNotice=tx.taxEstimateSupported?'':`<div class="notice amber" data-partnership-tax-review>${t('part.reviewTax')}</div>`;
 
   return `
   <div class="hero tax-hero">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
-    <div class="big num">${fmt(Math.max(tx.liability,0))}</div>
-    <div class="hi" style="opacity:.8">${t('tax.it')} ${fmt(tx.incomeTax)} · ${t('tax.c4')} ${fmt(tx.class4)}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
+    <div class="big num">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
+    <div class="hi" style="opacity:.8">${tx.taxEstimateSupported?t('tax.it')+' '+fmt(tx.incomeTax)+' · '+t('tax.c4')+' '+fmt(tx.class4):t('part.needsReview')}<br>${t('tax.fileBy',{d:cfg.fileDeadline})}</div>
     <div style="margin-top:12px;padding:8px 12px;background:rgba(255,255,255,.12);border-radius:10px;font-size:12.5px;font-weight:600;opacity:.95">⚠️ ${t('tax.estimateWarn')}</div>
   </div>
 
+  ${taxReviewNotice}
   ${deadlineBanner()}
   ${taBlock}
   ${mileageCard()}
 <div class="card">
     <div class="t" style="margin-bottom:10px">${t('tax.how')}</div>
-    ${tx.perBiz.map(p=>`<div class="frow"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('tag.your',{n:p.biz.share||50})} = ${fmt(p.profit*(p.biz.share||50)/100)}</small>`:''}</span><span class="fv num ${p.profit>=0?'pos':'neg'}">${fmt(p.profit)}</span></div>`).join('')}
-    <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num">${fmt(tx.myProfit)}</span></div>
+    ${tx.perBiz.map(p=>{const personal=p.personal,amountMinor=personal&&personal.profitMinor,amount=amountMinor==null?null:amountMinor/100,amountClass=amountMinor>0?'pos':amountMinor<0?'neg':'';return `<div class="frow" data-tax-business-row="${esc(p.biz.id)}"><span class="fl">${esc(p.biz.name)}${p.biz.structure==='partnership'?` <small>${t('part.totalProfit')}: ${fmt(p.profit)} · ${personal&&personal.sharePercent!=null?t('part.yourShare',{n:personal.sharePercent}):t('part.needsReview')}</small>`:''}</span><span class="fv num ${amountClass}" data-tax-attributable-profit-minor="${amountMinor==null?'':amountMinor}">${amount==null?esc(t('part.needsReview')):fmt(amount)}</span></div>`;}).join('')}
+    <div class="frow total"><span class="fl">${t('tax.taxableP')}</span><span class="fv num" data-tax-attributable-total-minor="${tx.taxEstimateSupported?Math.round(tx.myProfit*100):''}">${tx.taxEstimateSupported?fmt(tx.myProfit):'—'}</span></div>
   </div>
 
   <div class="card">
@@ -4583,7 +4610,7 @@ function pageMore(){
         <div class="avatar" style="background:${bizColor(b)};width:38px;height:38px;font-size:15px">${esc((b.name||'?').trim().charAt(0).toUpperCase())}</div>
         <div class="grow">
           <div class="t" style="font-size:14.5px">${esc(b.name)}</div>
-          <div class="s">${b.structure==='partnership'?t('tag.part')+' · '+t('tag.your',{n:b.share||50}):t('tag.sole')}${b.syncCode?' · <span style="color:var(--brand);font-weight:700">🔗 '+t('sy.synced')+'</span>':''}</div>
+          <div class="s">${b.structure==='partnership'?(()=>{const profile=TaxMatePartnership.profile(b);return t('tag.part')+' · '+(profile.sharePercent!=null?t('tag.your',{n:profile.sharePercent}):t('part.needsReview'));})():t('tag.sole')}${b.syncCode?' · <span style="color:var(--brand);font-weight:700">🔗 '+t('sy.synced')+'</span>':''}</div>
         </div>
         <button class="link" data-tm-click="openBiz('${b.id}')">${t('c.edit')}</button>
       </div>`).join(''):''}
@@ -5235,7 +5262,10 @@ function openBiz(id,initialStructure){
   document.getElementById('bz-name').value = b?b.name:'';
   document.getElementById('bz-name').classList.remove('err');
   document.getElementById('bz-name-err').classList.remove('show');
-  document.getElementById('bz-share').value = b?(b.share||50):50;
+  const savedShare=b&&Number.isSafeInteger(Number(b.share))&&Number(b.share)>=1&&Number(b.share)<=100?Number(b.share):null;
+  document.getElementById('bz-share').value = b?(savedShare==null?'':savedShare):50;
+  document.getElementById('bz-share').classList.remove('err');
+  document.getElementById('bz-share-err').classList.remove('show');
   document.getElementById('bz-delete').style.display = b?'inline':'none';
   paintTrades(); paintStruct(); paintSync(); openSheet('biz');
 }
@@ -5250,7 +5280,19 @@ function paintStruct(){
     BZ.pendingCode = genCode();
   }
   if(BZ.structure==='sole') BZ.pendingCode = null;
+  paintPartnershipFigures();
   paintSync();
+}
+function paintPartnershipFigures(){
+  const el=document.getElementById('bz-partnership-figures');if(!el)return;
+  const b=BZ.id?bizById(BZ.id):null;
+  if(!b||b.structure!=='partnership'||BZ.structure!=='partnership'){el.style.display='none';el.innerHTML='';return;}
+  const figures=bizFigures(b,S.year),personal=TaxMatePartnership.personalBusinessFigures(b,figures);
+  el.style.display='block';
+  el.innerHTML=`<div class="t" style="margin-bottom:8px">${t('part.details')}</div>
+    <div class="frow"><span class="fl">${t('part.totalProfit')}</span><span class="fv num ${figures.profitMinor>0?'pos':figures.profitMinor<0?'neg':''}" data-partnership-total-profit-minor="${figures.profitMinor}">${fmt(figures.profit)}</span></div>
+    <div class="frow"><span class="fl">${personal.sharePercent!=null?t('part.yourShare',{n:personal.sharePercent}):t('part.yourShareUnknown')}</span><span class="fv num ${personal.profitMinor>0?'pos':personal.profitMinor<0?'neg':''}" data-partnership-personal-profit-minor="${personal.profitMinor==null?'':personal.profitMinor}">${personal.profitMinor==null?esc(t('part.needsReview')):fmt(personal.profitMinor/100)}</span></div>
+    ${personal.supported?'':`<div class="notice amber" style="margin-top:10px">${t('part.reviewShare')}</div>`}`;
 }
 function paintSync(){
   const el = document.getElementById('bz-sync');
@@ -5290,8 +5332,12 @@ function saveBiz(){
     document.getElementById('bz-name-err').classList.add('show');
     return;
   }
-  let share = parseInt(document.getElementById('bz-share').value,10);
-  if(!(share>=1&&share<=100)) share=50;
+  const shareInput=document.getElementById('bz-share'),shareText=String(shareInput.value||'').trim();
+  let share = /^\d+$/.test(shareText)?Number(shareText):NaN;
+  if(BZ.structure==='partnership'&&(!Number.isSafeInteger(share)||share<1||share>100)){
+    shareInput.classList.add('err');document.getElementById('bz-share-err').classList.add('show');shareInput.focus();return;
+  }
+  if(BZ.structure!=='partnership')share=100;
   let newId = null;
   const firstMeaningfulBusiness=!BZ.id&&S.businesses.length===0;
   if(BZ.id){
@@ -6330,11 +6376,13 @@ function sa104Card(){
     +'<div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div>';
 
   partBiz.forEach(b=>{
-    const fig = bizFiguresRaw(b,yr);
-    const myShare = fig.profit * (b.share||50)/100;
+    const fig = bizFigures(b,yr);
+    const personal=TaxMatePartnership.personalBusinessFigures(b,fig);
+    if(!personal.supported){html += '<div class="notice amber" style="margin-top:8px">'+t('part.reviewTax')+'</div>';return;}
+    const myShare = personal.profitMinor/100;
     const isLoss = myShare < 0;
 
-    html += '<div style="font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px">'+esc(b.name)+' ('+t('tag.your',{n:b.share||50})+')</div>';
+    html += '<div style="font-size:13px;font-weight:800;color:var(--blue);padding:8px 0 4px">'+esc(b.name)+' ('+t('tag.your',{n:personal.sharePercent})+')</div>';
     html += saBoxRow(boxes.description, 'Description of partnership business', b.name);
     html += saBoxRow(boxes.statementProfitOrLoss, 'Your share from Partnership Statement box 11 (profit) or 12 (loss) — confirm against the Statement', myShare);
     html += saBoxRow(boxes.adjustedProfit, 'Adjusted partnership profit estimate', isLoss?0:myShare);
@@ -7311,7 +7359,7 @@ function obScrPickBiz(){
   const tiles = S.businesses.map(b=>{
     const col = bizColor(b);
     const letter = esc((b.name||'?').trim().charAt(0).toUpperCase());
-    const sub = b.structure==='partnership' ? t('ob.partTag',{s:(b.share||50)}) : t('ob.soleTag');
+    const profile=TaxMatePartnership.profile(b),sub = b.structure==='partnership' ? (profile.sharePercent!=null?t('ob.partTag',{s:profile.sharePercent}):t('part.needsReview')) : t('ob.soleTag');
     return `<button class="ob-tile" data-tm-click="obPickCatchupBiz('${b.id}')">
       <span class="ob-emoji" style="width:34px;height:34px;border-radius:50%;background:${col};color:#fff;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:800;flex-shrink:0">${letter}</span>
       <span><span class="ob-tt">${esc(b.name)}</span><span class="ob-ts">${sub}</span></span>

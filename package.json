@@ -1,6 +1,6 @@
 {
   "name": "taxmate-web",
-  "version": "2.1.9",
+  "version": "2.1.10",
   "private": true,
   "description": "TaxMate bookkeeping and tax planning web app",
   "scripts": {
@@ -20,6 +20,8 @@
     "test:ltd:final-corrections": "node scripts/verify-ltd-final-corrections.js",
     "test:onboarding:connected": "node --test tests/unit/onboarding-connected.test.js && node scripts/run-onboarding-connected-browser.js",
     "test:pro-checkout:browser": "node tests/browser/pro-checkout-enablement.e2e.js",
+    "test:partnership-share:browser": "node scripts/run-partnership-personal-share-browser.js",
+    "preview:partnership-share": "node scripts/start-partnership-personal-share-founder-preview.js",
     "preview:onboarding:actual-app": "node scripts/start-onboarding-actual-app-review.js",
     "preview:ltd:actual-app": "node scripts/start-ltd-actual-app-review.js",
     "preview:ltd": "node ui-preview-harness/server.js --port=41742",

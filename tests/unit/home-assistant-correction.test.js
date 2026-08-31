@@ -42,7 +42,7 @@ test('Home implements mutually exclusive personal and Ltd-only Heroes and remove
   assert.match(app,/data-home-ltd-only-hero/);
   assert.match(pageHome,/hasPersonal\?`<div class="homecta">/);
   assert.doesNotMatch(pageHome,/quarterRange|home\.qLabel|Q[1-4]/);
-  assert.match(app,/homeLedgerSnapshot\(S\.year\)/);
+  assert.match(pageHome,/const tx = calcTax\(S\.year\);\s*const personal=tx\.personalPortfolio/);
 });
 
 test('Assistant actions use real entry, receipt and Ltd paths with guarded dismissal and confirmation',()=>{
