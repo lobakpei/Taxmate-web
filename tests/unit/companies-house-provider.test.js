@@ -34,6 +34,13 @@ test('disabled alias is rejected without fallback provider call',async()=>{
   assert.equal(calls,0);
 });
 
+test('formal-domain alias is forwarded only to the callable and maps server rejection to the ordinary field error',async()=>{
+  let calls=0;const callable=Provider.createCallableProvider(async input=>{calls++;assert.deepEqual(input,{companyNumber:'lobakpe1'});throw{details:{reason:'company_number_format',retryable:false}};}),provider=Provider.createFounderPreviewProvider(callable,{...enabled,hostname:'www.taxmate.uk',firebaseProjectId:'taxmate-uk-2',firebaseEmulators:false,previewMode:''});
+  assert.equal(provider.acceptsAlias('lobakpe1'),true);
+  assert.deepEqual(await provider.lookup('lobakpe1'),{status:'field_error',retryable:false,reasonCode:'company_number_format'});
+  assert.equal(calls,1);
+});
+
 test('ordinary company numbers still delegate to the existing provider',async()=>{
   let calls=0;const provider=Provider.createFounderPreviewProvider({isNetworkProvider:true,async lookup(number){calls++;return{status:'not_found',number};}},enabled);
   assert.equal((await provider.lookup('11111111')).status,'not_found');

@@ -20,18 +20,18 @@ function unavailableProvider(reasonCode='companies_house_provider_not_configured
   return Object.freeze({isNetworkProvider:false,async lookup(){return{status:'unavailable',retryable:false,reasonCode};}});
 }
 function createCallableProvider(callable){
-  if(typeof callable!=='function')return unavailableProvider('companies_house_callable_not_configured');return Object.freeze({isNetworkProvider:true,async lookup(companyNumber){try{const response=await callable({companyNumber}),result=response&&response.data||response;if(!result||!['found','not_found'].includes(result.status))return{status:'unavailable',retryable:true,reasonCode:'companies_house_callable_invalid_response'};return clone(result);}catch(error){const details=error&&error.details||{};return{status:'unavailable',retryable:details.retryable!==false,reasonCode:details.reason||'companies_house_callable_failed'};}}});
+  if(typeof callable!=='function')return unavailableProvider('companies_house_callable_not_configured');return Object.freeze({isNetworkProvider:true,acceptsAlias:alias,async lookup(companyNumber){try{const response=await callable({companyNumber}),result=response&&response.data||response;if(!result||!['found','not_found'].includes(result.status))return{status:'unavailable',retryable:true,reasonCode:'companies_house_callable_invalid_response'};return clone(result);}catch(error){const details=error&&error.details||{},reasonCode=details.reason||'companies_house_callable_failed';if(reasonCode==='company_number_format')return{status:'field_error',retryable:false,reasonCode};return{status:'unavailable',retryable:details.retryable!==false,reasonCode};}}});
 }
 function createFounderPreviewProvider(provider,context={}){
   const fallback=provider&&typeof provider.lookup==='function'?provider:unavailableProvider(),enabled=founderPreviewAllowed(context);
   return Object.freeze({
     isNetworkProvider:fallback.isNetworkProvider===true,
     founderPreviewMode:enabled,
-    acceptsAlias:value=>enabled&&alias(value),
+    acceptsAlias:value=>alias(value)&&(enabled||typeof fallback.acceptsAlias==='function'&&fallback.acceptsAlias(value)),
     async lookup(value){
       if(alias(value)){
-        if(!enabled)return{status:'field_error',retryable:false,reasonCode:'company_number_format'};
-        return{status:'found',verificationStatus:'verified',retryable:false,reasonCodes:['founder_preview_test_data'],previewFixture:true,previewAlias:FOUNDER_PREVIEW_ALIAS,company:clone(FOUNDER_PREVIEW_COMPANY)};
+        if(enabled)return{status:'found',verificationStatus:'verified',retryable:false,reasonCodes:['founder_preview_test_data'],previewFixture:true,previewAlias:FOUNDER_PREVIEW_ALIAS,company:clone(FOUNDER_PREVIEW_COMPANY)};
+        if(typeof fallback.acceptsAlias!=='function'||!fallback.acceptsAlias(value))return{status:'field_error',retryable:false,reasonCode:'company_number_format'};
       }
       return fallback.lookup(value);
     }

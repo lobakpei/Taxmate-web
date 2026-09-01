@@ -206,6 +206,7 @@ class CanonicalCompanyDriver{
     if(!validation.valid){this.lookup={status:'field_error',number,reasons:[validation.reason],company:null};return{status:'field_error',fieldErrors:[fieldError('companyNumber',validation.reason)],data:clone(this.lookup)};}
     this.lookup={status:'loading',number:validation.normalized||number,company:null,reasons:[]};
     const result=await this.companiesHouseProvider.lookup(validation.normalized||number);
+    if(result&&result.status==='field_error'){this.lookup={status:'field_error',number:validation.normalized||number,reasons:[result.reasonCode||'company_number_invalid'],company:null,retryable:false};return{status:'field_error',fieldErrors:[fieldError('companyNumber',result.reasonCode||'company_number_invalid')],data:clone(this.lookup)};}
     const resultNumber=result&&result.company&&CompanyIdentity.validateCompanyNumber(result.company.number||''),resolvedNumber=resultNumber&&resultNumber.valid?resultNumber.normalized:(validation.normalized||number),reasons=Array.from(new Set([...(result.reasonCodes||[]),...(result.reasonCode?[result.reasonCode]:[])]));
     this.lookup={status:result.status,verificationStatus:result.status==='found'?(result.verificationStatus||CompaniesHouse.assessRegistryCompany(result.company).verificationStatus):result.status,number:resolvedNumber,inputAlias:previewAlias?number.toLowerCase():null,previewFixture:result.previewFixture===true,company:clone(result.company||null),reasons,retryable:result.retryable===true};
     const profile=this.activeProfile();
@@ -221,7 +222,6 @@ class CanonicalCompanyDriver{
       candidate.assessmentStatus=assessment.status;candidate.assessmentReasons=assessment.reasons;this.saveProfile(candidate);
     }
     if(result.status==='found')return{status:'ok',data:clone(this.lookup),nextRoute:null};
-    if(result.status==='field_error')return{status:'field_error',fieldErrors:[fieldError('companyNumber',result.reasonCode||'company_number_invalid')],data:clone(this.lookup)};
     return{status:'review_required',reviewReasons:clone(this.lookup.reasons),data:clone(this.lookup),nextRoute:null};
   }
   async recheckCompany(input={}){const profile=this.activeProfile(),number=input.companyNumber||profile&&profile.companyNumber;if(!profile||!number)return{status:'field_error',fieldErrors:[fieldError('companyNumber','company_number_required')]};const result=await this.lookupCompany({companyNumber:number});return{...result,nextRoute:'ltd.records.company-edit'};}
