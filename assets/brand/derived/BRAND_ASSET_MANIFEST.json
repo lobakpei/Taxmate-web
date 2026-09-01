@@ -31,6 +31,7 @@
     "transparentPixels": 0,
     "opaquePixels": 756000,
     "foregroundPixels": 50013,
+    "blackPixels": 706614,
     "foregroundBounds": {
       "left": 225,
       "top": 190,
@@ -93,17 +94,18 @@
       "height": 16,
       "transparentPixels": 0,
       "opaquePixels": 256,
-      "foregroundPixels": 140,
+      "foregroundPixels": 151,
+      "blackPixels": 1,
       "foregroundBounds": {
         "left": 2,
         "top": 1,
-        "right": 13,
+        "right": 14,
         "bottom": 14
       },
       "foregroundBoundsRatio": {
         "left": 0.125,
         "top": 0.0625,
-        "right": 0.875,
+        "right": 0.9375,
         "bottom": 0.9375
       }
     },
@@ -112,18 +114,19 @@
       "height": 32,
       "transparentPixels": 0,
       "opaquePixels": 1024,
-      "foregroundPixels": 497,
+      "foregroundPixels": 600,
+      "blackPixels": 12,
       "foregroundBounds": {
         "left": 4,
-        "top": 2,
-        "right": 27,
-        "bottom": 28
+        "top": 1,
+        "right": 29,
+        "bottom": 30
       },
       "foregroundBoundsRatio": {
         "left": 0.125,
-        "top": 0.0625,
-        "right": 0.875,
-        "bottom": 0.90625
+        "top": 0.03125,
+        "right": 0.9375,
+        "bottom": 0.96875
       }
     },
     "favicon-48x48.png": {
@@ -131,18 +134,19 @@
       "height": 48,
       "transparentPixels": 0,
       "opaquePixels": 2304,
-      "foregroundPixels": 1070,
+      "foregroundPixels": 1323,
+      "blackPixels": 40,
       "foregroundBounds": {
-        "left": 7,
-        "top": 4,
-        "right": 41,
-        "bottom": 43
+        "left": 6,
+        "top": 2,
+        "right": 44,
+        "bottom": 46
       },
       "foregroundBoundsRatio": {
-        "left": 0.14583333333333334,
-        "top": 0.08333333333333333,
-        "right": 0.875,
-        "bottom": 0.9166666666666666
+        "left": 0.125,
+        "top": 0.041666666666666664,
+        "right": 0.9375,
+        "bottom": 0.9791666666666666
       }
     },
     "apple-touch-icon.png": {
@@ -150,18 +154,19 @@
       "height": 180,
       "transparentPixels": 0,
       "opaquePixels": 32400,
-      "foregroundPixels": 14372,
+      "foregroundPixels": 17714,
+      "blackPixels": 795,
       "foregroundBounds": {
         "left": 25,
-        "top": 16,
-        "right": 154,
-        "bottom": 163
+        "top": 8,
+        "right": 168,
+        "bottom": 172
       },
       "foregroundBoundsRatio": {
         "left": 0.1388888888888889,
-        "top": 0.08888888888888889,
-        "right": 0.8611111111111112,
-        "bottom": 0.9111111111111111
+        "top": 0.044444444444444446,
+        "right": 0.9388888888888889,
+        "bottom": 0.9611111111111111
       }
     },
     "icon-192.png": {
@@ -169,18 +174,19 @@
       "height": 192,
       "transparentPixels": 0,
       "opaquePixels": 36864,
-      "foregroundPixels": 16341,
+      "foregroundPixels": 20154,
+      "blackPixels": 910,
       "foregroundBounds": {
-        "left": 27,
-        "top": 16,
-        "right": 164,
-        "bottom": 174
+        "left": 26,
+        "top": 9,
+        "right": 179,
+        "bottom": 184
       },
       "foregroundBoundsRatio": {
-        "left": 0.140625,
-        "top": 0.08333333333333333,
-        "right": 0.859375,
-        "bottom": 0.9114583333333334
+        "left": 0.13541666666666666,
+        "top": 0.046875,
+        "right": 0.9375,
+        "bottom": 0.9635416666666666
       }
     },
     "icon-512.png": {
@@ -188,18 +194,19 @@
       "height": 512,
       "transparentPixels": 0,
       "opaquePixels": 262144,
-      "foregroundPixels": 114952,
+      "foregroundPixels": 141959,
+      "blackPixels": 6937,
       "foregroundBounds": {
-        "left": 72,
-        "top": 44,
-        "right": 438,
-        "bottom": 466
+        "left": 69,
+        "top": 24,
+        "right": 477,
+        "bottom": 492
       },
       "foregroundBoundsRatio": {
-        "left": 0.140625,
-        "top": 0.0859375,
-        "right": 0.857421875,
-        "bottom": 0.912109375
+        "left": 0.134765625,
+        "top": 0.046875,
+        "right": 0.93359375,
+        "bottom": 0.962890625
       }
     }
   },
@@ -209,6 +216,7 @@
     "transparentPixels": 0,
     "opaquePixels": 262144,
     "foregroundPixels": 67258,
+    "blackPixels": 3201,
     "foregroundBounds": {
       "left": 115,
       "top": 95,
@@ -240,42 +248,42 @@
       "sha256": "12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8"
     },
     "favicon-16x16.png": {
-      "bytes": 471,
-      "sha256": "3E4E54A5CCAB3E277678065273085E9EC8F2894CF6EA70DEE09200DB04277570",
+      "bytes": 472,
+      "sha256": "0CCB44D0674BABDDC3A0C4C9CB3A206B1E7B1B0AF953E30DED83AF851DBCE8AC",
       "width": 16,
       "height": 16
     },
     "favicon-32x32.png": {
-      "bytes": 844,
-      "sha256": "377E9BF52A9A320258A2B9ADB3C429A41AE1A3CF0841695A7CDE673E22B8A958",
+      "bytes": 901,
+      "sha256": "B01537402835428D6337D44CE3B272BC9327EEE0E4FACD0F44AE978B1B548F4E",
       "width": 32,
       "height": 32
     },
     "favicon-48x48.png": {
-      "bytes": 1206,
-      "sha256": "D0BF845B42C5988A54ED76E1312868482843CADB25B89B139D61625F3D42A9B0",
+      "bytes": 1299,
+      "sha256": "58E321066FB52508DF2249ACCA1D7816B9D26E59D1DCE3ED55B5381507128E21",
       "width": 48,
       "height": 48
     },
     "favicon.ico": {
-      "bytes": 2575,
-      "sha256": "7C3DBAF44425D7A496DF544C032BE948DB5459E98431D5A8A1F0943F11327968"
+      "bytes": 2726,
+      "sha256": "9507D2D1D6CE15E5CFDDA7ADE90BD6F8E13A5A5B2CC205699B178FE850E0E480"
     },
     "apple-touch-icon.png": {
-      "bytes": 4504,
-      "sha256": "2B855D668DB36DA19FE4C91F2F78532B93EA8E1219E9E0EAED8EDB21AED94AAB",
+      "bytes": 4890,
+      "sha256": "F5805D9507F28575FC76DC2C0A46BC18D593E16B1BBC2104E5B2F3250B78122D",
       "width": 180,
       "height": 180
     },
     "icon-192.png": {
-      "bytes": 4702,
-      "sha256": "D50164F20CD4DEC404F3E2C42435DA618781DF397A2FE3DFDC917821CA746FD8",
+      "bytes": 5210,
+      "sha256": "40BC9AA11141B5FB5FE357537994B24D84A41E7F7B46A353C212274A57AE6297",
       "width": 192,
       "height": 192
     },
     "icon-512.png": {
-      "bytes": 13209,
-      "sha256": "9EA7CA0396ED79661FA0B76FCD92E4A7D29CA0E07305483411D1324CF2CECB37",
+      "bytes": 14528,
+      "sha256": "04E1B91CFEE64905ACAEEFEB1B338F5B45008514DB9F790C8BB9E30032DA4C2C",
       "width": 512,
       "height": 512
     },

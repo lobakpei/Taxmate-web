@@ -56,7 +56,7 @@ function browserState(){const state=JSON.parse(JSON.stringify(make('existing').d
 async function launch({query='',draft=null}={}){
   const context=await chromium.launchPersistentContext(path.join(os.tmpdir(),`tm-pro-checkout-${Date.now()}-${Math.random().toString(16).slice(2)}`),{headless:true,executablePath:chromePath(),viewport:{width:390,height:844},serviceWorkers:'block'});
   await installRoutes(context);
-  await context.addInitScript(({state,draft})=>{if(!sessionStorage.getItem('__proCheckoutAcceptanceInitialised')){localStorage.clear();sessionStorage.clear();sessionStorage.setItem('__proCheckoutAcceptanceInitialised','1');localStorage.setItem('taxmateuk_v1',JSON.stringify(state));localStorage.setItem('tmOnboardDone','1');localStorage.setItem('taxmateuk_analytics_consent','denied');if(draft)localStorage.setItem('taxmateuk_onboarding_draft_v1',JSON.stringify(draft));}},{state:browserState(),draft});
+  await context.addInitScript(({state,draft})=>{if(!sessionStorage.getItem('__proCheckoutAcceptanceInitialised')){localStorage.clear();sessionStorage.clear();sessionStorage.setItem('__proCheckoutAcceptanceInitialised','1');localStorage.setItem('taxmateuk_account_v1:local:canonical',JSON.stringify(state));localStorage.setItem('taxmateuk_account_v1:local:onboarding-done','1');localStorage.setItem('taxmateuk_analytics_consent','denied');if(draft)localStorage.setItem('taxmateuk_account_v1:local:onboarding-draft',JSON.stringify(draft));}},{state:browserState(),draft});
   const page=context.pages()[0]||await context.newPage();
   await page.goto(officialOrigin+'/'+query,{waitUntil:'domcontentloaded'});
   await page.waitForFunction(()=>typeof startProPurchase==='function'&&typeof proBillingAvailability==='function');
@@ -116,7 +116,7 @@ async function main(){
   await checkoutCadence('monthly');await checkoutCadence('yearly');await signedOutFailClosed();await billingReturnIntent();
   equal(externalRequests.length,0,'browser acceptance made zero external production requests');
   equal(sentryRequests.length,0,'browser acceptance made zero Sentry requests');
-  const result={status:'PASS',assertions:assertionCount,version:'2.1.12',build:'2026-09-01.full-backup-founder-alias-production.1',cache:'taxmate-v2-full-backup-founder-alias-production-1',externalRequests,sentryRequests,checks:assertions};
+  const result={status:'PASS',assertions:assertionCount,version:'2.1.13',build:'2026-09-01.account-isolation-backup-alias-favicon-production.1',cache:'taxmate-v2-account-isolation-backup-alias-favicon-production-1',externalRequests,sentryRequests,checks:assertions};
   fs.writeFileSync(path.join(evidence,'pro-checkout-enablement-browser-result.json'),JSON.stringify(result,null,2)+'\n');
   process.stdout.write(`Pro checkout enablement browser PASS (${assertionCount} assertions)\n`);
 }

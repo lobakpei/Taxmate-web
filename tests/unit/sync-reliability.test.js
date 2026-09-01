@@ -168,7 +168,8 @@ test('Android PWA lifecycle and auth-ready hooks retry the durable outbox withou
   for(const hook of ["addEventListener('online'","addEventListener('pageshow'","addEventListener('focus'","addEventListener('visibilitychange'","'auth-ready'","'app-open'"]){
     assert.ok(app.includes(hook),`missing retry hook ${hook}`);
   }
-  assert.ok(app.includes("const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1'"));
+  assert.ok(app.includes("SYNC_OUTBOX_KEY=TaxMateAccountStorage.key(scope,'sync-outbox')"));
+  assert.ok(app.includes('assertAccountWriteBoundary();localStorage.setItem(SYNC_OUTBOX_KEY'));
   assert.ok(app.includes("SYNC_OUTBOX=TaxMateSync.acknowledge"));
   assert.ok(app.includes('data-cloud-sync-status'));
   assert.doesNotMatch(app,/function pushEntryRemote\(rec\)\{[\s\S]{0,180}hasFeature\('partnerSync'\)/);

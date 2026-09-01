@@ -3,6 +3,7 @@
   const CATEGORIES=Object.freeze({
     AUTH_CONNECTIVITY:'auth_connectivity_unavailable',
     STORAGE_LIST:'storage_list_failure',
+    FOREIGN_REFERENCE:'foreign_receipt_reference',
     REFERENCED_RECEIPT:'referenced_receipt_unavailable',
     RECEIPT_DOWNLOAD:'receipt_download_failure',
     SIZE_LIMIT:'receipt_size_limit',
@@ -14,6 +15,7 @@
   const CODES=Object.freeze({
     [CATEGORIES.AUTH_CONNECTIVITY]:'BACKUP_AUTH_CONNECTIVITY_UNAVAILABLE',
     [CATEGORIES.STORAGE_LIST]:'BACKUP_STORAGE_LIST_FAILED',
+    [CATEGORIES.FOREIGN_REFERENCE]:'BACKUP_FOREIGN_RECEIPT_BLOCKED',
     [CATEGORIES.REFERENCED_RECEIPT]:'BACKUP_REFERENCED_RECEIPT_UNAVAILABLE',
     [CATEGORIES.RECEIPT_DOWNLOAD]:'BACKUP_RECEIPT_DOWNLOAD_FAILED',
     [CATEGORIES.SIZE_LIMIT]:'BACKUP_RECEIPT_SIZE_LIMIT',
@@ -22,11 +24,18 @@
     [CATEGORIES.BROWSER_DOWNLOAD]:'BACKUP_BROWSER_DOWNLOAD_FAILED',
     [CATEGORIES.UNKNOWN]:'BACKUP_UNKNOWN'
   });
-  const KNOWN=new Set(Object.values(CATEGORIES)),http=value=>/^https?:\/\//i.test(String(value||''));
+  const KNOWN=new Set(Object.values(CATEGORIES)),http=value=>/^https?:\/\//i.test(String(value||'')),safeStage=value=>/^[a-z][a-z0-9_-]{0,63}$/.test(String(value||''))?String(value):null;
+  const firebaseCode=error=>String(error&&error.code||'').toLowerCase().replace(/^storage\//,'');
+  const safeErrorClass=error=>{const code=firebaseCode(error);if(/^(?:unauthorized|unauthenticated|object-not-found|network-request-failed|retry-limit-exceeded|quota-exceeded)$/.test(code))return`storage_${code.replace(/-/g,'_')}`;const status=Number(error&&error.status||error&&error.statusCode);if(Number.isInteger(status)&&status>=100&&status<=599)return`http_${status}`;const name=String(error&&error.name||'').toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,48);return name||null;};
+  const fallbackResolutionError=error=>/^(?:unauthorized|unauthenticated|object-not-found)$/.test(firebaseCode(error));
+  const receiptOwner=path=>{const match=/^receipts\/([^/]+)\//.exec(String(path||''));return match?match[1]:null;};
   function failure(category,options={}){
     const safeCategory=KNOWN.has(category)?category:CATEGORIES.UNKNOWN,error=new Error(CODES[safeCategory]);
     error.name='TaxMateBackupExportError';error.backupCategory=safeCategory;error.safeCode=CODES[safeCategory];
     if(Number.isSafeInteger(options.count)&&options.count>0)error.safeCount=options.count;
+    const stage=safeStage(options.stage),errorClass=String(options.errorClass||safeErrorClass(options.cause)||'');if(stage)error.backupStage=stage;if(/^[a-z][a-z0-9_-]{0,63}$/.test(errorClass))error.backupErrorClass=errorClass;
+    const status=Number(options.httpStatus||options.cause&&options.cause.status||options.cause&&options.cause.statusCode);if(Number.isInteger(status)&&status>=100&&status<=599)error.backupHttpStatus=status;
+    const correlation=String(options.correlation||'');if(/^[A-Za-z0-9_-]{8,80}$/.test(correlation))error.backupCorrelation=correlation;
     if(options.cause!==undefined)Object.defineProperty(error,'cause',{value:options.cause,enumerable:false});
     return error;
   }
@@ -35,18 +44,20 @@
     const source=[error&&error.code,error&&error.name,error&&error.message].filter(Boolean).join(' ').toLowerCase();
     if(/zip support is unavailable|jszip|zip runtime/.test(source))return failure(CATEGORIES.ZIP_RUNTIME,{cause:error});
     if(/receipt count exceeds|receipt payload exceeds|portable-backup limit|invalid size|too large|size limit|quota-exceeded/.test(source))return failure(CATEGORIES.SIZE_LIMIT,{cause:error});
-    if(/unauth|network-request-failed|offline|failed to fetch|networkerror|connectivity/.test(source))return failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error});
     if(/object-not-found|referenced receipt.*missing|receipt is referenced but unavailable/.test(source))return failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error});
+    if(/foreign-receipt|account-owner-mismatch/.test(source))return failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,cause:error});
+    if(/unauth|network-request-failed|offline|failed to fetch|networkerror|connectivity/.test(source))return failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error});
     if(/receipt.*download/.test(source))return failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:error});
     if(/state|archive|manifest|association|schema|integrity|validation|corrupt|unsafe|duplicate receipt/.test(source))return failure(CATEGORIES.ARCHIVE_VALIDATION,{cause:error});
     return failure(CATEGORIES.UNKNOWN,{cause:error});
   }
-  function diagnostic(error){const value=classify(error);return Object.freeze({category:value.backupCategory,code:value.safeCode,count:value.safeCount||null});}
+  function diagnostic(error){const value=classify(error),result={category:value.backupCategory,code:value.safeCode,count:value.safeCount||null};if(value.backupStage)result.stage=value.backupStage;if(value.backupErrorClass)result.errorClass=value.backupErrorClass;if(value.backupHttpStatus)result.httpStatus=value.backupHttpStatus;if(value.backupCorrelation)result.correlation=value.backupCorrelation;return Object.freeze(result);}
   function message(error){
     const value=diagnostic(error),count=value.count||1,receipt=`${count} receipt${count===1?'':'s'}`;
     const copy={
       [CATEGORIES.AUTH_CONNECTIVITY]:'Sign in and reconnect to the internet, then try Full Backup again. Your data was not changed.',
       [CATEGORIES.STORAGE_LIST]:"TaxMate couldn't check your receipt files. Check your connection and try again. Your data was not changed.",
+      [CATEGORIES.FOREIGN_REFERENCE]:'TaxMate found a receipt reference that does not belong to this account. Full Backup stopped safely and your data was not changed.',
       [CATEGORIES.REFERENCED_RECEIPT]:`${receipt} referenced by your records could not be found. Full Backup stopped so nothing was omitted. Your data was not changed.`,
       [CATEGORIES.RECEIPT_DOWNLOAD]:`${receipt} could not be downloaded. Check your connection and try again. Your data was not changed.`,
       [CATEGORIES.SIZE_LIMIT]:'Your receipt files exceed the Full Backup size limit. Your data was not changed. Contact support before trying again.',
@@ -57,20 +68,21 @@
     };
     return copy[value.category];
   }
-  async function firstDownload(urls,download){
+  async function firstDownload(urls,download,options={}){
     let lastError=null;
     for(const url of urls){try{return await download(url);}catch(error){lastError=error;}}
-    if(classify(lastError).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:lastError});
-    throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:lastError});
+    if(classify(lastError).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:lastError,stage:options.stage||'receipt_download',correlation:options.correlation});
+    throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:lastError,stage:options.stage||'receipt_download',correlation:options.correlation});
   }
   async function collectReceipts(input){
-    const state=input&&input.state||{},download=input&&input.download;
-    if(typeof download!=='function')throw failure(CATEGORIES.RECEIPT_DOWNLOAD);
+    const state=input&&input.state||{},download=input&&input.download,correlation=input&&input.correlation,activeUid=String(input&&input.activeUid||''),stateOwnerUid=String(input&&input.stateOwnerUid||'');
+    if(typeof download!=='function')throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{stage:'receipt_download',correlation});
     let storageItems=null;
     if(input&&input.user){
-      if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST);
-      try{storageItems=await input.listStorage(input.user.uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error});}
-      if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST);
+      const uid=String(input.user.uid||'');if(!uid||activeUid!==uid||stateOwnerUid!==uid)throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'state_owner',correlation});
+      if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
+      try{storageItems=await input.listStorage(uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error,stage:'storage_list',correlation});}
+      if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
     }
     const byPath=new Map(),add=(source,association,fallback)=>{if(!source)return;const group=byPath.get(source)||{associations:[],fallbackUrls:[]};group.associations.push(association);if(http(fallback)&&fallback!==source&&!group.fallbackUrls.includes(fallback))group.fallbackUrls.push(fallback);byPath.set(source,group);};
     for(const item of input&&input.evidenceAssociations||[])add(item.originalPath,item,null);
@@ -79,23 +91,26 @@
     for(const [source,group] of byPath){
       let urls=http(source)?[source]:[];
       if(!urls.length){
-        if(!input.user||typeof input.storageUrl!=='function')throw failure(CATEGORIES.AUTH_CONNECTIVITY);
-        try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error});if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error});}
+        if(!input.user||typeof input.storageUrl!=='function')throw failure(CATEGORIES.AUTH_CONNECTIVITY,{stage:'receipt_resolve',correlation});
+        const uid=String(input.user.uid||''),owned=receiptOwner(source)===uid&&activeUid===uid&&stateOwnerUid===uid;
+        if(!owned){if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'receipt_owner',correlation});}
+        try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'receipt_resolve',correlation});}
       }
       urls=urls.concat(group.fallbackUrls).filter((value,index,list)=>http(value)&&list.indexOf(value)===index);
       if(!urls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1});
-      const binary=await firstDownload(urls,download),legacy=group.associations.filter(item=>item.recordType==='legacy_entry');
+      const binary=await firstDownload(urls,download,{stage:'receipt_download',correlation}),legacy=group.associations.filter(item=>item.recordType==='legacy_entry');
       result.push({entryId:group.associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations:group.associations,...binary});
       if(!http(source))seen.add(source);
     }
     if(input.user){
       for(const item of storageItems){
         if(!item||!item.fullPath||seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;
-        let url;try{url=typeof item.getDownloadURL==='function'?await item.getDownloadURL():await input.storageUrl(item.fullPath);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error});throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:error});}
-        const binary=await firstDownload([url],download);result.push({entryId:null,originalPath:item.fullPath,...binary});
+        if(receiptOwner(item.fullPath)!==String(input.user.uid||'')){if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'orphan_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'orphan_owner',correlation});}
+        let url;try{url=typeof item.getDownloadURL==='function'?await item.getDownloadURL():await input.storageUrl(item.fullPath);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'orphan_resolve',correlation});throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:error,stage:'orphan_resolve',correlation});}
+        const binary=await firstDownload([url],download,{stage:'orphan_download',correlation});result.push({entryId:null,originalPath:item.fullPath,...binary});
       }
     }
     return result;
   }
-  return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,collectReceipts});
+  return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,collectReceipts,receiptOwner,fallbackResolutionError});
 });

@@ -3,30 +3,30 @@
 const crypto=require('node:crypto');
 
 const FOUNDER_ALIAS='lobakpe1';
-const FOUNDER_IDENTITY_SHA256='bf8b804e0393a21fb123a03f497df20247526969807ea403c458e5220a88f8df';
+const FOUNDER_UID_SHA256='61cee3549f9c0b6dc5608ccbaf6ee20504bb7d52a9133f5a23e09c0023220032';
+const FOUNDER_EMAIL_SHA256='2d672b1e8274cef707c7e2e6caa6bb6903b3b21b472c264026287fba74c6f0cf';
+const FOUNDER_CLIENT_VERSION='2.1.13';
 const FOUNDER_COMPANY=Object.freeze({number:'00000000',name:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15',status:'active',type:'ltd',registryUrl:null});
 
-function identitySha256(user){
-  const token=user&&user.token||{},uid=String(user&&user.uid||''),email=String(token.email||'').trim().toLowerCase(),provider=String(token.firebase&&token.firebase.sign_in_provider||'');
-  if(!uid||!email||token.email_verified!==true||provider!=='google.com')return null;
-  return crypto.createHash('sha256').update(`${uid}\n${email}`,'utf8').digest('hex');
+const sha256=value=>crypto.createHash('sha256').update(String(value||''),'utf8').digest('hex');
+const safeEqual=(actual,expected)=>/^[a-f0-9]{64}$/.test(actual)&&/^[a-f0-9]{64}$/.test(expected)&&crypto.timingSafeEqual(Buffer.from(actual,'hex'),Buffer.from(expected,'hex'));
+function founderIdentityGate(user,expected={}){
+  const token=user&&user.token||{},uid=String(user&&user.uid||''),email=String(token.email||'').trim().toLowerCase(),provider=String(token.firebase&&token.firebase.sign_in_provider||''),uidHash=String(expected.uidSha256||FOUNDER_UID_SHA256).toLowerCase(),emailHash=String(expected.emailSha256||FOUNDER_EMAIL_SHA256).toLowerCase();
+  if(!uid)return{allowed:false,reason:'auth_missing'};if(!safeEqual(sha256(uid),uidHash))return{allowed:false,reason:'uid_mismatch'};if(!email||!safeEqual(sha256(email),emailHash))return{allowed:false,reason:'email_mismatch'};if(token.email_verified!==true)return{allowed:false,reason:'email_verification'};if(provider!=='google.com')return{allowed:false,reason:'provider'};return{allowed:true,reason:null};
 }
 
-function isFounderIdentity(user,expectedSha256=FOUNDER_IDENTITY_SHA256){
-  const actual=identitySha256(user),expected=String(expectedSha256||'').toLowerCase();
-  if(!actual||!/^[a-f0-9]{64}$/.test(expected))return false;
-  return crypto.timingSafeEqual(Buffer.from(actual,'hex'),Buffer.from(expected,'hex'));
-}
+function isFounderIdentity(user,expected={}){return founderIdentityGate(user,expected).allowed;}
 
-function createHandler({HttpsError,authenticate,requireTier,apiKey,fetchImpl=globalThis.fetch,expectedFounderIdentitySha256=FOUNDER_IDENTITY_SHA256}){
+function createHandler({HttpsError,authenticate,requireTier,apiKey,fetchImpl=globalThis.fetch,expectedFounderUidSha256=FOUNDER_UID_SHA256,expectedFounderEmailSha256=FOUNDER_EMAIL_SHA256,requiredFounderClientVersion=FOUNDER_CLIENT_VERSION,diagnosticLog=console.warn}){
   if(typeof HttpsError!=='function'||typeof authenticate!=='function'||typeof requireTier!=='function'||typeof apiKey!=='function'||typeof fetchImpl!=='function')throw new TypeError('Companies House handler dependencies are required');
   const invalidCompanyNumber=()=>new HttpsError('invalid-argument','Invalid company number',{reason:'company_number_format'});
   return async req=>{
     const raw=String(req&&req.data&&req.data.companyNumber||'').trim(),isAlias=raw.toLowerCase()===FOUNDER_ALIAS;
     if(isAlias){
-      const founder=req&&req.auth;
-      if(!isFounderIdentity(founder,expectedFounderIdentitySha256))throw invalidCompanyNumber();
-      await requireTier(founder.uid,'pro');
+      const founder=req&&req.auth,clientVersion=String(req&&req.data&&req.data.clientVersion||''),log=(reason,stage)=>{try{diagnosticLog('founder-alias-gate',{category:'founder_alias_gate',safeCode:`FOUNDER_ALIAS_${String(reason).toUpperCase()}`,stage});}catch(_){}};
+      if(clientVersion!==requiredFounderClientVersion){log('client_version','client');throw invalidCompanyNumber();}
+      const gate=founderIdentityGate(founder,{uidSha256:expectedFounderUidSha256,emailSha256:expectedFounderEmailSha256});if(!gate.allowed){log(gate.reason,'identity');throw invalidCompanyNumber();}
+      try{await requireTier(founder.uid,'pro');}catch(error){log('tier','entitlement');throw error;}
       return{status:'found',company:{...FOUNDER_COMPANY},verificationStatus:'verified',reasonCodes:['founder_preview_test_data'],previewFixture:true,previewAlias:FOUNDER_ALIAS,retryable:false};
     }
     const user=authenticate(req),companyNumber=raw.toUpperCase();
@@ -52,4 +52,4 @@ function createHandler({HttpsError,authenticate,requireTier,apiKey,fetchImpl=glo
   };
 }
 
-module.exports={FOUNDER_ALIAS,FOUNDER_IDENTITY_SHA256,FOUNDER_COMPANY,identitySha256,isFounderIdentity,createHandler};
+module.exports={FOUNDER_ALIAS,FOUNDER_UID_SHA256,FOUNDER_EMAIL_SHA256,FOUNDER_CLIENT_VERSION,FOUNDER_COMPANY,founderIdentityGate,isFounderIdentity,createHandler};
