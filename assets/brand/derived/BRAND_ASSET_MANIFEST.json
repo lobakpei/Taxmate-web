@@ -19,6 +19,31 @@
       "sha256": "6CA5D181A5BB18C257642700C2AA2AEB5875A87B0D3BFD0A06A4E11E49905638"
     }
   },
+  "approvedSocial": {
+    "file": "taxmate-share-20260831-v2.png",
+    "sha256": "132A70B72F79EF6002B6856A3B6FE565D966E68113A1584BAE869D3BACDD6624",
+    "width": 1200,
+    "height": 630
+  },
+  "approvedSocialValidation": {
+    "width": 1200,
+    "height": 630,
+    "transparentPixels": 0,
+    "opaquePixels": 756000,
+    "foregroundPixels": 50013,
+    "foregroundBounds": {
+      "left": 225,
+      "top": 190,
+      "right": 972,
+      "bottom": 460
+    },
+    "foregroundBoundsRatio": {
+      "left": 0.1875,
+      "top": 0.30158730158730157,
+      "right": 0.8108333333333333,
+      "bottom": 0.7317460317460317
+    }
+  },
   "transparentLogoComparison": {
     "light": {
       "width": 1024,
@@ -62,23 +87,139 @@
     11,
     13
   ],
+  "iconRasterValidation": {
+    "favicon-16x16.png": {
+      "width": 16,
+      "height": 16,
+      "transparentPixels": 0,
+      "opaquePixels": 256,
+      "foregroundPixels": 140,
+      "foregroundBounds": {
+        "left": 2,
+        "top": 1,
+        "right": 13,
+        "bottom": 14
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.125,
+        "top": 0.0625,
+        "right": 0.875,
+        "bottom": 0.9375
+      }
+    },
+    "favicon-32x32.png": {
+      "width": 32,
+      "height": 32,
+      "transparentPixels": 0,
+      "opaquePixels": 1024,
+      "foregroundPixels": 497,
+      "foregroundBounds": {
+        "left": 4,
+        "top": 2,
+        "right": 27,
+        "bottom": 28
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.125,
+        "top": 0.0625,
+        "right": 0.875,
+        "bottom": 0.90625
+      }
+    },
+    "favicon-48x48.png": {
+      "width": 48,
+      "height": 48,
+      "transparentPixels": 0,
+      "opaquePixels": 2304,
+      "foregroundPixels": 1070,
+      "foregroundBounds": {
+        "left": 7,
+        "top": 4,
+        "right": 41,
+        "bottom": 43
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.14583333333333334,
+        "top": 0.08333333333333333,
+        "right": 0.875,
+        "bottom": 0.9166666666666666
+      }
+    },
+    "apple-touch-icon.png": {
+      "width": 180,
+      "height": 180,
+      "transparentPixels": 0,
+      "opaquePixels": 32400,
+      "foregroundPixels": 14372,
+      "foregroundBounds": {
+        "left": 25,
+        "top": 16,
+        "right": 154,
+        "bottom": 163
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.1388888888888889,
+        "top": 0.08888888888888889,
+        "right": 0.8611111111111112,
+        "bottom": 0.9111111111111111
+      }
+    },
+    "icon-192.png": {
+      "width": 192,
+      "height": 192,
+      "transparentPixels": 0,
+      "opaquePixels": 36864,
+      "foregroundPixels": 16341,
+      "foregroundBounds": {
+        "left": 27,
+        "top": 16,
+        "right": 164,
+        "bottom": 174
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.140625,
+        "top": 0.08333333333333333,
+        "right": 0.859375,
+        "bottom": 0.9114583333333334
+      }
+    },
+    "icon-512.png": {
+      "width": 512,
+      "height": 512,
+      "transparentPixels": 0,
+      "opaquePixels": 262144,
+      "foregroundPixels": 114952,
+      "foregroundBounds": {
+        "left": 72,
+        "top": 44,
+        "right": 438,
+        "bottom": 466
+      },
+      "foregroundBoundsRatio": {
+        "left": 0.140625,
+        "top": 0.0859375,
+        "right": 0.857421875,
+        "bottom": 0.912109375
+      }
+    }
+  },
   "maskableValidation": {
     "width": 512,
     "height": 512,
     "transparentPixels": 0,
     "opaquePixels": 262144,
-    "foregroundPixels": 27312,
+    "foregroundPixels": 67258,
     "foregroundBounds": {
-      "left": 145,
-      "top": 159,
-      "right": 323,
-      "bottom": 363
+      "left": 115,
+      "top": 95,
+      "right": 396,
+      "bottom": 416
     },
     "foregroundBoundsRatio": {
-      "left": 0.283203125,
-      "top": 0.310546875,
-      "right": 0.6328125,
-      "bottom": 0.7109375
+      "left": 0.224609375,
+      "top": 0.185546875,
+      "right": 0.775390625,
+      "bottom": 0.814453125
     }
   },
   "derived": {
@@ -98,59 +239,55 @@
       "bytes": 14046,
       "sha256": "12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8"
     },
-    "taxmate-share-20260829.svg": {
-      "bytes": 128949,
-      "sha256": "478DA9FC1B7062655D63D0E1AAE0CCDA9ABDD967740767DECB97F123FCA20D9C"
-    },
     "favicon-16x16.png": {
-      "bytes": 260,
-      "sha256": "FCC59016705C8E4D55C1A9615464B9AA88EBC217534116BA0A5F365CD999946F",
+      "bytes": 471,
+      "sha256": "3E4E54A5CCAB3E277678065273085E9EC8F2894CF6EA70DEE09200DB04277570",
       "width": 16,
       "height": 16
     },
     "favicon-32x32.png": {
-      "bytes": 476,
-      "sha256": "E0E90AA96C6403B232D4EC7CB1897D5400FF54F1E9721A70B229555D74CF42D8",
+      "bytes": 844,
+      "sha256": "377E9BF52A9A320258A2B9ADB3C429A41AE1A3CF0841695A7CDE673E22B8A958",
       "width": 32,
       "height": 32
     },
     "favicon-48x48.png": {
-      "bytes": 676,
-      "sha256": "628B41A87560B966D7EA7CE8411C28615729705252D993762F8CB7BB090FE391",
+      "bytes": 1206,
+      "sha256": "D0BF845B42C5988A54ED76E1312868482843CADB25B89B139D61625F3D42A9B0",
       "width": 48,
       "height": 48
     },
     "favicon.ico": {
-      "bytes": 1466,
-      "sha256": "152FBBB582EADC2CBD1D864C09BDAA92CED7E86CD4A85AF98C6AE254504012E2"
+      "bytes": 2575,
+      "sha256": "7C3DBAF44425D7A496DF544C032BE948DB5459E98431D5A8A1F0943F11327968"
     },
     "apple-touch-icon.png": {
-      "bytes": 2613,
-      "sha256": "B5C226ECE816AFAED0A5330D0C3DC9248AB3F6D5EE90F140477CD20D524C2B45",
+      "bytes": 4504,
+      "sha256": "2B855D668DB36DA19FE4C91F2F78532B93EA8E1219E9E0EAED8EDB21AED94AAB",
       "width": 180,
       "height": 180
     },
     "icon-192.png": {
-      "bytes": 2794,
-      "sha256": "D780DA4DE5C0458A64842276EC606F73C03397AE441137B1C1920A3E9027B1F3",
+      "bytes": 4702,
+      "sha256": "D50164F20CD4DEC404F3E2C42435DA618781DF397A2FE3DFDC917821CA746FD8",
       "width": 192,
       "height": 192
     },
     "icon-512.png": {
-      "bytes": 7863,
-      "sha256": "84C6AB80868C2D0376DF68C1F34C133C1C56183968C8C3F05F200578910A2825",
+      "bytes": 13209,
+      "sha256": "9EA7CA0396ED79661FA0B76FCD92E4A7D29CA0E07305483411D1324CF2CECB37",
       "width": 512,
       "height": 512
     },
     "icon-512-maskable.png": {
-      "bytes": 7863,
-      "sha256": "84C6AB80868C2D0376DF68C1F34C133C1C56183968C8C3F05F200578910A2825",
+      "bytes": 10752,
+      "sha256": "221EE03125BBA8E479C242FB03508A5D14236E927D476AD624E794C9DE7A58FD",
       "width": 512,
       "height": 512
     },
-    "taxmate-share-20260829.png": {
-      "bytes": 52709,
-      "sha256": "40F29B1D579CC27F836B7A918DE093CA30C86E690885AA73AFD954DF5ED8D457",
+    "taxmate-share-20260831-v2.png": {
+      "bytes": 37358,
+      "sha256": "132A70B72F79EF6002B6856A3B6FE565D966E68113A1584BAE869D3BACDD6624",
       "width": 1200,
       "height": 630
     }

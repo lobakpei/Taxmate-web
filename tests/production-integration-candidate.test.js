@@ -16,11 +16,29 @@ const Portable=require('../src/core/portable-backup');
 const TransactionAdapter=require('../src/integration/ltd/company-transaction-adapter');
 const CompanyAccess=require('../src/core/company-access');
 const ProfileHistory=require('../src/core/company-profile-history');
+const CompaniesHouse=require('../src/integration/ltd/companies-house-provider');
 const {CanonicalCompanyDriver,DEFAULT_NOW}=require('../src/integration/ltd/CanonicalCompanyDriver');
 const {make,PRO_ENTITLEMENT}=require('./test-fixture');
 
 const clone=value=>JSON.parse(JSON.stringify(value));
 const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+test('Founder Preview alias is accepted only by the explicit localhost emulator provider and preserves fixture provenance',async()=>{
+  const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
+  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider({isNetworkProvider:true,async lookup(){providerCalls++;return{status:'not_found'};}},{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});
+  const lookup=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
+  assert.equal(lookup.status,'ok');assert.equal(providerCalls,0);assert.equal(lookup.data.previewFixture,true);assert.equal(lookup.data.company.name,'LOBAKPE FOUNDER PREVIEW LTD');assert.equal(lookup.data.company.incorporationDate,'2025-12-15');
+  const profile=driver.activeProfile();assert.equal(profile.registryVerification.provider,'founder_preview_fixture');assert.equal(profile.registryVerification.previewFixture,true);assert.equal(profile.registryVerification.previewAlias,'lobakpe1');assert.equal(profile.registryVerification.registryFacts.registryUrl,null);
+  const step1=await facade.onContinueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'00000000',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}});assert.equal(step1.status,'ok');assert.equal(step1.nextRoute,'ltd.onboarding.step2');
+});
+
+test('formal-domain alias delegates once to the trusted callable, maps rejection and performs zero canonical writes',async()=>{
+  const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
+  const callable=CompaniesHouse.createCallableProvider(async()=>{providerCalls++;throw{details:{reason:'company_number_format',retryable:false}};});
+  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider(callable,{hostname:'www.taxmate.uk',firebaseProjectId:'taxmate-uk-2',firebaseEmulators:false,previewMode:''});
+  const before=JSON.stringify(driver.state),result=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
+  assert.equal(result.status,'field_error');assert.equal(result.fieldErrors[0].reasonCode,'company_number_format');assert.equal(providerCalls,1);assert.equal(JSON.stringify(driver.state),before);
+});
 
 test('FY2027 is official-source locked and covers current cross-year and leap-year periods',()=>{
   assert.deepEqual(Rules.validateRuleset(Rules.RULESET),{valid:true,errors:[]});
@@ -55,7 +73,7 @@ test('Companies House provenance survives reload and unsupported/not-found resul
 });
 
 test('Companies House credentials remain in the authenticated App Check and Pro callable boundary only',()=>{
-  const provider=fs.readFileSync(path.join(__dirname,'../src/integration/ltd/companies-house-provider.js'),'utf8'),functions=fs.readFileSync(path.join(__dirname,'../functions/index.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.doesNotMatch(provider,/apiKey|authorization|Buffer\.from|api\.company-information/);assert.doesNotMatch(html,/COMPANIES_HOUSE_API_KEY|company-information\.service\.gov\.uk/);assert.match(functions,/defineSecret\('COMPANIES_HOUSE_API_KEY'\)/);assert.match(functions,/lookupCompaniesHouse=onCall\(\{\.\.\.baseOpts,secrets:\[COMPANIES_HOUSE_API_KEY\]\}/);assert.match(functions,/lookupCompaniesHouse[\s\S]*await requireTier\(user\.uid,'pro'\)/);assert.match(functions,/authorization:`Basic/);assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==['"]true['"]/);
+  const provider=fs.readFileSync(path.join(__dirname,'../src/integration/ltd/companies-house-provider.js'),'utf8'),functions=fs.readFileSync(path.join(__dirname,'../functions/index.js'),'utf8'),lookup=fs.readFileSync(path.join(__dirname,'../functions/companies-house-lookup.js'),'utf8'),html=fs.readFileSync(path.join(__dirname,'../index.html'),'utf8');assert.doesNotMatch(provider,/apiKey|authorization|Buffer\.from|api\.company-information/);assert.doesNotMatch(html,/COMPANIES_HOUSE_API_KEY|company-information\.service\.gov\.uk/);assert.match(functions,/defineSecret\('COMPANIES_HOUSE_API_KEY'\)/);assert.match(functions,/lookupCompaniesHouse=onCall\(\{\.\.\.baseOpts,secrets:\[COMPANIES_HOUSE_API_KEY\]\}/);assert.match(lookup,/await requireTier\(founder\.uid,'pro'\)/);assert.match(lookup,/await requireTier\(user\.uid,'pro'\)/);assert.match(lookup,/authorization:`Basic/);assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==['"]true['"]/);
 });
 
 test('unregistered draft persists an explicit not-registered provenance without inventing official facts',async()=>{

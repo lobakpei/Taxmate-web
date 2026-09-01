@@ -70,30 +70,33 @@ test('favicon, PWA and maskable rasters have exact dimensions, full backgrounds 
   for(const [file,size] of Object.entries({'favicon-16x16.png':16,'favicon-32x32.png':32,'favicon-48x48.png':48,'apple-touch-icon.png':180,'icon-192.png':192,'icon-512.png':512,'icon-512-maskable.png':512})){
     const dimensions=pngDimensions(file);assert.deepEqual({width:dimensions.width,height:dimensions.height},{width:size,height:size},file);assert.equal(dimensions.bitDepth,8);assert.equal(dimensions.colourType,2,`${file} is fully opaque RGB`);
   }
-  const safe=assetManifest.maskableValidation;assert.equal(safe.transparentPixels,0);assert.equal(safe.opaquePixels,512*512);assert.ok(safe.foregroundBoundsRatio.left>=0.18&&safe.foregroundBoundsRatio.top>=0.18&&safe.foregroundBoundsRatio.right<=0.82&&safe.foregroundBoundsRatio.bottom<=0.82);
+  for(const [file,value] of Object.entries(assetManifest.iconRasterValidation)){const width=value.foregroundBoundsRatio.right-value.foregroundBoundsRatio.left;assert.ok(width>=0.70&&width<=0.75,`${file} foreground width ${width}`);}
+  const safe=assetManifest.maskableValidation;assert.equal(safe.transparentPixels,0);assert.equal(safe.opaquePixels,512*512);assert.ok(safe.foregroundBoundsRatio.left>=0.18&&safe.foregroundBoundsRatio.top>=0.18&&safe.foregroundBoundsRatio.right<=0.82&&safe.foregroundBoundsRatio.bottom<=0.82);assert.ok(safe.foregroundBoundsRatio.right-safe.foregroundBoundsRatio.left>0.5);
   const ico=read('favicon.ico');assert.equal(ico.readUInt16LE(0),0);assert.equal(ico.readUInt16LE(2),1);assert.equal(ico.readUInt16LE(4),3);const sizes=[];for(let index=0;index<3;index++)sizes.push(ico[6+index*16]||256);assert.deepEqual(sizes,[16,32,48]);
 });
 
 test('all website identity metadata points to the new assets while product SEO copy stays unchanged',()=>{
-  assert.match(home,/<meta property="og:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260829\.png">/);
-  assert.match(home,/<meta property="og:image:secure_url" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260829\.png">/);
-  assert.match(home,/<meta name="twitter:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260829\.png">/);
+  assert.match(home,/<meta property="og:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260831-v2\.png">/);
+  assert.match(home,/<meta property="og:image:secure_url" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260831-v2\.png">/);
+  assert.match(home,/<meta name="twitter:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260831-v2\.png">/);
   assert.match(home,/<meta property="og:image:width" content="1200">/);
   assert.match(home,/<meta property="og:image:height" content="630">/);
   assert.match(home,/"image":"https:\/\/www\.taxmate\.uk\/icon-512\.png"/);
-  assert.match(home,/taxmate-icon-light\.svg" media="\(prefers-color-scheme: light\)"/);
-  assert.match(home,/taxmate-icon-dark\.svg" media="\(prefers-color-scheme: dark\)"/);
-  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png"/);
+  assert.doesNotMatch(home,/rel="icon" type="image\/svg\+xml"/);
+  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png\?v=20260831-2"/);
   assert.match(home,/<meta name="description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people\. Track income and expenses and see your estimated tax as you go\.">/);
 });
 
-test('social preview is a real 1200 by 630 composition containing the approved icon and Brand Logo',()=>{
-  assert.deepEqual(pngDimensions('taxmate-share-20260829.png'),{width:1200,height:630,bitDepth:8,colourType:2});
-  const source=text('assets/brand/derived/taxmate-share-20260829.svg');
-  assert.ok(source.includes(Buffer.from(text('assets/brand/source/light_icon.svg')).toString('base64')),'social composition embeds the immutable light icon');
-  const logo=text('assets/brand/derived/taxmate-brand-logo-light.svg').replace(/\r\n/g,'\n');
-  assert.ok(source.includes(Buffer.from(logo).toString('base64')),'social composition embeds the EOL-normalised transparent Brand Logo');
-  assert.match(source,/Simple bookkeeping and tax planning/);
+test('social preview is the exact supplied Founder-approved 1200 by 630 PNG',()=>{
+  const file='taxmate-share-20260831-v2.png';assert.deepEqual(pngDimensions(file),{width:1200,height:630,bitDepth:8,colourType:6});
+  assert.equal(sha256(read(file)),'132A70B72F79EF6002B6856A3B6FE565D966E68113A1584BAE869D3BACDD6624');
+  assert.equal(assetManifest.approvedSocial.file,file);assert.equal(assetManifest.approvedSocial.sha256,'132A70B72F79EF6002B6856A3B6FE565D966E68113A1584BAE869D3BACDD6624');
+  assert.equal(assetManifest.approvedSocialValidation.transparentPixels,0);assert.equal(assetManifest.approvedSocialValidation.opaquePixels,1200*630);
+  assert.equal(fs.existsSync('assets/brand/derived/taxmate-share-20260829.svg'),false);
+});
+
+test('Home Add income uses a scoped white ink override without changing Add expense or the global action token',()=>{
+  assert.match(home,/\.homecta \.home-add-income\{color:#fff\}/);assert.match(app,/class="btn home-add-income" data-tm-click="openEntry\('income'\)"/);assert.match(app,/class="btn danger-soft" data-tm-click="openEntry\('expense'\)"/);assert.match(home,/--brand-action-ink:#10231B/);
 });
 
 test('App Icon stays out of Home, Tax and Ltd heroes and is limited to identity metadata/assets',()=>{
@@ -103,8 +106,9 @@ test('App Icon stays out of Home, Tax and Ltd heroes and is limited to identity 
 });
 
 test('manifest, service worker and Hosting build carry every production brand asset',()=>{
-  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png','192x192','any'],['icon-512.png','512x512','any'],['icon-512-maskable.png','512x512','maskable']]);
-  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png','taxmate-share-20260829.png']){assert.ok(sw.includes(`/${file}`),`${file} precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
+  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png?v=20260831-2','192x192','any'],['icon-512.png?v=20260831-2','512x512','any'],['icon-512-maskable.png?v=20260831-2','512x512','maskable']]);
+  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png']){assert.ok(sw.includes(`/${file}?v=20260831-2`),`${file} versioned and precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
+  assert.ok(sw.includes('/taxmate-share-20260831-v2.png'));assert.ok(build.includes("'taxmate-share-20260831-v2.png'"));assert.doesNotMatch(home+sw+build,/taxmate-share-20260829/);
   for(const file of ['taxmate-brand-logo-light.svg','taxmate-brand-logo-dark.svg','taxmate-icon-light.svg','taxmate-icon-dark.svg'])assert.ok(sw.includes(`/assets/brand/derived/${file}`),`${file} precached`);
   assert.match(build,/assets', 'brand', 'derived/);
 });

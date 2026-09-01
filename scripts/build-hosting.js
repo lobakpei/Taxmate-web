@@ -28,7 +28,7 @@ const rootFiles = [
   'index.html',
   'manifest.json',
   'og-image.png',
-  'taxmate-share-20260829.png',
+  'taxmate-share-20260831-v2.png',
   'robots.txt',
   'sitemap.xml',
   'sw.js',

@@ -73,7 +73,7 @@ test('Open Graph, language and canonical behavior are consistent',()=>{
   assert.ok(home.includes(`<meta property="og:title" content="${title}">`));
   assert.ok(home.includes(`<meta property="og:description" content="${description}">`));
   assert.match(home,/<meta property="og:url" content="https:\/\/www\.taxmate\.uk\/">/);
-  assert.match(home,/<meta property="og:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260829\.png">/);
+  assert.match(home,/<meta property="og:image" content="https:\/\/www\.taxmate\.uk\/taxmate-share-20260831-v2\.png">/);
   assert.doesNotMatch([home,help,privacy,terms].join('\n'),/hreflang=/i);
   assert.equal(matches(home,/rel="canonical"/gi).length,1);
 });
@@ -93,13 +93,12 @@ test('public canonicals match the final www destination',()=>{
 });
 
 test('approved TaxMate favicon set is explicit, square and deployable',()=>{
-  assert.match(home,/<link rel="icon" href="\/favicon\.ico" sizes="any">/);
-  assert.match(home,/<link rel="icon" type="image\/svg\+xml" href="\/assets\/brand\/derived\/taxmate-icon-light\.svg" media="\(prefers-color-scheme: light\)">/);
-  assert.match(home,/<link rel="icon" type="image\/svg\+xml" href="\/assets\/brand\/derived\/taxmate-icon-dark\.svg" media="\(prefers-color-scheme: dark\)">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="16x16" href="\/favicon-16x16\.png">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="48x48" href="\/favicon-48x48\.png">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="192x192" href="\/icon-192\.png">/);
+  assert.match(home,/<link rel="icon" href="\/favicon\.ico\?v=20260831-2" sizes="any">/);
+  assert.doesNotMatch(home,/<link rel="icon" type="image\/svg\+xml"/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="16x16" href="\/favicon-16x16\.png\?v=20260831-2">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png\?v=20260831-2">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="48x48" href="\/favicon-48x48\.png\?v=20260831-2">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="192x192" href="\/icon-192\.png\?v=20260831-2">/);
   const png=fs.readFileSync('favicon-48x48.png');
   assert.equal(png.toString('ascii',1,4),'PNG');
   assert.equal(png.readUInt32BE(16),48);
@@ -111,7 +110,7 @@ test('approved TaxMate favicon set is explicit, square and deployable',()=>{
   for(let index=0;index<count;index++)sizes.push(ico[6+index*16]||256);
   for(const size of [16,32,48])assert.ok(sizes.includes(size));
   const buildScript=read('scripts/build-hosting.js');
-  for(const file of ['favicon.ico','favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','apple-touch-icon.png','taxmate-share-20260829.png'])assert.ok(buildScript.includes(`'${file}'`));
+  for(const file of ['favicon.ico','favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','apple-touch-icon.png','taxmate-share-20260831-v2.png'])assert.ok(buildScript.includes(`'${file}'`));
 });
 
 test('staging is header-level noindex while production is not',()=>{

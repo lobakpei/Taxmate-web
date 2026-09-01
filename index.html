@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-08-31.partner-invite-manual-code-founder-preview.2 -->
+<!-- build: 2026-09-01.full-backup-founder-alias-production.1 -->
 <html lang="en-GB">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -15,31 +15,29 @@
 <meta name="robots" content="index,follow,max-image-preview:large">
 <meta property="og:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta property="og:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta property="og:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
-<meta property="og:image:secure_url" content="https://www.taxmate.uk/taxmate-share-20260829.png">
+<meta property="og:image" content="https://www.taxmate.uk/taxmate-share-20260831-v2.png">
+<meta property="og:image:secure_url" content="https://www.taxmate.uk/taxmate-share-20260831-v2.png">
 <meta property="og:image:type" content="image/png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
+<meta property="og:image:alt" content="TaxMate — May your income always be with you.">
 <meta property="og:url" content="https://www.taxmate.uk/">
 <meta property="og:type" content="website">
 <meta property="og:site_name" content="TaxMate UK">
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="Self-Employed Bookkeeping &amp; Tax Made Simple | TaxMate UK">
 <meta name="twitter:description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.">
-<meta name="twitter:image" content="https://www.taxmate.uk/taxmate-share-20260829.png">
-<meta name="twitter:image:alt" content="TaxMate bookkeeping and tax-planning app for UK sole traders">
+<meta name="twitter:image" content="https://www.taxmate.uk/taxmate-share-20260831-v2.png">
+<meta name="twitter:image:alt" content="TaxMate — May your income always be with you.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","image":"https://www.taxmate.uk/icon-512.png","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
-<link rel="manifest" href="manifest.json">
+<link rel="manifest" href="manifest.json?v=20260831-2">
 <link rel="stylesheet" href="src/ui/ltd/workbench.css">
-<link rel="icon" href="/favicon.ico" sizes="any">
-<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-light.svg" media="(prefers-color-scheme: light)">
-<link rel="icon" type="image/svg+xml" href="/assets/brand/derived/taxmate-icon-dark.svg" media="(prefers-color-scheme: dark)">
-<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" href="/favicon.ico?v=20260831-2" sizes="any">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260831-2">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png?v=20260831-2">
+<link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png?v=20260831-2">
+<link rel="icon" type="image/png" sizes="192x192" href="/icon-192.png?v=20260831-2">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png?v=20260831-2">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="TaxMate">
@@ -202,6 +200,7 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
    half-width pushes itself onto the next flex line and both then span full width. */
 .homecta{display:flex;flex-wrap:wrap;gap:8px;margin:14px 0}
 .homecta .btn{flex:1 1 calc(50% - 4px);white-space:nowrap;padding-inline:14px}
+.homecta .home-add-income{color:#fff}
 .link{background:none;border:0;color:var(--blue);font-size:14px;font-weight:700;cursor:pointer;padding:4px}
 .link.danger{color:var(--coral)}
 
@@ -812,21 +811,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('partner')" data-i18n="c.cancel"></button>
 </div></div>
 
-<div class="sb" id="sb-partner-invite"><div class="sheet">
-  <div class="grab" data-tm-click="closeParentSheet(this)"></div>
-  <div class="stitle" data-i18n="sy.inviteTitle"></div>
-  <div class="s" style="margin:6px 0 16px" data-i18n="sy.inviteBody"></div>
-  <div class="fg"><label for="partner-invite-link" data-i18n="sy.inviteLinkLabel"></label><input id="partner-invite-link" type="text" readonly dir="ltr"></div>
-  <div class="fg"><label for="partner-invite-text" data-i18n="sy.invitePreviewLabel"></label><textarea id="partner-invite-text" readonly rows="8" style="width:100%;resize:vertical;white-space:pre-wrap"></textarea></div>
-  <div class="ferr" id="partner-invite-error" style="margin:0 0 10px"></div>
-  <button class="btn" id="partner-invite-share" data-tm-click="sharePartnerInvitation()" data-i18n="sy.inviteShare"></button>
-  <div class="sact" style="margin-top:8px">
-    <button class="btn ghost" data-tm-click="copyPartnerInviteLink()" data-i18n="sy.copyLink"></button>
-    <button class="btn ghost" data-tm-click="copyPartnerInvitation()" data-i18n="sy.copyInvitation"></button>
-  </div>
-  <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('partner-invite')" data-i18n="c.cancel"></button>
-</div></div>
-
 <div class="sb" id="sb-confirm"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div class="stitle" id="cf-title"></div>
@@ -895,6 +879,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/integration/ltd/companies-house-provider.js"></script>
 <script src="src/core/ltd-sync.js"></script>
 <script src="src/core/company-evidence.js"></script>
+<script src="src/core/backup-export.js"></script>
 <script src="src/core/portable-backup.js"></script>
 <script src="src/core/onboarding-root.js"></script>
 <script src="src/core/sync.js"></script>
