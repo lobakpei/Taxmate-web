@@ -1,7 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;root.TaxMateTelemetry=api;})(typeof globalThis!=='undefined'?globalThis:this,function(){
   'use strict';
   const EVENTS=new Set(['onboarding_complete','business_created','income_added','expense_added','receipt_added','tax_estimate_viewed','quarterly_summary_viewed','backup_exported','backup_export_failed','cloud_connected','sync_error','upgrade_viewed','pwa_install_prompt_viewed','pwa_install_clicked','pwa_install_dismissed','pwa_install_completed']);
-  const BACKUP_FAILURE_CATEGORIES=new Set(['auth_connectivity_unavailable','storage_list_failure','referenced_receipt_unavailable','receipt_download_failure','receipt_size_limit','zip_runtime_unavailable','state_archive_validation_failure','browser_download_failure','unknown']);
+  const BACKUP_FAILURE_CATEGORIES=new Set(['auth_connectivity_unavailable','storage_list_failure','foreign_receipt_reference','referenced_receipt_unavailable','receipt_download_failure','receipt_size_limit','zip_runtime_unavailable','state_archive_validation_failure','browser_download_failure','unknown']);
   function scrubFrame(frame){return{filename:String(frame&&frame.filename||'').split('?')[0],function:String(frame&&frame.function||'').slice(0,120),lineno:Number(frame&&frame.lineno)||undefined,colno:Number(frame&&frame.colno)||undefined};}
   function safeIdentity(value,max=160){const text=String(value||'');return text.length>0&&text.length<=max&&/^[A-Za-z0-9@._:-]+$/.test(text)?text:undefined;}
   function scrubSentryEvent(event){
@@ -20,6 +20,8 @@
       const category=String(values&&values.category||''),errorCode=String(values&&values.code||'');
       if(!BACKUP_FAILURE_CATEGORIES.has(category)||!/^BACKUP_[A-Z_]+$/.test(errorCode))throw new Error('Unsafe backup diagnostic');
       params.failure_category=category;params.error_code=errorCode;
+      const stage=String(values&&values.stage||''),errorClass=String(values&&values.errorClass||''),correlation=String(values&&values.correlation||''),status=Number(values&&values.httpStatus);
+      if(/^[a-z][a-z0-9_-]{0,63}$/.test(stage))params.failure_stage=stage;if(/^[a-z][a-z0-9_-]{0,63}$/.test(errorClass))params.error_class=errorClass;if(/^[A-Za-z0-9_-]{8,80}$/.test(correlation))params.request_correlation=correlation;if(Number.isInteger(status)&&status>=100&&status<=599)params.http_status=status;
     }
     return{name,params};
   }

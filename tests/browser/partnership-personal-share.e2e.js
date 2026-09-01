@@ -29,7 +29,8 @@ window.TAXMATE_FIREBASE_ENVIRONMENT=Object.freeze({firebaseConfig:Object.freeze(
 (function(){
   const fixtures=${payload},names=Object.keys(fixtures),params=new URLSearchParams(location.search),requested=params.get('fixture'),fixture=names.includes(requested)?requested:'current',marker='taxmate-partnership-share-preview-fixture';
   localStorage.setItem('taxmateuk_analytics_consent','denied');
-  if(params.get('reset')==='1'||localStorage.getItem(marker)!==fixture||!localStorage.getItem('taxmateuk_v1')){localStorage.setItem('taxmateuk_v1',JSON.stringify(fixtures[fixture]));localStorage.setItem(marker,fixture);localStorage.removeItem('taxmateuk_sync_outbox_v1');}
+  const stateKey='taxmateuk_account_v1:local:canonical',outboxKey='taxmateuk_account_v1:local:sync-outbox';
+  if(params.get('reset')==='1'||localStorage.getItem(marker)!==fixture||!localStorage.getItem(stateKey)){localStorage.setItem(stateKey,JSON.stringify(fixtures[fixture]));localStorage.setItem(marker,fixture);localStorage.removeItem(outboxKey);}
   window.TaxMatePartnershipSharePreview=Object.freeze({fixture,names,productionProviders:false});
   document.addEventListener('DOMContentLoaded',function(){
     const box=document.createElement('details');box.id='partnership-share-review-controls';box.style.cssText='position:fixed;z-index:12000;inset-block-end:84px;inset-inline-end:8px;background:#fff;color:#16202b;border:1px solid #0aa968;border-radius:12px;padding:6px 8px;font:12px/1.4 system-ui;box-shadow:0 4px 16px #0003;max-width:min(310px,calc(100vw - 16px));max-height:calc(100vh - 110px);overflow:auto';

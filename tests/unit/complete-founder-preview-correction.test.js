@@ -14,7 +14,7 @@ test('personal onboarding uses an explicit lexical-state action and durable draf
   assert.match(app,/data-tm-input="obSetBizName\(this\.value\)"/);
   assert.match(app,/function obSetBizName\(value\)[\s\S]*OB\.bizName=String\(value\|\|''\)/);
   assert.match(app,/function obContinueBusiness\(\)[\s\S]*OB\._bizError=t\('ob\.bizRequired'\)/);
-  assert.match(app,/const OB_DRAFT_KEY='taxmateuk_onboarding_draft_v1'/);
+  assert.match(app,/OB_DRAFT_KEY=TaxMateAccountStorage\.key\(scope,'onboarding-draft'\)/);
   assert.match(app,/function obRestoreDraft\(\)/);
   assert.doesNotMatch(actions,/\(EN\|OB\)/);
   assert.doesNotMatch(actions,/window\[m\[1\]\]/);

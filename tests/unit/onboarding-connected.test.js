@@ -28,6 +28,8 @@ test('Ltd pending intent survives authentication and waits for canonical entitle
   assert.match(app,/TaxMateLtdProductionAdapter\.openNewLimitedCompany\(\{companyNumberStatus:intent\.companyNumberStatus\}\)/);
   assert.match(adapter,/f\.onAddBusinessCategoryChosen\(\{category:'limited_company'\}\)/);
   assert.match(adapter,/f\.onDraftChanged\(\{screenId:'ltd\.onboarding\.step1',field:\{id:'companyNumberStatus'/);
+  assert.match(app,/if\(OB&&OB\.pendingIntent\)\{TaxMateOnboardingRoot\.open\(document\);OB\._signingInFlow=false;OB\.loggedIn=true;obResumePendingIntentAfterHydration\(result\)/);
+  assert.match(app,/if\(OB\)\{TaxMateOnboardingRoot\.open\(document\);obRender\(\);return;\}/);
 });
 
 test('Partner Sync stores only code intent and writes membership only after explicit confirmation',()=>{
@@ -82,6 +84,6 @@ test('dark and light record rows use theme-safe ink while negative values remain
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.12',build:'2026-09-01.full-backup-founder-alias-production.1',cache:'taxmate-v2-full-backup-founder-alias-production-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.13',build:'2026-09-01.account-isolation-backup-alias-favicon-production.1',cache:'taxmate-v2-account-isolation-backup-alias-favicon-production-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

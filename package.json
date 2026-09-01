@@ -1,6 +1,6 @@
 {
   "name": "taxmate-web",
-  "version": "2.1.12",
+  "version": "2.1.13",
   "private": true,
   "description": "TaxMate bookkeeping and tax planning web app",
   "scripts": {
@@ -14,6 +14,7 @@
     "test:functions:emulator": "node scripts/run-functions-emulator.js",
     "test:paid-sync:browser": "node scripts/run-paid-sync-browser.js",
     "test:sync-runtime:browser": "node scripts/run-sync-runtime-browser.js",
+    "test:account-isolation:browser": "node scripts/run-account-isolation-browser.js",
     "test:ltd": "node --test tests/facade-contract.test.js tests/v2-corrections.test.js tests/canonical-actions.test.js tests/package-boundary.test.js tests/integrated-contract.test.js tests/ltd-i18n.test.js tests/production-integration-candidate.test.js",
     "test:ltd:browser": "node scripts/run-ltd-preview-browser.js",
     "test:ltd:actual-app": "node scripts/run-ltd-actual-app-browser.js",

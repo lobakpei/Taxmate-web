@@ -2,7 +2,7 @@
   'use strict';
 
   const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
-  let ready=null,driver=null,facade=null,snapshot=null,unsubscribe=null;
+  let ready=null,driver=null,facade=null,snapshot=null,unsubscribe=null,canonicalListener=null;
 
   function bridge(){
     if(!root.TaxMateLtdProductionBridge)throw new Error('TaxMate Ltd production bridge is unavailable');
@@ -41,21 +41,28 @@
     ready=(async()=>{
       const required=['TaxMateCanonicalCompanyDriver','TaxMateCompanyStateRepository','TaxMateLtdUIFacadeModule','TaxMateLtdWorkbenchRenderer'];
       for(const name of required)if(!root[name])throw new Error(`Missing Ltd runtime module: ${name}`);
-      const copy=await loadCopy(),b=bridge();
-      const repository=root.TaxMateCompanyStateRepository.externalRepository({kind:'taxmate-production-state',load:()=>b.loadState(),replace:next=>b.replaceState(next),rollbackSnapshot:()=>b.rollbackSnapshot()});
-      const networkProvider=root.TaxMateCompaniesHouseProvider.createCallableProvider(data=>b.callTrusted('lookupCompaniesHouse',data));
+      const copy=await loadCopy(),b=bridge();if(!b.accountReady())throw new Error('TaxMate account scope is not ready');
+      const canonicalRepository=root.TaxMateCompanyStateRepository.externalRepository({kind:'taxmate-production-state',load:()=>b.loadState(),replace:next=>b.replaceState(next),rollbackSnapshot:()=>b.rollbackSnapshot()});
+      const fixtureKey=b.fixtureSessionKey(),fixtureRepository=initial=>root.TaxMateCompanyStateRepository.externalRepository({
+        kind:'taxmate-founder-fixture-session',
+        load(){const raw=root.sessionStorage.getItem(fixtureKey);return raw?JSON.parse(raw):clone(initial);},
+        replace(next){root.sessionStorage.setItem(fixtureKey,JSON.stringify(next));return clone(next);},
+        rollbackSnapshot(){return null;}
+      });
+      const repository=root.sessionStorage.getItem(fixtureKey)?fixtureRepository(b.loadState()):canonicalRepository;
+      const versions=root.TaxMateCore&&root.TaxMateCore.VERSIONS||{},networkProvider=root.TaxMateCompaniesHouseProvider.createCallableProvider(data=>b.callTrusted('lookupCompaniesHouse',{...data,clientVersion:versions.APP_VERSION,buildId:versions.BUILD_ID}));
       const environment=root.TAXMATE_FIREBASE_ENVIRONMENT||{},provider=root.TaxMateCompaniesHouseProvider.createFounderPreviewProvider(networkProvider,{hostname:root.location&&root.location.hostname||'',firebaseProjectId:environment.firebaseConfig&&environment.firebaseConfig.projectId||'',firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,previewMode:root.TAXMATE_FOUNDER_PREVIEW_MODE||''});
       driver=new root.TaxMateCanonicalCompanyDriver.CanonicalCompanyDriver({
         mode:b.hasExistingCompany()?'existing':'fresh',repository,copy,deviceId:b.deviceId(),now:Date.now,
         entitlementSnapshot:b.entitlementSnapshot(),trustedActiveCompanyId:b.activeCompanyId(),personalTaxJurisdiction:b.personalTaxJurisdiction(),companiesHouseProvider:provider,
-        activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),
+        activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),fixtureRepositoryFactory:state=>fixtureRepository(state),
         runtime:{providerMode:provider.founderPreviewMode?'founder_preview_local_emulator':'actual_taxmate_app',founderPreviewMode:provider.founderPreviewMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
-      facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:'taxmateuk_ltd_ui_drafts_v1',prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
+      facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
       root.TaxMateLtdUIFacade=facade;
       root.TaxMateLtdWorkbenchRenderer.setProductionMode(true);
       unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value);});
-      root.addEventListener('taxmate:canonical-state-updated',()=>{if(!driver)return;driver.reload();facade.emit();});
+      canonicalListener=()=>{if(!driver||driver.isFixtureSession&&driver.isFixtureSession())return;driver.reload();facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
       return facade;
     })().catch(error=>{ready=null;throw error;});
     return ready;
@@ -85,7 +92,8 @@
     getSnapshot:()=>clone(snapshot),
     refreshFromCanonicalState:()=>{if(driver){driver.reload();driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}return clone(snapshot);},
     isReady:()=>!!facade,
-    dispose:()=>{if(unsubscribe)unsubscribe();unsubscribe=null;facade=null;driver=null;snapshot=null;ready=null;}
+    dispose:()=>{if(unsubscribe)unsubscribe();if(canonicalListener)root.removeEventListener('taxmate:canonical-state-updated',canonicalListener);unsubscribe=null;canonicalListener=null;facade=null;driver=null;snapshot=null;ready=null;}
   });
-  initialise().then(()=>bridge().refreshShell()).catch(error=>console.error('Ltd runtime initialisation failed',error));
+  const start=()=>{if(!root.TaxMateLtdProductionBridge||!bridge().accountReady())return;initialise().then(()=>bridge().refreshShell()).catch(error=>console.error('Ltd runtime initialisation failed',error));};
+  root.addEventListener('taxmate:account-ready',start);if(root.TaxMateLtdProductionBridge&&bridge().accountReady())root.queueMicrotask(start);
 })(typeof globalThis!=='undefined'?globalThis:this);

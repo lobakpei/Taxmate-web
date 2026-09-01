@@ -8,7 +8,7 @@ const Sync=require('../../src/core/sync');
 
 const app=fs.readFileSync(path.join(__dirname,'../../src/app/app.js'),'utf8');
 const sw=fs.readFileSync(path.join(__dirname,'../../sw.js'),'utf8');
-const start=app.indexOf("const SYNC_OUTBOX_KEY='taxmateuk_sync_outbox_v1';");
+const start=app.indexOf('let SYNC_OUTBOX_KEY=null;');
 const end=app.indexOf('let CLOUD =',start);
 if(start<0||end<0)throw new Error('Unable to locate production outbox loader');
 const loaderSource=app.slice(start,end);
@@ -17,15 +17,16 @@ function executeLoader(options={}){
   const runtime=Object.prototype.hasOwnProperty.call(options,'runtime')?options.runtime:Sync;
   const raw=Object.prototype.hasOwnProperty.call(options,'raw')?options.raw:null;
   let writes=0,stored=raw;
+  const key='taxmateuk_account_v1:local:sync-outbox';
   const context=vm.createContext({
     TaxMateSync:runtime,
     Blob,
     localStorage:{
-      getItem:key=>key==='taxmateuk_sync_outbox_v1'?stored:null,
+      getItem:value=>value===key?stored:null,
       setItem:(key,value)=>{writes++;stored=String(value);}
     }
   });
-  vm.runInContext(loaderSource,context,{filename:'src/app/app.js'});
+  vm.runInContext(`${loaderSource}\nSYNC_OUTBOX_KEY=${JSON.stringify(key)};SYNC_OUTBOX=loadSyncOutbox();`,context,{filename:'src/app/app.js'});
   const snapshot=vm.runInContext('({runtime:{...SYNC_RUNTIME},outbox:SYNC_OUTBOX})',context);
   return{...snapshot,writes,stored};
 }
@@ -74,6 +75,8 @@ test('app guards every outbox write and convergence path behind the runtime lock
   assert.match(app,/if\(SYNC_RUNTIME\.blocked\|\|!SYNC_OUTBOX\)\{renderSyncStatus\(\);return false;\}/);
   assert.match(app,/state:'update-required'[\s\S]{0,160}Local data is safe/);
   assert.match(app,/function flushSyncOutbox\(reason\)\{\s*if\(SYNC_RUNTIME\.blocked\)/);
+  assert.match(app,/await user\.getIdToken\(\);\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*await sendSyncOperation\(operation\)/);
+  assert.match(app,/catch\(error\)\{\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*SYNC_OUTBOX=TaxMateSync\.markAttempt/);
   assert.match(app,/function startUserSync\(u\)\{\s*if\(SYNC_RUNTIME\.blocked\)/);
   assert.doesNotMatch(app,/catch\(_\)\{return TaxMateSync\.emptyOutbox\(\);\}/);
 });

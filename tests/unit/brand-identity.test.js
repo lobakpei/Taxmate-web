@@ -70,7 +70,7 @@ test('favicon, PWA and maskable rasters have exact dimensions, full backgrounds 
   for(const [file,size] of Object.entries({'favicon-16x16.png':16,'favicon-32x32.png':32,'favicon-48x48.png':48,'apple-touch-icon.png':180,'icon-192.png':192,'icon-512.png':512,'icon-512-maskable.png':512})){
     const dimensions=pngDimensions(file);assert.deepEqual({width:dimensions.width,height:dimensions.height},{width:size,height:size},file);assert.equal(dimensions.bitDepth,8);assert.equal(dimensions.colourType,2,`${file} is fully opaque RGB`);
   }
-  for(const [file,value] of Object.entries(assetManifest.iconRasterValidation)){const width=value.foregroundBoundsRatio.right-value.foregroundBoundsRatio.left;assert.ok(width>=0.70&&width<=0.75,`${file} foreground width ${width}`);}
+  for(const [file,value] of Object.entries(assetManifest.iconRasterValidation)){const width=value.foregroundBoundsRatio.right-value.foregroundBoundsRatio.left;assert.ok(width>=0.75&&width<=0.83,`${file} enlarged foreground width ${width}`);assert.ok(value.foregroundBounds.left>0&&value.foregroundBounds.top>0&&value.foregroundBounds.right<value.width-1&&value.foregroundBounds.bottom<value.height-1,`${file} enlarged foreground remains uncropped`);assert.ok(value.blackPixels>=(value.width<=16?1:2),`${file} retains black eye and mouth pixels`);}
   const safe=assetManifest.maskableValidation;assert.equal(safe.transparentPixels,0);assert.equal(safe.opaquePixels,512*512);assert.ok(safe.foregroundBoundsRatio.left>=0.18&&safe.foregroundBoundsRatio.top>=0.18&&safe.foregroundBoundsRatio.right<=0.82&&safe.foregroundBoundsRatio.bottom<=0.82);assert.ok(safe.foregroundBoundsRatio.right-safe.foregroundBoundsRatio.left>0.5);
   const ico=read('favicon.ico');assert.equal(ico.readUInt16LE(0),0);assert.equal(ico.readUInt16LE(2),1);assert.equal(ico.readUInt16LE(4),3);const sizes=[];for(let index=0;index<3;index++)sizes.push(ico[6+index*16]||256);assert.deepEqual(sizes,[16,32,48]);
 });
@@ -83,7 +83,7 @@ test('all website identity metadata points to the new assets while product SEO c
   assert.match(home,/<meta property="og:image:height" content="630">/);
   assert.match(home,/"image":"https:\/\/www\.taxmate\.uk\/icon-512\.png"/);
   assert.doesNotMatch(home,/rel="icon" type="image\/svg\+xml"/);
-  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png\?v=20260831-2"/);
+  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png\?v=20260901-3"/);
   assert.match(home,/<meta name="description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people\. Track income and expenses and see your estimated tax as you go\.">/);
 });
 
@@ -106,8 +106,8 @@ test('App Icon stays out of Home, Tax and Ltd heroes and is limited to identity 
 });
 
 test('manifest, service worker and Hosting build carry every production brand asset',()=>{
-  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png?v=20260831-2','192x192','any'],['icon-512.png?v=20260831-2','512x512','any'],['icon-512-maskable.png?v=20260831-2','512x512','maskable']]);
-  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png']){assert.ok(sw.includes(`/${file}?v=20260831-2`),`${file} versioned and precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
+  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png?v=20260901-3','192x192','any'],['icon-512.png?v=20260901-3','512x512','any'],['icon-512-maskable.png?v=20260901-3','512x512','maskable']]);
+  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png']){assert.ok(sw.includes(`/${file}?v=20260901-3`),`${file} versioned and precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
   assert.ok(sw.includes('/taxmate-share-20260831-v2.png'));assert.ok(build.includes("'taxmate-share-20260831-v2.png'"));assert.doesNotMatch(home+sw+build,/taxmate-share-20260829/);
   for(const file of ['taxmate-brand-logo-light.svg','taxmate-brand-logo-dark.svg','taxmate-icon-light.svg','taxmate-icon-dark.svg'])assert.ok(sw.includes(`/assets/brand/derived/${file}`),`${file} precached`);
   assert.match(build,/assets', 'brand', 'derived/);
