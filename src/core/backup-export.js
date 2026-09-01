@@ -66,6 +66,12 @@
   async function collectReceipts(input){
     const state=input&&input.state||{},download=input&&input.download;
     if(typeof download!=='function')throw failure(CATEGORIES.RECEIPT_DOWNLOAD);
+    let storageItems=null;
+    if(input&&input.user){
+      if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST);
+      try{storageItems=await input.listStorage(input.user.uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error});}
+      if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST);
+    }
     const byPath=new Map(),add=(source,association,fallback)=>{if(!source)return;const group=byPath.get(source)||{associations:[],fallbackUrls:[]};group.associations.push(association);if(http(fallback)&&fallback!==source&&!group.fallbackUrls.includes(fallback))group.fallbackUrls.push(fallback);byPath.set(source,group);};
     for(const item of input&&input.evidenceAssociations||[])add(item.originalPath,item,null);
     for(const entry of state.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(source)add(source,{recordType:'legacy_entry',recordId:entry.id,originalPath:source},entry.receiptUrl);}
@@ -82,9 +88,8 @@
       result.push({entryId:group.associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations:group.associations,...binary});
       if(!http(source))seen.add(source);
     }
-    if(input.user&&typeof input.listStorage==='function'){
-      let items;try{items=await input.listStorage(input.user.uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error});}
-      for(const item of items||[]){
+    if(input.user){
+      for(const item of storageItems){
         if(!item||!item.fullPath||seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;
         let url;try{url=typeof item.getDownloadURL==='function'?await item.getDownloadURL():await input.storageUrl(item.fullPath);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error});throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:error});}
         const binary=await firstDownload([url],download);result.push({entryId:null,originalPath:item.fullPath,...binary});

@@ -43,12 +43,13 @@
       for(const name of required)if(!root[name])throw new Error(`Missing Ltd runtime module: ${name}`);
       const copy=await loadCopy(),b=bridge();
       const repository=root.TaxMateCompanyStateRepository.externalRepository({kind:'taxmate-production-state',load:()=>b.loadState(),replace:next=>b.replaceState(next),rollbackSnapshot:()=>b.rollbackSnapshot()});
-      const provider=root.TaxMateCompaniesHouseProvider.createCallableProvider(data=>b.callTrusted('lookupCompaniesHouse',data));
+      const networkProvider=root.TaxMateCompaniesHouseProvider.createCallableProvider(data=>b.callTrusted('lookupCompaniesHouse',data));
+      const environment=root.TAXMATE_FIREBASE_ENVIRONMENT||{},provider=root.TaxMateCompaniesHouseProvider.createFounderPreviewProvider(networkProvider,{hostname:root.location&&root.location.hostname||'',firebaseProjectId:environment.firebaseConfig&&environment.firebaseConfig.projectId||'',firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,previewMode:root.TAXMATE_FOUNDER_PREVIEW_MODE||''});
       driver=new root.TaxMateCanonicalCompanyDriver.CanonicalCompanyDriver({
         mode:b.hasExistingCompany()?'existing':'fresh',repository,copy,deviceId:b.deviceId(),now:Date.now,
         entitlementSnapshot:b.entitlementSnapshot(),trustedActiveCompanyId:b.activeCompanyId(),personalTaxJurisdiction:b.personalTaxJurisdiction(),companiesHouseProvider:provider,
         activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),
-        runtime:{providerMode:'actual_taxmate_app',firebase:true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
+        runtime:{providerMode:provider.founderPreviewMode?'founder_preview_local_emulator':'actual_taxmate_app',founderPreviewMode:provider.founderPreviewMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
       facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:'taxmateuk_ltd_ui_drafts_v1',prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
       root.TaxMateLtdUIFacade=facade;

@@ -16,11 +16,28 @@ const Portable=require('../src/core/portable-backup');
 const TransactionAdapter=require('../src/integration/ltd/company-transaction-adapter');
 const CompanyAccess=require('../src/core/company-access');
 const ProfileHistory=require('../src/core/company-profile-history');
+const CompaniesHouse=require('../src/integration/ltd/companies-house-provider');
 const {CanonicalCompanyDriver,DEFAULT_NOW}=require('../src/integration/ltd/CanonicalCompanyDriver');
 const {make,PRO_ENTITLEMENT}=require('./test-fixture');
 
 const clone=value=>JSON.parse(JSON.stringify(value));
 const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
+
+test('Founder Preview alias is accepted only by the explicit localhost emulator provider and preserves fixture provenance',async()=>{
+  const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
+  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider({isNetworkProvider:true,async lookup(){providerCalls++;return{status:'not_found'};}},{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});
+  const lookup=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
+  assert.equal(lookup.status,'ok');assert.equal(providerCalls,0);assert.equal(lookup.data.previewFixture,true);assert.equal(lookup.data.company.name,'LOBAKPE FOUNDER PREVIEW LTD');assert.equal(lookup.data.company.incorporationDate,'2025-12-15');
+  const profile=driver.activeProfile();assert.equal(profile.registryVerification.provider,'founder_preview_fixture');assert.equal(profile.registryVerification.previewFixture,true);assert.equal(profile.registryVerification.previewAlias,'lobakpe1');assert.equal(profile.registryVerification.registryFacts.registryUrl,null);
+  const step1=await facade.onContinueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'00000000',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}});assert.equal(step1.status,'ok');assert.equal(step1.nextRoute,'ltd.onboarding.step2');
+});
+
+test('formal-domain alias rejection performs zero provider calls and zero canonical writes',async()=>{
+  const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
+  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider({isNetworkProvider:true,async lookup(){providerCalls++;return{status:'found'};}},{hostname:'www.taxmate.uk',firebaseProjectId:'taxmate-uk-2',firebaseEmulators:false,previewMode:''});
+  const before=JSON.stringify(driver.state),result=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
+  assert.equal(result.status,'field_error');assert.equal(result.fieldErrors[0].reasonCode,'company_number_format');assert.equal(providerCalls,0);assert.equal(JSON.stringify(driver.state),before);
+});
 
 test('FY2027 is official-source locked and covers current cross-year and leap-year periods',()=>{
   assert.deepEqual(Rules.validateRuleset(Rules.RULESET),{valid:true,errors:[]});
