@@ -74,20 +74,23 @@ test('valid pending outbox remains available without changing its stored represe
 test('app guards every outbox write and convergence path behind the runtime lock',()=>{
   assert.match(app,/if\(SYNC_RUNTIME\.blocked\|\|!SYNC_OUTBOX\)\{renderSyncStatus\(\);return false;\}/);
   assert.match(app,/state:'update-required'[\s\S]{0,160}Local data is safe/);
-  assert.match(app,/function flushSyncOutbox\(reason\)\{\s*if\(SYNC_RUNTIME\.blocked\)/);
+  assert.match(app,/function flushSyncOutbox\(reason\)\{\s*if\(ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.controlsCached\|\|CLOUD\.firstSyncBlocked\)[\s\S]{0,240}if\(SYNC_RUNTIME\.blocked\)[\s\S]{0,240}if\(CLOUD\.boundaryBlocked\)/);
   assert.match(app,/await user\.getIdToken\(\);\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*await sendSyncOperation\(operation\)/);
   assert.match(app,/catch\(error\)\{\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*SYNC_OUTBOX=TaxMateSync\.markAttempt/);
-  assert.match(app,/function startUserSync\(u\)\{\s*if\(SYNC_RUNTIME\.blocked\)/);
+  assert.match(app,/function startUserSync\(u,options=\{\}\)\{\s*if\(ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.controlsCached\)[\s\S]{0,260}if\(SYNC_RUNTIME\.blocked\)/);
+  assert.match(app,/if\(CLOUD\.controlsCached\)\{refreshCachedAccountControls\(\);return;\}scheduleOutboxFlush\(0,'online'\)/);
   assert.doesNotMatch(app,/catch\(_\)\{return TaxMateSync\.emptyOutbox\(\);\}/);
 });
 
-test('service worker enforces coherent atomic shell and navigation-only HTML fallback',()=>{
+test('service worker enforces coherent atomic shell, safe online repair and navigation-only HTML fallback',()=>{
   assert.match(sw,/await c\.addAll\(requests\)/);
   assert.match(sw,/await caches\.delete\(CACHE\);\s*throw error/);
   assert.match(sw,/invalid-essential-runtime-response/);
   assert.match(sw,/const isNavigation = e\.request\.mode === 'navigate'/);
   assert.match(sw,/if \(isNavigation\)/);
-  assert.match(sw,/if \(essentialPath\)[\s\S]{0,140}Response\.error\(\)/);
+  assert.match(sw,/if \(essentialPath\)[\s\S]{0,180}if \(cached\) return cached/);
+  assert.match(sw,/if \(essentialPath\)[\s\S]{0,520}const res = await fetch\(e\.request\)[\s\S]{0,260}type\.includes\('text\/html'\)[\s\S]{0,180}await c\.put\(url\.pathname, res\.clone\(\)\)/);
+  assert.match(sw,/if \(essentialPath\)[\s\S]{0,900}catch \(error\) \{\s*return Response\.error\(\)/);
   assert.doesNotMatch(sw,/cached \|\| caches\.match\(['"]\.\/index\.html/);
   assert.doesNotMatch(sw,/SHELL\.map\([\s\S]{0,180}catch \(err\) \{ \/\* ignore individual failures \*\//);
 });

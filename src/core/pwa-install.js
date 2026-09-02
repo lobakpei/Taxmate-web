@@ -17,14 +17,16 @@
     return current<timestamp+DISMISSAL_WINDOW_MS;
   }
   function isInstalled({displayModeStandalone=false,navigatorStandalone=false,persistedInstalled=false}={}){
-    return displayModeStandalone===true||navigatorStandalone===true||persistedInstalled===true;
+    // A historical completion marker is analytics only. The current display mode is the
+    // authority so an uninstalled app or ordinary browser tab can offer installation again.
+    return displayModeStandalone===true||navigatorStandalone===true;
   }
-  function supportsMeaningfulPath({hasDeferredPrompt=false,isIOSSafari=false}={}){
-    return hasDeferredPrompt===true||isIOSSafari===true;
+  function supportsMeaningfulPath({hasDeferredPrompt=false,isIOSSafari=false,hasBrowserInstallInstructions=false}={}){
+    return hasDeferredPrompt===true||isIOSSafari===true||hasBrowserInstallInstructions===true;
   }
-  function canPromote({state,now=Date.now(),dismissedAt=null,displayModeStandalone=false,navigatorStandalone=false,persistedInstalled=false,hasDeferredPrompt=false,isIOSSafari=false}={}){
+  function canPromote({state,now=Date.now(),dismissedAt=null,displayModeStandalone=false,navigatorStandalone=false,persistedInstalled=false,hasDeferredPrompt=false,isIOSSafari=false,hasBrowserInstallInstructions=false}={}){
     return hasMeaningfulData(state)
-      &&supportsMeaningfulPath({hasDeferredPrompt,isIOSSafari})
+      &&supportsMeaningfulPath({hasDeferredPrompt,isIOSSafari,hasBrowserInstallInstructions})
       &&!isInstalled({displayModeStandalone,navigatorStandalone,persistedInstalled})
       &&!dismissalIsActive(dismissedAt,now);
   }

@@ -24,6 +24,9 @@ class TaxMateLtdUIFacade{
     this.workflow=Structural.createWorkflow({routes:[{screenId:'home',params:{mode:this.driver.mode}}]});
     this.busy={active:false,action:null};
     this.prepareAction=typeof options.prepareAction==='function'?options.prepareAction:null;
+    this.actionTimeoutMs=Math.max(100,Math.min(120000,Number(options.actionTimeoutMs)||30000));
+    this.trace=typeof options.trace==='function'?options.trace:null;
+    this.actionSequence=0;
     this.lastResult=null;
     this.listeners=new Set();
   }
@@ -35,13 +38,20 @@ class TaxMateLtdUIFacade{
   result(value={}){return{status:value.status||'ok',data:value.data==null?null:clone(value.data),fieldErrors:clone(value.fieldErrors||[]),reviewReasons:clone(value.reviewReasons||[]),busy:false,error:value.error?clone(value.error):null,nextRoute:value.nextRoute||null,snapshot:this.getSnapshot()};}
   fail(error){return this.result({status:'failure',error:semanticError(error&&error.code||'facade_failure')});}
   route(screenId,params={},replace=false){this.workflow.enter(screenId,params,{replace});return this.emit();}
+  actionTrace(value){if(!this.trace)return;try{this.trace(Object.freeze({...value}));}catch(_){}}
 
   execute(action,input,handler){
     if(this.busy.active)return Promise.resolve(this.result({status:'busy',error:semanticError('action_in_progress',{action:this.busy.action})}));
-    this.busy={active:true,action};this.emit();
-    return Promise.resolve().then(()=>this.prepareAction?this.prepareAction(action,clone(input||{})):null).then(()=>handler.call(this.driver,clone(input||{}))).then(raw=>{
-      const value=raw||{status:'ok'};this.lastResult=clone(value);if(value.nextRoute)this.workflow.enter(value.nextRoute,value.routeParams||{});this.busy={active:false,action:null};this.emit();return this.result(value);
-    }).catch(error=>{this.lastResult={status:'failure',error:semanticError(error&&error.code||'facade_failure')};this.busy={active:false,action:null};this.emit();return this.fail(error);});
+    const startedAt=Date.now(),correlationId=`ltd-action-${++this.actionSequence}`,route=this.workflow.currentRoute(),routeId=route&&route.screenId||'unknown';
+    this.busy={active:true,action};this.actionTrace({correlationId,action,route:routeId,result:'started'});this.emit();
+    return new Promise(resolve=>{
+      let settled=false;
+      const finish=(kind,createPayload)=>{if(settled)return;settled=true;clearTimeout(timer);this.busy={active:false,action:null};this.actionTrace({correlationId,action,route:routeId,result:kind,durationMs:Math.max(0,Date.now()-startedAt)});this.emit();resolve(createPayload());};
+      const timer=setTimeout(()=>{const error=Object.assign(new Error('Action timed out'),{code:'action_timeout'});this.lastResult={status:'failure',error:semanticError('action_timeout')};finish('timeout',()=>this.fail(error));},this.actionTimeoutMs);
+      Promise.resolve().then(()=>this.prepareAction?this.prepareAction(action,clone(input||{})):null).then(()=>handler.call(this.driver,clone(input||{}))).then(raw=>{
+        if(settled)return;const value=raw||{status:'ok'};this.lastResult=clone(value);if(value.nextRoute)this.workflow.enter(value.nextRoute,value.routeParams||{});finish(String(value.status||'ok').replace(/[^a-z0-9_-]/gi,'_').slice(0,32),()=>this.result(value));
+      }).catch(error=>{if(settled)return;this.lastResult={status:'failure',error:semanticError(error&&error.code||'facade_failure')};finish('failure',()=>this.fail(error));});
+    });
   }
 
   onOpenHome(){this.route('home',{mode:this.driver.mode});return Promise.resolve(this.result({status:'ok',nextRoute:'home'}));}

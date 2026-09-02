@@ -16,7 +16,7 @@ const equal=(actual,expected,message)=>{assert.equal(actual,expected,message);as
 const chromePath=()=>{for(const candidate of [process.env.TAXMATE_CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'])if(candidate&&fs.existsSync(candidate))return candidate;throw new Error('Installed Chrome not found');};
 const waitForServer=async()=>{const started=Date.now();while(Date.now()-started<15000){try{const response=await fetch(`${origin}/?mode=existing&tier=pro`);if(response.ok)return;}catch(_){}await new Promise(resolve=>setTimeout(resolve,100));}throw new Error('Founder Preview server did not start');};
 async function pageFor(viewport){const context=await browser.newContext({viewport});await context.route('**/*',async route=>{const url=route.request().url();if(/^https?:\/\//i.test(url)&&!/^http:\/\/(?:127\.0\.0\.1|localhost)(?::\d+)?\//i.test(url)){externalRequests.push(url);await route.abort('blockedbyclient');return;}await route.continue();});const page=await context.newPage();page.on('pageerror',error=>consoleErrors.push(error.message));page.on('console',message=>{if(message.type()==='error'&&!/ERR_BLOCKED_BY_CLIENT/.test(message.text()))consoleErrors.push(message.text());});return{context,page};}
-async function goto(page,pathName){await page.goto(`${origin}${pathName}`,{waitUntil:'networkidle'});await page.locator('.tm-app').waitFor();}
+async function goto(page,pathName){await page.goto(`${origin}${pathName}`,{waitUntil:'networkidle'});await page.locator('.tm-app').waitFor();await page.waitForFunction(()=>window.TaxMateLtdPreviewReady===true);}
 
 async function main(){
   fs.mkdirSync(evidence,{recursive:true});
@@ -31,7 +31,7 @@ async function main(){
   check(await page.getByRole('button',{name:/ToodaLoop Ltd/}).isEnabled(),'Pro can open the existing Ltd row');
   await page.screenshot({path:path.join(evidence,'existing-home-390x844-light-en.png'),fullPage:true});
   await page.getByRole('button',{name:/ToodaLoop Ltd/}).click();
-  await page.getByRole('tab',{name:'Overview'}).waitFor();
+  try{await page.getByRole('tab',{name:'Overview'}).waitFor();}catch(error){await page.screenshot({path:path.join(evidence,'existing-workspace-open-failed.png'),fullPage:true});const diagnostic={url:page.url(),body:(await page.locator('body').innerText()).slice(0,4000),consoleErrors};throw new Error(`Existing Ltd workspace did not open: ${JSON.stringify(diagnostic)}; ${error.message}`);}
   for(const area of ['Overview','Money','Tax','Records'])check(await page.getByRole('tab',{name:area}).count()===1,`${area} workspace tab renders`);
   await page.getByRole('tab',{name:'Records'}).click();
   await page.getByRole('button',{name:/Download company working pack/}).waitFor();check(true,'Working pack action renders');

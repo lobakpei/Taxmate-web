@@ -100,6 +100,10 @@ service cloud.firestore {
       }
     }
 
+    match /accountClaims/{uid} { allow read: if owner(uid); allow write: if false; }
+    match /accountResets/{uid} { allow read: if owner(uid); allow write: if false; }
+    match /accountQuarantines/{document=**} { allow read, write: if false; }
+
     match /appConfig/{document=**} { allow read: if true; allow write: if false; }
     match /billing/{document=**} { allow read, write: if false; }
     match /founderPromotions/{document=**} { allow read, write: if false; }

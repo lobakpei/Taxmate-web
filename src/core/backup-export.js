@@ -28,7 +28,8 @@
   const firebaseCode=error=>String(error&&error.code||'').toLowerCase().replace(/^storage\//,'');
   const safeErrorClass=error=>{const code=firebaseCode(error);if(/^(?:unauthorized|unauthenticated|object-not-found|network-request-failed|retry-limit-exceeded|quota-exceeded)$/.test(code))return`storage_${code.replace(/-/g,'_')}`;const status=Number(error&&error.status||error&&error.statusCode);if(Number.isInteger(status)&&status>=100&&status<=599)return`http_${status}`;const name=String(error&&error.name||'').toLowerCase().replace(/[^a-z0-9_-]/g,'_').slice(0,48);return name||null;};
   const fallbackResolutionError=error=>/^(?:unauthorized|unauthenticated|object-not-found)$/.test(firebaseCode(error));
-  const receiptOwner=path=>{const match=/^receipts\/([^/]+)\//.exec(String(path||''));return match?match[1]:null;};
+  const receiptPath=value=>{const source=String(value||'');if(/^receipts\/[^/]+\//.test(source))return source;if(!http(source))return null;try{const url=new URL(source),match=/\/o\/([^?#]+)/.exec(url.pathname);if(match){const decoded=decodeURIComponent(match[1]);if(/^receipts\/[^/]+\//.test(decoded))return decoded;}const name=url.searchParams.get('name');if(name){const decoded=decodeURIComponent(name);if(/^receipts\/[^/]+\//.test(decoded))return decoded;}}catch(_){}return null;};
+  const receiptOwner=value=>{const match=/^receipts\/([^/]+)\//.exec(receiptPath(value)||'');return match?match[1]:null;};
   function failure(category,options={}){
     const safeCategory=KNOWN.has(category)?category:CATEGORIES.UNKNOWN,error=new Error(CODES[safeCategory]);
     error.name='TaxMateBackupExportError';error.backupCategory=safeCategory;error.safeCode=CODES[safeCategory];
@@ -77,22 +78,26 @@
   async function collectReceipts(input){
     const state=input&&input.state||{},download=input&&input.download,correlation=input&&input.correlation,activeUid=String(input&&input.activeUid||''),stateOwnerUid=String(input&&input.stateOwnerUid||'');
     if(typeof download!=='function')throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{stage:'receipt_download',correlation});
-    let storageItems=null;
+    let storageItems=null,uid='';
     if(input&&input.user){
-      const uid=String(input.user.uid||'');if(!uid||activeUid!==uid||stateOwnerUid!==uid)throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'state_owner',correlation});
-      if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
-      try{storageItems=await input.listStorage(uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error,stage:'storage_list',correlation});}
-      if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
+      uid=String(input.user.uid||'');if(!uid||activeUid!==uid||stateOwnerUid!==uid)throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'state_owner',correlation});
     }
     const byPath=new Map(),add=(source,association,fallback)=>{if(!source)return;const group=byPath.get(source)||{associations:[],fallbackUrls:[]};group.associations.push(association);if(http(fallback)&&fallback!==source&&!group.fallbackUrls.includes(fallback))group.fallbackUrls.push(fallback);byPath.set(source,group);};
     for(const item of input&&input.evidenceAssociations||[])add(item.originalPath,item,null);
     for(const entry of state.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(source)add(source,{recordType:'legacy_entry',recordId:entry.id,originalPath:source},entry.receiptUrl);}
+    let skippedForeignCount=0;
+    if(input&&input.user){
+      for(const [source,group] of [...byPath]){const foreign=[source,...group.fallbackUrls].find(reference=>{const owner=receiptOwner(reference);return owner&&owner!==uid;});if(foreign){skippedForeignCount++;byPath.delete(source);if(typeof input.onForeignReference==='function')input.onForeignReference({kind:http(foreign)?'receipt_url':'receipt_path'});}}
+      if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
+      try{storageItems=await input.listStorage(uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error,stage:'storage_list',correlation});}
+      if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
+    }
     const result=[],seen=new Set(),linkedPaths=new Set(byPath.keys());
     for(const [source,group] of byPath){
       let urls=http(source)?[source]:[];
       if(!urls.length){
         if(!input.user||typeof input.storageUrl!=='function')throw failure(CATEGORIES.AUTH_CONNECTIVITY,{stage:'receipt_resolve',correlation});
-        const uid=String(input.user.uid||''),owned=receiptOwner(source)===uid&&activeUid===uid&&stateOwnerUid===uid;
+        const owned=receiptOwner(source)===uid&&activeUid===uid&&stateOwnerUid===uid;
         if(!owned){if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'receipt_owner',correlation});}
         try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'receipt_resolve',correlation});}
       }
@@ -110,7 +115,7 @@
         const binary=await firstDownload([url],download,{stage:'orphan_download',correlation});result.push({entryId:null,originalPath:item.fullPath,...binary});
       }
     }
-    return result;
+    Object.defineProperty(result,'skippedForeignCount',{value:skippedForeignCount,enumerable:false});return result;
   }
-  return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,collectReceipts,receiptOwner,fallbackResolutionError});
+  return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,collectReceipts,receiptPath,receiptOwner,fallbackResolutionError});
 });

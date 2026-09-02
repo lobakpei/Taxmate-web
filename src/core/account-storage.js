@@ -23,6 +23,15 @@
   function write(storage,scope,slot,value){storage.setItem(key(scope,slot),String(value));return true;}
   function remove(storage,scope,slot){storage.removeItem(key(scope,slot));}
   function accountKeys(storage,scope){const prefix=`${PREFIX}:${token(scope)}:`,rows=[];for(let i=0;i<storage.length;i++){const value=storage.key(i);if(value&&value.startsWith(prefix))rows.push(value);}return rows.sort();}
+  function sessionKeys(storage,scope){const prefix=`${SESSION_PREFIX}:${token(scope)}:`,rows=[];for(let i=0;i<storage.length;i++){const value=storage.key(i);if(value&&value.startsWith(prefix))rows.push(value);}return rows.sort();}
+  function resetEpoch(value){const epoch=Number(value);if(!Number.isSafeInteger(epoch)||epoch<0)throw new Error('Invalid account reset epoch');return epoch;}
+  function applyServerReset(storage,sessionStorage,scope,epochValue){
+    if(!storage||!sessionStorage||!validScope(scope)||scope.kind!=='firebase')throw new Error('A Firebase account scope and both storage areas are required');
+    const epoch=resetEpoch(epochValue),markerKey=key(scope,'reset-epoch'),seen=Number(storage.getItem(markerKey)||0);
+    if(seen>=epoch)return{status:'current',epoch,localRemoved:0,sessionRemoved:0};
+    const local=accountKeys(storage,scope),session=sessionKeys(sessionStorage,scope);for(const item of local)storage.removeItem(item);for(const item of session)sessionStorage.removeItem(item);storage.setItem(markerKey,String(epoch));
+    return{status:'reset',epoch,localRemoved:local.length,sessionRemoved:session.length};
+  }
   function stateHasAccountData(state){
     const value=state&&typeof state==='object'?state:{},domain=value.domain&&typeof value.domain==='object'?value.domain:{};
     if(['businesses','entries','folders','tombstones','businessTombstones','folderTombstones'].some(name=>Array.isArray(value[name])&&value[name].length))return true;
@@ -42,12 +51,27 @@
     return{status:'quarantined',count:entries.length,recordKey};
   }
   function associationMarkerKey(){return'taxmateuk_local_association_v1:pending';}
-  function prepareLocalAssociation(storage,options={}){const marker={version:VERSION,status:'pending',source:'local',createdAt:Number(options.now)||Date.now()};storage.setItem(associationMarkerKey(),JSON.stringify(marker));return clone(marker);}
+  function associationDecisionKey(uid){const value=String(uid||'');if(!value||value.length>128)throw new Error('A valid Firebase UID is required');return`taxmateuk_local_association_v1:decision:${encodeURIComponent(value)}`;}
+  function localAssociationState(storage){try{const value=JSON.parse(storage.getItem(associationMarkerKey())||'null');if(!value||value.version!==VERSION||value.source!=='local'||!['pending','confirmation'].includes(value.status))return null;if(value.status==='confirmation'&&(!value.targetUid||!['empty','existing'].includes(value.cloudState)))return null;return clone(value);}catch(_){return null;}}
+  function prepareLocalAssociation(storage,options={}){
+    const current=localAssociationState(storage);if(current&&options.resetTarget!==true)return current;
+    const marker={version:VERSION,status:'pending',source:'local',createdAt:current&&Number(current.createdAt)||Number(options.now)||Date.now()};storage.setItem(associationMarkerKey(),JSON.stringify(marker));return clone(marker);
+  }
+  function classifyLocalAssociation(storage,targetScope,cloudState,options={}){
+    if(!validScope(targetScope)||targetScope.kind!=='firebase')throw new Error('A Firebase target scope is required');
+    if(!['empty','existing'].includes(cloudState))throw new Error('A known cloud state is required');
+    const current=localAssociationState(storage);if(!current)return{status:'not-pending'};
+    const marker={version:VERSION,status:'confirmation',source:'local',createdAt:Number(current.createdAt)||Number(options.now)||Date.now(),classifiedAt:Number(options.now)||Date.now(),targetUid:targetScope.uid,cloudState};storage.setItem(associationMarkerKey(),JSON.stringify(marker));return clone(marker);
+  }
   function clearLocalAssociation(storage){storage.removeItem(associationMarkerKey());}
-  function localAssociationPending(storage){try{const value=JSON.parse(storage.getItem(associationMarkerKey())||'null');return !!value&&value.version===VERSION&&value.status==='pending'&&value.source==='local';}catch(_){return false;}}
+  function localAssociationPending(storage){return!!localAssociationState(storage);}
+  function localAssociationTargets(storage,targetScope){const marker=localAssociationState(storage);return!!marker&&marker.status==='confirmation'&&validScope(targetScope)&&targetScope.kind==='firebase'&&marker.targetUid===targetScope.uid;}
+  function recordLocalAssociationDecision(storage,targetScope,decision,options={}){if(!validScope(targetScope)||targetScope.kind!=='firebase')throw new Error('A Firebase target scope is required');if(decision!=='open-cloud')throw new Error('Invalid local association decision');const value={version:VERSION,status:'recorded',decision,targetUid:targetScope.uid,createdAt:Number(options.now)||Date.now()};storage.setItem(associationDecisionKey(targetScope.uid),JSON.stringify(value));return clone(value);}
+  function localAssociationDecision(storage,targetScope){if(!validScope(targetScope)||targetScope.kind!=='firebase')return null;try{const value=JSON.parse(storage.getItem(associationDecisionKey(targetScope.uid))||'null');return value&&value.version===VERSION&&value.status==='recorded'&&value.targetUid===targetScope.uid&&value.decision==='open-cloud'?clone(value):null;}catch(_){return null;}}
   function associateLocal(storage,targetScope,options={}){
     if(!validScope(targetScope)||targetScope.kind!=='firebase')throw new Error('A Firebase target scope is required');
-    if(!localAssociationPending(storage))return{status:'not-pending'};
+    const marker=localAssociationState(storage);if(!marker)return{status:'not-pending'};
+    if(marker.status==='confirmation'&&marker.targetUid!==targetScope.uid)return{status:'target-mismatch'};
     const source=localScope(),canonical=read(storage,source,'canonical');
     if(read(storage,targetScope,'canonical')!=null){clearLocalAssociation(storage);return{status:'target-exists'};}
     const entries=ASSOCIATION_SLOTS.flatMap(slot=>{const value=read(storage,source,slot);return value==null?[]:[{slot,value}];});
@@ -59,5 +83,5 @@
     clearLocalAssociation(storage);
     return{status:'associated',canonical,backupKey,copiedSlots:entries.map(entry=>entry.slot)};
   }
-  return Object.freeze({VERSION,PREFIX,SESSION_PREFIX,LEGACY_KEYS,localScope,firebaseScope,validScope,token,key,sessionKey,sameScope,activeUidMatches,receiptPathOwner,ownsReceiptPath,read,write,remove,accountKeys,stateHasAccountData,quarantineLegacy,prepareLocalAssociation,clearLocalAssociation,localAssociationPending,associateLocal});
+  return Object.freeze({VERSION,PREFIX,SESSION_PREFIX,LEGACY_KEYS,localScope,firebaseScope,validScope,token,key,sessionKey,sameScope,activeUidMatches,receiptPathOwner,ownsReceiptPath,read,write,remove,accountKeys,sessionKeys,applyServerReset,stateHasAccountData,quarantineLegacy,associationMarkerKey,associationDecisionKey,localAssociationState,prepareLocalAssociation,classifyLocalAssociation,clearLocalAssociation,localAssociationPending,localAssociationTargets,recordLocalAssociationDecision,localAssociationDecision,associateLocal});
 });

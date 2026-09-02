@@ -1,7 +1,7 @@
 'use strict';
 const assert=require('node:assert/strict');
 const test=require('node:test');
-const {CALLBACKS}=require('../src/integration/ltd/TaxMateLtdUIFacade');
+const {CALLBACKS,TaxMateLtdUIFacade}=require('../src/integration/ltd/TaxMateLtdUIFacade');
 const {make}=require('./test-fixture');
 
 test('facade exposes the complete stable semantic callback surface',()=>{
@@ -18,6 +18,12 @@ test('information overlay and back preserve the Codex-owned dirty draft',async()
 
 test('busy, field error, review required and failure are explicit result states',async()=>{
   const {facade}=make('fresh');const unknown=await facade.invoke('notARealCallback',{});assert.equal(unknown.status,'failure');await facade.onAddBusinessCategoryChosen({category:'limited_company'});const invalid=await facade.onContinueStep({step:1,values:{legalName:'',incorporationDate:'bad',companyNumberStatus:'provided',companyNumber:'1'}});assert.equal(invalid.status,'field_error');assert.ok(invalid.fieldErrors.length>=2);assert.ok(invalid.fieldErrors.every(error=>error.reasonCode&&error.copyKey&&!('message'in error)&&!('code'in error)));
+});
+
+test('a timed-out action restores interactivity, ignores the late result and emits only safe trace fields',async()=>{
+  const {driver}=make('fresh'),traces=[];driver.chooseBusinessCategory=()=>new Promise(()=>{});const facade=new TaxMateLtdUIFacade({driver,actionTimeoutMs:100,trace:event=>traces.push(event)}),result=await facade.onAddBusinessCategoryChosen({category:'limited_company',privatePayload:'must-not-trace'});
+  assert.equal(result.status,'failure');assert.equal(result.error.reasonCode,'action_timeout');assert.equal(result.snapshot.busy.active,false);assert.equal(facade.getSnapshot().busy.active,false);assert.deepEqual(Object.keys(traces[0]).sort(),['action','correlationId','result','route'].sort());assert.deepEqual(Object.keys(traces.at(-1)).sort(),['action','correlationId','durationMs','result','route'].sort());assert.equal(JSON.stringify(traces).includes('privatePayload'),false);
+  driver.chooseBusinessCategory=()=>({status:'ok',nextRoute:'business.category-choice'});const retry=await facade.onAddBusinessCategoryChosen({category:'self_employed_business'});assert.equal(retry.status,'ok');assert.equal(retry.snapshot.busy.active,false);assert.equal(facade.getSnapshot().busy.active,false);
 });
 
 test('Fresh Step 1 to 5 creates a real company and Step 4 review does not falsely block bookkeeping',async()=>{

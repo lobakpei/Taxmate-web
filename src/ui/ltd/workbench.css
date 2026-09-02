@@ -55,7 +55,7 @@ body{
 .tm-col{
   width:100%; max-width:var(--col); flex:1 0 auto;
   display:flex; flex-direction:column; position:relative;
-  padding:0 16px 132px;
+  padding:0 16px calc(132px + env(safe-area-inset-bottom));
 }
 @media (min-width:900px){
   .tm-app{padding:28px 0}
@@ -283,6 +283,10 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-rec .rs{font-size:12px; color:var(--muted); margin-top:2px}
 .tm-rec .rv{font-weight:800; font-size:14px; text-align:end; color:var(--ink)}
 .tm-rec .rv.neg{color:var(--coral)}
+.tm-secondary-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
+.tm-secondary-actions .tm-btn{flex:1 1 150px;min-height:44px}
+.tm-ownership-card{margin-top:18px}
+.tm-record-actions{display:flex;flex-direction:column;gap:12px;margin-top:12px;margin-bottom:4px}
 .tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
 .tm-pill.warn{background:var(--amber-soft); color:var(--amber)}
 .tm-pill.ok{background:var(--brand-soft); color:var(--brand-deep)}
@@ -332,6 +336,11 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 :where(button,a,input,select,textarea,[tabindex]):focus-visible{
   outline:3px solid color-mix(in srgb,var(--brand) 45%,transparent); outline-offset:2px; border-radius:8px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important; transition:none!important}}
+@media (max-width:420px){
+  .tm-secondary-actions{flex-direction:column;gap:10px}
+  .tm-secondary-actions .tm-btn{width:100%;flex:0 0 auto}
+  .tm-record-actions{gap:10px;margin-top:10px}
+}
 
 /* 18 — HELPERS ------------------------------------------------------------ */
 .tm-muted{color:var(--muted)} .tm-center{text-align:center}

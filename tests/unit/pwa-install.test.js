@@ -19,10 +19,16 @@ test('Not now suppresses promotion for exactly fourteen days',()=>{
   assert.equal(P.canPromote({state:active,now:dismissedAt+P.DISMISSAL_WINDOW_MS,dismissedAt,hasDeferredPrompt:true}),true);
 });
 
-test('all installed signals hide promotion and proactive prompt is one-time',()=>{
-  for(const signal of [{displayModeStandalone:true},{navigatorStandalone:true},{persistedInstalled:true}]){
+test('only current standalone signals hide promotion and proactive prompt is one-time',()=>{
+  for(const signal of [{displayModeStandalone:true},{navigatorStandalone:true}]){
     assert.equal(P.canPromote({state:active,now,hasDeferredPrompt:true,...signal}),false);
   }
+  assert.equal(P.canPromote({state:active,now,persistedInstalled:true,hasBrowserInstallInstructions:true}),true);
   assert.equal(P.canPromptProactively({state:active,now,hasDeferredPrompt:true,proactiveShown:false}),true);
   assert.equal(P.canPromptProactively({state:active,now,hasDeferredPrompt:true,proactiveShown:true}),false);
+});
+
+test('Android Chrome and Samsung-style browser tabs retain a manual install path after uninstall',()=>{
+  for(const browser of ['android-chrome','samsung-internet'])assert.equal(P.canPromote({state:active,now,persistedInstalled:true,hasBrowserInstallInstructions:true,browser}),true);
+  assert.equal(P.isInstalled({persistedInstalled:true}),false);assert.equal(P.isInstalled({displayModeStandalone:true,persistedInstalled:false}),true);
 });

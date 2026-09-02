@@ -55,13 +55,14 @@ test('returning account detection uses durable cloud facts rather than sign-in a
 test('fresh-client flow separates inbound restore from durable outbound ACK convergence',()=>{
   const app=fs.readFileSync(path.join(__dirname,'../../src/app/app.js'),'utf8');
   assert.doesNotMatch(app,/if\(OB\s*&&\s*!OB\._signingInFlow\)\{\s*try\{\s*obClose/);
-  assert.match(app,/const result=await startUserSync\(u\);\s*applyHydratedAccountResult\(result\)/);
-  assert.match(app,/if\(result\.existingCloudAccount\)\{applyHydratedAccountResult\(result\);return;\}/);
-  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='converged';CLOUD\.partnershipHydrationState='converged'/);
+  assert.match(app,/const result=await startUserSync\(u\);safeActionTrace\('account_hydration',[\s\S]{0,240}if\(transition!==AUTH_TRANSITION_GENERATION\)return/);
+  assert.match(app,/CLOUD\.hydrationResult=result;const presentation=await applyHydratedAccountResult\(result/);
+  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='presenting';CLOUD\.partnershipHydrationState='converged'/);
   assert.match(app,/clearUserSyncListeners\(\);CLOUD\.hydrationState='failed'[\s\S]*setTimeout\(\(\)=>\{const current=cloudUser\(\)/);
   assert.ok(app.indexOf('const metaDoc=await')<app.indexOf('await pushUserState(uid,true)'));
   assert.ok(app.indexOf('Promise.all(partnershipSubscriptions)')<app.indexOf('await pushUserState(uid,true)'));
-  assert.ok(app.indexOf("CLOUD.hydrationState='converged';CLOUD.partnershipHydrationState='converged'")<app.indexOf('await pushUserState(uid,true)'));
+  assert.ok(app.indexOf("CLOUD.hydrationState='presenting';CLOUD.partnershipHydrationState='converged'")<app.indexOf('await applyHydratedAccountResult(result'));
+  assert.ok(app.indexOf('await applyHydratedAccountResult(result')<app.indexOf('await pushUserState(uid,true)'));
   assert.match(app,/TaxMateSync\.reconcileRecords\(current,remote\)/);
   assert.match(app,/reconciliation\.uploads\.forEach\(record=>enqueueSyncOperation/);
   assert.match(app,/async function flushSyncForConvergence\(uid\)/);

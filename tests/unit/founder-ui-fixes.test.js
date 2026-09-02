@@ -65,7 +65,8 @@ test('draft persistence has one-shot suppression while canonical emits always re
   assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)\{\s*UI\.skipNextDraftEmitRender-=1;\s*return; \/\/ consume only the draft persistence emit/);
   assert.match(renderer,/finally \{[\s\S]*if\(UI\.skipNextDraftEmitRender>0\) UI\.skipNextDraftEmitRender-=1;/);
   assert.match(renderer,/onDraftChanged[^\n]*\{skipPaint:true\}/);
-  assert.match(renderer,/else if\(!opts\.skipPaint\) paint\(\)/);
+  assert.match(renderer,/else if\(!opts\.skipPaint\) paintIfChanged\(\)/);
+  assert.match(renderer,/function paintIfChanged\(\)\{ if\(UI\.mountedKey!==renderKey\(\)\) paint\(\); \}/);
   assert.doesNotMatch(renderer,/if\s*\(\s*key\s*===\s*UI\.mountedKey\s*\)\s*\{?\s*return/);
   assert.match(adapter,/canonicalListener=\(\)=>\{if\(!driver\|\|driver\.isFixtureSession&&driver\.isFixtureSession\(\)\)return;driver\.reload\(\);facade\.emit\(\);\};root\.addEventListener\('taxmate:canonical-state-updated',canonicalListener\)/);
   assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
