@@ -33,16 +33,6 @@
     value.onEditLegacyBusiness=async input=>{const result=await originalEditLegacy(input);if(result.status==='ok')bridge().exitToLegacyBusiness(null,input.businessId);return result;};
     const originalPack=value.onDownloadWorkingPack.bind(value);
     value.onDownloadWorkingPack=async input=>{const result=await originalPack(input);if(result.status==='ok'&&result.data)bridge().downloadWorkingPack(result.data);return result;};
-    const originalContinue=value.onContinueStep.bind(value);
-    value.onContinueStep=async input=>{
-      const result=await originalContinue(input);
-      if(result&&result.status==='ok'&&result.data&&result.data.previewCompleted===true){
-        try{root.sessionStorage.removeItem(bridge().fixtureSessionKey());}catch(_){}
-        bridge().exitToBusinesses();
-        root.queueMicrotask(()=>{if(root.TaxMateLtdProductionAdapter)root.TaxMateLtdProductionAdapter.dispose();});
-      }
-      return result;
-    };
     return value;
   }
 
@@ -53,26 +43,19 @@
       for(const name of required)if(!root[name])throw new Error(`Missing Ltd runtime module: ${name}`);
       const copy=await loadCopy(),b=bridge();if(!b.accountReady())throw new Error('TaxMate account scope is not ready');
       const canonicalRepository=root.TaxMateCompanyStateRepository.externalRepository({kind:'taxmate-production-state',load:()=>b.loadState(),replace:next=>b.replaceState(next),rollbackSnapshot:()=>b.rollbackSnapshot()});
-      const fixtureKey=b.fixtureSessionKey(),fixtureRepository=initial=>root.TaxMateCompanyStateRepository.externalRepository({
-        kind:'taxmate-founder-fixture-session',
-        load(){const raw=root.sessionStorage.getItem(fixtureKey);return raw?JSON.parse(raw):clone(initial);},
-        replace(next){root.sessionStorage.setItem(fixtureKey,JSON.stringify(next));return clone(next);},
-        rollbackSnapshot(){return null;}
-      });
-      const repository=root.sessionStorage.getItem(fixtureKey)?fixtureRepository(b.loadState()):canonicalRepository;
       const versions=root.TaxMateCore&&root.TaxMateCore.VERSIONS||{},networkProvider=root.TaxMateCompaniesHouseProvider.createCallableProvider(data=>b.callTrusted('lookupCompaniesHouse',{...data,clientVersion:versions.APP_VERSION,buildId:versions.BUILD_ID}));
-      const environment=root.TAXMATE_FIREBASE_ENVIRONMENT||{},provider=root.TaxMateCompaniesHouseProvider.createFounderPreviewProvider(networkProvider,{hostname:root.location&&root.location.hostname||'',firebaseProjectId:environment.firebaseConfig&&environment.firebaseConfig.projectId||'',firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,previewMode:root.TAXMATE_FOUNDER_PREVIEW_MODE||''});
+      const environment=root.TAXMATE_FIREBASE_ENVIRONMENT||{},provider=root.TaxMateCompaniesHouseProvider.createFounderShortcutProvider(networkProvider,{hostname:root.location&&root.location.hostname||'',firebaseProjectId:environment.firebaseConfig&&environment.firebaseConfig.projectId||'',firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,previewMode:root.TAXMATE_FOUNDER_PREVIEW_MODE||''});
       driver=new root.TaxMateCanonicalCompanyDriver.CanonicalCompanyDriver({
-        mode:b.hasExistingCompany()?'existing':'fresh',repository,copy,deviceId:b.deviceId(),now:Date.now,
+        mode:b.hasExistingCompany()?'existing':'fresh',repository:canonicalRepository,copy,deviceId:b.deviceId(),now:Date.now,
         entitlementSnapshot:b.entitlementSnapshot(),trustedActiveCompanyId:b.activeCompanyId(),personalTaxJurisdiction:b.personalTaxJurisdiction(),companiesHouseProvider:provider,
-        activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),fixtureRepositoryFactory:state=>fixtureRepository(state),
-        runtime:{providerMode:provider.founderPreviewMode?'founder_preview_local_emulator':'actual_taxmate_app',founderPreviewMode:provider.founderPreviewMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
+        activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),
+        runtime:{providerMode:provider.founderShortcutMode?'founder_shortcut_local_emulator':'actual_taxmate_app',founderShortcutMode:provider.founderShortcutMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
       facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),actionTimeoutMs:30000,trace:event=>console.info('Ltd action trace',event),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
       root.TaxMateLtdUIFacade=facade;
       root.TaxMateLtdWorkbenchRenderer.setProductionMode(true);
       unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value);});
-      canonicalListener=()=>{if(!driver||driver.isFixtureSession&&driver.isFixtureSession())return;driver.reload();facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
+      canonicalListener=()=>{if(!driver)return;driver.reload();facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
       return facade;
     })().catch(error=>{ready=null;throw error;});
     return ready;

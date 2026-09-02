@@ -74,7 +74,8 @@ test('valid pending outbox remains available without changing its stored represe
 test('app guards every outbox write and convergence path behind the runtime lock',()=>{
   assert.match(app,/if\(SYNC_RUNTIME\.blocked\|\|!SYNC_OUTBOX\)\{renderSyncStatus\(\);return false;\}/);
   assert.match(app,/state:'update-required'[\s\S]{0,160}Local data is safe/);
-  assert.match(app,/function flushSyncOutbox\(reason\)\{\s*if\(ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.controlsCached\|\|CLOUD\.firstSyncBlocked\)[\s\S]{0,240}if\(SYNC_RUNTIME\.blocked\)[\s\S]{0,240}if\(CLOUD\.boundaryBlocked\)/);
+  assert.match(app,/function flushSyncOutbox\(reason\)\{\s*if\(ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.controlsCached\|\|CLOUD\.firstSyncBlocked\)[\s\S]{0,240}if\(SYNC_RUNTIME\.blocked\)/);
+  assert.doesNotMatch(app,/CLOUD\.boundaryBlocked|ownership-quarantine|accountBoundaryIndex/);
   assert.match(app,/await user\.getIdToken\(\);\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*await sendSyncOperation\(operation\)/);
   assert.match(app,/catch\(error\)\{\s*if\(typeof navigator!==['"]undefined['"]&&navigator\.onLine===false\)\{renderSyncStatus\(\);break;\}\s*SYNC_OUTBOX=TaxMateSync\.markAttempt/);
   assert.match(app,/function startUserSync\(u,options=\{\}\)\{\s*if\(ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.controlsCached\)[\s\S]{0,260}if\(SYNC_RUNTIME\.blocked\)/);

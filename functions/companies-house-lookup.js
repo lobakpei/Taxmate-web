@@ -5,8 +5,8 @@ const crypto=require('node:crypto');
 const FOUNDER_ALIAS='lobakpe1';
 const FOUNDER_UID_SHA256='61cee3549f9c0b6dc5608ccbaf6ee20504bb7d52a9133f5a23e09c0023220032';
 const FOUNDER_EMAIL_SHA256='2d672b1e8274cef707c7e2e6caa6bb6903b3b21b472c264026287fba74c6f0cf';
-const FOUNDER_CLIENT_VERSION='2.1.14';
-const FOUNDER_COMPANY=Object.freeze({number:'00000000',name:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15',status:'active',type:'ltd',registryUrl:null});
+const FOUNDER_CLIENT_VERSION='2.1.15';
+const FOUNDER_COMPANY=Object.freeze({number:null,name:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15',status:null,type:null,registryUrl:null});
 
 const sha256=value=>crypto.createHash('sha256').update(String(value||''),'utf8').digest('hex');
 const safeEqual=(actual,expected)=>/^[a-f0-9]{64}$/.test(actual)&&/^[a-f0-9]{64}$/.test(expected)&&crypto.timingSafeEqual(Buffer.from(actual,'hex'),Buffer.from(expected,'hex'));
@@ -27,7 +27,7 @@ function createHandler({HttpsError,authenticate,requireTier,apiKey,fetchImpl=glo
       if(clientVersion!==requiredFounderClientVersion){log('client_version','client');throw invalidCompanyNumber();}
       const gate=founderIdentityGate(founder,{uidSha256:expectedFounderUidSha256,emailSha256:expectedFounderEmailSha256});if(!gate.allowed){log(gate.reason,'identity');throw invalidCompanyNumber();}
       try{await requireTier(founder.uid,'pro');}catch(error){log('tier','entitlement');throw error;}
-      return{status:'found',company:{...FOUNDER_COMPANY},verificationStatus:'verified',reasonCodes:['founder_preview_test_data'],previewFixture:true,previewAlias:FOUNDER_ALIAS,retryable:false};
+      return{status:'found',company:{...FOUNDER_COMPANY},verificationStatus:'manual_unverified',reasonCodes:['companies_house_verification_not_completed'],founderShortcut:true,retryable:false};
     }
     const user=authenticate(req),companyNumber=raw.toUpperCase();
     if(!/^[A-Z0-9]{8}$/.test(companyNumber))throw invalidCompanyNumber();

@@ -23,36 +23,34 @@ const {make,PRO_ENTITLEMENT}=require('./test-fixture');
 const clone=value=>JSON.parse(JSON.stringify(value));
 const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
 
-test('Founder Preview alias is accepted only by the explicit localhost emulator provider and preserves fixture provenance',async()=>{
+test('Founder shortcut is accepted only by the explicit localhost emulator provider and stores only ordinary company facts',async()=>{
   const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
-  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider({isNetworkProvider:true,async lookup(){providerCalls++;return{status:'not_found'};}},{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});
+  driver.companiesHouseProvider=CompaniesHouse.createFounderShortcutProvider({isNetworkProvider:true,async lookup(){providerCalls++;return{status:'not_found'};}},{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});
   const lookup=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
-  assert.equal(lookup.status,'ok');assert.equal(providerCalls,0);assert.equal(lookup.data.previewFixture,true);assert.equal(lookup.data.company.name,'LOBAKPE FOUNDER PREVIEW LTD');assert.equal(lookup.data.company.incorporationDate,'2025-12-15');
-  const profile=driver.activeProfile();assert.equal(profile.registryVerification.provider,'founder_preview_fixture');assert.equal(profile.registryVerification.previewFixture,true);assert.equal(profile.registryVerification.previewAlias,'lobakpe1');assert.equal(profile.registryVerification.registryFacts.registryUrl,null);
-  const step1=await facade.onContinueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'00000000',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}});assert.equal(step1.status,'ok');assert.equal(step1.nextRoute,'ltd.onboarding.step2');
-  assert.equal(driver.isFixtureSession(),true);
+  assert.equal(lookup.status,'ok');assert.equal(providerCalls,0);assert.equal(lookup.data.founderShortcut,true);assert.equal(lookup.data.previewFixture,undefined);assert.equal(lookup.data.company.number,null);assert.equal(lookup.data.company.name,'LOBAKPE FOUNDER PREVIEW LTD');assert.equal(lookup.data.company.incorporationDate,'2025-12-15');
+  const step1=await facade.onContinueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'lobakpe1',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}});assert.equal(step1.status,'ok');assert.equal(step1.nextRoute,'ltd.onboarding.step2');
+  const profile=driver.activeProfile();assert.equal(profile.companyNumberStatus,'not_available');assert.equal(profile.companyNumber==null,true);assert.equal(profile.registryVerification.provider,'user_fact');assert.equal(profile.registryVerification.registryFacts.registryUrl,null);assert.doesNotMatch(JSON.stringify(driver.state),/lobakpe1|00000000|previewFixture|previewAlias|founder_preview_fixture/i);
 });
 
-test('Founder fixture completes Step 1-5 in an isolated repository with zero canonical, claim, sync or backup write',async()=>{
-  const initial=clone(make('fresh').driver.state);let canonical=clone(initial),fixture=null,canonicalWrites=0,fixtureWrites=0,claims=0;
-  const canonicalRepository=Repository.externalRepository({kind:'canonical-test',load:()=>canonical,replace:next=>{canonicalWrites++;canonical=clone(next);return canonical;}}),fixtureRepositoryFactory=state=>Repository.externalRepository({kind:'taxmate-founder-fixture-session',load:()=>fixture||state,replace:next=>{fixtureWrites++;fixture=clone(next);return fixture;}});
-  const driver=new CanonicalCompanyDriver({mode:'fresh',repository:canonicalRepository,entitlementSnapshot:PRO_ENTITLEMENT,activeCompanyClaim:async()=>{claims++;throw new Error('fixture-must-not-claim');},fixtureRepositoryFactory});
-  await driver.chooseBusinessCategory({category:'limited_company'});driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider(CompaniesHouse.unavailableProvider(),{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});await driver.lookupCompany({companyNumber:'lobakpe1'});
-  assert.equal(driver.isFixtureSession(),true);assert.equal(canonicalWrites,0);assert.equal(claims,0);
-  assert.equal((await driver.continueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'00000000',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}})).status,'ok');
+test('Founder shortcut completes Step 1-5 as one persistent normal Ltd without secret or fixture metadata',async()=>{
+  const initial=clone(make('fresh').driver.state);let canonical=clone(initial),canonicalWrites=0,claims=0;
+  const canonicalRepository=Repository.externalRepository({kind:'canonical-test',load:()=>canonical,replace:next=>{canonicalWrites++;canonical=clone(next);return canonical;}});
+  const driver=new CanonicalCompanyDriver({mode:'fresh',repository:canonicalRepository,entitlementSnapshot:PRO_ENTITLEMENT,activeCompanyClaim:async({companyId})=>{claims++;return{status:'claimed',activeCompanyId:companyId,idempotent:false};}});
+  await driver.chooseBusinessCategory({category:'limited_company'});driver.companiesHouseProvider=CompaniesHouse.createFounderShortcutProvider(CompaniesHouse.unavailableProvider(),{hostname:'localhost',firebaseProjectId:'demo-taxmate',firebaseEmulators:true,previewMode:'ltd-founder-preview'});await driver.lookupCompany({companyNumber:'lobakpe1'});
+  assert.equal(canonicalWrites,0);assert.equal(claims,0);
+  assert.equal((await driver.continueStep({step:1,values:{companyNumberStatus:'provided',companyNumber:'lobakpe1',legalName:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15'}})).status,'ok');
   assert.equal((await driver.continueStep({step:2,values:{tradingStatus:'trading',tradingStartDate:'2025-12-20',corporationTaxStatus:'registered'}})).status,'ok');
   assert.equal((await driver.continueStep({step:3,values:{founderName:'Founder Preview',founderShares:100,otherShares:0,directorAnswer:'yes'}})).status,'ok');
   assert.equal((await driver.continueStep({step:4,values:{ordinaryServiceDigital:true,riskAnswers:{groupStructure:false,associatedCompanies:false,propertyOrInvestment:false,inventoryOrStock:false,fullVat:false}}})).status,'ok');
-  const completed=await driver.continueStep({step:5,values:{confirmed:true}});assert.equal(completed.status,'ok');assert.equal(completed.nextRoute,'home');assert.equal(completed.data.previewCompleted,true);assert.equal(completed.data.canonicalWrite,false);assert.equal(completed.data.cloudWrite,false);assert.equal(driver.list('paymentAccounts').length,0);assert.equal(claims,0);assert.equal(canonicalWrites,0);assert.ok(fixtureWrites>=6);assert.deepEqual(canonical,initial);
-  assert.equal(JSON.stringify(canonical).includes('LOBAKPE FOUNDER PREVIEW LTD'),false);
-  const canonicalReload=new CanonicalCompanyDriver({mode:'fresh',repository:canonicalRepository,entitlementSnapshot:PRO_ENTITLEMENT});assert.equal(canonicalReload.activeProfile(),null);
-  const fixtureReload=new CanonicalCompanyDriver({mode:'fresh',repository:fixtureRepositoryFactory(fixture),entitlementSnapshot:PRO_ENTITLEMENT});assert.equal(fixtureReload.isFixtureSession(),true);assert.equal(fixtureReload.activeProfile().legalName,'LOBAKPE FOUNDER PREVIEW LTD');
+  const completed=await driver.continueStep({step:5,values:{confirmed:true}});assert.ok(['ok','review_required'].includes(completed.status));assert.equal(completed.nextRoute,'ltd.workspace.overview');assert.equal(driver.list('paymentAccounts').length,2);assert.equal(claims,1);assert.ok(canonicalWrites>=5);
+  assert.match(JSON.stringify(canonical),/LOBAKPE FOUNDER PREVIEW LTD/);assert.doesNotMatch(JSON.stringify(canonical),/lobakpe1|00000000|previewFixture|previewAlias|founder_preview_fixture/i);
+  const canonicalReload=new CanonicalCompanyDriver({mode:'existing',repository:canonicalRepository,entitlementSnapshot:PRO_ENTITLEMENT});assert.equal(canonicalReload.activeProfile().lifecycleStatus,'confirmed');assert.equal(canonicalReload.activeProfile().legalName,'LOBAKPE FOUNDER PREVIEW LTD');assert.equal(canonicalReload.openExistingCompany().nextRoute,'ltd.workspace.overview');
 });
 
 test('formal-domain alias delegates once to the trusted callable, maps rejection and performs zero canonical writes',async()=>{
   const {facade,driver}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});let providerCalls=0;
   const callable=CompaniesHouse.createCallableProvider(async()=>{providerCalls++;throw{details:{reason:'company_number_format',retryable:false}};});
-  driver.companiesHouseProvider=CompaniesHouse.createFounderPreviewProvider(callable,{hostname:'www.taxmate.uk',firebaseProjectId:'taxmate-uk-2',firebaseEmulators:false,previewMode:''});
+  driver.companiesHouseProvider=CompaniesHouse.createFounderShortcutProvider(callable,{hostname:'www.taxmate.uk',firebaseProjectId:'taxmate-uk-2',firebaseEmulators:false,previewMode:''});
   const before=JSON.stringify(driver.state),result=await facade.onLookupCompaniesHouse({companyNumber:'lobakpe1'});
   assert.equal(result.status,'field_error');assert.equal(result.fieldErrors[0].reasonCode,'company_number_format');assert.equal(providerCalls,1);assert.equal(JSON.stringify(driver.state),before);
 });

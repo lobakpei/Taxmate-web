@@ -149,11 +149,9 @@ exports.claimActiveLtdCompany=onCall(baseOpts,async req=>{
   const user=auth(req),companyId=String(req.data&&req.data.companyId||'').trim();
   if(!/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(companyId))throw new HttpsError('invalid-argument','Invalid company identity',{reason:'company_id_invalid'});
   await requireTier(user.uid,'pro');
-  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`),claim=db.doc(`accountClaims/${user.uid}`);
+  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`);
   return db.runTransaction(async tx=>{
-    const [snap,claimSnap]=await Promise.all([tx.get(anchor),tx.get(claim)]);
-    if(claimSnap.exists&&String((claimSnap.data()||{}).ownerUid||'')!==user.uid)throw new HttpsError('data-loss','Account ownership claim mismatch',{reason:'account_claim_mismatch'});
-    if(!claimSnap.exists)tx.create(claim,{schemaVersion:1,status:'verified',claimType:'server_created',ownerUid:user.uid,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
+    const snap=await tx.get(anchor);
     if(snap.exists){
       const current=String((snap.data()||{}).activeCompanyId||'');
       if(current===companyId)return{status:'existing',activeCompanyId:current,idempotent:true};
