@@ -6,6 +6,7 @@
   var facade = new root.TaxMateLtdUIFacadeClient(mode, tier);
   var mount = document.getElementById('taxmate-ltd-ui-root');
   root.TaxMateLtdUIFacade = facade;
+  root.TaxMateLtdPreviewReady = false;
 
   var renderer = root.TaxMateLtdWorkbenchRenderer;
   // Optional review conveniences (UI-only): ?locale=ur & ?theme=dark. In
@@ -17,5 +18,6 @@
   facade.subscribe(function (snapshot) { renderer.render(mount, facade, snapshot); });
   facade.refresh()
     .then(function () { return params.get('reset') === '1' ? facade.onResetPreview() : null; })
+    .then(function () { root.TaxMateLtdPreviewReady = true; })
     .catch(function (error) { mount.textContent = String((error && error.message) || error); });
 })(globalThis);

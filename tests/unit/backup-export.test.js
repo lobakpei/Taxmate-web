@@ -38,6 +38,12 @@ test('signed-in receipt collection without Storage listing capability stops befo
   assert.equal(Backup.diagnostic(error).category,Backup.CATEGORIES.STORAGE_LIST);assert.equal(downloads,0);assert.equal(JSON.stringify(state),before);
 });
 
+test('foreign Firebase URL-only reference is skipped before resolving or downloading while owned orphan listing remains available',async()=>{
+  const foreign='https://firebasestorage.googleapis.com/v0/b/demo/o/receipts%2Ffounder%2Fprivate.jpg?alt=media&token=synthetic',state=baseState([entry('e1',null,foreign)]);let lists=0,resolves=0,downloads=0,foreignCalls=0;
+  const receipts=await Backup.collectReceipts({state,user:{uid:'tammy'},activeUid:'tammy',stateOwnerUid:'tammy',listStorage:async()=>{lists++;return[];},storageUrl:async()=>{resolves++;return foreign;},download:async()=>{downloads++;return{bytes:bytes(1),mimeType:'image/jpeg'};},onForeignReference:()=>{foreignCalls++;}});
+  assert.equal(receipts.length,0);assert.equal(receipts.skippedForeignCount,1);assert.equal(lists,1);assert.equal(resolves,0);assert.equal(downloads,0);assert.equal(foreignCalls,1);
+});
+
 test('missing references and download failures have distinct safe categories and messages',async()=>{
   const missing=await Backup.collectReceipts({state:baseState([entry('e1','receipts/u/missing.jpg',null)]),user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download}).then(()=>null,error=>error);
   const failedDownload=await Backup.collectReceipts({state:baseState([entry('e1',null,'https://example.test/fail.jpg')]),download:async()=>{throw new Error('private URL failed');}}).then(()=>null,error=>error);

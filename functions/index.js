@@ -1,8 +1,8 @@
 'use strict';
+const crypto=require('node:crypto');
 const {onCall,HttpsError,onRequest}=require('firebase-functions/v2/https');
 const {defineSecret,defineString}=require('firebase-functions/params');
 const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldValue}=require('firebase-admin/firestore'); const {getStorage}=require('firebase-admin/storage');
-const {getAuth}=require('firebase-admin/auth');
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const FounderPromotions=require('./founder-promotions');
 const CompaniesHouseLookup=require('./companies-house-lookup');
@@ -149,15 +149,17 @@ exports.claimActiveLtdCompany=onCall(baseOpts,async req=>{
   const user=auth(req),companyId=String(req.data&&req.data.companyId||'').trim();
   if(!/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(companyId))throw new HttpsError('invalid-argument','Invalid company identity',{reason:'company_id_invalid'});
   await requireTier(user.uid,'pro');
-  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`);
+  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`),claim=db.doc(`accountClaims/${user.uid}`);
   return db.runTransaction(async tx=>{
-    const snap=await tx.get(anchor);
+    const [snap,claimSnap]=await Promise.all([tx.get(anchor),tx.get(claim)]);
+    if(claimSnap.exists&&String((claimSnap.data()||{}).ownerUid||'')!==user.uid)throw new HttpsError('data-loss','Account ownership claim mismatch',{reason:'account_claim_mismatch'});
+    if(!claimSnap.exists)tx.create(claim,{schemaVersion:1,status:'verified',claimType:'server_created',ownerUid:user.uid,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp()});
     if(snap.exists){
       const current=String((snap.data()||{}).activeCompanyId||'');
       if(current===companyId)return{status:'existing',activeCompanyId:current,idempotent:true};
       throw new HttpsError('already-exists','This TaxMate account already has its Limited Company',{reason:'one_active_ltd_limit',activeCompanyId:current});
     }
-    tx.create(anchor,{schemaVersion:1,status:'active_slot_claimed',activeCompanyId:companyId,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),releasePolicy:'founder_approval_required'});
+    tx.create(anchor,{schemaVersion:1,status:'active_slot_claimed',activeCompanyId:companyId,accountOwnerUid:user.uid,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),releasePolicy:'founder_approval_required'});
     return{status:'claimed',activeCompanyId:companyId,idempotent:false};
   });
 });
@@ -173,22 +175,26 @@ exports.leavePartnership=onCall(baseOpts,async req=>{
 });
 exports.deleteAccountData=onCall(opts,async req=>{
   const user=auth(req),uid=user.uid;
-  const memberships=await db.collectionGroup('members').where('uid','==',uid).get();
-  let partnershipRecordsRetained=0,partnershipsDeleted=0;
-  for(const member of memberships.docs){
-    const partnership=member.ref.parent.parent;
-    if(!partnership)continue;
-    const allMembers=await partnership.collection('members').get();
-    const otherMembers=allMembers.docs.filter(doc=>doc.id!==uid);
-    if(otherMembers.length){await member.ref.delete();partnershipRecordsRetained++;}
-    else{await db.recursiveDelete(partnership);partnershipsDeleted++;}
-  }
-  await getStorage().bucket().deleteFiles({prefix:`receipts/${uid}/`,force:true});
-  const redemptions=await db.collection('promotionRedemptions').where('uid','==',uid).get();
-  for(let i=0;i<redemptions.docs.length;i+=400){const batch=db.batch();for(const doc of redemptions.docs.slice(i,i+400))batch.delete(doc.ref);await batch.commit();}
-  const customerRef=db.doc(`billingCustomers/${uid}`),customer=await customerRef.get();
-  if(customer.exists){try{await stripe().customers.del(customer.data().stripeCustomerId);}catch(e){if(e&&e.code!=='resource_missing')throw e;}await customerRef.delete();}
-  await db.recursiveDelete(db.doc(`users/${uid}`));
-  await getAuth().deleteUser(uid);
-  return {deleted:true,partnershipRecordsRetained,partnershipsDeleted};
+  const customerRef=db.doc(`billingCustomers/${uid}`),customer=await customerRef.get(),entitlement=await db.doc(`users/${uid}/entitlements/current`).get(),entitlementData=entitlement.exists?entitlement.data()||{}:{};
+  if(ACTIVE_SUBSCRIPTIONS.has(String(entitlementData.subscriptionStatus||''))&&TIER_WEIGHT[String(entitlementData.paidTier||'free')]>0)throw new HttpsError('failed-precondition','Active billing must be resolved before deleting TaxMate data',{reason:'active_billing'});
+  let stripeCustomerId=null;
+  const resetRef=db.doc(`accountResets/${uid}`),priorReset=await resetRef.get(),resetEpoch=Math.max(Date.now(),Number(priorReset.exists&&priorReset.data().resetEpoch||0)+1),correlationId=crypto.randomUUID();
+  await resetRef.set({schemaVersion:1,status:'deleting',resetEpoch,correlationId,updatedAt:FieldValue.serverTimestamp()});
+  let stage='billing_preflight',partnershipRecordsRetained=0,partnershipsDeleted=0;
+  try{
+    if(customer.exists){
+      stripeCustomerId=String(customer.data().stripeCustomerId||'');if(!/^cus_[A-Za-z0-9]+$/.test(stripeCustomerId))throw new Error('billing_reference_invalid');
+      const client=stripe(),[subscriptions,invoices]=await Promise.all([client.subscriptions.list({customer:stripeCustomerId,status:'all',limit:100}),client.invoices.list({customer:stripeCustomerId,limit:100})]);
+      if(subscriptions.data.length||invoices.data.some(item=>item.paid&&Number(item.amount_paid)>0))throw new Error('billing_history_present');
+    }
+    stage='memberships';
+    const memberships=await db.collectionGroup('members').where('uid','==',uid).get();
+    for(const member of memberships.docs){const partnership=member.ref.parent.parent;if(!partnership)continue;const [root,allMembers]=await Promise.all([partnership.get(),partnership.collection('members').get()]),otherMembers=allMembers.docs.filter(doc=>doc.id!==uid);if(!otherMembers.length&&root.exists&&String((root.data()||{}).createdBy||'')===uid){await db.recursiveDelete(partnership);partnershipsDeleted++;}else{await member.ref.delete();partnershipRecordsRetained++;}}
+    stage='storage';await getStorage().bucket().deleteFiles({prefix:`receipts/${uid}/`,force:true});
+    stage='promotions';const redemptions=await db.collection('promotionRedemptions').where('uid','==',uid).get();for(let i=0;i<redemptions.docs.length;i+=400){const batch=db.batch();for(const doc of redemptions.docs.slice(i,i+400))batch.delete(doc.ref);await batch.commit();}
+    stage='billing';if(customer.exists){try{await stripe().customers.del(stripeCustomerId);}catch(error){if(error&&error.code!=='resource_missing')throw error;}await customerRef.delete();}
+    stage='user_data';await db.recursiveDelete(db.doc(`users/${uid}`));await db.doc(`accountClaims/${uid}`).delete().catch(()=>{});await db.recursiveDelete(db.doc(`accountQuarantines/${uid}`)).catch(()=>{});
+    stage='complete';await resetRef.set({schemaVersion:1,status:'complete',resetEpoch,correlationId,updatedAt:FieldValue.serverTimestamp()});
+    return{deleted:true,resetEpoch,partnershipRecordsRetained,partnershipsDeleted,authIdentityRetained:true};
+  }catch(error){await resetRef.set({schemaVersion:1,status:'failed',resetEpoch,correlationId,failedStage:stage,updatedAt:FieldValue.serverTimestamp()}).catch(()=>{});console.error('account-deletion-failed',{category:'account_deletion',stage,correlationId});throw new HttpsError('internal','Account deletion could not be completed',{reason:'delete_pipeline_failed',stage,correlationId});}
 });

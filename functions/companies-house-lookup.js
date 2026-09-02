@@ -5,7 +5,7 @@ const crypto=require('node:crypto');
 const FOUNDER_ALIAS='lobakpe1';
 const FOUNDER_UID_SHA256='61cee3549f9c0b6dc5608ccbaf6ee20504bb7d52a9133f5a23e09c0023220032';
 const FOUNDER_EMAIL_SHA256='2d672b1e8274cef707c7e2e6caa6bb6903b3b21b472c264026287fba74c6f0cf';
-const FOUNDER_CLIENT_VERSION='2.1.13';
+const FOUNDER_CLIENT_VERSION='2.1.14';
 const FOUNDER_COMPANY=Object.freeze({number:'00000000',name:'LOBAKPE FOUNDER PREVIEW LTD',incorporationDate:'2025-12-15',status:'active',type:'ltd',registryUrl:null});
 
 const sha256=value=>crypto.createHash('sha256').update(String(value||''),'utf8').digest('hex');

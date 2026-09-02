@@ -33,6 +33,16 @@
     value.onEditLegacyBusiness=async input=>{const result=await originalEditLegacy(input);if(result.status==='ok')bridge().exitToLegacyBusiness(null,input.businessId);return result;};
     const originalPack=value.onDownloadWorkingPack.bind(value);
     value.onDownloadWorkingPack=async input=>{const result=await originalPack(input);if(result.status==='ok'&&result.data)bridge().downloadWorkingPack(result.data);return result;};
+    const originalContinue=value.onContinueStep.bind(value);
+    value.onContinueStep=async input=>{
+      const result=await originalContinue(input);
+      if(result&&result.status==='ok'&&result.data&&result.data.previewCompleted===true){
+        try{root.sessionStorage.removeItem(bridge().fixtureSessionKey());}catch(_){}
+        bridge().exitToBusinesses();
+        root.queueMicrotask(()=>{if(root.TaxMateLtdProductionAdapter)root.TaxMateLtdProductionAdapter.dispose();});
+      }
+      return result;
+    };
     return value;
   }
 
@@ -58,7 +68,7 @@
         activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),fixtureRepositoryFactory:state=>fixtureRepository(state),
         runtime:{providerMode:provider.founderPreviewMode?'founder_preview_local_emulator':'actual_taxmate_app',founderPreviewMode:provider.founderPreviewMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
-      facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
+      facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),actionTimeoutMs:30000,trace:event=>console.info('Ltd action trace',event),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
       root.TaxMateLtdUIFacade=facade;
       root.TaxMateLtdWorkbenchRenderer.setProductionMode(true);
       unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value);});

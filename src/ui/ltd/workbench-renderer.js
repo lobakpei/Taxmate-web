@@ -21,7 +21,7 @@
     sheet:null,      // { kind, step, ctx } UI-local sheet layered over current route
     cal:null,        // fieldKey whose calendar popover is open
     calView:null,    // { y, m } month shown in calendar
-    checkIdx:0,      // onboarding step-4: current setup-check index (one question per screen)
+    checkIdx:null,   // onboarding step-4: current setup-check index (one question per screen)
     ctIdx:0,         // Corporation Tax review: current factual topic
     disc:{},         // discKey -> open boolean
     errors:{},       // scopeId -> { fieldId: resolvedText }
@@ -33,6 +33,7 @@
     // button which is about to receive the same pointer click. No other emit
     // (including a canonical-state reload) is eligible for this suppression.
     skipNextDraftEmitRender:0,
+    pendingRun:null, pendingDraftRuns:[], pendingRunTimer:null,
     lastRouteKey:null, mountedKey:null
   };
   var LAST = { mount:null, facade:null, snapshot:null };
@@ -113,7 +114,8 @@
   }
   function displayToISO(s){
     if(!s) return '';
-    var m = String(s).trim().match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
+    var value=String(s).trim();if(/^\d{8}$/.test(value))value=value.slice(0,2)+'/'+value.slice(2,4)+'/'+value.slice(4);
+    var m = value.match(/^(\d{1,2})\/(\d{1,2})\/(\d{4})$/);
     if(!m) return null;
     var d=+m[1], mo=+m[2], y=+m[3];
     if(mo<1||mo>12||d<1||d>31) return null;
@@ -130,6 +132,17 @@
   function overlays(){ return nav().overlays||[]; }
   function pendingDiscard(){ return nav().pendingDiscard; }
   function busy(){ return !!(S().busy && S().busy.active); }
+  function schedulePendingRun(){
+    if((!UI.pendingRun&&!UI.pendingDraftRuns.length)||UI.pendingRunTimer)return;
+    UI.pendingRunTimer=setTimeout(function(){
+      UI.pendingRunTimer=null;
+      if(!UI.pendingRun&&!UI.pendingDraftRuns.length)return;
+      if(busy()){schedulePendingRun();return;}
+      var pending=UI.pendingDraftRuns.length?UI.pendingDraftRuns.shift():UI.pendingRun;
+      if(pending===UI.pendingRun)UI.pendingRun=null;
+      run(pending.cb,pending.input,pending.opts);
+    },0);
+  }
   function draftFields(sid){
     var dr = S().drafts && S().drafts.drafts && S().drafts.drafts[sid];
     var out={}; if(dr&&dr.fields) dr.fields.forEach(function(f){ out[f.id]=f.value; });
@@ -161,27 +174,38 @@
   function run(cb, input, opts){
     opts = opts||{};
     var f=LAST.facade;
-    if(busy()) return; // guard double submit
+    if(busy()){
+      // Draft persistence can overlap a fast next tap. Collapse repeated submits,
+      // but queue the latest different semantic action so it is never silently lost.
+      var active=S().busy&&S().busy.action;
+      if(cb==='onDraftChanged'){
+        var field=input&&input.field||{},key=String(input&&input.screenId||'')+'::'+String(field.id||'');
+        UI.pendingDraftRuns=UI.pendingDraftRuns.filter(function(item){return item.key!==key;});
+        UI.pendingDraftRuns.push({key:key,cb:cb,input:input||{},opts:opts});schedulePendingRun();return;
+      }
+      if(cb===active)return;
+      UI.pendingRun={cb:cb,input:input||{},opts:opts};schedulePendingRun();return;
+    }
     Promise.resolve(f[cb](input||{})).then(function(r){
       r=r||{};
       var scope=opts.scope||routeId();
       if(r.status==='field_error'){
         UI.errors[scope]=mapErrors(r.fieldErrors);
-        UI.review[scope]=null; UI.focusError=true; paint();
+        UI.review[scope]=null; UI.focusError=true; paintIfChanged();
       } else if(r.status==='review_required'){
         UI.review[scope]=r.reviewReasons||[]; UI.errors[scope]=null;
         if(opts.onReview) opts.onReview(r);
-        paint();
+        paintIfChanged();
       } else if(r.status==='failure'){
         if(opts.onReview){ // fail closed: surface "Needs checking" rather than a bare error
-          UI.review[scope]=['facade_failure']; UI.errors[scope]=null; opts.onReview(r); paint();
-        } else { UI.toast = t((r.error&&r.error.copyKey)||'error.fix_issue', r.error&&r.error.params); paint(); scheduleToast(); }
+          UI.review[scope]=['facade_failure']; UI.errors[scope]=null; opts.onReview(r); paintIfChanged();
+        } else { UI.toast = t((r.error&&r.error.copyKey)||'error.fix_issue', r.error&&r.error.params); paintIfChanged(); scheduleToast(); }
       } else if(r.status==='ok'){
         UI.errors[scope]=null; UI.review[scope]=null;
         if(opts.onOk) opts.onOk(r);
-        else if(!opts.skipPaint) paint();
-      } else { paint(); }
-    });
+        else if(!opts.skipPaint) paintIfChanged();
+      } else { paintIfChanged(); }
+    }).catch(function(){UI.toast=t('error.fix_issue');paintIfChanged();scheduleToast();}).finally(schedulePendingRun);
   }
   function mapErrors(list){
     var out={}; (list||[]).forEach(function(e){ out[e.field]=t(e.copyKey, e.params||{}); });
@@ -260,7 +284,7 @@
   function dateField(o){
     // o:{scope,label,fid,infoId,persist}. Displays DD/MM/YYYY, stores ISO in cache under fid.
     var scope=o.scope, fid=o.fid, err=errFor(scope,fid);
-    var iso=fieldVal(scope,fid,'');
+    var iso=fieldVal(scope,fid,o.default||'');
     var disp = iso && /^\d{4}-\d{2}-\d{2}$/.test(iso) ? isoToDisplay(iso) : iso;
     var wrapCls='tm-inwrap'+(err?' err':'');
     var input=h('input',{class:'tm-input suf', type:'text', inputmode:'numeric',
@@ -571,11 +595,12 @@
     return wrap;
   }
   function screenOneLtdLimit(){
+    var existing=S().company&&S().company.profile||{},preview=!!(existing.registryVerification&&existing.registryVerification.previewFixture);
     var wrap=frag();
     wrap.append(backBar(function(){ run('onBack',{},{}); }, t('add.ltd_title')));
-    wrap.append(notice('info', t('add.ltd_title'), t('add.one_ltd_limit')));
+    wrap.append(notice('info', preview?t('preview.notice_title'):t('add.ltd_title'), preview?t('preview.notice_body'):t('add.one_ltd_limit')));
     wrap.append(h('div',{style:'margin-top:14px'},[
-      btn(t('add.open_existing'),'p',function(){
+      btn(preview?t('preview.resume'):t('add.open_existing'),'p',function(){
         var act=(S().companyLimit&&S().companyLimit.existingAction)||{callback:'onOpenExistingCompany',input:{}};
         run(act.callback||'onOpenExistingCompany', act.input||{}, {}); }),
       h('div',{class:'tm-spacer'}),
@@ -612,7 +637,8 @@
   }
   function step1(){
     var sid='ltd.onboarding.step1';
-    var reg=fieldVal(sid,'companyNumberStatus', getChoice(sid,'reg')||'');
+    var profile=S().company&&S().company.profile||{};
+    var reg=fieldVal(sid,'companyNumberStatus', getChoice(sid,'reg')||profile.companyNumberStatus||'');
     var body=[
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s1.registered_question'), infoTrigger('s1.ch')]),
       choiceGroup({scope:sid,name:'reg',row:true,current:reg,options:[
@@ -621,21 +647,22 @@
     ];
     if(reg==='provided'){
       body.push(h('div',{class:'tm-company-identity-stack'},[
-        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text'}),
+        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text',default:profile.companyNumber||''}),
         h('div',{},[btn(t('s1.check_ch'),'s',function(){
-          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.number)setField(sid,'companyNumber',co.number);if(co.name)setField(sid,'legalName',co.name);if(co.incorporationDate)setField(sid,'incorporationDate',co.incorporationDate);paint();}});
+          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.number){setField(sid,'companyNumber',co.number);persistDraft(sid,'companyNumber','text',co.number);}if(co.name){setField(sid,'legalName',co.name);persistDraft(sid,'legalName','text',co.name);}if(co.incorporationDate){setField(sid,'incorporationDate',co.incorporationDate);persistDraft(sid,'incorporationDate','date',co.incorporationDate);}paint();}});
         })]),
         lookupState(),
-        textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text'}),
-        dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date')})
+        textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text',default:profile.legalName||''}),
+        dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date'),default:profile.incorporationDate||''})
       ]));
     } else if(reg==='not_available'){
-      body.push(textField({scope:sid,fid:'legalName',label:t('s1.proposed_name'),placeholder:t('s1.proposed_name'),type:'text'}));
+      body.push(textField({scope:sid,fid:'legalName',label:t('s1.proposed_name'),placeholder:t('s1.proposed_name'),type:'text',default:profile.legalName||''}));
       body.push(notice('info',null,t('s1.draft_notice')));
     }
+    var lookupCompany=S().lookupStatus&&S().lookupStatus.company||{};
     var foot=[ btn(t('common.continue'),'p',function(){ submitStep(1,sid,{
-        legalName:fieldVal(sid,'legalName',''), companyNumberStatus:reg,
-        companyNumber:fieldVal(sid,'companyNumber',''), incorporationDate:fieldVal(sid,'incorporationDate','')
+        legalName:fieldVal(sid,'legalName',profile.legalName||lookupCompany.name||''), companyNumberStatus:reg,
+        companyNumber:fieldVal(sid,'companyNumber',profile.companyNumber||lookupCompany.number||''), incorporationDate:fieldVal(sid,'incorporationDate',profile.incorporationDate||lookupCompany.incorporationDate||'')
       }); }) ];
     if(reg==='not_available') foot.push(btn(t('s3.save_draft'),'g',function(){ run('onSaveCompanyDraft',{},{}); }));
     return stepShell(1, t('setup.title'), body, foot);
@@ -646,7 +673,8 @@
     if(ls.status==='loading') return notice('info',null,t('s1.checking'));
     if(ls.status==='found'){
       var co=ls.company||{};
-      var n=notice(ls.verificationStatus==='verified'?'ok':'warn', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
+      var n=ls.previewFixture===true?notice('info',t('preview.notice_title'),t('preview.notice_body')):notice(ls.verificationStatus==='verified'?'ok':'warn', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
+      if(ls.previewFixture===true)n.classList.add('tm-founder-preview-marker');
       if(co.registryUrl)n.append(h('a',{class:'tm-linkbtn',href:co.registryUrl,target:'_blank',rel:'noopener noreferrer',style:'display:inline-block;margin-top:4px'},t('s1.public_record')));
       return n;
     }
@@ -663,24 +691,24 @@
         btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
       ]);
     }
-    var trading=fieldVal(sid,'tradingStatus', getChoice(sid,'trading')||'');
+    var trading=fieldVal(sid,'tradingStatus', getChoice(sid,'trading')||profile.tradingStatus||'');
     var body=[
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.started_question'), infoTrigger('s2.trading')]),
       choiceGroup({scope:sid,name:'trading',row:true,current:trading,options:[
         {v:'trading',title:t('common.yes')},{v:'not_started',title:t('s2.not_yet')}
       ],onPick:function(v){ setField(sid,'tradingStatus',v); persistDraft(sid,'tradingStatus','select-one',v); requestPeriodPlan(sid,v); }})
     ];
-    if(trading==='trading') body.push(dateField({scope:sid,fid:'tradingStartDate',label:t('s2.start_date'),onChange:function(){requestPeriodPlan(sid,'trading');}}));
+    if(trading==='trading') body.push(dateField({scope:sid,fid:'tradingStartDate',label:t('s2.start_date'),default:profile.tradingStartDate||'',onChange:function(){requestPeriodPlan(sid,'trading');}}));
     body.push(periodPlanCard());
     body.push(periodOverrideEntry(sid));
-    var ctStatus=fieldVal(sid,'corporationTaxStatus', getChoice(sid,'ct')||'');
+    var ctStatus=fieldVal(sid,'corporationTaxStatus', getChoice(sid,'ct')||profile.corporationTaxStatus||'');
     body.push(h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.ct_account_question'), infoTrigger('s2.ct_account')]));
     body.push(choiceGroup({scope:sid,name:'ct',row:true,current:ctStatus,options:[
       {v:'registered',title:t('common.yes')},{v:'not_registered',title:t('s2.not_yet')},{v:'unknown',title:t('common.not_sure')}
     ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); }}));
     var foot=[ btn(t('common.continue'),'p',function(){
       var pp=companyPeriod(sid);
-      submitStep(2,sid,{ tradingStatus:trading, tradingStartDate:fieldVal(sid,'tradingStartDate',''),
+      submitStep(2,sid,{ tradingStatus:trading, tradingStartDate:fieldVal(sid,'tradingStartDate',profile.tradingStartDate||''),
         accountingPeriod:{startDate:pp.start,endDate:pp.end,referenceDate:pp.ref},
         corporationTaxStatus:ctStatus });
     }, {disabled: !trading || !ctStatus}) ];
@@ -726,10 +754,11 @@
   }
   function step3(){
     var sid='ltd.onboarding.step3';
-    var onlyShareholder=getChoice(sid,'sole');
-    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||'');
+    var profile=S().company&&S().company.profile||{},preview=!!(profile.registryVerification&&profile.registryVerification.previewFixture),holders=profile.shareholders||[],accountHolder=holders.filter(function(item){return item.isAccountHolder;})[0]||{},otherHolder=holders.filter(function(item){return !item.isAccountHolder;})[0]||{};
+    var onlyShareholder=fieldVal(sid,'onlyShareholder',getChoice(sid,'sole')||(holders.length?holders.length===1?'yes':'no':preview?'yes':''));
+    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||(profile.accountHolder?profile.accountHolder.isDirector===true?'yes':profile.accountHolder.isDirector===false?'no':'not_sure':preview?'yes':''));
     var body=[
-      textField({scope:sid,fid:'founderName',label:t('s3.legal_name'),infoId:'s3.legal_name',placeholder:t('s3.legal_name'),type:'text'}),
+      textField({scope:sid,fid:'founderName',label:t('s3.legal_name'),infoId:'s3.legal_name',placeholder:t('s3.legal_name'),type:'text',default:accountHolder.name||(preview?t('preview.founder_name'):'')}),
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s3.director_question'), infoTrigger('s3.director')]),
       choiceGroup({scope:sid,name:'director',row:true,current:director,options:[
         {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
@@ -737,14 +766,14 @@
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s3.only_shareholder_question'), infoTrigger('s3.shareholder')]),
       choiceGroup({scope:sid,name:'sole',row:true,current:onlyShareholder,options:[
         {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')}
-      ]})
+      ],onPick:function(v){setField(sid,'onlyShareholder',v);persistDraft(sid,'onlyShareholder','select-one',v);}})
     ];
     if(onlyShareholder==='yes'){
       body.push(notice('ok', null, t('s3.owner_100')));
     } else if(onlyShareholder==='no'){
-      body.push(textField({scope:sid,fid:'founderShares',label:t('s3.your_ownership'),kind:'percent',placeholder:'51',type:'number'}));
-      body.push(textField({scope:sid,fid:'otherShareholderName',label:t('s3.other_name'),placeholder:t('s3.other_name'),type:'text'}));
-      body.push(textField({scope:sid,fid:'otherShares',label:t('s3.other_ownership'),kind:'percent',placeholder:'49',type:'number'}));
+      body.push(textField({scope:sid,fid:'founderShares',label:t('s3.your_ownership'),kind:'percent',placeholder:'51',type:'number',default:accountHolder.shares||''}));
+      body.push(textField({scope:sid,fid:'otherShareholderName',label:t('s3.other_name'),placeholder:t('s3.other_name'),type:'text',default:otherHolder.name||''}));
+      body.push(textField({scope:sid,fid:'otherShares',label:t('s3.other_ownership'),kind:'percent',placeholder:'49',type:'number',default:otherHolder.shares||''}));
       var a=parseInt(fieldVal(sid,'founderShares','')||'0',10)||0, b=parseInt(fieldVal(sid,'otherShares','')||'0',10)||0;
       body.push(totalBar(t('s3.your_ownership'), h('span',{class:'tm-num',text:(a+b)+'%'}), (a+b)===100));
     }
@@ -754,11 +783,11 @@
     if(!directorBlocks){
       foot.push(btn(t('common.continue'),'p',function(){
         var sole=onlyShareholder==='yes';
-        submitStep(3,sid,{ founderName:fieldVal(sid,'founderName',''),
+        submitStep(3,sid,{ founderName:fieldVal(sid,'founderName',accountHolder.name||(preview?t('preview.founder_name'):'')),
           onlyShareholder:onlyShareholder,
-          founderShares: sole?100:(parseInt(fieldVal(sid,'founderShares','')||'0',10)||0),
-          otherShareholderName: sole?'':fieldVal(sid,'otherShareholderName',''),
-          otherShares: sole?0:(parseInt(fieldVal(sid,'otherShares','')||'0',10)||0),
+          founderShares: sole?100:(parseInt(fieldVal(sid,'founderShares',accountHolder.shares||'')||'0',10)||0),
+          otherShareholderName: sole?'':fieldVal(sid,'otherShareholderName',otherHolder.name||''),
+          otherShares: sole?0:(parseInt(fieldVal(sid,'otherShares',otherHolder.shares||'')||'0',10)||0),
           directorAnswer:director });
       }, {disabled: !onlyShareholder || !director}));
     }
@@ -767,32 +796,36 @@
   }
   function step4(){
     var sid='ltd.onboarding.step4';
+    var profile=S().company&&S().company.profile||{};
     var qs=[['groupStructure','s4.q1'],['associatedCompanies','s4.q2'],['propertyOrInvestment','s4.q3'],['inventoryOrStock','s4.q4'],['fullVat','s4.q5'],['ordinaryServiceDigital','s4.q6']];
+    function savedAnswer(name){var drafts=draftFields(sid);if(name in drafts)return drafts[name];var picked=getChoice(sid,name);if(picked!=null)return picked;if(name==='ordinaryServiceDigital')return profile.activityType==='service_digital'?'true':profile.activityType?'false':'';var value=profile.riskAnswers&&profile.riskAnswers[name];return value===true?'true':value===false?'false':value==='not_sure'?'not_sure':'';}
     // One question per screen (Founder UX): sub-index within the step, state persists to draft.
-    var idx=UI.checkIdx||0; if(idx>=qs.length) idx=qs.length-1;
-    var q=qs[idx], name=q[0], base=q[1], cur=getChoice(sid,name);
+    if(UI.checkIdx==null){UI.checkIdx=qs.findIndex(function(q){return savedAnswer(q[0])==='';});if(UI.checkIdx<0)UI.checkIdx=qs.length-1;}
+    var idx=UI.checkIdx; if(idx>=qs.length) idx=qs.length-1;
+    var q=qs[idx], name=q[0], base=q[1], cur=savedAnswer(name);
     var body=[
       h('div',{class:'tm-kick',text:t('s4.progress',{n:idx+1,total:qs.length})}),
       idx===0? h('p',{class:'tm-muted',text:t('s4.intro')}) : null,
       h('div',{class:'tm-question',style:'display:flex;align-items:center;margin-top:8px'},[t(base), infoTrigger(base)]),
       choiceGroup({scope:sid,name:name,row:true,current:cur,options:[
         {v:'true',title:t('common.yes')},{v:'false',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
-      ]}),
+      ],onPick:function(v){setField(sid,name,v);persistDraft(sid,name,'select-one',v);}}),
       (cur==='true'||cur==='not_sure')? notice('warn',null,t(base+'_means')) : null
     ];
     var last=idx===qs.length-1;
     var foot=[ btn(last?t('common.continue'):t('s4.next_question'),'p',function(){
       if(last){
-        var risk={}; qs.slice(0,5).forEach(function(qq){ var v=getChoice(sid,qq[0]); risk[qq[0]] = v==='true'?true:v==='false'?false:'not_sure'; });
-        var activity=getChoice(sid,'ordinaryServiceDigital');UI.checkIdx=0;submitStep(4,sid,{ordinaryServiceDigital:activity==='true'?true:activity==='false'?false:'not_sure',riskAnswers:risk});
+        var risk={}; qs.slice(0,5).forEach(function(qq){ var v=savedAnswer(qq[0]); risk[qq[0]] = v==='true'?true:v==='false'?false:'not_sure'; });
+        var activity=savedAnswer('ordinaryServiceDigital');UI.checkIdx=null;submitStep(4,sid,{ordinaryServiceDigital:activity==='true'?true:activity==='false'?false:'not_sure',riskAnswers:risk});
       } else { UI.checkIdx=idx+1; paint(); }
     },{disabled:cur==null}) ];
-    foot.push(btn(t('common.back'),'g',function(){ if(idx>0){ UI.checkIdx=idx-1; paint(); } else { UI.checkIdx=0; run('onBack',{},{}); } }));
+    foot.push(btn(t('common.back'),'g',function(){ if(idx>0){ UI.checkIdx=idx-1; paint(); } else { UI.checkIdx=null; run('onBack',{},{}); } }));
     return stepShell(4, t('s4.title'), body, foot);
   }
   function step5(){
     var sid='ltd.onboarding.step5';
     var prof=(S().company&&S().company.profile)||{};
+    var preview=!!(prof.registryVerification&&prof.registryVerification.previewFixture);
     var elig=(S().company&&S().company.bookkeepingEligibility)||{allowed:true,reasons:[]};
     var confirmed=getChoice(sid,'confirm','')==='yes';
     var draft=(S().company&&S().company.draftState&&S().company.draftState.registrationStatus==='not_available');
@@ -820,12 +853,13 @@
         else body.push(notice('warn', t('common.review_required'), t('s5.review_notice')));
       });
     }
-    body.push(h('div',{style:'display:flex;gap:8px;margin-top:4px'},[
+    if(preview)body.unshift(notice('info',t('preview.notice_title'),t('preview.notice_body')));
+    body.push(h('div',{class:'tm-secondary-actions'},[
       btn(t('s5.review_answers'),'g sm',function(){ run('onBack',{},{}); }),
       btn(t('s5.learn'),'g sm',function(){ run('onOpenInfo',{infoId:'s5.learn'},{}); })
     ]));
     body.push(checkControl({label:t('s5.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }}));
-    var foot=[ btn(draft?t('s5.save_draft'):t('s5.start'),'p',function(){
+    var foot=[ btn(draft?t('s5.save_draft'):preview?t('s5.finish_preview'):t('s5.start'),'p',function(){
       submitStep(5,sid,{confirmed:true}); }, {disabled:!confirmed}) ];
     return stepShell(5, draft?t('s5.draft_title'):t('s5.ready_title'), body, foot);
   }
@@ -997,7 +1031,7 @@
     var sh=(cur&&cur.shareholders)||[];
     if(!sh.length) return null;
     var yours=sh.filter(function(x){return x.isAccountHolder;})[0]||sh[0];
-    return h('div',{},[
+    return h('div',{class:'tm-ownership-card'},[
       h('div',{class:'tm-h',text:t('records.ownership')}),
       summRows([[t('records.your_share'), h('span',{class:'tm-num',text:Math.round((yours.ownershipBasisPoints||0)/100)+'%'})]]
         .concat(sh.length>1?[[t('design.shareholders'), h('span',{text:sh.map(function(x){return x.name+' '+Math.round((x.ownershipBasisPoints||0)/100)+'%';}).join(' \u00B7 ')})]]:[]))
@@ -1007,10 +1041,10 @@
     var nodes=[
       companyDetailsCard(),
       ownershipSummaryCard(),
-      recRow(t('records.ownership'), function(){ run('onOpenOwnershipChange',{},{}); }),
+      h('div',{class:'tm-record-actions'},[recRow(t('records.ownership'), function(){ run('onOpenOwnershipChange',{},{}); })]),
       periodsInline(),
       salaryDividendSection(),
-      recRow(t('records.working_pack'), function(){ run('onDownloadWorkingPack',{},{}); }, 'records.working_pack'),
+      h('div',{class:'tm-record-actions'},[recRow(t('records.working_pack'), function(){ run('onDownloadWorkingPack',{},{}); }, 'records.working_pack')]),
       h('div',{style:'margin-top:16px'},[ btn(t('design.remove_action'),'coral-soft',function(){ openSheet('remove'); }) ])
     ];
     return workspaceShell('records', nodes);
@@ -1822,6 +1856,7 @@
     return [S().mode, routeId(), JSON.stringify(route().params||{}), ov, pd, sh, UI.locale, UI.theme, busy(), UI.toast||'', er, rv, res,
       UI.cal||'', UI.calView?(UI.calView.y+'-'+UI.calView.m):'', JSON.stringify(UI.disc), JSON.stringify(UI.choices)].join('#');
   }
+  function paintIfChanged(){ if(UI.mountedKey!==renderKey()) paint(); }
 
   // Public entry (subscribed). Every facade emit repaints except the explicit,
   // one-shot synchronous onDraftChanged emit armed by persistDraft above.
@@ -1830,7 +1865,7 @@
     if(!snapshot){ mount.replaceChildren(h('div',{style:'padding:24px',text:'\u2026'})); return; }
     var rId=routeId();
     if(UI.lastRouteKey!==rId){ // arrived at a new screen: clear field cache so it seeds from snapshot draft
-      UI.cache={}; UI.cal=null; UI.lastRouteKey=rId;
+      UI.cache={}; UI.cal=null;if(rId==='ltd.onboarding.step4')UI.checkIdx=null; UI.lastRouteKey=rId;
     }
     if(UI.skipNextDraftEmitRender>0){
       UI.skipNextDraftEmitRender-=1;

@@ -41,7 +41,8 @@ test('checkout return preserves and resumes the exact onboarding pending intent'
   assert.match(app,/if\(!draft\|\|!draft\.pendingIntent\)return state/);
   assert.match(app,/OB=draft/);
   assert.match(app,/OB\.screen=state==='success'\?'intent-loading':'pro-gate'/);
-  assert.match(app,/if\(OB&&OB\.pendingIntent\)\{TaxMateOnboardingRoot\.open\(document\);OB\._signingInFlow=false;OB\.loggedIn=true;obResumePendingIntentAfterHydration\(result\)/);
+  assert.match(app,/function pendingIntentForHydration\(\)[\s\S]*OB\.pendingIntent=existing;[\s\S]*OB\.loggedIn=true;OB\.screen='intent-loading'/);
+  assert.match(app,/if\(pendingIntentForHydration\(\)\)[\s\S]*obResumePendingIntentAfterHydration\(result\)/);
 });
 
 test('checkout double click is idempotently collapsed and pricing remains the approved contract',()=>{
