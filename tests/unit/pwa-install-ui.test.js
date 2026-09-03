@@ -7,16 +7,23 @@ const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const dispatcher=fs.readFileSync('src/app/action-dispatch.js','utf8');
 
-test('Home uses the approved compact install copy in the requested position',()=>{
+test('Home uses the approved compact install copy inside the existing carousel',()=>{
   assert.match(app,/'pwa\.homeTitle':'Install TaxMate'/);
   assert.match(app,/'pwa\.homeBody':'Keep TaxMate on your Home Screen for faster access and core bookkeeping offline\.'/);
   assert.doesNotMatch(app,/Everything works offline/i);
   const home=app.slice(app.indexOf('function pageHome()'),app.indexOf('function entryRow('));
-  const card=app.slice(app.indexOf('function homeInstallCard()'),app.indexOf('function installCard()'));
-  assert.ok(home.indexOf('${homeInstallCard()}')<home.indexOf('${hasPersonal?homeCarousel():\'\'}'));
-  assert.ok(home.indexOf('${homeInstallCard()}')<home.indexOf('${hasPersonal?personalHero'));
-  assert.match(card,/data-tm-click="doInstall\(\)"/);
-  assert.match(card,/data-tm-click="dismissInstallPromotion\(\)"/);
+  const carousel=app.slice(app.indexOf('function carouselCards()'),app.indexOf('function cxrOnScroll('));
+  assert.doesNotMatch(app,/function homeInstallCard\(|pwa-home-install/);
+  assert.match(carousel,/!dismissed\.includes\('pwa'\)&&canShowHomeInstallPromotion\(\)/);
+  assert.match(carousel,/cards\.push\(\{id:'pwa',[\s\S]*onclick:'doInstall\(\)'\}\)/);
+  assert.ok(home.indexOf('${homeCarousel()}')<home.indexOf('${hasPersonal?personalHero'));
+  assert.match(html,/\.cxr-card\{[^}]*min-height:74px/);
+});
+
+test('receipt education remains in Assistant and is not duplicated on Home',()=>{
+  const tip=app.slice(app.indexOf('function topContextTip()'),app.indexOf('function activeLtdProfile('));
+  assert.doesNotMatch(tip,/tip\.receipt|receipt_missing/);
+  assert.match(app,/function assistantHomeCard\(/);
 });
 
 test('Settings keeps its existing install entry while installed state hides both surfaces',()=>{

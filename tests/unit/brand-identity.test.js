@@ -83,7 +83,7 @@ test('all website identity metadata points to the new assets while product SEO c
   assert.match(home,/<meta property="og:image:height" content="630">/);
   assert.match(home,/"image":"https:\/\/www\.taxmate\.uk\/icon-512\.png"/);
   assert.doesNotMatch(home,/rel="icon" type="image\/svg\+xml"/);
-  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png\?v=20260903-6"/);
+  assert.match(home,/rel="apple-touch-icon" sizes="180x180" href="\/apple-touch-icon\.png\?v=20260903-7"/);
   assert.match(home,/<meta name="description" content="Simple bookkeeping and tax planning for UK sole traders and self-employed people\. Track income and expenses and see your estimated tax as you go\.">/);
 });
 
@@ -106,8 +106,8 @@ test('App Icon stays out of Home, Tax and Ltd heroes and is limited to identity 
 });
 
 test('manifest, service worker and Hosting build carry every production brand asset',()=>{
-  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png?v=20260903-6','192x192','any'],['icon-512.png?v=20260903-6','512x512','any'],['icon-512-maskable.png?v=20260903-6','512x512','maskable']]);
-  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png']){assert.ok(sw.includes(`/${file}?v=20260903-6`),`${file} versioned and precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
+  assert.deepEqual(manifest.icons.map(icon=>[icon.src,icon.sizes,icon.purpose]),[['icon-192.png?v=20260903-7','192x192','any'],['icon-512.png?v=20260903-7','512x512','any'],['icon-512-maskable.png?v=20260903-7','512x512','maskable']]);
+  for(const file of ['favicon-16x16.png','favicon-32x32.png','favicon-48x48.png','favicon.ico','apple-touch-icon.png','icon-192.png','icon-512.png','icon-512-maskable.png']){assert.ok(sw.includes(`/${file}?v=20260903-7`),`${file} versioned and precached`);assert.ok(build.includes(`'${file}'`),`${file} copied`);}
   assert.ok(sw.includes('/taxmate-share-20260831-v2.png'));assert.ok(build.includes("'taxmate-share-20260831-v2.png'"));assert.doesNotMatch(home+sw+build,/taxmate-share-20260829/);
   for(const file of ['taxmate-brand-logo-light.svg','taxmate-brand-logo-dark.svg','taxmate-icon-light.svg','taxmate-icon-dark.svg'])assert.ok(sw.includes(`/assets/brand/derived/${file}`),`${file} precached`);
   assert.match(build,/assets', 'brand', 'derived/);
