@@ -7,7 +7,7 @@ const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const dispatcher=fs.readFileSync('src/app/action-dispatch.js','utf8');
 
-test('Home uses the approved compact install copy inside the existing carousel',()=>{
+test('Home puts the formal Hero first and keeps the approved compact install copy after it',()=>{
   assert.match(app,/'pwa\.homeTitle':'Install TaxMate'/);
   assert.match(app,/'pwa\.homeBody':'Keep TaxMate on your Home Screen for faster access and core bookkeeping offline\.'/);
   assert.doesNotMatch(app,/Everything works offline/i);
@@ -16,7 +16,7 @@ test('Home uses the approved compact install copy inside the existing carousel',
   assert.doesNotMatch(app,/function homeInstallCard\(|pwa-home-install/);
   assert.match(carousel,/!dismissed\.includes\('pwa'\)&&canShowHomeInstallPromotion\(\)/);
   assert.match(carousel,/cards\.push\(\{id:'pwa',[\s\S]*onclick:'doInstall\(\)'\}\)/);
-  assert.ok(home.indexOf('${homeCarousel()}')<home.indexOf('${hasPersonal?personalHero'));
+  assert.ok(home.indexOf('${hasPersonal?personalHero')<home.indexOf('${homeCarousel()}'));
   assert.match(html,/\.cxr-card\{[^}]*min-height:74px/);
 });
 
@@ -31,6 +31,17 @@ test('home-working education remains in Assistant but is removed from the Home c
   const assistant=app.slice(app.indexOf('function tipsCard('));
   assert.doesNotMatch(tip,/home_working|tip\.home_t|tip\.home_b/);
   assert.match(assistant,/home_working/);assert.match(assistant,/tip\.home_t/);assert.match(assistant,/tip\.home_b/);
+});
+
+test('all contextual advice stays in Assistant and PWA chrome uses one deep release identity',()=>{
+  const carousel=app.slice(app.indexOf('function carouselCards()'),app.indexOf('function cxrOnScroll('));
+  const manifest=JSON.parse(fs.readFileSync('manifest.json','utf8'));
+  assert.doesNotMatch(carousel,/topContextTip|id:'tip'|tip\.phone_t|tip\.home_t/);
+  assert.equal((html.match(/<meta name="theme-color"/g)||[]).length,1);
+  assert.match(html,/<meta name="theme-color" content="#0F1620">/);
+  assert.equal(manifest.theme_color,'#0F1620');assert.equal(manifest.background_color,'#0F1620');
+  assert.match(html,/manifest\.json\?v=20260903-9/);assert.match(app,/sw\.js\?v=20260903-9/);
+  assert.match(sw,/manifest\.json\?v=20260903-9/);assert.match(sw,/taxmate-v2-founder-production-hotfix-candidate-1/);
 });
 
 test('Settings keeps its existing install entry while installed state hides both surfaces',()=>{

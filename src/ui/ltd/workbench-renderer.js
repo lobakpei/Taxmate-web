@@ -169,6 +169,7 @@
     return (k in UI.choices)?UI.choices[k]:(fallback!=null?fallback:null);
   }
   function setChoice(scope,name,val){ UI.choices[choiceKey(scope,name)]=val; }
+  function clearScope(scope){var prefix=scope+'::';Object.keys(UI.cache).forEach(function(key){if(key.indexOf(prefix)===0)delete UI.cache[key];});Object.keys(UI.choices).forEach(function(key){if(key.indexOf(prefix)===0)delete UI.choices[key];});delete UI.errors[scope];delete UI.review[scope];}
 
   /* ---- action runner: every state change goes through the facade -------- */
   function run(cb, input, opts){
@@ -1351,14 +1352,15 @@
   function screenOwnership(){
     var sid='ltd.records.ownership';
     var hist=(S().workspace&&S().workspace.ownershipHistory)||[];
-    var cur=hist.filter(function(v){return v.effectiveTo==null;})[0]||hist[0];
+    var today=S().context&&S().context.currentDate;
+    var cur=hist.filter(function(v){return v.effectiveFrom<=today&&(v.effectiveTo==null||today<v.effectiveTo);})[0]||hist[0];
     var nodes=[backBar(function(){ run('onBack',{},{}); }, t('records.ownership'))];
     if(cur){ nodes.push(h('div',{class:'tm-h',text:t('records.current')}));
       nodes.push(summRows((cur.shareholders||[]).map(function(sh){ return [sh.name, h('span',{class:'tm-num',text:Math.round((sh.ownershipBasisPoints||0)/100)+'%'})]; }))); }
     if(hist.length>1){
       nodes.push(h('div',{class:'tm-h',text:t('records.history')}));
       hist.slice().sort(function(a,b){return String(b.effectiveFrom).localeCompare(String(a.effectiveFrom));}).forEach(function(v){
-        var range=t('records.effective_from')+' '+isoToDisplay(v.effectiveFrom)+(v.effectiveTo?(' '+t('records.effective_to')+' '+isoToDisplay(v.effectiveTo)):' \u2013 '+t('records.current').toLowerCase());
+        var range=t('records.effective_from')+' '+isoToDisplay(v.effectiveFrom)+(v.effectiveTo?(' '+t('records.effective_to')+' '+isoToDisplay(v.effectiveTo)):(v.effectiveFrom<=today?' \u2013 '+t('records.current').toLowerCase():''));
         var who=(v.shareholders||[]).map(function(sh){return sh.name+' '+Math.round((sh.ownershipBasisPoints||0)/100)+'%';}).join(' \u00B7 ');
         nodes.push(recItem(who||t('records.ownership'), range, h('span',{class:'tm-num',text:'v'+(v.version||1)}), null));
       });
@@ -1379,23 +1381,26 @@
       nodes.push(textField({scope:sid,fid:'other_name',label:t('s3.other_name'),type:'text',persist:false}));
       nodes.push(textField({scope:sid,fid:'other_pct',label:t('s3.other_ownership'),kind:'percent',default:'0',type:'number',persist:false,onInput:function(){setChoice(sid,'other-pct-edited',true);}}));
     }
-    var ownershipTotal=currentHolders.reduce(function(sum,sh,i){return sum+(parseInt(fieldVal(sid,'sh'+i+'_pct',String(Math.round((sh.ownershipBasisPoints||0)/100)))||'0',10)||0);},0)+(soleHolder?(parseInt(fieldVal(sid,'other_pct','0')||'0',10)||0):0);
+    function normalizedDraft(){
+      var shareholders=currentHolders.map(function(sh,i){return{id:sh.id,name:sh.name,shareClassId:sh.shareClassId||'ordinary',shares:parseInt(fieldVal(sid,'sh'+i+'_pct',String(Math.round((sh.ownershipBasisPoints||0)/100)))||'0',10)||0,isAccountHolder:!!sh.isAccountHolder};});
+      var otherPct=soleHolder?(parseInt(fieldVal(sid,'other_pct','0')||'0',10)||0):0,otherName=soleHolder?String(fieldVal(sid,'other_name','')||'').trim():'';
+      if(soleHolder&&otherPct>0&&otherName)shareholders.push({id:'shareholder:other',name:otherName,shareClassId:'ordinary',shares:otherPct,isAccountHolder:false});
+      return{shareholders:shareholders,otherPct:otherPct,otherName:otherName,total:shareholders.reduce(function(sum,sh){return sum+sh.shares;},0)};
+    }
+    var ownershipTotal=normalizedDraft().total;
     nodes.push(totalBar(t('records.ownership'),h('span',{class:'tm-num',text:ownershipTotal+'%'}),ownershipTotal===100));
     nodes.push(errNode(sid,'ownership'));
     if(soleHolder)nodes.push(errNode(sid,'other_name'));
     nodes.push(textField({scope:sid,fid:'reason',label:t('records.reason'),type:'text',persist:false}));
     nodes.push(textField({scope:sid,fid:'evidence',label:t('design.evidence_reference'),type:'text',persist:false}));
     nodes.push(h('div',{style:'margin-top:14px'},[ btn(t('common.save'),'p',function(){
-      var shs=currentHolders.map(function(sh,i){ return {id:sh.id,name:sh.name,shareClassId:'ordinary',shares:parseInt(fieldVal(sid,'sh'+i+'_pct','')||'0',10)||0,isAccountHolder:!!sh.isAccountHolder}; });
-      var otherPct=soleHolder?(parseInt(fieldVal(sid,'other_pct','0')||'0',10)||0):0,otherName=soleHolder?String(fieldVal(sid,'other_name','')||'').trim():'';
-      if(soleHolder&&otherPct>0&&otherName)shs.push({id:'shareholder:other',name:otherName,shareClassId:'ordinary',shares:otherPct,isAccountHolder:false});
-      var total=shs.reduce(function(sum,sh){return sum+sh.shares;},0),localErrors={};
-      if(total!==100)localErrors.ownership=t('error.ownership_total',{total:total});
-      if(soleHolder&&otherPct>0&&!otherName)localErrors.other_name=t('error.other_name');
+      var draft=normalizedDraft(),localErrors={};
+      if(draft.total!==100)localErrors.ownership=t('error.ownership_total',{total:draft.total});
+      if(soleHolder&&draft.otherPct>0&&!draft.otherName)localErrors.other_name=t('error.other_name');
       if(Object.keys(localErrors).length){UI.errors[sid]=localErrors;UI.focusError=true;paintIfChanged();return;}
       var ref=fieldVal(sid,'evidence','');
-      run('onChangeOwnership',{effectiveDate:fieldVal(sid,'effectiveDate',''), shareholders:shs, reason:fieldVal(sid,'reason',''), evidenceRefs:[ref].filter(Boolean)},
-        {scope:sid, onReview:function(r){ UI.review[sid]=r.reviewReasons||[]; paint(); }, onOk:function(){ toast(t('common.saved_for_review')); }}); }) ]));
+      run('onChangeOwnership',{effectiveDate:fieldVal(sid,'effectiveDate',''), shareholders:draft.shareholders, reason:fieldVal(sid,'reason',''), evidenceRefs:[ref].filter(Boolean)},
+        {scope:sid, onReview:function(r){ UI.review[sid]=r.reviewReasons||[]; paint(); }, onOk:function(){clearScope(sid);toast(t('common.saved_for_review'));}}); }) ]));
     var rev=UI.review[sid];
     if(rev&&rev.length) nodes.push(notice('warn', t('records.impact'), t('common.review_required')));
     return workspaceBack(nodes);
