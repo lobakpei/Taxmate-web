@@ -60,8 +60,8 @@ test('opening an existing cloud account records a per-account decision without m
 
 test('server reset epoch clears only the exact Firebase account local and session scopes',()=>{
   const storage=memory(),session=memory(),tammy=Accounts.firebaseScope('tammy-uid'),founder=Accounts.firebaseScope('founder-uid');
-  Accounts.write(storage,tammy,'canonical','tammy');Accounts.write(storage,tammy,'sync-outbox','pending');Accounts.write(storage,founder,'canonical','founder');session.setItem(Accounts.sessionKey(tammy,'ltd-founder-preview'),'fixture');session.setItem(Accounts.sessionKey(founder,'ltd-founder-preview'),'founder-fixture');
-  const reset=Accounts.applyServerReset(storage,session,tammy,200);assert.equal(reset.status,'reset');assert.equal(reset.localRemoved,2);assert.equal(reset.sessionRemoved,1);assert.equal(Accounts.read(storage,tammy,'canonical'),null);assert.equal(Accounts.read(storage,founder,'canonical'),'founder');assert.equal(session.getItem(Accounts.sessionKey(founder,'ltd-founder-preview')),'founder-fixture');
+  Accounts.write(storage,tammy,'canonical','tammy');Accounts.write(storage,tammy,'sync-outbox','pending');Accounts.write(storage,founder,'canonical','founder');session.setItem(Accounts.sessionKey(tammy,'ltd-transient'),'tammy-transient');session.setItem(Accounts.sessionKey(founder,'ltd-transient'),'founder-transient');
+  const reset=Accounts.applyServerReset(storage,session,tammy,200);assert.equal(reset.status,'reset');assert.equal(reset.localRemoved,2);assert.equal(reset.sessionRemoved,1);assert.equal(Accounts.read(storage,tammy,'canonical'),null);assert.equal(Accounts.read(storage,founder,'canonical'),'founder');assert.equal(session.getItem(Accounts.sessionKey(founder,'ltd-transient')),'founder-transient');
   assert.equal(Accounts.applyServerReset(storage,session,tammy,200).status,'current');assert.equal(storage.getItem(Accounts.key(tammy,'reset-epoch')),'200');
 });
 
@@ -75,7 +75,8 @@ test('new-account hydration contract does not pre-empt local association or crea
   assert.match(source,/if\(account\.established\|\|TaxMateAccountStorage\.stateHasAccountData\(S\)\)result\.syncState=await pushUserState/);
   assert.match(source,/if\(!established&&!TaxMateAccountStorage\.stateHasAccountData\(S\)\)return null/);
   assert.match(source,/if\(associationPending\)[\s\S]*setFirstSyncConfirmation\(u,cloudState/);
-  assert.match(source,/if\(CLOUD\.boundaryBlocked\|\|CLOUD\.firstSyncBlocked\)return null/);
+  assert.match(source,/if\(CLOUD\.firstSyncBlocked\)return null/);
+  assert.doesNotMatch(source,/boundaryBlocked|foreignIndex|ownership-quarantine|TaxMateAccountBoundary/);
   assert.match(source,/if\(SYNC_RUNTIME\.blocked\|\|ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.firstSyncBlocked\)/);
   assert.match(source,/function firstSyncUseAccount\(\)[\s\S]*readAccountPresence\(user\.uid\)[\s\S]*associateLocal\(localStorage,scope/);
   assert.match(source,/function firstSyncOpenExisting\(\)[\s\S]*recordLocalAssociationDecision\(localStorage,scope,'open-cloud'/);

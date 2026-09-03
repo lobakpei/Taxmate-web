@@ -85,7 +85,7 @@
     const byPath=new Map(),add=(source,association,fallback)=>{if(!source)return;const group=byPath.get(source)||{associations:[],fallbackUrls:[]};group.associations.push(association);if(http(fallback)&&fallback!==source&&!group.fallbackUrls.includes(fallback))group.fallbackUrls.push(fallback);byPath.set(source,group);};
     for(const item of input&&input.evidenceAssociations||[])add(item.originalPath,item,null);
     for(const entry of state.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(source)add(source,{recordType:'legacy_entry',recordId:entry.id,originalPath:source},entry.receiptUrl);}
-    let skippedForeignCount=0;
+    let skippedForeignCount=0,skippedUnavailableCount=0;
     if(input&&input.user){
       for(const [source,group] of [...byPath]){const foreign=[source,...group.fallbackUrls].find(reference=>{const owner=receiptOwner(reference);return owner&&owner!==uid;});if(foreign){skippedForeignCount++;byPath.delete(source);if(typeof input.onForeignReference==='function')input.onForeignReference({kind:http(foreign)?'receipt_url':'receipt_path'});}}
       if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
@@ -96,26 +96,27 @@
     for(const [source,group] of byPath){
       let urls=http(source)?[source]:[];
       if(!urls.length){
-        if(!input.user||typeof input.storageUrl!=='function')throw failure(CATEGORIES.AUTH_CONNECTIVITY,{stage:'receipt_resolve',correlation});
+        if(!input.user||typeof input.storageUrl!=='function'){skippedUnavailableCount++;continue;}
         const owned=receiptOwner(source)===uid&&activeUid===uid&&stateOwnerUid===uid;
-        if(!owned){if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'receipt_owner',correlation});}
-        try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'receipt_resolve',correlation});}
+        if(!owned){skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});continue;}
+        try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length){skippedUnavailableCount++;continue;}}
       }
       urls=urls.concat(group.fallbackUrls).filter((value,index,list)=>http(value)&&list.indexOf(value)===index);
-      if(!urls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1});
-      const binary=await firstDownload(urls,download,{stage:'receipt_download',correlation}),legacy=group.associations.filter(item=>item.recordType==='legacy_entry');
+      if(!urls.length){skippedUnavailableCount++;continue;}
+      let binary;try{binary=await firstDownload(urls,download,{stage:'receipt_download',correlation});}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw error;skippedUnavailableCount++;continue;}
+      const legacy=group.associations.filter(item=>item.recordType==='legacy_entry');
       result.push({entryId:group.associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations:group.associations,...binary});
       if(!http(source))seen.add(source);
     }
     if(input.user){
       for(const item of storageItems){
         if(!item||!item.fullPath||seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;
-        if(receiptOwner(item.fullPath)!==String(input.user.uid||'')){if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'orphan_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'orphan_owner',correlation});}
-        let url;try{url=typeof item.getDownloadURL==='function'?await item.getDownloadURL():await input.storageUrl(item.fullPath);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'orphan_resolve',correlation});throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:error,stage:'orphan_resolve',correlation});}
-        const binary=await firstDownload([url],download,{stage:'orphan_download',correlation});result.push({entryId:null,originalPath:item.fullPath,...binary});
+        if(receiptOwner(item.fullPath)!==String(input.user.uid||'')){skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'orphan_path'});continue;}
+        let url;try{url=typeof item.getDownloadURL==='function'?await item.getDownloadURL():await input.storageUrl(item.fullPath);}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'orphan_resolve',correlation});skippedUnavailableCount++;continue;}
+        let binary;try{binary=await firstDownload([url],download,{stage:'orphan_download',correlation});}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw error;skippedUnavailableCount++;continue;}result.push({entryId:null,originalPath:item.fullPath,...binary});
       }
     }
-    Object.defineProperty(result,'skippedForeignCount',{value:skippedForeignCount,enumerable:false});return result;
+    Object.defineProperties(result,{skippedForeignCount:{value:skippedForeignCount,enumerable:false},skippedUnavailableCount:{value:skippedUnavailableCount,enumerable:false}});return result;
   }
   return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,collectReceipts,receiptPath,receiptOwner,fallbackResolutionError});
 });

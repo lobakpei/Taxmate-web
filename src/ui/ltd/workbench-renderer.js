@@ -595,12 +595,12 @@
     return wrap;
   }
   function screenOneLtdLimit(){
-    var existing=S().company&&S().company.profile||{},preview=!!(existing.registryVerification&&existing.registryVerification.previewFixture);
+    var existing=S().company&&S().company.profile||{};
     var wrap=frag();
     wrap.append(backBar(function(){ run('onBack',{},{}); }, t('add.ltd_title')));
-    wrap.append(notice('info', preview?t('preview.notice_title'):t('add.ltd_title'), preview?t('preview.notice_body'):t('add.one_ltd_limit')));
+    wrap.append(notice('info', t('add.ltd_title'), t('add.one_ltd_limit')));
     wrap.append(h('div',{style:'margin-top:14px'},[
-      btn(preview?t('preview.resume'):t('add.open_existing'),'p',function(){
+      btn(t('add.open_existing'),'p',function(){
         var act=(S().companyLimit&&S().companyLimit.existingAction)||{callback:'onOpenExistingCompany',input:{}};
         run(act.callback||'onOpenExistingCompany', act.input||{}, {}); }),
       h('div',{class:'tm-spacer'}),
@@ -638,7 +638,8 @@
   function step1(){
     var sid='ltd.onboarding.step1';
     var profile=S().company&&S().company.profile||{};
-    var reg=fieldVal(sid,'companyNumberStatus', getChoice(sid,'reg')||profile.companyNumberStatus||'');
+    var savedShortcut=profile.companyNumberStatus==='not_available'&&!!profile.incorporationDate;
+    var reg=fieldVal(sid,'companyNumberStatus', getChoice(sid,'reg')||(savedShortcut?'provided':profile.companyNumberStatus)||'');
     var body=[
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s1.registered_question'), infoTrigger('s1.ch')]),
       choiceGroup({scope:sid,name:'reg',row:true,current:reg,options:[
@@ -647,7 +648,7 @@
     ];
     if(reg==='provided'){
       body.push(h('div',{class:'tm-company-identity-stack'},[
-        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text',default:profile.companyNumber||''}),
+        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text',default:profile.companyNumber||(S().lookupStatus&&S().lookupStatus.inputAlias)||''}),
         h('div',{},[btn(t('s1.check_ch'),'s',function(){
           run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.number){setField(sid,'companyNumber',co.number);persistDraft(sid,'companyNumber','text',co.number);}if(co.name){setField(sid,'legalName',co.name);persistDraft(sid,'legalName','text',co.name);}if(co.incorporationDate){setField(sid,'incorporationDate',co.incorporationDate);persistDraft(sid,'incorporationDate','date',co.incorporationDate);}paint();}});
         })]),
@@ -673,8 +674,7 @@
     if(ls.status==='loading') return notice('info',null,t('s1.checking'));
     if(ls.status==='found'){
       var co=ls.company||{};
-      var n=ls.previewFixture===true?notice('info',t('preview.notice_title'),t('preview.notice_body')):notice(ls.verificationStatus==='verified'?'ok':'warn', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
-      if(ls.previewFixture===true)n.classList.add('tm-founder-preview-marker');
+      var n=notice(ls.verificationStatus==='verified'?'ok':'warn', co.name||t('s1.lookup_confirmed'), co.incorporationDate?isoToDisplay(co.incorporationDate):null);
       if(co.registryUrl)n.append(h('a',{class:'tm-linkbtn',href:co.registryUrl,target:'_blank',rel:'noopener noreferrer',style:'display:inline-block;margin-top:4px'},t('s1.public_record')));
       return n;
     }
@@ -754,11 +754,11 @@
   }
   function step3(){
     var sid='ltd.onboarding.step3';
-    var profile=S().company&&S().company.profile||{},preview=!!(profile.registryVerification&&profile.registryVerification.previewFixture),holders=profile.shareholders||[],accountHolder=holders.filter(function(item){return item.isAccountHolder;})[0]||{},otherHolder=holders.filter(function(item){return !item.isAccountHolder;})[0]||{};
-    var onlyShareholder=fieldVal(sid,'onlyShareholder',getChoice(sid,'sole')||(holders.length?holders.length===1?'yes':'no':preview?'yes':''));
-    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||(profile.accountHolder?profile.accountHolder.isDirector===true?'yes':profile.accountHolder.isDirector===false?'no':'not_sure':preview?'yes':''));
+    var profile=S().company&&S().company.profile||{},founderShortcutProfile=profile.legalName==='LOBAKPE FOUNDER PREVIEW LTD'&&profile.companyNumberStatus==='not_available'&&profile.incorporationDate==='2025-12-15',holders=profile.shareholders||[],accountHolder=holders.filter(function(item){return item.isAccountHolder;})[0]||{},otherHolder=holders.filter(function(item){return !item.isAccountHolder;})[0]||{};
+    var onlyShareholder=fieldVal(sid,'onlyShareholder',getChoice(sid,'sole')||(holders.length?holders.length===1?'yes':'no':founderShortcutProfile?'yes':''));
+    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||(profile.accountHolder?profile.accountHolder.isDirector===true?'yes':profile.accountHolder.isDirector===false?'no':'not_sure':founderShortcutProfile?'yes':''));
     var body=[
-      textField({scope:sid,fid:'founderName',label:t('s3.legal_name'),infoId:'s3.legal_name',placeholder:t('s3.legal_name'),type:'text',default:accountHolder.name||(preview?t('preview.founder_name'):'')}),
+      textField({scope:sid,fid:'founderName',label:t('s3.legal_name'),infoId:'s3.legal_name',placeholder:t('s3.legal_name'),type:'text',default:accountHolder.name||(founderShortcutProfile?t('preview.founder_name'):'')}),
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s3.director_question'), infoTrigger('s3.director')]),
       choiceGroup({scope:sid,name:'director',row:true,current:director,options:[
         {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
@@ -783,7 +783,7 @@
     if(!directorBlocks){
       foot.push(btn(t('common.continue'),'p',function(){
         var sole=onlyShareholder==='yes';
-        submitStep(3,sid,{ founderName:fieldVal(sid,'founderName',accountHolder.name||(preview?t('preview.founder_name'):'')),
+        submitStep(3,sid,{ founderName:fieldVal(sid,'founderName',accountHolder.name||(founderShortcutProfile?t('preview.founder_name'):'')),
           onlyShareholder:onlyShareholder,
           founderShares: sole?100:(parseInt(fieldVal(sid,'founderShares',accountHolder.shares||'')||'0',10)||0),
           otherShareholderName: sole?'':fieldVal(sid,'otherShareholderName',otherHolder.name||''),
@@ -825,7 +825,6 @@
   function step5(){
     var sid='ltd.onboarding.step5';
     var prof=(S().company&&S().company.profile)||{};
-    var preview=!!(prof.registryVerification&&prof.registryVerification.previewFixture);
     var elig=(S().company&&S().company.bookkeepingEligibility)||{allowed:true,reasons:[]};
     var confirmed=getChoice(sid,'confirm','')==='yes';
     var draft=(S().company&&S().company.draftState&&S().company.draftState.registrationStatus==='not_available');
@@ -853,13 +852,12 @@
         else body.push(notice('warn', t('common.review_required'), t('s5.review_notice')));
       });
     }
-    if(preview)body.unshift(notice('info',t('preview.notice_title'),t('preview.notice_body')));
     body.push(h('div',{class:'tm-secondary-actions'},[
       btn(t('s5.review_answers'),'g sm',function(){ run('onBack',{},{}); }),
       btn(t('s5.learn'),'g sm',function(){ run('onOpenInfo',{infoId:'s5.learn'},{}); })
     ]));
     body.push(checkControl({label:t('s5.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }}));
-    var foot=[ btn(draft?t('s5.save_draft'):preview?t('s5.finish_preview'):t('s5.start'),'p',function(){
+    var foot=[ btn(draft?t('s5.save_draft'):t('s5.start'),'p',function(){
       submitStep(5,sid,{confirmed:true}); }, {disabled:!confirmed}) ];
     return stepShell(5, draft?t('s5.draft_title'):t('s5.ready_title'), body, foot);
   }

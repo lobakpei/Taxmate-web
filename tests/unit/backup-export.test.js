@@ -44,12 +44,12 @@ test('foreign Firebase URL-only reference is skipped before resolving or downloa
   assert.equal(receipts.length,0);assert.equal(receipts.skippedForeignCount,1);assert.equal(lists,1);assert.equal(resolves,0);assert.equal(downloads,0);assert.equal(foreignCalls,1);
 });
 
-test('missing references and download failures have distinct safe categories and messages',async()=>{
-  const missing=await Backup.collectReceipts({state:baseState([entry('e1','receipts/u/missing.jpg',null)]),user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download}).then(()=>null,error=>error);
-  const failedDownload=await Backup.collectReceipts({state:baseState([entry('e1',null,'https://example.test/fail.jpg')]),download:async()=>{throw new Error('private URL failed');}}).then(()=>null,error=>error);
-  assert.deepEqual(Backup.diagnostic(missing),{category:'referenced_receipt_unavailable',code:'BACKUP_REFERENCED_RECEIPT_UNAVAILABLE',count:1,stage:'receipt_resolve',errorClass:'storage_object_not_found'});
-  assert.deepEqual(Backup.diagnostic(failedDownload),{category:'receipt_download_failure',code:'BACKUP_RECEIPT_DOWNLOAD_FAILED',count:1,stage:'receipt_download',errorClass:'error'});
-  assert.notEqual(Backup.message(missing),Backup.message(failedDownload));assert.doesNotMatch(Backup.message(missing),/receipts\/u|example\.test|private/i);
+test('missing references and ordinary download failures are safely omitted without changing state',async()=>{
+  const missingState=baseState([entry('e1','receipts/u/missing.jpg',null)]),failedState=baseState([entry('e1',null,'https://example.test/fail.jpg')]),beforeMissing=JSON.stringify(missingState),beforeFailed=JSON.stringify(failedState);
+  const missing=await Backup.collectReceipts({state:missingState,user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download});
+  const failedDownload=await Backup.collectReceipts({state:failedState,download:async()=>{throw new Error('private URL failed');}});
+  assert.equal(missing.length,0);assert.equal(missing.skippedUnavailableCount,1);assert.equal(failedDownload.length,0);assert.equal(failedDownload.skippedUnavailableCount,1);
+  assert.equal(JSON.stringify(missingState),beforeMissing);assert.equal(JSON.stringify(failedState),beforeFailed);
 });
 
 test('offline/auth failures remain distinct from an HTTP receipt failure',async()=>{

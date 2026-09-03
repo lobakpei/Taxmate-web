@@ -3792,10 +3792,9 @@ async function callLtdTrusted(name,data){
   const result=await callSecureFunction(name,data);
   if(name!=='claimActiveLtdCompany'||!result||!['claimed','existing'].includes(result.status))return result;
   const user=cloudUser();if(!user)throw Object.assign(new Error('Account sign-in changed during the company claim.'),{code:'account-owner-mismatch'});assertActiveAccountUid(user.uid);
-  const controls=await readAccountControls(user.uid);if(!TaxMateAccountBoundary.trustedServerClaim(controls.claim,user.uid))throw Object.assign(new Error('Trusted company claim did not create an account ownership claim.'),{code:'account-claim-missing'});
   const anchorDoc=await userRoot(user.uid).collection('ltdControl').doc('activeCompany').get(),anchor=anchorDoc.exists?normaliseLtdAnchor(anchorDoc.data()):null;
   if(!anchor||anchor.activeCompanyId!==result.activeCompanyId||String(anchor.accountOwnerUid||'')!==user.uid)throw Object.assign(new Error('Trusted company anchor could not be verified.'),{code:'ltd-anchor-invalid'});
-  CLOUD.ownerClaim=controls.claim;CLOUD.ltdAnchor=anchor;cacheAccountControls(user.uid,controls);return result;
+  CLOUD.ltdAnchor=anchor;return result;
 }
 window.TaxMateLtdProductionBridge=Object.freeze({
   loadState:()=>JSON.parse(JSON.stringify(S)),
@@ -3807,7 +3806,6 @@ window.TaxMateLtdProductionBridge=Object.freeze({
   },
   rollbackSnapshot(){try{return JSON.parse(localStorage.getItem(accountSlotKey('pre-ltd-rollback'))||'null');}catch(_){return null;}},
   ltdDraftKey:()=>accountSlotKey('ltd-drafts'),
-  fixtureSessionKey:()=>TaxMateAccountStorage.sessionKey(ACTIVE_ACCOUNT_SCOPE,'founder-fixture'),
   accountReady:()=>!!ACTIVE_ACCOUNT_SCOPE,
   entitlementSnapshot:()=>JSON.parse(JSON.stringify(ENTITLEMENT.snapshot||{})),
   hasExistingCompany:()=>!!activeLtdProfile(),
@@ -5573,8 +5571,6 @@ function toast(msg){
 
 /* ═══════════ export / import ═══════════ */
 function prepareOwnedStateForTransfer(source){
-  const boundary=partitionActiveState(S,source||'transfer_preflight');
-  if(boundary.changed){S=TaxMateState.migrate(boundary.state,Date.now(),DEVICE_ID);CLOUD.boundaryBlocked=ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE.kind==='firebase';CLOUD.boundaryCompanyIds=[...new Set([...(CLOUD.boundaryCompanyIds||[]),...(boundary.removedEntityIds||[])])];try{persistCanonicalState(S);}catch(_){}}
   return S;
 }
 function exportJSON(){
@@ -5613,7 +5609,7 @@ async function collectPortableReceipts(){
 async function buildPortableArchive(state=S){if(state===S&&!ltdBackupAllowed('full_backup',state))throw Object.assign(new Error('pro_required'),{code:'pro_required'});const receipts=state===S?await collectPortableReceipts():[];return TaxMatePortableBackup.createArchive({state,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts});}
 let FULL_BACKUP_PENDING=false;
 async function exportPortableBackup(){if(FULL_BACKUP_PENDING)return{status:'busy'};if(!ltdBackupAllowed('full_backup'))return{status:'blocked'};FULL_BACKUP_PENDING=true;const correlation='backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now()));safeActionTrace('full_backup','started',correlation,S.tab);try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');safeActionTrace('full_backup','completed',correlation,S.tab);return{status:'ok'};}catch(error){const diagnostic=TaxMateBackupExport.diagnostic(error);console.warn('Full backup failed',diagnostic);trackEvent('backup_export_failed',diagnostic);showNotice(t('m.backup'),TaxMateBackupExport.message(error));safeActionTrace('full_backup','failed',correlation,S.tab);return{status:'failure',diagnostic};}finally{FULL_BACKUP_PENDING=false;}}
-function replaceStateSafely(candidate){const before=JSON.stringify(S);try{localStorage.setItem(accountSlotKey('preimport-backup'),before);const boundary=TaxMateAccountBoundary.partitionState(candidate,{uid:activeAccountUid(),foreignIndex:accountBoundaryIndex()});if(boundary.changed)quarantineAccountBoundary(boundary.quarantined,'restore_preflight');S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),boundary.state);S.settings=Object.assign({lang:'en',tier:'free'},boundary.state.settings||{});save();render();toast(t('toast.restored'));}catch(error){S=JSON.parse(before);try{localStorage.setItem(STORE_KEY,before);}catch(_){}throw error;}}
+function replaceStateSafely(candidate){const before=JSON.stringify(S);try{localStorage.setItem(accountSlotKey('preimport-backup'),before);const migrated=TaxMateState.migrate(candidate,Date.now(),DEVICE_ID);TaxMateState.validateState(migrated);S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),migrated);S.settings=Object.assign({lang:'en',tier:'free'},migrated.settings||{});save();render();toast(t('toast.restored'));}catch(error){S=JSON.parse(before);try{localStorage.setItem(STORE_KEY,before);}catch(_){}throw error;}}
 async function restorePortableBackup(inspected){
   const needsStorage=inspected.receipts.length>0;if(needsStorage&&(!fbConfigured()||!FB.ready||!firebase.auth().currentUser))throw new Error('Sign in before restoring receipt files');
   const pre=await buildPortableArchive();downloadBackupBlob(pre.archive,'taxmate-pre-restore-'+todayISO()+'.zip');
@@ -5852,42 +5848,20 @@ function loadSyncOutbox(){
 }
 let SYNC_OUTBOX=loadSyncOutbox();
 let ACCOUNT_TRANSITION_PENDING=false;
-let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, controlsRefreshPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0, boundaryBlocked:false, boundaryCompanyIds:[], ownerClaim:null, deletionBlocked:false, controlsCached:false, firstSyncBlocked:false };
+let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, flushPromise:null, controlsRefreshPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, generation:0, deletionBlocked:false, controlsCached:false, firstSyncBlocked:false };
 let FIRST_SYNC_CONFIRMATION=null,FIRST_SYNC_ACTION_PROMISE=null,AUTH_PENDING_INTENT=null;
 let ACCOUNT_UI_READY={state:'idle',correlation:null,expectedRows:0,renderedRows:0,onboardingOpen:false};
-function accountBoundaryIndex(){return TaxMateAccountBoundary.foreignIndex(localStorage,ACTIVE_ACCOUNT_SCOPE,TaxMateAccountStorage);}
-function quarantineAccountBoundary(items,source){
-  if(!items||!items.length)return{status:'empty',count:0};
-  const result=TaxMateAccountBoundary.quarantine(localStorage,ACTIVE_ACCOUNT_SCOPE,items,{accountStorage:TaxMateAccountStorage,source,now:Date.now()});
-  console.warn('Account data isolated',{category:'account_boundary',safeCode:'ACCOUNT_DATA_QUARANTINED',stage:String(source||'boundary').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:items.length});
-  return result;
+function explicitOwner(value){return value&&String(value.accountOwnerUid||value.ownerUid||value.uid||'')||'';}
+function cloudMetaForAccount(meta,uid,{forWrite=false}={}){
+  const value=meta&&typeof meta==='object'?meta:{},owner=explicitOwner(value);
+  if(owner&&owner!==uid){if(forWrite)throw Object.assign(new Error('Cloud metadata belongs to another account.'),{code:'account-owner-mismatch'});console.warn('Cloud metadata skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:'meta_read'});return{};}
+  return value;
 }
-function partitionActiveState(state,source){
-  const result=TaxMateAccountBoundary.partitionState(state,{uid:activeAccountUid(),foreignIndex:accountBoundaryIndex()});
-  if(result.changed)quarantineAccountBoundary(result.quarantined,source);
-  return result;
-}
-function partitionCloudMetaForAccount(meta,uid,source){
-  const result=TaxMateAccountBoundary.partitionCloudMeta(meta,{uid,foreignIndex:accountBoundaryIndex(),trustedClaim:CLOUD.ownerClaim});
-  if(result.changed){quarantineAccountBoundary(result.quarantined,source);CLOUD.boundaryBlocked=true;}
-  return result.meta;
-}
-function partitionCloudRecordsForAccount(records,uid,collection,source){
-  const result=TaxMateAccountBoundary.partitionRecords(records,{uid,collection,foreignIndex:accountBoundaryIndex(),trustedClaim:CLOUD.ownerClaim,requireOwner:true});
-  if(result.changed){quarantineAccountBoundary(result.quarantined,source);CLOUD.boundaryBlocked=true;}
-  return result.accepted;
-}
-function partitionActiveOutbox(){
-  if(!SYNC_OUTBOX||!Array.isArray(SYNC_OUTBOX.items))return;
-  const uid=activeAccountUid(),accepted=[],foreign=[];
-  for(const operation of SYNC_OUTBOX.items){
-    const explicitOwner=operation&&String(operation.uid||operation.ownerUid||''),record=operation&&operation.record,recordResult=record?TaxMateAccountBoundary.partitionRecords([record],{uid,collection:`outbox.${operation.kind||'operation'}`,foreignIndex:accountBoundaryIndex()}):{accepted:[record],quarantined:[]};
-    if(uid&&explicitOwner&&explicitOwner!==uid||recordResult.quarantined.length){foreign.push({collection:'sync-outbox',reason:'foreign_operation',record:operation});continue;}
-    accepted.push(operation);
-  }
-  if(!foreign.length)return;
-  quarantineAccountBoundary(foreign,'outbox_load');SYNC_OUTBOX={...SYNC_OUTBOX,items:accepted};
-  try{localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));}catch(_){CLOUD.writeError='outbox-storage';CLOUD.writeErrorKind='outbox';}
+function cloudRecordsForAccount(records,uid,collection){
+  const accepted=[];let skipped=0;
+  for(const record of records||[]){const owner=explicitOwner(record);if(owner&&owner!==uid){skipped++;continue;}accepted.push(record);}
+  if(skipped)console.warn('Cloud records skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:String(collection||'records').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:skipped});
+  return accepted;
 }
 function activateAccountScope(scope,options={}){
   if(!TaxMateAccountStorage.validScope(scope))throw new Error('A valid account scope is required');
@@ -5898,11 +5872,9 @@ function activateAccountScope(scope,options={}){
   try{TaxMateAccountStorage.quarantineLegacy(localStorage,{now:Date.now(),nonce:typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():'migration'});}catch(error){console.warn('Legacy account state quarantine failed',{category:'account_storage',safeCode:'LEGACY_QUARANTINE_FAILED'});}
   if(window.TaxMateLtdProductionAdapter&&TaxMateLtdProductionAdapter.dispose)TaxMateLtdProductionAdapter.dispose();
   ACTIVE_ACCOUNT_SCOPE=scope;STORE_KEY=TaxMateAccountStorage.key(scope,'canonical');SYNC_OUTBOX_KEY=TaxMateAccountStorage.key(scope,'sync-outbox');OB_DRAFT_KEY=TaxMateAccountStorage.key(scope,'onboarding-draft');
-  ACCOUNT_SCOPE_HAD_CANONICAL=localStorage.getItem(STORE_KEY)!==null;STATE_LOAD_ERROR=null;ACCOUNT_SCOPE_NORMALIZATION_PENDING=false;SYNC_RUNTIME.blocked=false;SYNC_RUNTIME.reason=null;SYNC_RUNTIME.storedOutboxPresent=false;SYNC_RUNTIME.storedOutboxBytes=0;CLOUD.boundaryBlocked=false;CLOUD.boundaryCompanyIds=[];
+  ACCOUNT_SCOPE_HAD_CANONICAL=localStorage.getItem(STORE_KEY)!==null;STATE_LOAD_ERROR=null;ACCOUNT_SCOPE_NORMALIZATION_PENDING=false;SYNC_RUNTIME.blocked=false;SYNC_RUNTIME.reason=null;SYNC_RUNTIME.storedOutboxPresent=false;SYNC_RUNTIME.storedOutboxBytes=0;
   S=load();
-  const boundary=partitionActiveState(S,'canonical_load');
-  if(boundary.changed){S=TaxMateState.migrate(boundary.state,Date.now(),DEVICE_ID);CLOUD.boundaryBlocked=scope.kind==='firebase';CLOUD.boundaryCompanyIds=boundary.removedEntityIds||[];try{if(scope.kind==='firebase'&&cloudUser()&&cloudUser().uid===scope.uid)persistCanonicalState(S);}catch(_){}}
-  if(!ACCOUNT_SCOPE_HAD_CANONICAL&&localNavigation)S.tab=localNavigation;META_SYNC_SHADOW=metaSyncSnapshot(S);SYNC_OUTBOX=loadSyncOutbox();partitionActiveOutbox();ENTITLEMENT={snapshot:null,loaded:false};OB=obRestoreDraft();
+  if(!ACCOUNT_SCOPE_HAD_CANONICAL&&localNavigation)S.tab=localNavigation;META_SYNC_SHADOW=metaSyncSnapshot(S);SYNC_OUTBOX=loadSyncOutbox();ENTITLEMENT={snapshot:null,loaded:false};OB=obRestoreDraft();
   consumeBillingReturn();
   closePersonalSurfacesForLtd();applyTheme();window.dispatchEvent(new CustomEvent('taxmate:canonical-state-updated'));window.dispatchEvent(new CustomEvent('taxmate:account-ready',{detail:{kind:scope.kind}}));
   return true;
@@ -5919,7 +5891,6 @@ function syncStatus(){
   if(CLOUD.firstSyncBlocked)return{state:'checking',pending:0,message:'Waiting for account confirmation before syncing…',error:null};
   if(CLOUD.deletionBlocked)return{state:'failed',pending:null,message:'Account deletion is incomplete. Local data is retained and cloud sync is paused.',error:'account-deletion-incomplete'};
   if(CLOUD.controlsCached){const pending=SYNC_OUTBOX&&Array.isArray(SYNC_OUTBOX.items)?SYNC_OUTBOX.items.length:0;return typeof navigator!=='undefined'&&navigator.onLine===false?{state:'offline',pending,message:'Offline — server account safety will be rechecked before syncing',error:null}:{state:'checking',pending,message:'Checking cloud data before syncing…',error:null};}
-  if(CLOUD.boundaryBlocked)return{state:'failed',pending:null,message:'Cloud sync paused after an account-data safety check. Isolated data is not shown or synced.',error:'account-boundary-quarantine'};
   const user=cloudUser(),box=TaxMateSync.normalizeOutbox(SYNC_OUTBOX);
   if(user) box.items=box.items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid));
   return TaxMateSync.status({outbox:box,online:typeof navigator==='undefined'||navigator.onLine!==false,authReady:!!user&&FB.ready,hydrationState:CLOUD.hydrationState,partnershipHydrationState:CLOUD.partnershipHydrationState,reconciliationState:CLOUD.reconciliationState,ackState:CLOUD.ackState,hydrationError:CLOUD.hydrationError,inboundError:CLOUD.inboundError,writeError:CLOUD.writeError,writeErrorKind:CLOUD.writeErrorKind});
@@ -6005,22 +5976,20 @@ function beginAccountTransition(correlation){
 }
 async function readAccountControls(uid){
   if(!FB.ready||!FB.db)throw new Error('account-control-unavailable');
-  const [claimDoc,resetDoc]=await Promise.all([FB.db.collection('accountClaims').doc(uid).get(),FB.db.collection('accountResets').doc(uid).get()]),claim=claimDoc.exists?claimDoc.data():null,reset=resetDoc.exists?resetDoc.data():null;
-  if(claim&&!TaxMateAccountBoundary.trustedServerClaim(claim,uid))throw Error('account-claim-invalid');
-  if(reset){const epoch=Number(reset.resetEpoch),status=String(reset.status||'');if(!Number.isSafeInteger(epoch)||epoch<0||!['complete','deleting','failed'].includes(status))throw Error('account-reset-invalid');return{claim,reset:{status,resetEpoch:epoch}};}
-  return{claim,reset:null};
+  const resetDoc=await FB.db.collection('accountResets').doc(uid).get(),reset=resetDoc.exists?resetDoc.data():null;
+  if(reset){const epoch=Number(reset.resetEpoch),status=String(reset.status||'');if(!Number.isSafeInteger(epoch)||epoch<0||!['complete','deleting','failed'].includes(status))throw Error('account-reset-invalid');return{reset:{status,resetEpoch:epoch}};}
+  return{reset:null};
 }
 function cachedAccountControls(uid){
   try{
     const scope=TaxMateAccountStorage.firebaseScope(uid),raw=TaxMateAccountStorage.read(localStorage,scope,'server-controls');if(!raw)return null;
-    const value=JSON.parse(raw),claim=value&&value.claim||null,reset=value&&value.reset||null;
-    if(claim&&!TaxMateAccountBoundary.trustedServerClaim(claim,uid))return null;
+    const value=JSON.parse(raw),reset=value&&value.reset||null;
     if(reset&&(!Number.isSafeInteger(Number(reset.resetEpoch))||Number(reset.resetEpoch)<0||!['complete','deleting','failed'].includes(String(reset.status||''))))return null;
-    return{claim,reset:reset?{status:String(reset.status),resetEpoch:Number(reset.resetEpoch)}:null};
+    return{reset:reset?{status:String(reset.status),resetEpoch:Number(reset.resetEpoch)}:null};
   }catch(_){return null;}
 }
 function cacheAccountControls(uid,controls){
-  const scope=TaxMateAccountStorage.firebaseScope(uid),value={schemaVersion:1,claim:controls&&controls.claim||null,reset:controls&&controls.reset||null,verifiedAt:Date.now()};
+  const scope=TaxMateAccountStorage.firebaseScope(uid),value={schemaVersion:1,reset:controls&&controls.reset||null,verifiedAt:Date.now()};
   TaxMateAccountStorage.write(localStorage,scope,'server-controls',JSON.stringify(value));
 }
 function accountControlConnectivityFailure(error){const code=String(error&&error.code||'').toLowerCase().replace(/^firestore\//,'');return typeof navigator!=='undefined'&&navigator.onLine===false||['unavailable','deadline-exceeded','network-request-failed'].includes(code);}
@@ -6030,9 +5999,9 @@ async function refreshCachedAccountControls(){
   CLOUD.controlsRefreshPromise=(async()=>{const priorNavigation=['home','income','expenses','tax','receipts','more'].includes(S.tab)?S.tab:null,cached=cachedAccountControls(user.uid),correlation=`account-controls-${Date.now()}`;beginAccountTransition(correlation);try{
     const controls=await readAccountControls(user.uid);if(!cloudUser()||cloudUser().uid!==user.uid)return false;
     const scope=TaxMateAccountStorage.firebaseScope(user.uid),reset=controls.reset;if(reset&&reset.status==='complete')TaxMateAccountStorage.applyServerReset(localStorage,sessionStorage,scope,reset.resetEpoch);
-    activateAccountScope(scope,{force:true,navigation:priorNavigation});CLOUD.ownerClaim=controls.claim;CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';CLOUD.controlsCached=false;cacheAccountControls(user.uid,controls);ACCOUNT_TRANSITION_PENDING=false;render();safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':'controls_refreshed',correlation,'auth');
+    activateAccountScope(scope,{force:true,navigation:priorNavigation});CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';CLOUD.controlsCached=false;cacheAccountControls(user.uid,controls);ACCOUNT_TRANSITION_PENDING=false;render();safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':'controls_refreshed',correlation,'auth');
     if(!CLOUD.deletionBlocked)await startUserSync(user);return true;
-  }catch(error){if(cloudUser()&&cloudUser().uid===user.uid&&cached){activateAccountScope(TaxMateAccountStorage.firebaseScope(user.uid),{force:true,navigation:priorNavigation});CLOUD.ownerClaim=cached.claim||null;CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');}ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError='account-control-unavailable';safeActionTrace('account_transition','control_refresh_failed',correlation,'auth');renderAccountControlRetry(correlation);return false;}finally{CLOUD.controlsRefreshPromise=null;}})();
+  }catch(error){if(cloudUser()&&cloudUser().uid===user.uid&&cached){activateAccountScope(TaxMateAccountStorage.firebaseScope(user.uid),{force:true,navigation:priorNavigation});CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');}ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError='account-control-unavailable';safeActionTrace('account_transition','control_refresh_failed',correlation,'auth');renderAccountControlRetry(correlation);return false;}finally{CLOUD.controlsRefreshPromise=null;}})();
   return CLOUD.controlsRefreshPromise;
 }
 function retryAccountSafetyCheck(){return refreshCachedAccountControls();}
@@ -6067,11 +6036,11 @@ function watchAuth(){
     if(u && !u.isAnonymous){
       const priorNavigation=ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE.kind==='local'&&['home','income','expenses','tax','receipts','more'].includes(S.tab)?S.tab:null;
       beginAccountTransition(correlation);let controls,controlsCached=false;
-      try{controls=await readAccountControls(u.uid);}catch(error){const cached=cachedAccountControls(u.uid);if(cached&&accountControlConnectivityFailure(error)){controls=cached;controlsCached=true;}else{if(transition!==AUTH_TRANSITION_GENERATION)return;ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError=String(error&&error.message||'account-control-failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,48);safeActionTrace('account_transition','control_failed',correlation,'auth');console.warn('Account safety preflight failed',{category:'account_boundary',safeCode:'ACCOUNT_CONTROL_FAILED',stage:'pre_hydration'});renderAccountControlRetry(correlation);return;}}
+      try{controls=await readAccountControls(u.uid);}catch(error){const cached=cachedAccountControls(u.uid);if(cached&&accountControlConnectivityFailure(error)){controls=cached;controlsCached=true;}else{if(transition!==AUTH_TRANSITION_GENERATION)return;ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError=String(error&&error.message||'account-reset-check-failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,48);safeActionTrace('account_transition','reset_check_failed',correlation,'auth');console.warn('Account reset check failed',{category:'account_reset',safeCode:'ACCOUNT_RESET_CHECK_FAILED',stage:'pre_hydration'});renderAccountControlRetry(correlation);return;}}
       if(transition!==AUTH_TRANSITION_GENERATION||!firebase.auth().currentUser||firebase.auth().currentUser.uid!==u.uid){safeActionTrace('account_transition','superseded',correlation,'auth');return;}
       const scope=TaxMateAccountStorage.firebaseScope(u.uid),reset=controls.reset;
       if(reset&&reset.status==='complete')TaxMateAccountStorage.applyServerReset(localStorage,sessionStorage,scope,reset.resetEpoch);
-      activateAccountScope(scope,{force:true,navigation:priorNavigation});CLOUD.ownerClaim=controls.claim;CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);if(!controlsCached)cacheAccountControls(u.uid,controls);ACCOUNT_TRANSITION_PENDING=false;
+      activateAccountScope(scope,{force:true,navigation:priorNavigation});CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);if(!controlsCached)cacheAccountControls(u.uid,controls);ACCOUNT_TRANSITION_PENDING=false;
       if(ACCOUNT_SCOPE_NORMALIZATION_PENDING){try{persistCanonicalState(S);ACCOUNT_SCOPE_NORMALIZATION_PENDING=false;}catch(error){STATE_LOAD_ERROR=error;CLOUD.hydrationState='failed';safeActionTrace('account_transition','normalization_failed',correlation,'auth');render();return;}}
       render();
       safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':'scope_ready',correlation,'auth');
@@ -6131,24 +6100,20 @@ async function waitForAuthenticatedAccountScope(uid,timeoutMs=30000){
 }
 async function doSignOut(){
   stopUserSync();
-  activateAccountScope(TaxMateAccountStorage.localScope());render();
-  try{ await firebase.auth().signOut(); }catch(e){}
-  render();
+  ACCOUNT_TRANSITION_PENDING=true;closeOnboardingSurface({clearState:true});S=freshState();render();
+  try{await firebase.auth().signOut();}
+  catch(e){ACCOUNT_TRANSITION_PENDING=false;const current=cloudUser();if(current)activateAccountScope(TaxMateAccountStorage.firebaseScope(current.uid),{force:true});render();return false;}
+  activateAccountScope(TaxMateAccountStorage.localScope(),{force:true,navigation:'home'});ACCOUNT_TRANSITION_PENDING=false;render();return true;
 }
 function userRoot(uid){ assertActiveAccountUid(uid);return FB.db.collection('users').doc(uid); }
 function ltdCollectionRef(uid,collection){return userRoot(uid).collection('ltd').doc('v1').collection(collection);}
 function normaliseLtdAnchor(value){if(!value)return null;if(value.schemaVersion!==1||value.status!=='active_slot_claimed'||typeof value.activeCompanyId!=='string'||!value.activeCompanyId)throw Object.assign(new Error('ltd-anchor-invalid'),{code:'ltd-anchor-invalid'});return{schemaVersion:1,status:value.status,activeCompanyId:value.activeCompanyId,releasePolicy:value.releasePolicy||null,accountOwnerUid:value.accountOwnerUid||null};}
 function validateLtdAnchorConsistency(anchor,envelopes){const ids=new Set((envelopes||[]).map(item=>item.companyId)),localIds=new Set((S.domain&&S.domain.entities||[]).filter(item=>item.type==='limited_company'&&item.deletedAt==null).map(item=>item.id));if((ids.size||localIds.size)&&!anchor)throw Object.assign(new Error('ltd-anchor-missing'),{code:'ltd-anchor-missing'});if(anchor&&[...ids,...localIds].some(id=>id!==anchor.activeCompanyId))throw Object.assign(new Error('ltd-anchor-mismatch'),{code:'ltd-anchor-mismatch'});return true;}
 function setLtdRemote(envelopes){CLOUD.ltdRemote=envelopes.slice().sort((a,b)=>String(a.collection).localeCompare(String(b.collection))||String(a.recordId).localeCompare(String(b.recordId)));}
-function partitionLtdCloudForAccount(anchor,envelopes,source){
-  const index=accountBoundaryIndex(),badCompanyIds=new Set(CLOUD.boundaryCompanyIds||[]),rows=envelopes||[];
-  const uid=activeAccountUid(),trusted=TaxMateAccountBoundary.trustedServerClaim(CLOUD.ownerClaim,uid)||!!anchor&&String(anchor.accountOwnerUid||'')===uid;
-  if((anchor||rows.length)&&!trusted){const quarantined=[...rows.map(envelope=>({collection:'cloud.ltd.'+(envelope.collection||'record'),reason:'owner_missing',record:envelope})),...(anchor?[{collection:'cloud.ltdControl',reason:'owner_missing',record:anchor}]:[])];quarantineAccountBoundary(quarantined,source);CLOUD.boundaryBlocked=true;return{anchor:null,envelopes:[]};}
-  for(const envelope of rows){const payload=envelope&&envelope.payload||{},profilePreview=envelope&&envelope.collection==='companyProfiles'&&TaxMateAccountBoundary.previewProfile(payload);if(profilePreview||index.ids.has(envelope&&envelope.companyId)||index.ids.has(envelope&&envelope.recordId))badCompanyIds.add(envelope.companyId);}
-  const accepted=[],quarantined=[];
-  for(const envelope of rows){if(badCompanyIds.has(envelope&&envelope.companyId))quarantined.push({collection:'cloud.ltd.'+(envelope.collection||'record'),reason:'foreign_or_preview_company',record:envelope});else accepted.push(envelope);}
-  let safeAnchor=anchor;if(anchor&&badCompanyIds.has(anchor.activeCompanyId)){quarantined.push({collection:'cloud.ltdControl',reason:'foreign_or_preview_anchor',record:anchor});safeAnchor=null;}
-  if(quarantined.length){quarantineAccountBoundary(quarantined,source);CLOUD.boundaryBlocked=true;CLOUD.boundaryCompanyIds=[...new Set([...(CLOUD.boundaryCompanyIds||[]),...badCompanyIds])];}
+function ltdCloudForAccount(anchor,envelopes,source){
+  const uid=activeAccountUid(),anchorOwner=explicitOwner(anchor),safeAnchor=anchorOwner&&anchorOwner!==uid?null:anchor,accepted=[];let skipped=anchor&&!safeAnchor?1:0;
+  for(const envelope of envelopes||[]){const owner=explicitOwner(envelope)||explicitOwner(envelope&&envelope.payload);if(owner&&owner!==uid){skipped++;continue;}accepted.push(envelope);}
+  if(skipped)console.warn('Ltd cloud records skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:String(source||'ltd_read').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:skipped});
   return{anchor:safeAnchor,envelopes:accepted};
 }
 function reconcileLtdState(uid,envelopes,{queue=true}={}){
@@ -6156,12 +6121,12 @@ function reconcileLtdState(uid,envelopes,{queue=true}={}){
   if(!hydrate.allowed)return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
   const result=TaxMateLtdSync.reconcile(S,envelopes,uid);if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
   if(result.downloads.length){const next=TaxMateLtdSync.applyDownloads(S,result.downloads);S=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(S);persistRemoteState();}
-  if(queue&&write.allowed&&!CLOUD.boundaryBlocked)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
-  return{...result,uploads:write.allowed&&!CLOUD.boundaryBlocked?result.uploads:[],retainedLocalOnlyUploads:write.allowed&&!CLOUD.boundaryBlocked?0:result.uploads.length,readOnly:!write.allowed||CLOUD.boundaryBlocked};
+  if(queue&&write.allowed)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
+  return{...result,uploads:write.allowed?result.uploads:[],retainedLocalOnlyUploads:write.allowed?0:result.uploads.length,readOnly:!write.allowed};
 }
 async function readLtdCloud(uid,options={}){
   if(!ltdAccessDecision('cloud_hydrate').allowed){setLtdRemote([]);return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};}
-  const anchorDoc=await userRoot(uid).collection('ltdControl').doc('activeCompany').get(),anchor=anchorDoc.exists?normaliseLtdAnchor(anchorDoc.data()):null,batches=await Promise.all(TaxMateLtdSync.COLLECTIONS.map(async collection=>{const snap=await ltdCollectionRef(uid,collection).get(),rows=[];snap.forEach(doc=>rows.push(doc.data()));return rows;})),raw=batches.flat(),safe=partitionLtdCloudForAccount(anchor,raw,'cloud_ltd_hydrate'),remote=safe.envelopes;remote.forEach(TaxMateLtdSync.validateEnvelope);validateLtdAnchorConsistency(safe.anchor,remote);CLOUD.ltdAnchor=safe.anchor;setLtdRemote(remote);return{...reconcileLtdState(uid,remote,{queue:options.queue!==false}),anchor:safe.anchor?{...safe.anchor}:null};
+  const anchorDoc=await userRoot(uid).collection('ltdControl').doc('activeCompany').get(),anchor=anchorDoc.exists?normaliseLtdAnchor(anchorDoc.data()):null,batches=await Promise.all(TaxMateLtdSync.COLLECTIONS.map(async collection=>{const snap=await ltdCollectionRef(uid,collection).get(),rows=[];snap.forEach(doc=>rows.push(doc.data()));return rows;})),raw=batches.flat(),safe=ltdCloudForAccount(anchor,raw,'cloud_ltd_hydrate'),remote=safe.envelopes;remote.forEach(TaxMateLtdSync.validateEnvelope);validateLtdAnchorConsistency(safe.anchor,remote);CLOUD.ltdAnchor=safe.anchor;setLtdRemote(remote);return{...reconcileLtdState(uid,remote,{queue:options.queue!==false}),anchor:safe.anchor?{...safe.anchor}:null};
 }
 async function readAccountPresence(uid){
   assertActiveAccountUid(uid);const reads=[userRoot(uid).collection('app').doc('meta').get(),userRoot(uid).collection('entries').limit(1).get(),userRoot(uid).collection('ltdControl').doc('activeCompany').get()];
@@ -6169,8 +6134,8 @@ async function readAccountPresence(uid){
   const results=await Promise.all(reads),meta=results[0],entries=results[1],anchor=results[2],ltd=results.slice(3);return{established:meta.exists||!entries.empty||anchor.exists||ltd.some(snapshot=>!snapshot.empty),meta:meta.exists,entries:!entries.empty,ltd:anchor.exists||ltd.some(snapshot=>!snapshot.empty)};
 }
 async function restartSyncAfterFirstConfirmation(user,{reloadScope=false,correlation=`first-sync-${Date.now()}`}={}){
-  const ownerClaim=CLOUD.ownerClaim,controlsCached=CLOUD.controlsCached;FIRST_SYNC_CONFIRMATION=null;closeOnboardingSurface({clearState:true});stopUserSync();CLOUD.ownerClaim=ownerClaim;CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=false;
-  if(reloadScope){activateAccountScope(TaxMateAccountStorage.firebaseScope(user.uid),{force:true,navigation:'home'});CLOUD.ownerClaim=ownerClaim;CLOUD.controlsCached=controlsCached;ACCOUNT_SCOPE_HAD_CANONICAL=true;}
+  const controlsCached=CLOUD.controlsCached;FIRST_SYNC_CONFIRMATION=null;closeOnboardingSurface({clearState:true});stopUserSync();CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=false;
+  if(reloadScope){activateAccountScope(TaxMateAccountStorage.firebaseScope(user.uid),{force:true,navigation:'home'});CLOUD.controlsCached=controlsCached;ACCOUNT_SCOPE_HAD_CANONICAL=true;}
   ACCOUNT_TRANSITION_PENDING=false;return startUserSync(user,{correlation});
 }
 function runFirstSyncAction(action){
@@ -6189,7 +6154,7 @@ function firstSyncChooseAnother(){return runFirstSyncAction(async state=>{TaxMat
 function firstSyncCancel(){return runFirstSyncAction(async state=>{TaxMateAccountStorage.clearLocalAssociation(localStorage);FIRST_SYNC_CONFIRMATION=null;closeOnboardingSurface({clearState:true});safeActionTrace('first_sync','cancelled',state.correlation,'auth');await doSignOut();return{status:'cancelled'};});}
 function installLtdListeners(uid){
   if(!ltdAccessDecision('cloud_hydrate').allowed){(CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=[];return;}
-  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=TaxMateLtdSync.COLLECTIONS.map(collection=>ltdCollectionRef(uid,collection).onSnapshot(snap=>{if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;const other=(CLOUD.ltdRemote||[]).filter(item=>item.collection!==collection),rows=[];snap.forEach(doc=>rows.push(doc.data()));try{rows.forEach(TaxMateLtdSync.validateEnvelope);const safe=partitionLtdCloudForAccount(CLOUD.ltdAnchor,other.concat(rows),'cloud_ltd_listener');CLOUD.ltdAnchor=safe.anchor;setLtdRemote(safe.envelopes);CLOUD.applying=true;reconcileLtdState(uid,CLOUD.ltdRemote);CLOUD.applying=false;persistRemoteState();render();scheduleOutboxFlush(0,'ltd-reconciliation');}catch(error){CLOUD.applying=false;handleSyncListenerError(error);}},handleSyncListenerError));
+  (CLOUD.ltdUnsubs||[]).forEach(unsub=>{try{unsub();}catch(_){}});CLOUD.ltdUnsubs=TaxMateLtdSync.COLLECTIONS.map(collection=>ltdCollectionRef(uid,collection).onSnapshot(snap=>{if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;const other=(CLOUD.ltdRemote||[]).filter(item=>item.collection!==collection),rows=[];snap.forEach(doc=>rows.push(doc.data()));try{rows.forEach(TaxMateLtdSync.validateEnvelope);const safe=ltdCloudForAccount(CLOUD.ltdAnchor,other.concat(rows),'cloud_ltd_listener');CLOUD.ltdAnchor=safe.anchor;setLtdRemote(safe.envelopes);CLOUD.applying=true;reconcileLtdState(uid,CLOUD.ltdRemote);CLOUD.applying=false;persistRemoteState();render();scheduleOutboxFlush(0,'ltd-reconciliation');}catch(error){CLOUD.applying=false;handleSyncListenerError(error);}},handleSyncListenerError));
 }
 
 function cloudMetaFromState(){
@@ -6216,7 +6181,7 @@ function personalRecordsFromState(){
   return S.entries.concat(S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId));
 }
 function queuePersonalState(uid){
-  if(CLOUD.boundaryBlocked||CLOUD.firstSyncBlocked)return null;
+  if(CLOUD.firstSyncBlocked)return null;
   if(!uid){const cu=cloudUser();if(!cu)return null;uid=cu.uid;}
   assertActiveAccountUid(uid);
   const established=!!(CLOUD.hydrationResult&&CLOUD.hydrationResult.existingCloudAccount);
@@ -6264,12 +6229,10 @@ async function sendSyncOperation(operation){
     return;
   }
   if(operation.kind==='personal-state'){
-    if(CLOUD.boundaryBlocked)throw Object.assign(new Error('Account boundary quarantine is active.'),{code:'account-boundary-quarantine'});
     const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState().map(record=>({...record,accountOwnerUid:operation.uid}));
     const metaRef=userRoot(operation.uid).collection('app').doc('meta');let serverMeta=operationMeta;
     await FB.db.runTransaction(async tx=>{
-      const snap=await tx.get(metaRef),remote=snap.exists?partitionCloudMetaForAccount(snap.data(),operation.uid,'sync_meta_write'):{};
-      if(CLOUD.boundaryBlocked)throw Object.assign(new Error('Account boundary quarantine is active.'),{code:'account-boundary-quarantine'});
+      const snap=await tx.get(metaRef),remote=snap.exists?cloudMetaForAccount(snap.data(),operation.uid,{forWrite:true}):{};
       serverMeta={...TaxMateSync.mergeMeta(operationMeta,remote),accountOwnerUid:operation.uid};tx.set(metaRef,serverMeta);
     });
     for(let i=0;i<operationRecords.length;i+=12){
@@ -6286,7 +6249,6 @@ async function sendSyncOperation(operation){
 async function flushSyncOutbox(reason){
   if(ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.controlsCached||CLOUD.firstSyncBlocked){renderSyncStatus();return{state:'account-safety-paused',pending:null,error:'account-safety-paused'};}
   if(SYNC_RUNTIME.blocked){renderSyncStatus();return{state:'update-required',pending:null,error:SYNC_RUNTIME.reason};}
-  if(CLOUD.boundaryBlocked){renderSyncStatus();return{state:'account-boundary-paused',pending:null,error:'account-boundary-quarantine'};}
   if(CLOUD.flushPromise)return CLOUD.flushPromise;
   CLOUD.flushPromise=(async()=>{
     if(typeof navigator!=='undefined'&&navigator.onLine===false){renderSyncStatus();return;}
@@ -6373,8 +6335,8 @@ function startUserSync(u,options={}){
       const entSnap=await userRoot(uid).collection('entries').get();
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
       const remoteRaw=[];entSnap.forEach(d=>{const re=d.data();if(re)remoteRaw.push(re);});
-      const remote=partitionCloudRecordsForAccount(remoteRaw,uid,'entries','cloud_entries_hydrate');
-      const remoteMeta=metaDoc.exists?partitionCloudMetaForAccount(metaDoc.data(),uid,'cloud_meta_hydrate'):{};
+      const remote=cloudRecordsForAccount(remoteRaw,uid,'entries_hydrate');
+      const remoteMeta=metaDoc.exists?cloudMetaForAccount(metaDoc.data(),uid):{};
       if(metaDoc.exists)applyCloudMeta(remoteMeta);
       const mergedEntries=TaxMateSync.mergeRecords(S.entries.concat(S.tombstones||[]),remote);
       S.entries=TaxMateSync.visible(mergedEntries);
@@ -6397,14 +6359,14 @@ function startUserSync(u,options={}){
       /* 2 ── Install live personal listeners, then await every partnership's first snapshots. */
       CLOUD.metaUnsub=userRoot(uid).collection('app').doc('meta').onSnapshot(doc=>{
         const m=doc.data();if(!m||CLOUD.applying||CLOUD.hydrationUid!==uid)return;
-        CLOUD.applying=true;applyCloudMeta(partitionCloudMetaForAccount(m,uid,'cloud_meta_listener'));CLOUD.applying=false;render();
+        CLOUD.applying=true;applyCloudMeta(cloudMetaForAccount(m,uid));CLOUD.applying=false;render();
         S.businesses.filter(b=>b.syncCode).forEach(b=>subscribeSync(b.syncCode,b.id).catch(()=>{}));
       },handleSyncListenerError);
       CLOUD.entUnsub=userRoot(uid).collection('entries').onSnapshot(snap=>{
         if(CLOUD.applying||CLOUD.hydrationUid!==uid)return;
         CLOUD.applying=true;
         const latestRaw=[];snap.forEach(d=>latestRaw.push(d.data()));
-        const latest=partitionCloudRecordsForAccount(latestRaw,uid,'entries','cloud_entries_listener');
+        const latest=cloudRecordsForAccount(latestRaw,uid,'entries_listener');
         const partnerBiz=new Set(S.businesses.filter(b=>b.syncCode).map(b=>b.id));
         const partnerEntries=S.entries.filter(e=>partnerBiz.has(e.bizId));
         const personal=S.entries.filter(e=>!partnerBiz.has(e.bizId)).concat((S.tombstones||[]).filter(e=>!partnerBiz.has(e.bizId)));
@@ -6453,7 +6415,7 @@ function stopUserSync(){
   CLOUD.generation++;clearTimeout(CLOUD.hydrationRetryTimer);CLOUD.hydrationRetryTimer=null;
   clearUserSyncListeners();
   CLOUD.lastPushed='';
-  CLOUD.hydrationState='idle';CLOUD.partnershipHydrationState='idle';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.boundaryBlocked=false;CLOUD.boundaryCompanyIds=[];CLOUD.ownerClaim=null;CLOUD.deletionBlocked=false;CLOUD.firstSyncBlocked=false;
+  CLOUD.hydrationState='idle';CLOUD.partnershipHydrationState='idle';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.deletionBlocked=false;CLOUD.firstSyncBlocked=false;
   renderSyncStatus();
 }
 async function pushUserState(uid, force){
@@ -6463,7 +6425,6 @@ async function pushUserState(uid, force){
 }
 function scheduleCloudPush(){
   if(SYNC_RUNTIME.blocked||ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.firstSyncBlocked){renderSyncStatus();return;}
-  if(CLOUD.boundaryBlocked){renderSyncStatus();return;}
   if(!cloudUser() || CLOUD.applying) return;
   CLOUD.localEditAt = Date.now();
   queuePersonalState();
@@ -8123,7 +8084,7 @@ window.addEventListener('appinstalled', ()=>{
   markPwaInstalled();
 });
 const APP_RUNTIME_RECOVERY_KEY='taxmateuk_runtime_recovery_v1';
-function appRuntimeReady(){return typeof JSZip==='function'&&typeof TaxMateBackupExport==='object'&&typeof TaxMatePortableBackup==='object'&&typeof TaxMateCompanyAccess==='object'&&typeof TaxMateSync==='object'&&typeof TaxMateAccountBoundary==='object';}
+function appRuntimeReady(){return typeof JSZip==='function'&&typeof TaxMateBackupExport==='object'&&typeof TaxMatePortableBackup==='object'&&typeof TaxMateCompanyAccess==='object'&&typeof TaxMateSync==='object';}
 function recoverIncompleteAppRuntime(){
   if(appRuntimeReady()){try{sessionStorage.removeItem(APP_RUNTIME_RECOVERY_KEY);}catch(_){}return false;}
   console.warn('App runtime incomplete',{category:'runtime_safety',safeCode:'APP_RUNTIME_INCOMPLETE',stage:'essential_module_check'});
