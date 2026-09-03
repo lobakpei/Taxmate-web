@@ -104,6 +104,6 @@ test('focused CTA and Ltd Step 5 fixes keep green action text white and separate
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.19',build:'2026-09-03.founder-production-hotfix-candidate.1',cache:'taxmate-v2-founder-production-hotfix-candidate-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.20',build:'2026-09-03.existing-ownership-recovery-candidate.1',cache:'taxmate-v2-existing-ownership-recovery-candidate-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

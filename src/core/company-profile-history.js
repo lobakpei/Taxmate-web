@@ -40,7 +40,6 @@
     const revisions=source.profileRevisionHistory.filter(item=>item&&item.kind==='effective_change'&&item.field==='ownership'&&item.status==='applied'&&Domain.isoDate(item.effectiveDate)&&Array.isArray(item.after)).slice().sort((a,b)=>Number(a.revision)-Number(b.revision));
     for(const revision of revisions){
       let shareholders;try{shareholders=validateShareholders(revision.after).map(({totalShares,...holder})=>holder);}catch(_){continue;}
-      if(!same(shareholders,normalizedProfile))continue;
       const linked=ordered.find(item=>item.sourceRevisionId===revision.id||item.effectiveFrom===revision.effectiveDate&&same(item.shareholders,shareholders));
       if(linked)continue;
       const prior=ordered.filter(item=>item.effectiveFrom<revision.effectiveDate).at(-1);
@@ -54,7 +53,11 @@
       if(ordered[index].effectiveTo==null&&ordered[index+1].effectiveFrom>ordered[index].effectiveFrom){ordered[index].effectiveTo=ordered[index+1].effectiveFrom;ordered[index].updatedAt=Math.max(Number(ordered[index].updatedAt)||0,Number(ordered[index+1].updatedAt)||0);}
     }
     const open=ordered.at(-1);
-    if(open&&open.effectiveTo==null&&same(open.shareholders,normalizedProfile))source.ownershipHistory=ordered;
+    const applied=open&&revisions.find(item=>{if(item.id!==open.sourceRevisionId||item.effectiveDate!==open.effectiveFrom)return false;try{return same(validateShareholders(item.after).map(({totalShares,...holder})=>holder),open.shareholders);}catch(_){return false;}});
+    if(open&&open.effectiveTo==null&&(same(open.shareholders,normalizedProfile)||applied)){
+      source.ownershipHistory=ordered;source.shareholders=clone(open.shareholders);
+      if(applied){source.updatedAt=Math.max(Number(source.updatedAt)||0,Number(open.updatedAt)||0,Number(applied.updatedAt)||0);source.deviceId=applied.deviceId||open.deviceId||source.deviceId;}
+    }
     return source;
   }
   function recordsAffected(field,records={}){
@@ -88,6 +91,11 @@
     const candidates=orderedHistory(profile).filter(version=>version.effectiveFrom<=date&&(version.effectiveTo==null||date<version.effectiveTo));
     if(candidates.length!==1)throw new Error('Ownership history is missing or overlaps for the requested date');return clone(candidates[0]);
   }
+  function verifiedOwnershipAtDate(profile,date){
+    if(!profile||!Domain.isoDate(date)||!Array.isArray(profile.ownershipHistory))return null;
+    const candidates=profile.ownershipHistory.filter(version=>{try{Domain.validateCompanyOwnershipVersion(version,profile);return version.effectiveFrom<=date&&(version.effectiveTo==null||date<version.effectiveTo);}catch(_){return false;}});
+    return candidates.length===1?clone(candidates[0]):null;
+  }
   function recordOwnershipChange(input){
     const source=ensureHistory(input&&input.profile),effectiveDate=input&&input.effectiveDate;if(!Domain.isoDate(effectiveDate)||effectiveDate<source.incorporationDate)throw new Error('Ownership effective date is invalid');
     if(!text(input.reason,1000))throw new Error('Ownership change reason is required');const evidenceRefs=assertEvidence(input.evidenceRefs),history=orderedHistory(source),current=history.at(-1);
@@ -102,5 +110,5 @@
     return{status:'applied',reasons:[],profile:source,revision,impact,ownershipVersion:clone(version)};
   }
   function profileAtDate(profile,date){const version=ownershipAtDate(profile,date);return{...clone(profile),shareholders:clone(version.shareholders)};}
-  return Object.freeze({HISTORY_SCHEMA_VERSION,CORRECTABLE_FIELDS,ensureHistory,repairOwnershipHistory,fieldStatus,recordsAffected,applySetupCorrection,recordOwnershipChange,ownershipAtDate,profileAtDate,validateShareholders});
+  return Object.freeze({HISTORY_SCHEMA_VERSION,CORRECTABLE_FIELDS,ensureHistory,repairOwnershipHistory,fieldStatus,recordsAffected,applySetupCorrection,recordOwnershipChange,ownershipAtDate,verifiedOwnershipAtDate,profileAtDate,validateShareholders});
 });

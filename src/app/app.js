@@ -6052,11 +6052,17 @@ function ltdCloudForAccount(anchor,envelopes,source){
   if(skipped)console.warn('Ltd cloud records skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:String(source||'ltd_read').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:skipped});
   return{anchor:safeAnchor,envelopes:accepted};
 }
+function pendingLtdRecoveryEnvelopes(uid){
+  const box=TaxMateSync.normalizeOutbox(loadSyncOutbox()),records=[];
+  for(const operation of box.items){if(operation.kind!=='ltd-record'||(operation.uid||operation.ownerUid)!==uid||!operation.record)continue;TaxMateLtdSync.validateEnvelope(operation.record);records.push(operation.record);}
+  return records;
+}
 function reconcileLtdState(uid,envelopes,{queue=true}={}){
   const hydrate=ltdAccessDecision('cloud_hydrate'),write=ltdAccessDecision('cloud_sync');
   if(!hydrate.allowed)return{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
-  let result=TaxMateLtdSync.reconcile(S,envelopes,uid);if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
-  if(result.downloads.length){const downloaded=result.downloads,next=TaxMateLtdSync.applyDownloads(S,downloaded),candidate=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(candidate);S=candidate;persistRemoteState();const verified=TaxMateLtdSync.reconcile(S,envelopes,uid);if(verified.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:verified.conflicts});result={...verified,downloads:downloaded};}
+  let result=TaxMateLtdSync.reconcile(S,envelopes,uid);
+  if(result.downloads.length||result.conflicts.length){const downloaded=result.downloads,pending=pendingLtdRecoveryEnvelopes(uid),next=TaxMateLtdSync.applyDownloads(S,envelopes.concat(pending)),candidate=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(candidate);const verified=TaxMateLtdSync.reconcile(candidate,envelopes,uid);if(verified.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:verified.conflicts});S=candidate;persistRemoteState();result={...verified,downloads:downloaded,recoveryInputs:{remote:envelopes.length,pending:pending.length}};}
+  if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
   if(queue&&write.allowed)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
   return{...result,uploads:write.allowed?result.uploads:[],retainedLocalOnlyUploads:write.allowed?0:result.uploads.length,readOnly:!write.allowed};
 }
@@ -8098,7 +8104,7 @@ document.addEventListener('touchend', e=>{
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
-  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260903-9',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
+  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260903-10',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
   else registerTaxMateServiceWorker();
 }

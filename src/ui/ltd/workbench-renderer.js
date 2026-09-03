@@ -1026,9 +1026,10 @@
 
   function ownershipSummaryCard(){
     var hist=(S().workspace&&S().workspace.ownershipHistory)||[];
-    var cur=hist.filter(function(v){return v.effectiveTo==null;})[0]||hist[0];
+    var today=S().context&&S().context.currentDate;
+    var cur=hist.filter(function(v){return v.effectiveFrom<=today&&(v.effectiveTo==null||today<v.effectiveTo);})[0]||null;
     var sh=(cur&&cur.shareholders)||[];
-    if(!sh.length) return null;
+    if(!sh.length) return h('div',{class:'tm-ownership-card'},[h('div',{class:'tm-h',text:t('records.ownership')}),notice('warn',null,t('common.review_required'))]);
     var yours=sh.filter(function(x){return x.isAccountHolder;})[0]||sh[0];
     return h('div',{class:'tm-ownership-card'},[
       h('div',{class:'tm-h',text:t('records.ownership')}),
@@ -1353,10 +1354,11 @@
     var sid='ltd.records.ownership';
     var hist=(S().workspace&&S().workspace.ownershipHistory)||[];
     var today=S().context&&S().context.currentDate;
-    var cur=hist.filter(function(v){return v.effectiveFrom<=today&&(v.effectiveTo==null||today<v.effectiveTo);})[0]||hist[0];
+    var cur=hist.filter(function(v){return v.effectiveFrom<=today&&(v.effectiveTo==null||today<v.effectiveTo);})[0]||null;
     var nodes=[backBar(function(){ run('onBack',{},{}); }, t('records.ownership'))];
     if(cur){ nodes.push(h('div',{class:'tm-h',text:t('records.current')}));
       nodes.push(summRows((cur.shareholders||[]).map(function(sh){ return [sh.name, h('span',{class:'tm-num',text:Math.round((sh.ownershipBasisPoints||0)/100)+'%'})]; }))); }
+    else{nodes.push(notice('warn',t('records.current'),t('common.review_required')));return workspaceBack(nodes);}
     if(hist.length>1){
       nodes.push(h('div',{class:'tm-h',text:t('records.history')}));
       hist.slice().sort(function(a,b){return String(b.effectiveFrom).localeCompare(String(a.effectiveFrom));}).forEach(function(v){

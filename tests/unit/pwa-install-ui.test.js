@@ -40,8 +40,8 @@ test('all contextual advice stays in Assistant and PWA chrome uses one deep rele
   assert.equal((html.match(/<meta name="theme-color"/g)||[]).length,1);
   assert.match(html,/<meta name="theme-color" content="#0F1620">/);
   assert.equal(manifest.theme_color,'#0F1620');assert.equal(manifest.background_color,'#0F1620');
-  assert.match(html,/manifest\.json\?v=20260903-9/);assert.match(app,/sw\.js\?v=20260903-9/);
-  assert.match(sw,/manifest\.json\?v=20260903-9/);assert.match(sw,/taxmate-v2-founder-production-hotfix-candidate-1/);
+  assert.match(html,/manifest\.json\?v=20260903-10/);assert.match(app,/sw\.js\?v=20260903-10/);
+  assert.match(sw,/manifest\.json\?v=20260903-10/);assert.match(sw,/taxmate-v2-existing-ownership-recovery-candidate-1/);
 });
 
 test('Settings keeps its existing install entry while installed state hides both surfaces',()=>{
