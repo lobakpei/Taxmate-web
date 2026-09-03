@@ -44,6 +44,20 @@ test('foreign Firebase URL-only reference is skipped before resolving or downloa
   assert.equal(receipts.length,0);assert.equal(receipts.skippedForeignCount,1);assert.equal(lists,1);assert.equal(resolves,0);assert.equal(downloads,0);assert.equal(foreignCalls,1);
 });
 
+test('exact record-id receipt already migrated into the active UID is included without rewriting state',async()=>{
+  const foreign='receipts/legacy-owner/e1.jpg',ownedPath='receipts/u/e1.jpg',state=baseState([entry('e1',foreign,null)]),before=JSON.stringify(state),resolved=[];
+  const receipts=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:ownedPath}],storageUrl:async path=>{resolved.push(path);return'https://example.test/owned-e1.jpg';},download});
+  assert.equal(receipts.length,1);assert.equal(receipts[0].entryId,'e1');assert.equal(receipts[0].originalPath,foreign);assert.equal(receipts[0].associations[0].originalPath,foreign);assert.deepEqual(resolved,[ownedPath]);assert.equal(receipts.skippedForeignCount,0);assert.equal(receipts.skippedUnavailableCount,0);assert.equal(JSON.stringify(state),before);
+  const created=await Portable.createArchive({state,receipts,identity:{appVersion:'2.1.16',buildId:'focused-hotfix-test',deviceId:'test'},nodeBuffer:true,exportedAt:'2026-09-03T00:00:00.000Z'}),inspected=await Portable.inspectArchive(created.archive);
+  assert.equal(inspected.receipts.length,1);assert.equal(inspected.receipts[0].originalPath,foreign);assert.equal(inspected.metadata.receiptCount,1);
+});
+
+test('record-id mismatch cannot use an unrelated active-UID object as a foreign-reference fallback',async()=>{
+  const foreign='receipts/legacy-owner/e1.jpg',state=baseState([entry('different-record',foreign,null)]);let resolves=0,downloads=0;
+  const receipts=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:'receipts/u/e1.jpg'}],storageUrl:async()=>{resolves++;return'https://example.test/unrelated.jpg';},download:async()=>{downloads++;return download('x');}});
+  assert.equal(receipts.length,1);assert.equal(receipts[0].entryId,null);assert.equal(receipts[0].originalPath,'receipts/u/e1.jpg');assert.equal(receipts.skippedForeignCount,1);assert.equal(resolves,1);assert.equal(downloads,1);
+});
+
 test('missing references and ordinary download failures are safely omitted without changing state',async()=>{
   const missingState=baseState([entry('e1','receipts/u/missing.jpg',null)]),failedState=baseState([entry('e1',null,'https://example.test/fail.jpg')]),beforeMissing=JSON.stringify(missingState),beforeFailed=JSON.stringify(failedState);
   const missing=await Backup.collectReceipts({state:missingState,user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download});

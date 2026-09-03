@@ -94,18 +94,18 @@
       "height": 16,
       "transparentPixels": 0,
       "opaquePixels": 256,
-      "foregroundPixels": 174,
-      "blackPixels": 5,
+      "foregroundPixels": 193,
+      "blackPixels": 3,
       "foregroundBounds": {
         "left": 1,
         "top": 0,
-        "right": 14,
+        "right": 15,
         "bottom": 15
       },
       "foregroundBoundsRatio": {
         "left": 0.0625,
         "top": 0,
-        "right": 0.9375,
+        "right": 1,
         "bottom": 1
       }
     },
@@ -114,17 +114,17 @@
       "height": 32,
       "transparentPixels": 0,
       "opaquePixels": 1024,
-      "foregroundPixels": 641,
-      "blackPixels": 19,
+      "foregroundPixels": 692,
+      "blackPixels": 18,
       "foregroundBounds": {
-        "left": 3,
-        "top": 1,
+        "left": 2,
+        "top": 0,
         "right": 29,
         "bottom": 31
       },
       "foregroundBoundsRatio": {
-        "left": 0.09375,
-        "top": 0.03125,
+        "left": 0.0625,
+        "top": 0,
         "right": 0.9375,
         "bottom": 1
       }
@@ -134,19 +134,19 @@
       "height": 48,
       "transparentPixels": 0,
       "opaquePixels": 2304,
-      "foregroundPixels": 1471,
+      "foregroundPixels": 1556,
       "blackPixels": 52,
       "foregroundBounds": {
         "left": 3,
         "top": 0,
         "right": 44,
-        "bottom": 46
+        "bottom": 47
       },
       "foregroundBoundsRatio": {
         "left": 0.0625,
         "top": 0,
         "right": 0.9375,
-        "bottom": 0.9791666666666666
+        "bottom": 1
       }
     },
     "apple-touch-icon.png": {
@@ -248,26 +248,26 @@
       "sha256": "12DB5CC1BCF8B1BB7AD1B10C52124246960A0FDCCA2D52A747FBC58533D088B8"
     },
     "favicon-16x16.png": {
-      "bytes": 485,
-      "sha256": "CCC047C1043B378F1479C73F0E4D9BDE2AA3769207D1C3C47400EB9CEC02495B",
+      "bytes": 496,
+      "sha256": "5C81D5BDE1C4309657A3F5718F2C4E486CFC084A387BD220214CCBF0480147D6",
       "width": 16,
       "height": 16
     },
     "favicon-32x32.png": {
-      "bytes": 957,
-      "sha256": "AE02BAF01E1941105B471B55B82141BF5E5B4D2EA7720810C995F6E327C01C59",
+      "bytes": 912,
+      "sha256": "C5EBA31CD50DC282E02CE61E728086762B54948081F1876AD59E3CDF04FE976E",
       "width": 32,
       "height": 32
     },
     "favicon-48x48.png": {
-      "bytes": 1368,
-      "sha256": "CBF2509491A4FF7479161A4194A7C1D67DA225727A3414A6F67D460B52A57B2E",
+      "bytes": 1406,
+      "sha256": "8D3EC9C79BBE8DF12DA978182927C48D6E0F9AFF723CFA254166968907D752DC",
       "width": 48,
       "height": 48
     },
     "favicon.ico": {
-      "bytes": 2864,
-      "sha256": "B21F301399E708282F78CF3FD176D288B9D00AF1BE8C3EBDADAC5FFD7CE3D80F"
+      "bytes": 2868,
+      "sha256": "952892BC099F88DBDA8CDE73E18BC62394D9B28C0FCB8A718F52CE30244D33A7"
     },
     "apple-touch-icon.png": {
       "bytes": 4890,

@@ -856,7 +856,7 @@
       btn(t('s5.review_answers'),'g sm',function(){ run('onBack',{},{}); }),
       btn(t('s5.learn'),'g sm',function(){ run('onOpenInfo',{infoId:'s5.learn'},{}); })
     ]));
-    body.push(checkControl({label:t('s5.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }}));
+    body.push(h('div',{class:'tm-step5-confirm'},[checkControl({label:t('s5.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }})]));
     var foot=[ btn(draft?t('s5.save_draft'):t('s5.start'),'p',function(){
       submitStep(5,sid,{confirmed:true}); }, {disabled:!confirmed}) ];
     return stepShell(5, draft?t('s5.draft_title'):t('s5.ready_title'), body, foot);

@@ -13,8 +13,8 @@ test('Home uses the approved compact install copy in the requested position',()=
   assert.doesNotMatch(app,/Everything works offline/i);
   const home=app.slice(app.indexOf('function pageHome()'),app.indexOf('function entryRow('));
   const card=app.slice(app.indexOf('function homeInstallCard()'),app.indexOf('function installCard()'));
-  assert.ok(home.indexOf('${homeInstallCard()}')>home.indexOf('<div class="homecta">'));
-  assert.ok(home.indexOf('${homeInstallCard()}')<home.indexOf("${t('home.biz')}"));
+  assert.ok(home.indexOf('${homeInstallCard()}')<home.indexOf('${hasPersonal?homeCarousel():\'\'}'));
+  assert.ok(home.indexOf('${homeInstallCard()}')<home.indexOf('${hasPersonal?personalHero'));
   assert.match(card,/data-tm-click="doInstall\(\)"/);
   assert.match(card,/data-tm-click="dismissInstallPromotion\(\)"/);
 });
@@ -38,11 +38,15 @@ test('only native Android prompt or the existing iOS TaxMate sheet is used',()=>
   assert.doesNotMatch(app,/\balert\s*\(|\bwindow\.prompt\s*\(/);
 });
 
-test('proactive prompt is wired after successful first business and entry saves',()=>{
-  assert.match(app,/toast\(t\('toast\.saved'\)\);\s*schedulePwaInstallSuggestion\(firstMeaningfulBusiness\)/);
-  assert.ok((app.match(/schedulePwaInstallSuggestion\(firstMeaningfulEntry\)/g)||[]).length>=3);
-  assert.match(html,/id="sb-pwainstall"/);
+test('first-use actions never open an automatic blocking install sheet',()=>{
+  assert.doesNotMatch(app,/schedulePwaInstallSuggestion|maybeOpenPendingPwaSuggestion|openSheet\('pwainstall'\)/);
   assert.match(dispatcher,/'dismissInstallPromotion'/);
+});
+
+test('folder controls are grouped with Business instead of directly beneath Settings Download',()=>{
+  const more=app.slice(app.indexOf('function pageMore()'),app.indexOf('function setAnalyticsConsent'));
+  const business=more.slice(more.indexOf("${t('sec.biz')}"),more.indexOf("${t('sec.prefs')}")),preferences=more.slice(more.indexOf("${t('sec.prefs')}"),more.indexOf("${t('sec.report')}"));
+  assert.match(business,/\$\{organiseSection\}/);assert.doesNotMatch(preferences,/\$\{organiseSection\}/);assert.match(preferences,/\$\{installCard\(\)\}/);
 });
 
 test('offline shell includes the install policy and existing local app runtime',()=>{

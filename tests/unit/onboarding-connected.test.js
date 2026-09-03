@@ -48,6 +48,14 @@ test('Partner Sync stores only code intent and writes membership only after expl
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
 
+test('a completed UID-scoped onboarding marker routes an empty returning account to Home',()=>{
+  assert.match(app,/localStorage\.setItem\(accountSlotKey\('onboarding-done'\),'explore'\)/);
+  assert.match(app,/function onboardingDoneFlag\(\)[\s\S]*accountSlotKey\('onboarding-done'\)/);
+  const hydration=app.slice(app.indexOf('async function applyHydratedAccountResult'),app.indexOf('function consumeBillingReturn'));
+  assert.match(hydration,/result\.existingCloudAccount\|\|TaxMateAccountStorage\.stateHasAccountData\(S\)\|\|onboardingDoneFlag\(\)/);
+  assert.ok(hydration.indexOf('onboardingDoneFlag()')<hydration.indexOf("OB.screen='entry'"));
+});
+
 test('Partner invite sharing preserves the existing manual-code Connected Onboarding contract',()=>{
   const invite=fs.readFileSync('src/core/partner-invite.js','utf8');
   assert.match(invite,/PRODUCTION_ORIGIN = 'https:\/\/www\.taxmate\.uk\/'/);
@@ -85,8 +93,17 @@ test('dark and light record rows use theme-safe ink while negative values remain
   assert.doesNotMatch(css,/\.tm-rec(?: \.rv)?\{[^}]*color:(?:#000|black)/i);
 });
 
+test('focused CTA and Ltd Step 5 fixes keep green action text white and separate confirmation',()=>{
+  assert.match(html,/\.welcome-add-business\{color:#fff\}/);
+  assert.match(app,/class="btn welcome-add-business"/);
+  assert.match(css,/\.tm-btn\.p\{background:var\(--brand\); color:#fff\}/);
+  assert.match(css,/\[data-theme="dark"\] \.tm-btn\.p\{color:#fff\}/);
+  assert.match(css,/\.tm-step5-confirm\{margin-top:18px\}/);
+  assert.match(fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8'),/class:'tm-step5-confirm'/);
+});
+
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.15',build:'2026-09-02.focused-repair-production.1',cache:'taxmate-v2-focused-repair-production-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.16',build:'2026-09-03.focused-hotfix-production.1',cache:'taxmate-v2-focused-hotfix-production-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });

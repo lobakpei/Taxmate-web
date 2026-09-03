@@ -126,9 +126,9 @@ body{
   transition:transform .04s ease, background .15s ease, opacity .15s ease}
 .tm-btn:active{transform:translateY(1px)}
 .tm-btn:disabled{opacity:.5; cursor:not-allowed}
-.tm-btn.p{background:var(--brand); color:#10231B}
+.tm-btn.p{background:var(--brand); color:#fff}
 .tm-btn.p:hover:not(:disabled){background:var(--brand-deep)}
-[data-theme="dark"] .tm-btn.p{color:#06231A}
+[data-theme="dark"] .tm-btn.p{color:#fff}
 .tm-btn.s{background:var(--brand-soft); color:var(--brand-deep)}
 [data-theme="dark"] .tm-btn.s{color:var(--brand)}
 .tm-btn.g{background:transparent; color:var(--ink); border:1.5px solid var(--line)}
@@ -285,6 +285,7 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-rec .rv.neg{color:var(--coral)}
 .tm-secondary-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .tm-secondary-actions .tm-btn{flex:1 1 150px;min-height:44px}
+.tm-step5-confirm{margin-top:18px}
 .tm-ownership-card{margin-top:18px}
 .tm-record-actions{display:flex;flex-direction:column;gap:12px;margin-top:12px;margin-bottom:4px}
 .tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
