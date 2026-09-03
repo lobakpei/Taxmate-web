@@ -25,7 +25,9 @@ test('sole-owner edit visibly allocates the remaining percentage and blocks an i
   assert.match(ownership,/fid:'other_name'.*t\('s3\.other_name'\)/);
   assert.match(ownership,/fid:'other_pct'.*t\('s3\.other_ownership'\)/);
   assert.match(ownership,/100-amount/);
-  assert.match(ownership,/if\(total!==100\)localErrors\.ownership=t\('error\.ownership_total'/);
+  assert.match(ownership,/if\(draft\.total!==100\)localErrors\.ownership=t\('error\.ownership_total'/);
+  assert.match(ownership,/function normalizedDraft\(\)/);
+  assert.match(ownership,/onOk:function\(\)\{clearScope\(sid\);toast/);
   assert.match(browser,/ownership-100-to-51-saved\.png/);
   assert.match(browser,/backupShares:\[4900,5100\]|backupShares/);
 });
