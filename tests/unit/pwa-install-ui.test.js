@@ -26,6 +26,13 @@ test('receipt education remains in Assistant and is not duplicated on Home',()=>
   assert.match(app,/function assistantHomeCard\(/);
 });
 
+test('home-working education remains in Assistant but is removed from the Home carousel',()=>{
+  const tip=app.slice(app.indexOf('function topContextTip()'),app.indexOf('function activeLtdProfile('));
+  const assistant=app.slice(app.indexOf('function tipsCard('));
+  assert.doesNotMatch(tip,/home_working|tip\.home_t|tip\.home_b/);
+  assert.match(assistant,/home_working/);assert.match(assistant,/tip\.home_t/);assert.match(assistant,/tip\.home_b/);
+});
+
 test('Settings keeps its existing install entry while installed state hides both surfaces',()=>{
   const more=app.slice(app.indexOf('function pageMore()'),app.indexOf('function setAnalyticsConsent'));
   assert.match(more,/\$\{installCard\(\)\}/);

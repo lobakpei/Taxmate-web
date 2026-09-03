@@ -288,6 +288,7 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-step5-confirm{margin-top:18px}
 .tm-ownership-card{margin-top:18px}
 .tm-record-actions{display:flex;flex-direction:column;gap:12px;margin-top:12px;margin-bottom:4px}
+.tm-record-actions .tm-btn{min-height:44px}
 .tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
 .tm-pill.warn{background:var(--amber-soft); color:var(--amber)}
 .tm-pill.ok{background:var(--brand-soft); color:var(--brand-deep)}

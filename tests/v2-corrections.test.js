@@ -76,7 +76,7 @@ test('B8 facade returns granular stable reason and approved copy keys, never raw
   const {facade}=make('fresh');await startLtdDraft(facade);const result=await facade.onContinueStep({step:1,values:{legalName:'A'.repeat(161),companyNumberStatus:'provided',companyNumber:'ABC',incorporationDate:'not-a-date'}});assert.equal(result.status,'field_error');assert.deepEqual(result.fieldErrors.map(item=>[item.field,item.reasonCode,item.copyKey]),[
     ['legalName','company_name_too_long','error.company_name'],['companyNumber','company_number_format','error.company_number'],['incorporationDate','incorporation_date_invalid','error.invalid_date']
   ]);assert.ok(result.fieldErrors.every(item=>!('code'in item)&&!('message'in item)&&typeof item.params==='object'));
-  const ownership=make('existing').facade,ownershipError=await ownership.onChangeOwnership({effectiveDate:'bad',shareholders:[],reason:'Correction',evidenceRefs:['preview:evidence']});assert.equal(ownershipError.status,'field_error');assert.deepEqual(ownershipError.fieldErrors[0],{field:'ownership',reasonCode:'ownership_effective_date_invalid',copyKey:'error.invalid_date',params:{}});
+  const ownership=make('existing').facade,ownershipError=await ownership.onChangeOwnership({effectiveDate:'bad',shareholders:[],reason:'Correction',evidenceRefs:['preview:evidence']});assert.equal(ownershipError.status,'field_error');assert.deepEqual(ownershipError.fieldErrors[0],{field:'effectiveDate',reasonCode:'ownership_effective_date_invalid',copyKey:'error.invalid_date',params:{}});
 });
 
 test('B9 Home rows expose canonical values and actions for all four legacy businesses plus Ltd',()=>{

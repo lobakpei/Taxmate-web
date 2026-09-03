@@ -246,17 +246,17 @@
   // Text / money / percent share one geometry (G4).
   function textField(o){
     // o: {scope,label,fid,placeholder,infoId,hint,kind:'text'|'money'|'percent',inputmode,persist}
-    var scope=o.scope, fid=o.fid, err=errFor(scope,fid);
+    var scope=o.scope, fid=o.fid, err=errFor(scope,fid), kind=o.kind||'text';
     var wrapCls='tm-inwrap'+(err?' err':'');
-    var affixPre = o.kind==='money' ? '\u00A3' : null;
-    var affixSuf = o.kind==='percent' ? '%' : null;
+    var affixPre = kind==='money' ? '\u00A3' : null;
+    var affixSuf = kind==='percent' ? '%' : null;
     var input=h('input',{class:'tm-input'+(affixPre?' pre':'')+(affixSuf?' suf':''), type:'text',
-      inputmode:o.inputmode||(o.kind==='text'?null:'decimal'),
+      inputmode:o.inputmode||(kind==='text'?'text':'decimal'),
       placeholder:o.placeholder||'', value:fieldVal(scope,fid,o.default||''),
       'aria-label':o.aria||stripTags(o.label), 'aria-invalid':err?'true':null,
       dataset:{fkey:fkey(scope,fid), field:fid},
       onInput:function(e){ setField(scope,fid,e.target.value); if(o.onInput)o.onInput(e.target.value); },
-      onChange:function(e){ setField(scope,fid,e.target.value); if(o.kind==='percent'){ setTimeout(paint,0); } },
+      onChange:function(e){ setField(scope,fid,e.target.value); if(kind==='percent'){ setTimeout(paint,0); } },
       onBlur:function(e){ if(o.persist!==false) persistDraft(scope,fid, o.type||'text', e.target.value); }
     });
     var inner=[input];
@@ -294,7 +294,7 @@
       onBlur:function(e){
         var v=e.target.value.trim();
         var isoV = /^\d{4}-\d{2}-\d{2}$/.test(v)? v : displayToISO(v);
-        if(isoV){ setField(scope,fid,isoV); if(o.persist!==false) persistDraft(scope,fid,'date',isoV); if(o.onChange)o.onChange(isoV); }
+        if(isoV){ e.target.value=isoToDisplay(isoV); setField(scope,fid,isoV); if(o.persist!==false) persistDraft(scope,fid,'date',isoV); if(o.onChange)o.onChange(isoV); }
         else { setField(scope,fid,v); } // keep invalid text; facade returns field error on submit
         delete UI.cache[fkey(scope,fid)+'#raw'];
       }
@@ -1011,7 +1011,7 @@
     // Salary and dividend records: collapsed by default (disclosure), with the record-specific rows inside.
     nodes.push(disclosure('tax.records', t('records.salary_dividend'), salaryDividendRecordsBody()));
     // Recording actions (payroll already run / declaration) live under the collapsed section header actions.
-    nodes.push(h('div',{style:'display:flex;gap:8px;margin-top:2px'},[
+    nodes.push(h('div',{class:'tm-record-actions'},[
       btn(t('tax.record_salary'),'g sm',function(){ openSheet('salary'); }),
       dividendAvailable()? btn(t('tax.record_declaration'),'g sm',function(){ openSheet('dividend'); }) : null
     ]));
@@ -1369,13 +1369,30 @@
     nodes.push(h('div',{style:'margin-top:12px'},[ btn(sfCopy('action'),'s',function(){ openSheet('share'); }) ]));
     nodes.push(h('div',{class:'tm-h',text:t('records.record_change')}));
     nodes.push(dateField({scope:sid,fid:'effectiveDate',persist:false,label:t('records.effective_date')}));
-    (cur&&cur.shareholders||[]).forEach(function(sh,i){
-      nodes.push(textField({scope:sid,fid:'sh'+i+'_pct',label:sh.name,kind:'percent',default:String(Math.round((sh.ownershipBasisPoints||0)/100)),type:'number',persist:false}));
+    var currentHolders=(cur&&cur.shareholders||[]), soleHolder=currentHolders.length===1;
+    currentHolders.forEach(function(sh,i){
+      nodes.push(textField({scope:sid,fid:'sh'+i+'_pct',label:sh.name,kind:'percent',default:String(Math.round((sh.ownershipBasisPoints||0)/100)),type:'number',persist:false,
+        onInput:soleHolder&&i===0?function(value){if(!getChoice(sid,'other-pct-edited',false)){var amount=parseInt(value||'0',10)||0;setField(sid,'other_pct',String(Math.max(0,Math.min(100,100-amount))));}}:null}));
     });
+    if(soleHolder){
+      nodes.push(notice('info', t('s3.shareholder_title'), t('s3.shareholder_means')));
+      nodes.push(textField({scope:sid,fid:'other_name',label:t('s3.other_name'),type:'text',persist:false}));
+      nodes.push(textField({scope:sid,fid:'other_pct',label:t('s3.other_ownership'),kind:'percent',default:'0',type:'number',persist:false,onInput:function(){setChoice(sid,'other-pct-edited',true);}}));
+    }
+    var ownershipTotal=currentHolders.reduce(function(sum,sh,i){return sum+(parseInt(fieldVal(sid,'sh'+i+'_pct',String(Math.round((sh.ownershipBasisPoints||0)/100)))||'0',10)||0);},0)+(soleHolder?(parseInt(fieldVal(sid,'other_pct','0')||'0',10)||0):0);
+    nodes.push(totalBar(t('records.ownership'),h('span',{class:'tm-num',text:ownershipTotal+'%'}),ownershipTotal===100));
+    nodes.push(errNode(sid,'ownership'));
+    if(soleHolder)nodes.push(errNode(sid,'other_name'));
     nodes.push(textField({scope:sid,fid:'reason',label:t('records.reason'),type:'text',persist:false}));
     nodes.push(textField({scope:sid,fid:'evidence',label:t('design.evidence_reference'),type:'text',persist:false}));
     nodes.push(h('div',{style:'margin-top:14px'},[ btn(t('common.save'),'p',function(){
-      var shs=(cur&&cur.shareholders||[]).map(function(sh,i){ return {id:sh.id,name:sh.name,shareClassId:'ordinary',shares:parseInt(fieldVal(sid,'sh'+i+'_pct','')||'0',10)||0,isAccountHolder:!!sh.isAccountHolder}; });
+      var shs=currentHolders.map(function(sh,i){ return {id:sh.id,name:sh.name,shareClassId:'ordinary',shares:parseInt(fieldVal(sid,'sh'+i+'_pct','')||'0',10)||0,isAccountHolder:!!sh.isAccountHolder}; });
+      var otherPct=soleHolder?(parseInt(fieldVal(sid,'other_pct','0')||'0',10)||0):0,otherName=soleHolder?String(fieldVal(sid,'other_name','')||'').trim():'';
+      if(soleHolder&&otherPct>0&&otherName)shs.push({id:'shareholder:other',name:otherName,shareClassId:'ordinary',shares:otherPct,isAccountHolder:false});
+      var total=shs.reduce(function(sum,sh){return sum+sh.shares;},0),localErrors={};
+      if(total!==100)localErrors.ownership=t('error.ownership_total',{total:total});
+      if(soleHolder&&otherPct>0&&!otherName)localErrors.other_name=t('error.other_name');
+      if(Object.keys(localErrors).length){UI.errors[sid]=localErrors;UI.focusError=true;paintIfChanged();return;}
       var ref=fieldVal(sid,'evidence','');
       run('onChangeOwnership',{effectiveDate:fieldVal(sid,'effectiveDate',''), shareholders:shs, reason:fieldVal(sid,'reason',''), evidenceRefs:[ref].filter(Boolean)},
         {scope:sid, onReview:function(r){ UI.review[sid]=r.reviewReasons||[]; paint(); }, onOk:function(){ toast(t('common.saved_for_review')); }}); }) ]));

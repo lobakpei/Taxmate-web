@@ -4153,8 +4153,6 @@ function topContextTip(){
   if(!hasIncome) return null;
   const hasSole = S.businesses.some(b=>b.structure==='sole');
   const exp = entriesFor(yr,null,'expense');
-  if(!dismissed.includes('home_working') && hasSole && !exp.some(e=>e.cat==='home'))
-    return {icon:'🏠', t:t('tip.home_t'), b:t('tip.home_b')};
   if(!dismissed.includes('phone_claim') && hasSole && !exp.some(e=>e.cat==='phone'))
     return {icon:'📱', t:t('tip.phone_t'), b:t('tip.phone_b')};
   return null;
@@ -6024,7 +6022,7 @@ function watchAuth(){
 async function signIn(options={}){
   const db = await ensureFB();
   if(!db){ showNotice(t('ac.title'),t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
-  captureLocalPendingIntent();closeOnboardingSurface({clearState:true});let associationPrepared=false;
+  captureLocalPendingIntent();let associationPrepared=false;
   if(localDeviceHasBookkeeping()){
     try{TaxMateAccountStorage.prepareLocalAssociation(localStorage,{now:Date.now(),resetTarget:options.resetAssociationTarget===true});associationPrepared=true;}catch(_){}
   }
@@ -7389,7 +7387,7 @@ function obScrLogin(){
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
     <p class="ob-lede">${context}</p>
-    <button class="ob-tile solid" data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
     ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
@@ -7408,7 +7406,7 @@ function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Keep onboarding pending until cloud account detection has finished. A successful Google
   // popup alone does not mean this is a new user.
-  const returnScreen=OB&&OB._authReturnScreen;OB && (OB._signingInFlow = true);
+  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signingInFlow=true;obRender();
   if(typeof signIn==='function' && fbConfigured()){
     try{
       const signedIn=await signIn();
