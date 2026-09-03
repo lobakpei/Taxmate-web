@@ -46,10 +46,10 @@ test('owned stale Storage path falls back to the same record URL on unauthorized
   assert.equal(resolves,1);assert.deepEqual(downloads,['https://example.test/linked.jpg']);assert.equal(receipts.length,1);assert.equal(JSON.stringify(input),before);
 });
 
-test('foreign receipt path is omitted without a foreign Storage or URL request and does not fail an otherwise legal backup',async()=>{
+test('foreign receipt path fails closed with its record and path before any foreign request',async()=>{
   const input=state();input.entries[0].receiptPath='receipts/founder-preview-user/private.jpg';let storageCalls=0,downloads=0,foreign=0;
-  const receipts=await Backup.collectReceipts({state:input,user:{uid:'tammy-user'},activeUid:'tammy-user',stateOwnerUid:'tammy-user',listStorage:async()=>[],storageUrl:async()=>{storageCalls++;},download:async()=>{downloads++;},onForeignReference:()=>{foreign++;}});
-  assert.equal(receipts.length,0);assert.equal(receipts.skippedForeignCount,1);assert.equal(storageCalls,0);assert.equal(downloads,0);assert.equal(foreign,1);
+  const error=await Backup.collectReceipts({state:input,user:{uid:'tammy-user'},activeUid:'tammy-user',stateOwnerUid:'tammy-user',listStorage:async()=>[],storageUrl:async()=>{storageCalls++;},download:async()=>{downloads++;},onForeignReference:()=>{foreign++;}}).then(()=>null,value=>value);
+  assert.deepEqual(Backup.diagnostic(error),{category:'foreign_receipt_reference',code:'BACKUP_FOREIGN_RECEIPT_BLOCKED',count:1,stage:'receipt_owner',recordId:'e1',path:'receipts/founder-preview-user/private.jpg'});assert.equal(storageCalls,0);assert.equal(downloads,0);assert.equal(foreign,1);
 });
 
 test('owned pure-URL receipt remains downloadable and a state-owner mismatch fails before listing',async()=>{

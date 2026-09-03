@@ -38,32 +38,40 @@ test('signed-in receipt collection without Storage listing capability stops befo
   assert.equal(Backup.diagnostic(error).category,Backup.CATEGORIES.STORAGE_LIST);assert.equal(downloads,0);assert.equal(JSON.stringify(state),before);
 });
 
-test('foreign Firebase URL-only reference is skipped before resolving or downloading while owned orphan listing remains available',async()=>{
+test('foreign Firebase URL-only reference fails closed before resolving or downloading',async()=>{
   const foreign='https://firebasestorage.googleapis.com/v0/b/demo/o/receipts%2Ffounder%2Fprivate.jpg?alt=media&token=synthetic',state=baseState([entry('e1',null,foreign)]);let lists=0,resolves=0,downloads=0,foreignCalls=0;
-  const receipts=await Backup.collectReceipts({state,user:{uid:'tammy'},activeUid:'tammy',stateOwnerUid:'tammy',listStorage:async()=>{lists++;return[];},storageUrl:async()=>{resolves++;return foreign;},download:async()=>{downloads++;return{bytes:bytes(1),mimeType:'image/jpeg'};},onForeignReference:()=>{foreignCalls++;}});
-  assert.equal(receipts.length,0);assert.equal(receipts.skippedForeignCount,1);assert.equal(lists,1);assert.equal(resolves,0);assert.equal(downloads,0);assert.equal(foreignCalls,1);
+  const error=await Backup.collectReceipts({state,user:{uid:'tammy'},activeUid:'tammy',stateOwnerUid:'tammy',listStorage:async()=>{lists++;return[];},storageUrl:async()=>{resolves++;return foreign;},download:async()=>{downloads++;return{bytes:bytes(1),mimeType:'image/jpeg'};},onForeignReference:()=>{foreignCalls++;}}).then(()=>null,value=>value);
+  assert.deepEqual(Backup.diagnostic(error),{category:'foreign_receipt_reference',code:'BACKUP_FOREIGN_RECEIPT_BLOCKED',count:1,stage:'receipt_owner',recordId:'e1',path:'receipts/founder/private.jpg'});assert.equal(lists,1);assert.equal(resolves,0);assert.equal(downloads,0);assert.equal(foreignCalls,1);
 });
 
 test('exact record-id receipt already migrated into the active UID is included without rewriting state',async()=>{
   const foreign='receipts/legacy-owner/e1.jpg',ownedPath='receipts/u/e1.jpg',state=baseState([entry('e1',foreign,null)]),before=JSON.stringify(state),resolved=[];
   const receipts=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:ownedPath}],storageUrl:async path=>{resolved.push(path);return'https://example.test/owned-e1.jpg';},download});
   assert.equal(receipts.length,1);assert.equal(receipts[0].entryId,'e1');assert.equal(receipts[0].originalPath,foreign);assert.equal(receipts[0].associations[0].originalPath,foreign);assert.deepEqual(resolved,[ownedPath]);assert.equal(receipts.skippedForeignCount,0);assert.equal(receipts.skippedUnavailableCount,0);assert.equal(JSON.stringify(state),before);
-  const created=await Portable.createArchive({state,receipts,identity:{appVersion:'2.1.16',buildId:'focused-hotfix-test',deviceId:'test'},nodeBuffer:true,exportedAt:'2026-09-03T00:00:00.000Z'}),inspected=await Portable.inspectArchive(created.archive);
+  const created=await Portable.createArchive({state,receipts,identity:{appVersion:'2.1.17',buildId:'focused-hotfix-test',deviceId:'test'},nodeBuffer:true,exportedAt:'2026-09-03T00:00:00.000Z'}),inspected=await Portable.inspectArchive(created.archive);
   assert.equal(inspected.receipts.length,1);assert.equal(inspected.receipts[0].originalPath,foreign);assert.equal(inspected.metadata.receiptCount,1);
 });
 
 test('record-id mismatch cannot use an unrelated active-UID object as a foreign-reference fallback',async()=>{
   const foreign='receipts/legacy-owner/e1.jpg',state=baseState([entry('different-record',foreign,null)]);let resolves=0,downloads=0;
-  const receipts=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:'receipts/u/e1.jpg'}],storageUrl:async()=>{resolves++;return'https://example.test/unrelated.jpg';},download:async()=>{downloads++;return download('x');}});
-  assert.equal(receipts.length,1);assert.equal(receipts[0].entryId,null);assert.equal(receipts[0].originalPath,'receipts/u/e1.jpg');assert.equal(receipts.skippedForeignCount,1);assert.equal(resolves,1);assert.equal(downloads,1);
+  const error=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:'receipts/u/e1.jpg'}],storageUrl:async()=>{resolves++;return'https://example.test/unrelated.jpg';},download:async()=>{downloads++;return download('x');}}).then(()=>null,value=>value);
+  assert.deepEqual(Backup.diagnostic(error),{category:'foreign_receipt_reference',code:'BACKUP_FOREIGN_RECEIPT_BLOCKED',count:1,stage:'receipt_owner',recordId:'different-record',path:foreign});assert.equal(resolves,0);assert.equal(downloads,0);
 });
 
-test('missing references and ordinary download failures are safely omitted without changing state',async()=>{
+test('missing references and ordinary download failures stop the complete backup with exact context',async()=>{
   const missingState=baseState([entry('e1','receipts/u/missing.jpg',null)]),failedState=baseState([entry('e1',null,'https://example.test/fail.jpg')]),beforeMissing=JSON.stringify(missingState),beforeFailed=JSON.stringify(failedState);
-  const missing=await Backup.collectReceipts({state:missingState,user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download});
-  const failedDownload=await Backup.collectReceipts({state:failedState,download:async()=>{throw new Error('private URL failed');}});
-  assert.equal(missing.length,0);assert.equal(missing.skippedUnavailableCount,1);assert.equal(failedDownload.length,0);assert.equal(failedDownload.skippedUnavailableCount,1);
+  const missing=await Backup.collectReceipts({state:missingState,user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('private path'),{code:'storage/object-not-found'});},listStorage:async()=>[],download}).then(()=>null,value=>value);
+  const failedDownload=await Backup.collectReceipts({state:failedState,download:async()=>{throw new Error('private URL failed');}}).then(()=>null,value=>value);
+  assert.deepEqual(Backup.diagnostic(missing),{category:'referenced_receipt_unavailable',code:'BACKUP_REFERENCED_RECEIPT_UNAVAILABLE',count:1,stage:'receipt_resolve',errorClass:'storage_object_not_found',recordId:'e1',path:'receipts/u/missing.jpg'});
+  assert.deepEqual(Backup.diagnostic(failedDownload),{category:'receipt_download_failure',code:'BACKUP_RECEIPT_DOWNLOAD_FAILED',count:1,stage:'receipt_download',errorClass:'error',recordId:'e1',path:'https://example.test/fail.jpg'});
   assert.equal(JSON.stringify(missingState),beforeMissing);assert.equal(JSON.stringify(failedState),beforeFailed);
+});
+
+test('a hung receipt times out with record and path while cancellation releases immediately',async()=>{
+  const state=baseState([entry('e1','receipts/u/e1.jpg',null)]),never=()=>new Promise(()=>{}),base={state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:'receipts/u/e1.jpg'}],storageUrl:async()=> 'https://example.test/e1.jpg',download:never};
+  const timed=await Backup.collectReceipts({...base,timeoutMs:20}).then(()=>null,value=>value),timedDiagnostic=Backup.diagnostic(timed);
+  assert.equal(timedDiagnostic.category,Backup.CATEGORIES.TIMEOUT);assert.equal(timedDiagnostic.recordId,'e1');assert.equal(timedDiagnostic.path,'receipts/u/e1.jpg');assert.match(Backup.message(timed),/Record ID: e1[\s\S]*Path: receipts\/u\/e1\.jpg/);
+  let started;const downloadStarted=new Promise(resolve=>{started=resolve;}),controller=new AbortController(),pending=Backup.collectReceipts({...base,timeoutMs:1000,signal:controller.signal,download:async()=>{started();return never();}}).then(()=>null,value=>value);await downloadStarted;controller.abort();const cancelled=Backup.diagnostic(await pending);assert.equal(cancelled.category,Backup.CATEGORIES.CANCELLED);assert.equal(cancelled.recordId,'e1');assert.equal(cancelled.path,'receipts/u/e1.jpg');
 });
 
 test('offline/auth failures remain distinct from an HTTP receipt failure',async()=>{
@@ -80,6 +88,8 @@ test('minimum required failure taxonomy remains distinct with a generic unknown 
     [new Error('ZIP support is unavailable'),Backup.CATEGORIES.ZIP_RUNTIME],
     [new Error('Receipt manifest contains an invalid path'),Backup.CATEGORIES.ARCHIVE_VALIDATION],
     [Backup.failure(Backup.CATEGORIES.BROWSER_DOWNLOAD),Backup.CATEGORIES.BROWSER_DOWNLOAD],
+    [Backup.failure(Backup.CATEGORIES.TIMEOUT),Backup.CATEGORIES.TIMEOUT],
+    [Backup.failure(Backup.CATEGORIES.CANCELLED),Backup.CATEGORIES.CANCELLED],
     [new Error('unexpected private detail'),Backup.CATEGORIES.UNKNOWN]
   ];
   const messages=new Set();for(const [error,category] of cases){assert.equal(Backup.diagnostic(error).category,category);messages.add(Backup.message(error));}

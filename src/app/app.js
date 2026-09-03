@@ -3542,23 +3542,6 @@ function recordPwaPromptViewed(){
   pwaHomeViewTracked=true;
   trackEvent('pwa_install_prompt_viewed');
 }
-function homeInstallCard(){
-  if(!canShowHomeInstallPromotion())return '';
-  recordPwaPromptViewed();
-  return `<div class="card pwa-home-install" data-pwa-install-promotion="home">
-    <div style="display:flex;align-items:flex-start;gap:12px">
-      <span style="font-size:22px;line-height:1.2">📲</span>
-      <div class="grow">
-        <div class="t" style="font-size:15px;margin-bottom:4px">${t('pwa.homeTitle')}</div>
-        <div class="s">${t('pwa.homeBody')}</div>
-      </div>
-    </div>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button class="btn ink" style="flex:1;padding:11px 14px" data-tm-click="doInstall()">${t('pwa.installCta')}</button>
-      <button class="btn ghost" style="flex:1;padding:11px 14px" data-tm-click="dismissInstallPromotion()">${t('pwa.notNow')}</button>
-    </div>
-  </div>`;
-}
 function installCard(){
   if(isPwaInstalled()) return '';
   return `<div class="card">
@@ -3944,6 +3927,8 @@ function renderYearSel(){
 function render(){
   applyStaticI18n(); renderYearSel(); renderNav();
   const page = document.getElementById('page');
+  if(fbConfigured()&&!ACTIVE_ACCOUNT_SCOPE){const nav=document.getElementById('nav');if(nav)nav.hidden=true;page.innerHTML='<div class="notice green" data-auth-initialising><strong>Restoring your account…</strong><br>TaxMate is checking your saved sign-in before showing account data.</div>';return;}
+  const nav=document.getElementById('nav');if(nav)nav.hidden=false;
   if(STATE_LOAD_ERROR){page.innerHTML='<div class="notice amber"><strong>TaxMate data needs checking</strong><br>This device contains data from an unsupported or damaged state. Your stored data has not been replaced and cloud sync is paused on this device.</div>';renderSyncStatus();return;}
   if(!S.businesses.length && !activeLtdProfile() && S.tab!=='more'){ page.innerHTML = welcome(); return; }
   if(S.tab==='home') page.innerHTML = pageHome();
@@ -4113,6 +4098,11 @@ function carouselCards(){
   const dismissed = carouselDismissed();
   const cards = [];
 
+  if(!dismissed.includes('pwa')&&canShowHomeInstallPromotion()){
+    recordPwaPromptViewed();
+    cards.push({id:'pwa',bg:'var(--card)',fg:'var(--ink)',accent:'var(--brand-deep)',emoji:'📲',title:t('pwa.homeTitle'),body:t('pwa.homeBody'),cta:t('pwa.installCta'),onclick:'doInstall()'});
+  }
+
   // Keep only the most relevant contextual tax tip. Receipt guidance lives in
   // TaxMate Assistant so Home never presents the same receipt task twice.
   if(!dismissed.includes('tip')){
@@ -4163,14 +4153,6 @@ function topContextTip(){
   if(!hasIncome) return null;
   const hasSole = S.businesses.some(b=>b.structure==='sole');
   const exp = entriesFor(yr,null,'expense');
-  // 收據提示（Pro）——一疊未補相就係最實際嗰條
-  if(hasFeature('receiptPhoto') && !dismissed.includes('receipt_missing')){
-    const noR = exp.filter(e=>!e.receiptUrl);
-    if(noR.length>=3){
-      const suf = noR.length===1?t('tip.entry'):t('tip.entries');
-      return {icon:'📸', t:t('tip.receipt_t'), b:t('tip.receipt_b',{n:noR.length,e:' '+suf})};
-    }
-  }
   if(!dismissed.includes('home_working') && hasSole && !exp.some(e=>e.cat==='home'))
     return {icon:'🏠', t:t('tip.home_t'), b:t('tip.home_b')};
   if(!dismissed.includes('phone_claim') && hasSole && !exp.some(e=>e.cat==='phone'))
@@ -4250,8 +4232,7 @@ function pageHome(){
   </div>`;
 
   return `
-  ${homeInstallCard()}
-  ${hasPersonal?homeCarousel():''}
+  ${homeCarousel()}
   ${hasPersonal?personalHero:(ltdProfile?ltdHomeHero(ltdProfile):'')}
 
   ${hasPersonal?deadlineBanner():''}
@@ -4746,7 +4727,7 @@ function pageMore(){
         <div class="s" style="margin-bottom:12px">${cloudUser()
           ? '<span data-cloud-sync-status style=\"font-weight:700\">'+esc(syncStatusMessage())+'</span> — '
           : ''}${t('m.backupHint')}</div>
-        <button class="btn soft" data-tm-click="exportPortableBackup()">${t('m.backupFull')}</button>
+        <div data-full-backup-controls>${fullBackupControlsMarkup()}</div>
         <div class="s" style="margin:6px 2px 12px">${t('m.backupFullS')}</div>
         <button class="btn ghost" data-tm-click="exportJSON()">${t('m.backupData')}</button>
         <div class="s" style="margin:6px 2px 12px">${t('m.backupDataS')}</div>
@@ -5553,28 +5534,44 @@ function exportJSON(){
   a.download = 'taxmate-backup-'+todayISO()+'.json';
   a.click(); URL.revokeObjectURL(a.href);
 }
-function downloadBackupBlob(blob,name){let url;try{const a=document.createElement('a');url=URL.createObjectURL(blob);a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(error){if(url)try{URL.revokeObjectURL(url);}catch(_){}throw TaxMateBackupExport.failure(TaxMateBackupExport.CATEGORIES.BROWSER_DOWNLOAD,{cause:error});}}
-async function receiptBytesFromUrl(url){const response=await fetch(url);if(!response.ok)throw Object.assign(new Error('receipt-download-failed'),{status:response.status});return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
-async function collectPortableReceipts(){
+function downloadBackupBlob(blob,name){let url,a;try{a=document.createElement('a');url=URL.createObjectURL(blob);a.href=url;a.download=name;a.hidden=true;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(error){if(a&&a.isConnected)a.remove();if(url)try{URL.revokeObjectURL(url);}catch(_){}throw TaxMateBackupExport.failure(TaxMateBackupExport.CATEGORIES.BROWSER_DOWNLOAD,{cause:error});}}
+async function receiptBytesFromUrl(url,options={}){const response=await fetch(url,{signal:options.signal});if(!response.ok)throw Object.assign(new Error('receipt-download-failed'),{status:response.status});return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
+async function collectPortableReceipts(stateSnapshot=S,options={}){
   prepareOwnedStateForTransfer('full_backup_preflight');
   const configured=fbConfigured(),current=configured&&typeof firebase!=='undefined'?firebase.auth().currentUser:null,user=current&&!current.isAnonymous?current:null;
-  const activeUid=user&&!user.isAnonymous?assertActiveAccountUid(user.uid):null,correlation='backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now()));
+  const activeUid=user&&!user.isAnonymous?assertActiveAccountUid(user.uid):null,correlation=options.correlation||'backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now()));
   return TaxMateBackupExport.collectReceipts({
-    state:S,
-    evidenceAssociations:TaxMateCompanyEvidence.requiredReceiptAssociations(S),
+    state:stateSnapshot,
+    evidenceAssociations:TaxMateCompanyEvidence.requiredReceiptAssociations(stateSnapshot),
     user,
     activeUid,
     stateOwnerUid:activeUid,
     correlation,
+    signal:options.signal,
+    timeoutMs:options.timeoutMs,
+    deadlineAt:options.deadlineAt,
+    onProgress:options.onProgress,
     storageUrl:user?source=>firebase.storage().ref(source).getDownloadURL():null,
     listStorage:configured&&FB.ready&&user?async uid=>(await firebase.storage().ref('receipts/'+uid).listAll()).items:null,
     download:receiptBytesFromUrl,
     onForeignReference:()=>console.warn('Full backup foreign receipt isolated',{category:'backup_security',safeCode:'BACKUP_FOREIGN_RECEIPT_ISOLATED',stage:'receipt_owner'})
   });
 }
-async function buildPortableArchive(state=S){if(state===S&&!ltdBackupAllowed('full_backup',state))throw Object.assign(new Error('pro_required'),{code:'pro_required'});const receipts=state===S?await collectPortableReceipts():[];return TaxMatePortableBackup.createArchive({state,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts});}
-let FULL_BACKUP_PENDING=false;
-async function exportPortableBackup(){if(FULL_BACKUP_PENDING)return{status:'busy'};if(!ltdBackupAllowed('full_backup'))return{status:'blocked'};FULL_BACKUP_PENDING=true;const correlation='backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now()));safeActionTrace('full_backup','started',correlation,S.tab);try{const out=await buildPortableArchive();downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');safeActionTrace('full_backup','completed',correlation,S.tab);return{status:'ok'};}catch(error){const diagnostic=TaxMateBackupExport.diagnostic(error);console.warn('Full backup failed',diagnostic);trackEvent('backup_export_failed',diagnostic);showNotice(t('m.backup'),TaxMateBackupExport.message(error));safeActionTrace('full_backup','failed',correlation,S.tab);return{status:'failure',diagnostic};}finally{FULL_BACKUP_PENDING=false;}}
+const FULL_BACKUP_OPERATION_TIMEOUT_MS=15000,FULL_BACKUP_TOTAL_TIMEOUT_MS=90000;
+let FULL_BACKUP_JOB=null,FULL_BACKUP_UI={state:'idle',message:''};
+function fullBackupControlsMarkup(){const busy=!!FULL_BACKUP_JOB,label=busy?(FULL_BACKUP_UI.message||'Preparing Full Backup…'):t('m.backupFull'),status=FULL_BACKUP_UI.state==='idle'?'':`<div class="s" data-full-backup-status style="margin:8px 2px 0;font-weight:700">${esc(FULL_BACKUP_UI.message)}</div>`,cancel=busy?'<button class="link" data-full-backup-cancel style="margin:8px 2px 0" data-tm-click="cancelPortableBackup()">Cancel</button>':'';return`<button class="btn soft" data-full-backup-button ${busy?'disabled':''} data-tm-click="exportPortableBackup()">${esc(label)}</button>${status}${cancel}`;}
+function refreshFullBackupControls(){document.querySelectorAll('[data-full-backup-controls]').forEach(node=>{node.innerHTML=fullBackupControlsMarkup();});}
+function setFullBackupStatus(state,message){FULL_BACKUP_UI={state,message:String(message||'')};refreshFullBackupControls();}
+function fullBackupProgress(value){const total=Number(value&&value.total)||0,completed=Number(value&&value.completed)||0,stage=String(value&&value.stage||'');if(stage==='storage_list')setFullBackupStatus('running','Checking receipt files…');else if(stage==='receipt_download'||stage==='orphan_download')setFullBackupStatus('running',total?`Reading receipt ${Math.min(completed+1,total)} of ${total}…`:'Checking receipt files…');else if(stage==='archive_prepare')setFullBackupStatus('running',total?`Checking backup ${completed} of ${total}…`:'Checking backup…');else if(stage==='archive_compress')setFullBackupStatus('running',`Creating ZIP… ${Math.max(0,Math.min(100,Math.round(Number(value.percent)||0)))}%`);}
+async function buildPortableArchive(state=S,options={}){const includeReceipts=state===S;if(includeReceipts&&!ltdBackupAllowed('full_backup',state))throw Object.assign(new Error('pro_required'),{code:'pro_required'});const snapshot=JSON.parse(JSON.stringify(state)),correlation=options.correlation||'backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())),deadlineAt=options.deadlineAt||Date.now()+FULL_BACKUP_TOTAL_TIMEOUT_MS,receipts=includeReceipts?await collectPortableReceipts(snapshot,{...options,correlation,deadlineAt}):[];return TaxMateBackupExport.bounded(signal=>TaxMatePortableBackup.createArchive({state:snapshot,identity:{appVersion:TaxMateCore.VERSIONS.APP_VERSION,buildId:TaxMateCore.VERSIONS.BUILD_ID,deviceId:DEVICE_ID},receipts,signal,onProgress:options.onProgress}),{signal:options.signal,timeoutMs:FULL_BACKUP_TOTAL_TIMEOUT_MS,deadlineAt,stage:'archive_create',correlation});}
+function cancelPortableBackup(){if(!FULL_BACKUP_JOB)return{status:'idle'};setFullBackupStatus('running','Cancelling Full Backup…');FULL_BACKUP_JOB.controller.abort();return{status:'cancelling'};}
+function exportPortableBackup(){
+  if(FULL_BACKUP_JOB)return FULL_BACKUP_JOB.promise;
+  if(!ltdBackupAllowed('full_backup'))return Promise.resolve({status:'blocked'});
+  const controller=new AbortController(),correlation='backup-'+(typeof crypto!=='undefined'&&crypto.randomUUID?crypto.randomUUID():String(Date.now())),deadlineAt=Date.now()+FULL_BACKUP_TOTAL_TIMEOUT_MS,job={controller,correlation,promise:null};FULL_BACKUP_JOB=job;setFullBackupStatus('running','Preparing Full Backup…');safeActionTrace('full_backup','started',correlation,S.tab);
+  job.promise=(async()=>{try{const out=await buildPortableArchive(S,{signal:controller.signal,timeoutMs:FULL_BACKUP_OPERATION_TIMEOUT_MS,deadlineAt,correlation,onProgress:fullBackupProgress});downloadBackupBlob(out.archive,'taxmate-full-backup-'+todayISO()+'.zip');trackEvent('backup_exported');toast('Full backup downloaded');setFullBackupStatus('complete','Full backup downloaded');safeActionTrace('full_backup','completed',correlation,S.tab);return{status:'ok'};}catch(error){const diagnostic=TaxMateBackupExport.diagnostic(error),cancelled=diagnostic.category===TaxMateBackupExport.CATEGORIES.CANCELLED;console.warn('Full backup failed',diagnostic);if(!cancelled){trackEvent('backup_export_failed',{category:diagnostic.category,code:diagnostic.code,stage:diagnostic.stage||null});showNotice(t('m.backup'),TaxMateBackupExport.message(error));}setFullBackupStatus(cancelled?'cancelled':'failure',cancelled?'Full Backup cancelled':'Full Backup stopped — nothing was omitted');safeActionTrace('full_backup',cancelled?'cancelled':'failed',correlation,S.tab);return{status:cancelled?'cancelled':'failure',diagnostic};}finally{if(FULL_BACKUP_JOB===job)FULL_BACKUP_JOB=null;refreshFullBackupControls();}})();
+  return job.promise;
+}
 function replaceStateSafely(candidate){const before=JSON.stringify(S);try{localStorage.setItem(accountSlotKey('preimport-backup'),before);const migrated=TaxMateState.migrate(candidate,Date.now(),DEVICE_ID);TaxMateState.validateState(migrated);S=Object.assign(JSON.parse(JSON.stringify(DEFAULT_STATE)),migrated);S.settings=Object.assign({lang:'en',tier:'free'},migrated.settings||{});save();render();toast(t('toast.restored'));}catch(error){S=JSON.parse(before);try{localStorage.setItem(STORE_KEY,before);}catch(_){}throw error;}}
 async function restorePortableBackup(inspected){
   const needsStorage=inspected.receipts.length>0;if(needsStorage&&(!fbConfigured()||!FB.ready||!firebase.auth().currentUser))throw new Error('Sign in before restoring receipt files');
@@ -5917,9 +5914,6 @@ function renderFirstSyncConfirmation(){
 function setFirstSyncConfirmation(user,cloudState,correlation,error=false){
   const scope=TaxMateAccountStorage.firebaseScope(user.uid);TaxMateAccountStorage.classifyLocalAssociation(localStorage,scope,cloudState,{now:Date.now()});CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='confirmation';CLOUD.partnershipHydrationState='paused';FIRST_SYNC_CONFIRMATION={uid:user.uid,email:String(user.email||''),cloudState,correlation,error:!!error,busy:false};ACCOUNT_UI_READY={state:'confirmation',correlation,expectedRows:0,renderedRows:0,onboardingOpen:true};safeActionTrace('first_sync','confirmation_required',correlation,'auth');renderFirstSyncConfirmation();return{state:'confirmation_required',existingCloudAccount:cloudState==='existing',cloudState};
 }
-function renderAccountControlRetry(correlation){
-  closePersonalSurfacesForLtd();const root=TaxMateOnboardingRoot.open(document);root.dataset.firstSync='retry';root.innerHTML=obShell(obProgress(0,'','doSignOut()'),`<h1>${t('ac.title')}</h1><p class="ob-lede" data-account-control-error>${t('firstSync.retry')}</p>`,`<button class="ob-btn" data-tm-click="retryAccountSafetyCheck()">${t('firstSync.tryAgain')}</button>`);root.scrollTop=0;ACCOUNT_UI_READY={state:'account-control-retry',correlation,expectedRows:0,renderedRows:0,onboardingOpen:true};return true;
-}
 function safeAccountNavigation(value){return['home','income','expenses','tax','receipts','more'].includes(value)?value:'home';}
 function accountHomeUiFacts(){
   const root=document.getElementById('ob-root'),page=document.getElementById('page'),list=page&&page.querySelector('[data-home-business-list]'),expected=S.businesses.length+(activeLtdProfile()?1:0),rows=list?list.querySelectorAll(':scope > .row').length:0,onboardingOpen=!!root&&(root.classList.contains('active')||root.getAttribute('aria-hidden')==='false'),shellVisible=!!page&&!page.hidden&&!document.body.classList.contains('ltd-active'),tab=safeAccountNavigation(S.tab),navTab=tab==='receipts'?'expenses':tab,selectedNav=document.querySelector(`#nav button.on[data-tm-click="go('${navTab}')"]`),homeOperable=!!list&&!!list.querySelector('button:not([disabled])'),pageOperable=!!page&&!!page.querySelector('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])'),operable=tab==='home'?expected===0||homeOperable:!!selectedNav&&pageOperable;
@@ -5936,13 +5930,14 @@ async function presentAccountHome(correlation){
 function pendingIntentForHydration(){
   const existing=OB&&OB.pendingIntent?obIntentCopy(OB.pendingIntent):AUTH_PENDING_INTENT?obIntentCopy(AUTH_PENDING_INTENT):null;if(!existing)return null;AUTH_PENDING_INTENT=null;if(!OB)OB=obDefaultState(true);OB.pendingIntent=existing;if(existing.source==='partner_sync')OB.connectCode=normalisePartnerCode(existing.formState&&existing.formState.partnerCode||existing.partnerCode||'').slice(0,8);OB.loggedIn=true;OB.screen='intent-loading';return existing;
 }
-function beginAccountTransition(correlation){
-  captureLocalPendingIntent();closeOnboardingSurface({clearState:true});ACCOUNT_TRANSITION_PENDING=true;stopUserSync();ACCOUNT_TRANSITION_PENDING=true;CLOUD.controlsCached=false;CLOUD.firstSyncBlocked=false;STATE_LOAD_ERROR=null;S=freshState();ENTITLEMENT={snapshot:null,loaded:false};closePersonalSurfacesForLtd();const ltdRoot=document.getElementById('taxmate-ltd-ui-root');if(ltdRoot)ltdRoot.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const node=document.querySelector(selector);if(node)node.hidden=false;}ACCOUNT_UI_READY={state:'transitioning',correlation,expectedRows:0,renderedRows:0,onboardingOpen:false};render();
+function beginAccountTransition(correlation,options={}){
+  captureLocalPendingIntent();closeOnboardingSurface({clearState:true});ACCOUNT_TRANSITION_PENDING=true;stopUserSync();ACCOUNT_TRANSITION_PENDING=true;CLOUD.controlsCached=false;CLOUD.firstSyncBlocked=false;STATE_LOAD_ERROR=null;ENTITLEMENT={snapshot:null,loaded:false};if(options.targetScope)activateAccountScope(options.targetScope,{force:true,navigation:options.navigation});else closePersonalSurfacesForLtd();const ltdRoot=document.getElementById('taxmate-ltd-ui-root');if(ltdRoot)ltdRoot.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const node=document.querySelector(selector);if(node)node.hidden=false;}ACCOUNT_UI_READY={state:'transitioning',correlation,expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen:false};render();
   safeActionTrace('account_transition','started',correlation,'auth');
 }
+function accountReadWithTimeout(promise,timeoutMs=8000){let timer;return Promise.race([Promise.resolve(promise),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Object.assign(new Error('account-read-timeout'),{code:'deadline-exceeded'})),timeoutMs);})]).finally(()=>clearTimeout(timer));}
 async function readAccountControls(uid){
   if(!FB.ready||!FB.db)throw new Error('account-control-unavailable');
-  const resetDoc=await FB.db.collection('accountResets').doc(uid).get(),reset=resetDoc.exists?resetDoc.data():null;
+  const resetDoc=await accountReadWithTimeout(FB.db.collection('accountResets').doc(uid).get()),reset=resetDoc.exists?resetDoc.data():null;
   if(reset){const epoch=Number(reset.resetEpoch),status=String(reset.status||'');if(!Number.isSafeInteger(epoch)||epoch<0||!['complete','deleting','failed'].includes(status))throw Error('account-reset-invalid');return{reset:{status,resetEpoch:epoch}};}
   return{reset:null};
 }
@@ -5962,15 +5957,14 @@ function accountControlConnectivityFailure(error){const code=String(error&&error
 async function refreshCachedAccountControls(){
   if(!CLOUD.controlsCached)return false;if(CLOUD.controlsRefreshPromise)return CLOUD.controlsRefreshPromise;
   const user=cloudUser();if(!user)return false;
-  CLOUD.controlsRefreshPromise=(async()=>{const priorNavigation=['home','income','expenses','tax','receipts','more'].includes(S.tab)?S.tab:null,cached=cachedAccountControls(user.uid),correlation=`account-controls-${Date.now()}`;beginAccountTransition(correlation);try{
+  CLOUD.controlsRefreshPromise=(async()=>{const priorNavigation=['home','income','expenses','tax','receipts','more'].includes(S.tab)?S.tab:null,cached=cachedAccountControls(user.uid),correlation=`account-controls-${Date.now()}`;beginAccountTransition(correlation,{targetScope:TaxMateAccountStorage.firebaseScope(user.uid),navigation:priorNavigation});try{
     const controls=await readAccountControls(user.uid);if(!cloudUser()||cloudUser().uid!==user.uid)return false;
     const scope=TaxMateAccountStorage.firebaseScope(user.uid),reset=controls.reset;if(reset&&reset.status==='complete')TaxMateAccountStorage.applyServerReset(localStorage,sessionStorage,scope,reset.resetEpoch);
     activateAccountScope(scope,{force:true,navigation:priorNavigation});CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';CLOUD.controlsCached=false;cacheAccountControls(user.uid,controls);ACCOUNT_TRANSITION_PENDING=false;render();safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':'controls_refreshed',correlation,'auth');
     if(!CLOUD.deletionBlocked)await startUserSync(user);return true;
-  }catch(error){if(cloudUser()&&cloudUser().uid===user.uid&&cached){activateAccountScope(TaxMateAccountStorage.firebaseScope(user.uid),{force:true,navigation:priorNavigation});CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');}ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError='account-control-unavailable';safeActionTrace('account_transition','control_refresh_failed',correlation,'auth');renderAccountControlRetry(correlation);return false;}finally{CLOUD.controlsRefreshPromise=null;}})();
+  }catch(error){if(cloudUser()&&cloudUser().uid===user.uid&&cached)CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);CLOUD.hydrationState='failed';CLOUD.hydrationError='account-control-unavailable';ACCOUNT_UI_READY={state:'retained-local',correlation,expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen:false};safeActionTrace('account_transition','control_refresh_failed',correlation,'auth');render();return false;}finally{CLOUD.controlsRefreshPromise=null;}})();
   return CLOUD.controlsRefreshPromise;
 }
-function retryAccountSafetyCheck(){return refreshCachedAccountControls();}
 function onboardingDoneFlag(){try{return ACTIVE_ACCOUNT_SCOPE?localStorage.getItem(accountSlotKey('onboarding-done')):null;}catch(e){return null;}}
 async function applyHydratedAccountResult(result,correlation=`account-ui-${Date.now()}`){
   if(!result)return{ready:false};
@@ -6001,8 +5995,8 @@ function watchAuth(){
     const transition=++AUTH_TRANSITION_GENERATION,correlation=`account-${transition}-${Date.now()}`;
     if(u && !u.isAnonymous){
       const priorNavigation=ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE.kind==='local'&&['home','income','expenses','tax','receipts','more'].includes(S.tab)?S.tab:null;
-      beginAccountTransition(correlation);let controls,controlsCached=false;
-      try{controls=await readAccountControls(u.uid);}catch(error){const cached=cachedAccountControls(u.uid);if(cached&&accountControlConnectivityFailure(error)){controls=cached;controlsCached=true;}else{if(transition!==AUTH_TRANSITION_GENERATION)return;ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=true;CLOUD.hydrationState='failed';CLOUD.hydrationError=String(error&&error.message||'account-reset-check-failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,48);safeActionTrace('account_transition','reset_check_failed',correlation,'auth');console.warn('Account reset check failed',{category:'account_reset',safeCode:'ACCOUNT_RESET_CHECK_FAILED',stage:'pre_hydration'});renderAccountControlRetry(correlation);return;}}
+      const targetScope=TaxMateAccountStorage.firebaseScope(u.uid);beginAccountTransition(correlation,{targetScope,navigation:priorNavigation});let controls,controlsCached=false;
+      try{controls=await readAccountControls(u.uid);}catch(error){const cached=cachedAccountControls(u.uid);if(cached&&accountControlConnectivityFailure(error)){controls=cached;controlsCached=true;}else{if(transition!==AUTH_TRANSITION_GENERATION)return;ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);CLOUD.hydrationState='failed';CLOUD.hydrationError=String(error&&error.message||'account-reset-check-failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,48);ACCOUNT_UI_READY={state:'retained-local',correlation,expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen:false};safeActionTrace('account_transition','reset_check_failed',correlation,'auth');console.warn('Account reset check failed',{category:'account_reset',safeCode:'ACCOUNT_RESET_CHECK_FAILED',stage:'pre_hydration'});render();return;}}
       if(transition!==AUTH_TRANSITION_GENERATION||!firebase.auth().currentUser||firebase.auth().currentUser.uid!==u.uid){safeActionTrace('account_transition','superseded',correlation,'auth');return;}
       const scope=TaxMateAccountStorage.firebaseScope(u.uid),reset=controls.reset;
       if(reset&&reset.status==='complete')TaxMateAccountStorage.applyServerReset(localStorage,sessionStorage,scope,reset.resetEpoch);
@@ -6293,12 +6287,11 @@ function startUserSync(u,options={}){
   clearTimeout(CLOUD.hydrationRetryTimer);renderSyncStatus();
   const hydration=(async()=>{
     try{
-      await loadEntitlementFromCloud(uid);
+      await accountReadWithTimeout(loadEntitlementFromCloud(uid),15000);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
 
       /* 1 ── Read account truth before any push. A clean client must never publish its empty defaults first. */
-      const metaDoc=await userRoot(uid).collection('app').doc('meta').get();
-      const entSnap=await userRoot(uid).collection('entries').get();
+      const [metaDoc,entSnap]=await accountReadWithTimeout(Promise.all([userRoot(uid).collection('app').doc('meta').get(),userRoot(uid).collection('entries').get()]),15000);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
       const remoteRaw=[];entSnap.forEach(d=>{const re=d.data();if(re)remoteRaw.push(re);});
       const remote=cloudRecordsForAccount(remoteRaw,uid,'entries_hydrate');
@@ -6309,7 +6302,7 @@ function startUserSync(u,options={}){
       S.tombstones=mergedEntries.filter(e=>e.deletedAt!=null);
       if(metaDoc.exists||remote.length||ACCOUNT_SCOPE_HAD_CANONICAL)persistRemoteState();
       const associationPending=TaxMateAccountStorage.localAssociationPending(localStorage);CLOUD.firstSyncBlocked=associationPending;
-      let ltdReconciliation=ltdAccessDecision('cloud_hydrate').allowed?await readLtdCloud(uid,{queue:!associationPending}):{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
+      let ltdReconciliation=ltdAccessDecision('cloud_hydrate').allowed?await accountReadWithTimeout(readLtdCloud(uid,{queue:!associationPending}),15000):{uploads:[],downloads:[],conflicts:[],blocked:'pro_required'};
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
 
       /* An explicit local-only sign-in may associate once, but only after an empty cloud account
@@ -6343,7 +6336,7 @@ function startUserSync(u,options={}){
       },handleSyncListenerError);
       if(ltdAccessDecision('cloud_hydrate').allowed)installLtdListeners(uid);
       const partnershipSubscriptions=S.businesses.filter(b=>b.syncCode).map(b=>subscribeSync(b.syncCode,b.id));
-      const partnershipResults=await Promise.all(partnershipSubscriptions);
+      const partnershipResults=await accountReadWithTimeout(Promise.all(partnershipSubscriptions),15000);
       if(!syncGenerationCurrent(uid,generation))throw new Error('stale-hydration');
       const partnershipRecordCount=partnershipResults.reduce((sum,row)=>sum+Number(row&&row.entries||0),0);
       const account=TaxMateSync.cloudAccountState({metaExists:metaDoc.exists,meta:remoteMeta,personalRecords:remote,partnershipRecords:partnershipRecordCount+(CLOUD.ltdRemote||[]).length+(CLOUD.ltdAnchor?1:0)});
@@ -8118,7 +8111,7 @@ document.addEventListener('touchend', e=>{
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
-  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('sw.js').catch(err=>console.warn('SW reg failed', err));
+  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260903-7',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
   else registerTaxMateServiceWorker();
 }

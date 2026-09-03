@@ -57,9 +57,9 @@ test('fresh-client flow separates inbound restore from durable outbound ACK conv
   assert.doesNotMatch(app,/if\(OB\s*&&\s*!OB\._signingInFlow\)\{\s*try\{\s*obClose/);
   assert.match(app,/const result=await startUserSync\(u\);safeActionTrace\('account_hydration',[\s\S]{0,240}if\(transition!==AUTH_TRANSITION_GENERATION\)return/);
   assert.match(app,/CLOUD\.hydrationResult=result;const presentation=await applyHydratedAccountResult\(result/);
-  assert.match(app,/const metaDoc=await[\s\S]*const entSnap=await[\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='presenting';CLOUD\.partnershipHydrationState='converged'/);
+  assert.match(app,/await accountReadWithTimeout\(loadEntitlementFromCloud\(uid\),15000\)[\s\S]*const \[metaDoc,entSnap\]=await accountReadWithTimeout\(Promise\.all\([\s\S]*Promise\.all\(partnershipSubscriptions\)[\s\S]*CLOUD\.hydrationState='presenting';CLOUD\.partnershipHydrationState='converged'/);
   assert.match(app,/clearUserSyncListeners\(\);CLOUD\.hydrationState='failed'[\s\S]*setTimeout\(\(\)=>\{const current=cloudUser\(\)/);
-  assert.ok(app.indexOf('const metaDoc=await')<app.indexOf('await pushUserState(uid,true)'));
+  assert.ok(app.indexOf('const [metaDoc,entSnap]=await')<app.indexOf('await pushUserState(uid,true)'));
   assert.ok(app.indexOf('Promise.all(partnershipSubscriptions)')<app.indexOf('await pushUserState(uid,true)'));
   assert.ok(app.indexOf("CLOUD.hydrationState='presenting';CLOUD.partnershipHydrationState='converged'")<app.indexOf('await applyHydratedAccountResult(result'));
   assert.ok(app.indexOf('await applyHydratedAccountResult(result')<app.indexOf('await pushUserState(uid,true)'));
