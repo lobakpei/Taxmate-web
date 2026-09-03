@@ -3508,7 +3508,6 @@ const PWA_KEYS=TaxMatePwaInstall.KEYS;
 let deferredInstall=null;
 let installing=false;
 let pwaHomeViewTracked=false;
-let pwaProactivePending=false;
 function pwaLocalGet(key){try{return localStorage.getItem(key);}catch(_){return null;}}
 function pwaLocalSet(key,value){try{localStorage.setItem(key,String(value));}catch(_){}}
 function isStandalone(){
@@ -3533,8 +3532,7 @@ function pwaInstallOptions(){
     persistedInstalled:pwaLocalGet(PWA_KEYS.installed)==='1',
     hasDeferredPrompt:!!deferredInstall,
     isIOSSafari:isIOSSafari(),
-    hasBrowserInstallInstructions:!(displayModeStandalone||navigatorStandalone),
-    proactiveShown:pwaLocalGet(PWA_KEYS.proactiveShown)==='1'
+    hasBrowserInstallInstructions:!(displayModeStandalone||navigatorStandalone)
   };
 }
 function isPwaInstalled(){return TaxMatePwaInstall.isInstalled(pwaInstallOptions());}
@@ -3592,20 +3590,6 @@ function markPwaInstalled(){
   closePwaInstallSurfaces();
   if(!already)trackEvent('pwa_install_completed');
   render();
-}
-function maybeOpenPendingPwaSuggestion(){
-  if(!pwaProactivePending||anySheetOpen())return;
-  pwaProactivePending=false;
-  const options=pwaInstallOptions();
-  if(!TaxMatePwaInstall.canPromptProactively(options))return;
-  pwaLocalSet(PWA_KEYS.proactiveShown,'1');
-  trackEvent('pwa_install_prompt_viewed');
-  openSheet('pwainstall');
-}
-function schedulePwaInstallSuggestion(firstMeaningfulAction){
-  if(!firstMeaningfulAction)return;
-  pwaProactivePending=true;
-  setTimeout(maybeOpenPendingPwaSuggestion,650);
 }
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
@@ -3783,7 +3767,6 @@ function closePersonalSurfacesForLtd(){
   if(personalToast)personalToast.classList.remove('show');
   const onboarding=document.getElementById('ob-root');
   if(onboarding){try{TaxMateOnboardingRoot.close(document);}catch(_){onboarding.classList.remove('active');onboarding.setAttribute('aria-hidden','true');onboarding.innerHTML='';}}
-  pwaProactivePending=false;
   if(_toastTimer){clearTimeout(_toastTimer);_toastTimer=null;}
   sheetOpener=null;
   LB={url:'',path:''};
@@ -3983,7 +3966,7 @@ function welcome(){
   </div>
   <div class="notice green">${t('w.priv')}</div>
   <div class="card">${steps}
-    <button class="btn" style="margin-top:14px" data-tm-click="openAddBusinessFlow()">${t('w.start')}</button>
+    <button class="btn welcome-add-business" style="margin-top:14px" data-tm-click="openAddBusinessFlow()">${t('w.start')}</button>
   </div>`;
 }
 
@@ -4129,19 +4112,9 @@ function dismissCarouselCard(id){
 function carouselCards(){
   const dismissed = carouselDismissed();
   const cards = [];
-  const canReceipt = hasFeature('receiptPhoto');
 
-  // 卡 1：影收據 —— Plus/Pro 直接去補收據頁；Free 去方案頁。
-  // 升級／推廣碼入口保留喺「設定 › 方案」同各處 lockGuard。
-  if(!dismissed.includes('receipt')){
-    cards.push({ id:'receipt', bg:'var(--card)', fg:'var(--ink)', accent:'var(--blue)', emoji:'📸',
-      title:t('car.rcTitle'),
-      body: canReceipt ? t('car.rcBody') : t('car.rcLockedBody'),
-      cta:  canReceipt ? t('car.rcCta') : t('car.rcLockedCta'),
-      onclick: canReceipt ? "go('receipts')" : "lockGuard('receiptPhoto')" });
-  }
-
-  // 卡 2：最相關嘅一條 context tip（借用 tipsCard 嘅資料，但淨係抽一條擺喺輪播）
+  // Keep only the most relevant contextual tax tip. Receipt guidance lives in
+  // TaxMate Assistant so Home never presents the same receipt task twice.
   if(!dismissed.includes('tip')){
     const tip = topContextTip();
     if(tip){
@@ -4277,6 +4250,7 @@ function pageHome(){
   </div>`;
 
   return `
+  ${homeInstallCard()}
   ${hasPersonal?homeCarousel():''}
   ${hasPersonal?personalHero:(ltdProfile?ltdHomeHero(ltdProfile):'')}
 
@@ -4287,8 +4261,6 @@ function pageHome(){
     <button class="btn home-add-income" data-tm-click="openEntry('income')">＋ ${t('f.addIncome')}</button>
     <button class="btn danger-soft" data-tm-click="openEntry('expense')">＋ ${t('f.addExpense')}</button>
   </div>`:''}
-
-  ${homeInstallCard()}
 
   ${assistantHomeCard()}
 
@@ -4718,6 +4690,7 @@ function pageMore(){
     <summary>${t('sec.biz')}</summary>
     <div class="sec-body">
       ${bizCard}
+      ${organiseSection}
     </div>
   </details>
 
@@ -4743,7 +4716,6 @@ function pageMore(){
         <label style="display:flex;align-items:center;gap:10px;font-weight:700"><input type="checkbox" ${window.TaxMateAnalytics&&TaxMateAnalytics.enabled()?'checked':''} data-tm-change="setAnalyticsConsent(this.checked)"> Share anonymous usage analytics</label>
       </div>
       ${installCard()}
-      ${organiseSection}
     </div>
   </details>
 
@@ -5219,7 +5191,6 @@ function saveEntry(){
     return;
   }
   const existingEntryIndex=EN.id?S.entries.findIndex(entry=>entry.id===EN.id):-1;
-  const firstMeaningfulEntry=existingEntryIndex<0&&!S.entries.some(entry=>entry&&(entry.kind==='income'||entry.kind==='expense'));
   const rec = {
     id:EN.id||uid(),
     bizId:document.getElementById('en-biz').value||(S.businesses[0]&&S.businesses[0].id),
@@ -5260,7 +5231,6 @@ function saveEntry(){
       // EN.id 係由 onReceiptFile 生成嘅，唔係 existing entry → 當新 entry 處理
       S.entries.push(rec);
       save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
-      schedulePwaInstallSuggestion(firstMeaningfulEntry);
     }
   } else if(EN.repeat && EN.kind==='expense'){
     // Add for all 12 months of the current tax year
@@ -5284,11 +5254,9 @@ function saveEntry(){
     });
     if(!count){ S.entries.push(rec); pushEntryRemote(rec); count=1; } // safety: nothing picked => single entry
     save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
-    schedulePwaInstallSuggestion(firstMeaningfulEntry);
   } else {
     S.entries.push(rec);
     save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
-    schedulePwaInstallSuggestion(firstMeaningfulEntry);
   }
 }
 function deleteEntry(){
@@ -5397,7 +5365,6 @@ function saveBiz(){
   }
   if(BZ.structure!=='partnership')share=100;
   let newId = null;
-  const firstMeaningfulBusiness=!BZ.id&&S.businesses.length===0;
   if(BZ.id){
     const b = bizById(BZ.id);
     b.name=name; b.structure=BZ.structure; b.share=BZ.structure==='partnership'?share:100;
@@ -5414,7 +5381,6 @@ function saveBiz(){
     trackEvent('business_created');
   }
   save(); closeSheet('biz'); render(); toast(t('toast.saved'));
-  schedulePwaInstallSuggestion(firstMeaningfulBusiness);
   if(newId&&BZ.pendingCode&&hasFeature('partnerSync')&&fbConfigured()){
     enableSync(newId,BZ.pendingCode);
   } else if(newId && BZ.structure==='partnership'){
@@ -5531,7 +5497,7 @@ let sheetOpener=null;
 function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus();},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
-  if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); setTimeout(maybeOpenPendingPwaSuggestion,0); }
+  if(sb){ sb.classList.remove('open'); document.body.classList.remove('sheet-open'); }
 }
 // Drag-to-dismiss on grab handles
 function initSheetDrag(){
@@ -5542,7 +5508,7 @@ function initSheetDrag(){
     let startY=0, curY=0, dragging=false;
     const onStart=e=>{ dragging=true; startY=(e.touches?e.touches[0].clientY:e.clientY); sheet.style.transition='none'; };
     const onMove=e=>{ if(!dragging)return; curY=(e.touches?e.touches[0].clientY:e.clientY); const dy=Math.max(0,curY-startY); sheet.style.transform='translateY('+dy+'px)'; };
-    const onEnd=()=>{ if(!dragging)return; dragging=false; sheet.style.transition=''; const dy=curY-startY; if(dy>100){ const sb=sheet.closest('.sb'); if(sb){sb.classList.remove('open');document.body.classList.remove('sheet-open');setTimeout(maybeOpenPendingPwaSuggestion,0);} } sheet.style.transform=''; };
+    const onEnd=()=>{ if(!dragging)return; dragging=false; sheet.style.transition=''; const dy=curY-startY; if(dy>100){ const sb=sheet.closest('.sb'); if(sb){sb.classList.remove('open');document.body.classList.remove('sheet-open');} } sheet.style.transform=''; };
     grab.addEventListener('touchstart',onStart,{passive:true});
     grab.addEventListener('touchmove',onMove,{passive:true});
     grab.addEventListener('touchend',onEnd);
@@ -5551,7 +5517,7 @@ function initSheetDrag(){
     document.addEventListener('mouseup',onEnd);
   });
 }
-function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); if(sheetOpener&&sheetOpener.focus)sheetOpener.focus(); setTimeout(maybeOpenPendingPwaSuggestion,0); }
+function closeSheet(id){ document.getElementById('sb-'+id).classList.remove('open'); document.body.classList.remove('sheet-open'); if(sheetOpener&&sheetOpener.focus)sheetOpener.focus(); }
 
 /* Toast feedback */
 let _toastTimer=null;
@@ -6013,7 +5979,7 @@ async function applyHydratedAccountResult(result,correlation=`account-ui-${Date.
   if(pendingIntentForHydration()){
     TaxMateOnboardingRoot.open(document);OB._signingInFlow=false;OB.loggedIn=true;ACCOUNT_UI_READY={state:'pending-intent',correlation,expectedRows:0,renderedRows:0,onboardingOpen:true};obResumePendingIntentAfterHydration(result);render();return{ready:true,pendingIntent:true};
   }
-  if(result.existingCloudAccount||TaxMateAccountStorage.stateHasAccountData(S))return presentAccountHome(correlation);
+  if(result.existingCloudAccount||TaxMateAccountStorage.stateHasAccountData(S)||onboardingDoneFlag())return presentAccountHome(correlation);
   closeOnboardingSurface({clearDraft:true});OB=obDefaultState(true);OB.screen='entry';TaxMateOnboardingRoot.open(document);obRender();ACCOUNT_UI_READY={state:'onboarding',correlation,expectedRows:0,renderedRows:0,onboardingOpen:true};return{ready:true,onboarding:true};
 }
 function consumeBillingReturn(){
@@ -7262,7 +7228,6 @@ function anySheetOpen(){
 function closeAllSheets(){
   document.querySelectorAll('.sb.open').forEach(o=>o.classList.remove('open'));
   document.body.classList.remove('sheet-open');
-  setTimeout(maybeOpenPendingPwaSuggestion,0);
 }
 function setupBackButton(){
   // Seed two states: one base + one buffer the back button consumes first.
@@ -8048,7 +8013,6 @@ function obFinish(){
   obClose();
   S.tab='home'; render(); window.scrollTo(0,0);
   if(typeof toast==='function') toast(wasCatchup ? 'Months added ✓' : 'All caught up — welcome to TaxMate!');
-  schedulePwaInstallSuggestion(!wasCatchup);
 }
 
 /* ═══════════ boot ═══════════ */

@@ -87,26 +87,36 @@
     for(const entry of state.entries||[]){const source=entry.receiptPath||entry.receiptUrl;if(source)add(source,{recordType:'legacy_entry',recordId:entry.id,originalPath:source},entry.receiptUrl);}
     let skippedForeignCount=0,skippedUnavailableCount=0;
     if(input&&input.user){
-      for(const [source,group] of [...byPath]){const foreign=[source,...group.fallbackUrls].find(reference=>{const owner=receiptOwner(reference);return owner&&owner!==uid;});if(foreign){skippedForeignCount++;byPath.delete(source);if(typeof input.onForeignReference==='function')input.onForeignReference({kind:http(foreign)?'receipt_url':'receipt_path'});}}
       if(typeof input.listStorage!=='function')throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
       try{storageItems=await input.listStorage(uid);}catch(error){throw failure(CATEGORIES.STORAGE_LIST,{cause:error,stage:'storage_list',correlation});}
       if(!Array.isArray(storageItems))throw failure(CATEGORIES.STORAGE_LIST,{stage:'storage_list',correlation});
+      const storagePaths=new Set(storageItems.map(item=>item&&item.fullPath).filter(Boolean));
+      for(const [source,group] of [...byPath]){
+        const foreign=[source,...group.fallbackUrls].find(reference=>{const owner=receiptOwner(reference);return owner&&owner!==uid;});
+        if(!foreign)continue;
+        const path=receiptPath(source),filename=path&&path.slice(path.lastIndexOf('/')+1),dot=filename&&filename.lastIndexOf('.'),stem=dot>0?filename.slice(0,dot):'',extension=dot>0?filename.slice(dot+1):'';
+        const exactLegacyRecord=!!filename&&/^(?:jpe?g|png|webp|heic|heif)$/i.test(extension)&&group.associations.length>0&&group.associations.every(item=>item&&item.recordType==='legacy_entry'&&String(item.recordId||'')===stem);
+        const ownedFallbackPath=exactLegacyRecord?`receipts/${uid}/${filename}`:'';
+        if(ownedFallbackPath&&storagePaths.has(ownedFallbackPath)){group.ownedFallbackPath=ownedFallbackPath;group.fallbackUrls=[];continue;}
+        skippedForeignCount++;byPath.delete(source);if(typeof input.onForeignReference==='function')input.onForeignReference({kind:http(foreign)?'receipt_url':'receipt_path'});
+      }
     }
-    const result=[],seen=new Set(),linkedPaths=new Set(byPath.keys());
+    const result=[],seen=new Set(),linkedPaths=new Set([...byPath.keys(),...[...byPath.values()].map(group=>group.ownedFallbackPath).filter(Boolean)]);
     for(const [source,group] of byPath){
-      let urls=http(source)?[source]:[];
+      const downloadSource=group.ownedFallbackPath||source;
+      let urls=http(downloadSource)?[downloadSource]:[];
       if(!urls.length){
         if(!input.user||typeof input.storageUrl!=='function'){skippedUnavailableCount++;continue;}
-        const owned=receiptOwner(source)===uid&&activeUid===uid&&stateOwnerUid===uid;
+        const owned=receiptOwner(downloadSource)===uid&&activeUid===uid&&stateOwnerUid===uid;
         if(!owned){skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});continue;}
-        try{const resolved=await input.storageUrl(source);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length){skippedUnavailableCount++;continue;}}
+        try{const resolved=await input.storageUrl(downloadSource);if(resolved)urls.push(resolved);}catch(error){if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw failure(CATEGORIES.AUTH_CONNECTIVITY,{cause:error,stage:'receipt_resolve',correlation});else if(!group.fallbackUrls.length){skippedUnavailableCount++;continue;}}
       }
       urls=urls.concat(group.fallbackUrls).filter((value,index,list)=>http(value)&&list.indexOf(value)===index);
       if(!urls.length){skippedUnavailableCount++;continue;}
       let binary;try{binary=await firstDownload(urls,download,{stage:'receipt_download',correlation});}catch(error){if(classify(error).backupCategory===CATEGORIES.AUTH_CONNECTIVITY)throw error;skippedUnavailableCount++;continue;}
       const legacy=group.associations.filter(item=>item.recordType==='legacy_entry');
       result.push({entryId:group.associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations:group.associations,...binary});
-      if(!http(source))seen.add(source);
+      if(!http(downloadSource))seen.add(downloadSource);
     }
     if(input.user){
       for(const item of storageItems){

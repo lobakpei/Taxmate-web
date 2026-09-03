@@ -101,6 +101,9 @@ service cloud.firestore {
     }
 
     match /accountResets/{uid} { allow read: if owner(uid); allow write: if false; }
+    // Legacy cached clients read this server-owned safety document while they
+    // upgrade. Reads stay UID-isolated and client writes remain impossible.
+    match /accountClaims/{uid} { allow read: if owner(uid); allow write: if false; }
 
     match /appConfig/{document=**} { allow read: if true; allow write: if false; }
     match /billing/{document=**} { allow read, write: if false; }
