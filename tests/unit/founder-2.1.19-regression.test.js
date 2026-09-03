@@ -48,13 +48,26 @@ test('2.1.18 partial ownership state repairs deterministically without losing fa
   assert.equal(fixed.profileRevisionHistory.length,1);assert.deepEqual(fixed.profileRevisionHistory[0],revision);assert.equal(fixed.ownershipHistory.length,2);assert.equal(fixed.ownershipHistory[1].sourceRevisionId,revision.id);assert.deepEqual(fixed.ownershipHistory[1].evidenceRefs,['R45']);assert.deepEqual(fixed.shareholders.map(item=>item.ownershipBasisPoints),[5100,4900]);assert.deepEqual(again.domain.companyProfiles[0].ownershipHistory,fixed.ownershipHistory);assert.equal(again.domain.companyProfiles[0].profileRevisionHistory.length,1);
 });
 
+test('2.1.18 split cloud profile plus revision and ownership collections recover as one validated snapshot',()=>{
+  const before=soleState(),driver=driverFor(before);assert.equal(futureChange(driver).status,'ok');const partial=clone(driver.state),profile=partial.domain.companyProfiles[0],oldProfile=before.domain.companyProfiles[0];
+  profile.shareholders=clone(oldProfile.shareholders);profile.updatedAt=oldProfile.updatedAt;profile.deviceId=oldProfile.deviceId;
+  assert.throws(()=>CompanyState.validateState(partial),/Current ownership must match the open ownership version/);
+  const repaired=CompanyState.migrate(partial,beforeDate,'upgrade-2.1.20'),fixed=repaired.domain.companyProfiles[0],again=CompanyState.migrate(repaired,beforeDate,'upgrade-2.1.20');CompanyState.validateState(repaired);
+  assert.deepEqual(fixed.shareholders.map(item=>item.ownershipBasisPoints),[5100,4900]);assert.deepEqual(History.ownershipAtDate(fixed,'2026-09-03').shareholders.map(item=>item.ownershipBasisPoints),[10000]);assert.equal(fixed.ownershipHistory.length,2);assert.equal(fixed.profileRevisionHistory.length,1);assert.equal(fixed.profileRevisionHistory[0].reason,'Sold');assert.deepEqual(fixed.profileRevisionHistory[0].evidenceRefs,['R45']);assert.deepEqual(again.domain.companyProfiles[0],fixed);
+});
+
 test('production sync applies only a validated candidate, batches ownership writes and bounds deterministic errors',()=>{
   const app=fs.readFileSync('src/app/app.js','utf8'),reconcile=app.slice(app.indexOf('function reconcileLtdState'),app.indexOf('async function readLtdCloud'));
   assert.ok(reconcile.indexOf('TaxMateState.validateState(candidate)')<reconcile.indexOf('S=candidate'));
-  assert.match(app,/async function writeLtdRecordsAtomically\(operations\)/);assert.match(app,/companyProfiles','companyProfileRevisions','companyOwnershipVersions/);assert.match(app,/scheduleLtdSnapshotRefresh\(uid\)/);assert.match(app,/CLOUD\.hydrationFailureCount<3/);assert.match(app,/if\(CLOUD\.reportedSyncErrors\[key\]\)return/);assert.doesNotMatch(app,/console\.warn\('user sync failed',error\)/);
+  assert.match(app,/function pendingLtdRecoveryEnvelopes\(uid\)/);assert.match(reconcile,/envelopes\.concat\(pending\)/);assert.match(app,/async function writeLtdRecordsAtomically\(operations\)/);assert.match(app,/companyProfiles','companyProfileRevisions','companyOwnershipVersions/);assert.match(app,/scheduleLtdSnapshotRefresh\(uid\)/);assert.match(app,/CLOUD\.hydrationFailureCount<3/);assert.match(app,/if\(CLOUD\.reportedSyncErrors\[key\]\)return/);assert.doesNotMatch(app,/console\.warn\('user sync failed',error\)/);
 });
 
 test('Home renders Hero before install promotion and never injects Assistant advice above it',()=>{
   const app=fs.readFileSync('src/app/app.js','utf8'),home=app.slice(app.indexOf('function pageHome()'),app.indexOf('function entryRow(')),carousel=app.slice(app.indexOf('function carouselCards()'),app.indexOf('function cxrOnScroll('));
   assert.ok(home.indexOf('${hasPersonal?personalHero')<home.indexOf('${homeCarousel()}'));assert.doesNotMatch(carousel,/topContextTip|id:'tip'|tip\.(?:phone|home)_/);assert.match(app,/function tipsCard\(\)/);
+});
+
+test('ownership UI resolves the effective version and has no raw/open fallback that can show a future share as current',()=>{
+  const renderer=fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8'),summary=renderer.slice(renderer.indexOf('function ownershipSummaryCard()'),renderer.indexOf('function areaRecords()')),screen=renderer.slice(renderer.indexOf('function screenOwnership()'),renderer.indexOf('function screenWorkingPack()'));
+  assert.match(summary,/effectiveFrom<=today/);assert.doesNotMatch(summary,/effectiveTo==null;\}\)\[0\]\|\|hist\[0\]/);assert.match(screen,/effectiveFrom<=today/);assert.doesNotMatch(screen,/\|\|hist\[0\]/);
 });
