@@ -93,12 +93,12 @@ test('public canonicals match the final www destination',()=>{
 });
 
 test('approved TaxMate favicon set is explicit, square and deployable',()=>{
-  assert.match(home,/<link rel="icon" href="\/favicon\.ico\?v=20260903-7" sizes="any">/);
+  assert.match(home,/<link rel="icon" href="\/favicon\.ico" sizes="any">/);
   assert.doesNotMatch(home,/<link rel="icon" type="image\/svg\+xml"/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="16x16" href="\/favicon-16x16\.png\?v=20260903-7">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png\?v=20260903-7">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="48x48" href="\/favicon-48x48\.png\?v=20260903-7">/);
-  assert.match(home,/<link rel="icon" type="image\/png" sizes="192x192" href="\/icon-192\.png\?v=20260903-7">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="16x16" href="\/favicon-16x16\.png\?v=20260903-8">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="32x32" href="\/favicon-32x32\.png\?v=20260903-8">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="48x48" href="\/favicon-48x48\.png\?v=20260903-8">/);
+  assert.match(home,/<link rel="icon" type="image\/png" sizes="192x192" href="\/icon-192\.png\?v=20260903-8">/);
   const png=fs.readFileSync('favicon-48x48.png');
   assert.equal(png.toString('ascii',1,4),'PNG');
   assert.equal(png.readUInt32BE(16),48);
