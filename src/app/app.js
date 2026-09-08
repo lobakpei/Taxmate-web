@@ -3204,6 +3204,12 @@ Object.assign(I18N.es,{"review01.options":"Otras opciones","review01.catchup":"M
 Object.assign(I18N.ur,{"review01.options":"دیگر اختیارات","review01.catchup":"پچھلے مہینے","review01.catchupHint":"پچھلی آمدنی اور اخراجات شامل کریں","review01.explorePlans":"Plus اور Pro دیکھیں ←","review01.personalTax":"ذاتی ٹیکس","review01.calculation":"حساب دیکھیں","review01.taxChoices":"چھوٹ اور مائلیج","review01.taxRecords":"ٹیکس ریکارڈ","review01.currentPlan":"موجودہ پلان","review01.changePlan":"پلان بدلیں","review01.cancelRenewal":"تجدید منسوخ کریں","review01.refund":"رقم واپسی کی درخواست","review01.refundStatus":"رقم واپسی کی حالت","review01.refundUnavailable":"ایپ میں رقم واپسی کی درخواست ابھی دستیاب نہیں۔ کچھ بھی جمع نہیں ہوا۔ مدد کے لیے سپورٹ سے رابطہ کریں۔","review01.refundUnknown":"اکاؤنٹ سے رقم واپسی کی حالت دستیاب نہیں۔ اس کا مطلب یہ نہیں کہ کوئی درخواست نہیں ہے۔","review01.refundApplied":"ادائیگی فراہم کنندہ نے مکمل رقم واپسی درج کی ہے۔","review01.refundReview":"جزوی رقم واپسی درج ہے؛ دستی جائزہ ضروری ہے۔","review01.payment":"ادائیگی منتخب کریں","review01.paymentUnavailable":"ادائیگی کی تاریخ منسلک نہیں","review01.reason":"وجہ","review01.extra":"اضافی معلومات (اختیاری)","review01.providerPortal":"یہ ادائیگی فراہم کنندہ کا پورٹل کھولتا ہے۔ تصدیق سے پہلے تبدیلی وہاں دیکھیں۔","review01.noPaidSubscription":"انتظام کے لیے فراہم کنندہ کی سبسکرپشن دستیاب نہیں۔","mtd.title":"MTD ریکارڈ کی تیاری","mtd.what":"ریکارڈ ترتیب دیں؛ یہ ایپ ٹیکس گوشوارے جمع نہیں کرتی۔"});
 
 Object.assign(I18N.zh,{"assistant.title":"小幫手","assistant.countOne":"1 件事待處理","assistant.countMany":"{n} 件事待處理","home.oweLine":"預計稅款","home.biz":"你嘅生意","home.addBiz":"新增生意","home.recent":"最近活動","f.addIncome":"加收入","f.addExpense":"加支出","tax.c4":"第4類國民保險","tax.c2":"第2類國民保險","tax.taT":"實報支出或 £1,000 免稅額","tax.taHint":"HMRC 容許以 £1,000 統一扣除額代替實際支出，合夥不適用。TaxMate 按較低利潤自動比較。","tax.usingAllow":"£1,000 營業免稅額","tax.thisBill":"今年稅款","tax.poaPaid":"已繳預繳稅款","tax.balancing":"1月31日尾款","tax.poaWhy":"符合預繳條件時，HMRC 會要求分兩期預繳下年度稅款，每期一半。","tax.refund":"估算可能有退稅；實際金額由 HMRC 按最終稅單確定。","tax.estimateWarn":"按目前記錄估算，唔係最終稅額。你仍需自行提交報稅。"});
+Object.assign(I18N.en,{"recovery.body":"Your saved records could not be opened. Sync is paused to protect them.","recovery.keepData":"Your saved data has not been replaced. You can reload, sign out or get help below.","recovery.reload":"Reload TaxMate","recovery.help":"Help","recovery.contact":"Contact support"});
+Object.assign(I18N.zh,{"recovery.body":"暫時未能開啟你儲存嘅記錄，已暫停同步以保護資料。","recovery.keepData":"已儲存嘅資料並無被取代。你可以重新載入、登出或使用以下支援。","recovery.reload":"重新載入 TaxMate","recovery.help":"幫助","recovery.contact":"聯絡支援"});
+Object.assign(I18N.pl,{"recovery.body":"Nie można otworzyć zapisanych danych. Synchronizacja została wstrzymana, aby je chronić.","recovery.keepData":"Zapisane dane nie zostały zastąpione. Możesz odświeżyć aplikację, wylogować się lub uzyskać pomoc.","recovery.reload":"Odśwież TaxMate","recovery.help":"Pomoc","recovery.contact":"Kontakt z pomocą"});
+Object.assign(I18N.ro,{"recovery.body":"Înregistrările salvate nu au putut fi deschise. Sincronizarea este oprită pentru a le proteja.","recovery.keepData":"Datele salvate nu au fost înlocuite. Poți reîncărca aplicația, ieși din cont sau cere ajutor.","recovery.reload":"Reîncarcă TaxMate","recovery.help":"Ajutor","recovery.contact":"Contactează asistența"});
+Object.assign(I18N.es,{"recovery.body":"No se pudieron abrir tus registros guardados. La sincronización está pausada para protegerlos.","recovery.keepData":"Tus datos guardados no se han sustituido. Puedes recargar, cerrar sesión o pedir ayuda.","recovery.reload":"Recargar TaxMate","recovery.help":"Ayuda","recovery.contact":"Contactar con soporte"});
+Object.assign(I18N.ur,{"recovery.body":"آپ کے محفوظ ریکارڈ نہیں کھل سکے۔ ان کی حفاظت کے لیے مطابقت پذیری روک دی گئی ہے۔","recovery.keepData":"آپ کا محفوظ ڈیٹا تبدیل نہیں ہوا۔ آپ دوبارہ لوڈ، سائن آؤٹ یا مدد حاصل کر سکتے ہیں۔","recovery.reload":"TaxMate دوبارہ لوڈ کریں","recovery.help":"مدد","recovery.contact":"سپورٹ سے رابطہ"});
 Object.assign(I18N.en,{'review01.back':'Back'});
 Object.assign(I18N.zh,{'review01.back':'返回'});
 Object.assign(I18N.pl,{'review01.back':'Wstecz'});
@@ -4026,12 +4032,12 @@ function renderNav(){
   }).join('');
 }
 let BILLING_VIEW=false;
-function go(tab){ BILLING_VIEW=false;if(tab!=='receipts'&&typeof RCB!=='undefined')RCB.bizId=null;S.tab=tab; save(); render(); window.scrollTo(0,0); }
+function go(tab){ BILLING_VIEW=false;if(tab!=='receipts'&&typeof RCB!=='undefined')RCB.bizId=null;S.tab=tab; if(!STATE_LOAD_ERROR)save(); render(); window.scrollTo(0,0); }
 // This entry point belongs to the Web shell, not a native platform/UA guess.
 // Modal forms and required account/setup flows keep their existing close/back
 // and unsaved-change handling; a background brand never dismisses them.
 function webBrandHome(){
-  if(ACCOUNT_TRANSITION_PENDING||CLOUD.retentionBlocked||STATE_LOAD_ERROR||
+  if(ACCOUNT_TRANSITION_PENDING||CLOUD.retentionBlocked||
     (fbConfigured()&&!ACTIVE_ACCOUNT_SCOPE)||document.getElementById('ob-root')?.classList.contains('active')||
     anySheetOpen())return;
   go('home');
@@ -4042,6 +4048,18 @@ function renderYearSel(){
     yearOptions().map(y=>`<option value="${y}" ${y===S.year?'selected':''}>${y}</option>`).join('');
 }
 
+function reloadTaxMate(){location.reload();}
+function pageStateRecovery(){
+  const user=cloudUser();
+  return '<section class="card" data-state-load-error><div class="notice amber"><strong>'+esc(t('shell.dataCheckTitle'))+'</strong><p>'+esc(t('recovery.body'))+'</p></div>'+
+    '<p>'+esc(t('recovery.keepData'))+'</p><div style="display:grid;gap:12px">'+
+    '<button class="btn" data-tm-click="reloadTaxMate()">'+esc(t('recovery.reload'))+'</button>'+
+    (fbConfigured()?'<button class="btn" data-tm-click="'+(user?'doSignOut()':'signIn()')+'">'+esc(t(user?'ac.signout':'ac.google'))+'</button>':'')+
+    '<a class="btn" href="help.html">'+esc(t('recovery.help'))+'</a>'+
+    '<a class="btn" href="mailto:support@taxmate.uk">'+esc(t('recovery.contact'))+'</a></div>'+
+    '<p class="muted">TaxMate '+esc(TaxMateCore.VERSIONS.APP_VERSION)+' · '+esc(TaxMateCore.VERSIONS.BUILD_ID)+'</p></section>';
+}
+
 function render(){
   applyStaticI18n(); renderYearSel(); renderNav();
   document.body.dataset.directionPage=S.tab||'home';
@@ -4050,7 +4068,7 @@ function render(){
   if(ACCOUNT_TRANSITION_PENDING||CLOUD.retentionBlocked){const nav=document.getElementById('nav');if(nav)nav.hidden=true;const failed=!!(CLOUD.retentionControl&&CLOUD.retentionControl.status==='failed');page.innerHTML='<div class="notice amber" data-retention-paused data-retention-status="'+esc(CLOUD.retentionControl?CLOUD.retentionControl.status:'checking')+'"><strong>'+esc(t(failed?'ret.failedTitle':'ret.pausedTitle'))+'</strong><br>'+esc(t(failed?'ret.failedBody':'ret.pausedBody'))+'</div>';return;}
   if(fbConfigured()&&!ACTIVE_ACCOUNT_SCOPE){const nav=document.getElementById('nav');if(nav)nav.hidden=true;page.innerHTML='<div class="notice amber" data-auth-initialising><strong>'+esc(t('shell.restoringTitle'))+'</strong><br>'+esc(t('shell.restoringBody'))+'</div>';return;}
   const nav=document.getElementById('nav');if(nav)nav.hidden=false;
-  if(STATE_LOAD_ERROR){page.innerHTML='<div class="notice amber" data-state-load-error><strong>'+esc(t('shell.dataCheckTitle'))+'</strong><br>'+esc(t('shell.dataCheckBody'))+'</div>';renderSyncStatus();return;}
+  if(STATE_LOAD_ERROR){page.innerHTML=pageStateRecovery();renderSyncStatus();return;}
   if(!S.businesses.length && !activeLtdProfile() && S.tab!=='more'){ page.innerHTML = welcome(); return; }
   if(S.tab==='home') page.innerHTML = pageHome();
   else if(S.tab==='income') page.innerHTML = pageList('income');
@@ -7531,9 +7549,9 @@ function closeAllSheets(){
 }
 function setupBackButton(){
   // Seed two states: one base + one buffer the back button consumes first.
-  history.pushState({tm:'base'}, '');
-  history.pushState({tm:'buffer'}, '');
+  if(!STATE_LOAD_ERROR){history.pushState({tm:'base'}, '');history.pushState({tm:'buffer'}, '');}
   window.addEventListener('popstate', (e)=>{
+    if(STATE_LOAD_ERROR){if(e.state&&['base','buffer'].includes(e.state.tm))history.back();return;}
     // A sheet is open → check for dirty data before closing
     if(anySheetOpen()){
       // 對比快照：開 sheet 時 vs 而家，有任何欄位變咗就當 dirty

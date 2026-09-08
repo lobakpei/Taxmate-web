@@ -1,0 +1,149 @@
+{
+  "v": 5,
+  "businesses": [
+    {
+      "id": "upgrade-business",
+      "name": "Saved business",
+      "structure": "sole",
+      "createdAt": 1788868801000,
+      "updatedAt": 1788868801000,
+      "deviceId": "upgrade-regression",
+      "deletedAt": null,
+      "schemaVersion": 5,
+      "recordType": "business"
+    }
+  ],
+  "entries": [
+    {
+      "id": "saved-income",
+      "bizId": "upgrade-business",
+      "kind": "income",
+      "date": "2026-09-01",
+      "amount": 123.45,
+      "note": "Saved before update",
+      "businessId": "upgrade-business",
+      "taxYear": null,
+      "source": "user",
+      "createdAt": 1788868802000,
+      "updatedAt": 1788868802000,
+      "deletedAt": null,
+      "deviceId": "upgrade-regression",
+      "schemaVersion": 5,
+      "recordType": "entry"
+    }
+  ],
+  "settings": {
+    "lang": "en"
+  },
+  "yearData": {},
+  "folders": [],
+  "tombstones": [],
+  "businessTombstones": [],
+  "folderTombstones": [],
+  "customCats": {},
+  "activeCats": {},
+  "catRenames": {},
+  "metaVersions": {},
+  "metaUpdatedAt": 0,
+  "domain": {
+    "schemaVersion": 6,
+    "projectionVersion": 7,
+    "migrationStatus": "complete",
+    "migratedAt": 1788868800000,
+    "updatedAt": 1788868802000,
+    "deviceId": "upgrade-regression",
+    "persons": [
+      {
+        "id": "person:account-holder",
+        "accountUid": null,
+        "origin": "legacy_v5"
+      }
+    ],
+    "entities": [
+      {
+        "id": "entity:upgrade-business",
+        "name": "Saved business",
+        "type": "sole_trade",
+        "currency": "GBP",
+        "legacyBusinessId": "upgrade-business",
+        "origin": "legacy_v5",
+        "createdAt": 1788868801000,
+        "updatedAt": 1788868801000,
+        "deviceId": "upgrade-regression"
+      }
+    ],
+    "companyProfiles": [],
+    "projects": [],
+    "paymentAccounts": [],
+    "economicEvents": [
+      {
+        "id": "legacy-event:saved-income",
+        "idempotencyKey": "legacy-entry:saved-income:1",
+        "status": "committed",
+        "revision": 1,
+        "sourceTransaction": {
+          "id": "legacy-source:saved-income",
+          "economicEventId": "legacy-event:saved-income",
+          "kind": "income",
+          "date": "2026-09-01",
+          "amountMinor": 12345,
+          "currency": "GBP",
+          "beneficiaryEntityId": "entity:upgrade-business",
+          "purpose": "Saved before update"
+        },
+        "allocations": [
+          {
+            "id": "legacy-allocation:saved-income",
+            "sourceTransactionId": "legacy-source:saved-income",
+            "entityId": "entity:upgrade-business",
+            "scope": "business",
+            "treatmentStatus": "supported",
+            "amountMinor": 12345
+          }
+        ],
+        "journals": [],
+        "origin": "legacy_v5",
+        "legacyEntryId": "saved-income",
+        "sourceUpdatedAt": 1788868802000,
+        "sourceSignature": "[\"income\",\"2026-09-01\",12345,\"entity:upgrade-business\",null,\"Saved before update\",null,null,1788868802000,\"upgrade-regression\",\"supported\",null]",
+        "createdAt": 1788868802000,
+        "updatedAt": 1788868802000,
+        "deviceId": "upgrade-regression"
+      }
+    ],
+    "companyTaxPeriods": [],
+    "companyLossRecords": [],
+    "salaryRecords": [],
+    "dividendDeclarations": [],
+    "personalIncomeLinks": [],
+    "migrationIssues": [],
+    "syncConflicts": [],
+    "sourceStateSchemaVersion": 5,
+    "partnershipConfirmationRequired": [],
+    "companyProfileReviewRequired": [],
+    "companyTaxReviewRequired": []
+  },
+  "companyStateSchemaVersion": 8,
+  "companyStateMigration": {
+    "schemaVersion": 1,
+    "fromCompanyStateSchemaVersion": 0,
+    "toCompanyStateSchemaVersion": 8,
+    "fromStateSchemaVersion": 5,
+    "toStateSchemaVersion": 5,
+    "migratedAt": 1788868800000,
+    "deviceId": "upgrade-regression",
+    "atomicBoundary": "repository_replace",
+    "rollbackSnapshotRequired": true
+  },
+  "companyStateReconciliation": {
+    "schemaVersion": 1,
+    "reason": "legacy_projection_structural_change",
+    "fromDomainSchemaVersion": 6,
+    "toDomainSchemaVersion": 6,
+    "fromProjectionVersion": 7,
+    "toProjectionVersion": 7,
+    "previousDomainUpdatedAt": 1788868800000,
+    "appliedAt": 1788868802000,
+    "deviceId": "upgrade-regression"
+  }
+}
