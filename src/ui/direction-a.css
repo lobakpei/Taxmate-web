@@ -268,6 +268,7 @@ html[data-direction-a="true"] .tm-notice.info{background:var(--blue-soft);color:
 html[data-direction-a="true"] .direction-a-inline-icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-inline-end:6px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
 html[data-direction-a="true"] .direction-a-privacy{display:flex;align-items:flex-start;color:var(--muted);line-height:1.5;margin-top:14px}
 html[data-direction-a="true"] details.sec,
+html[data-direction-a="true"] button.settings-link,
 html[data-direction-a="true"] details.help,
 html[data-direction-a="true"] .tm-disc{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:none;overflow:hidden}
 

@@ -4865,7 +4865,7 @@ function pageMore(){
     </div>
   </details>
 
-  <button class="row noicon" data-tm-click="openBillingOverview()"><span class="grow t">${t('review01.billing')}</span><span aria-hidden="true">›</span></button>
+  <button class="settings-link" data-tm-click="openBillingOverview()">${t('review01.billing')}</button>
 
   <details class="sec" data-settings-section="help">
     <summary>${t('sec.help')}</summary>
@@ -6035,7 +6035,7 @@ function syncStatusMessage(current=syncStatus()){
   if(current.state==='synced')return t('sync.synced');
   if(current.state==='offline')return n?t('sync.offlinePending',{n}):t('sync.offline');
   if(message.startsWith('Waiting for sign-in'))return n?t('sync.signInPending',{n}):t('sync.signIn');
-  if(message.startsWith('Cloud restore failed'))return t('sync.restoreFailed');
+  if(message.startsWith('Cloud restore failed'))return t('sync.restoreFailed')+(current.error?' · '+syncErrorKey({code:current.error}).replace(/_/g,' '):'');
   if(message.startsWith('Restoring cloud data'))return t('sync.restoring');
   if(message.startsWith('Checking cloud data'))return t('sync.checking');
   if(message.startsWith('Cloud sync read failed'))return t('sync.readFailed');
@@ -6517,7 +6517,7 @@ function handleSyncListenerError(error){
 }
 function syncErrorKey(error){return String(error&&error.code||error&&error.message||TaxMateSync.classifyError(error)||'sync-failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,80);}
 function deterministicHydrationError(error){return /(?:ownership|company_profile|ltd_sync|ltd-sync|ltd_anchor|ltd-anchor|schema|invalid_company)/i.test(syncErrorKey(error));}
-function reportSyncErrorOnce(stage,error){const key=stage+':'+syncErrorKey(error);if(CLOUD.reportedSyncErrors[key])return;CLOUD.reportedSyncErrors[key]=true;console.warn('TaxMate sync failed',{category:'cloud_sync',safeCode:syncErrorKey(error),stage:stage});}
+function reportSyncErrorOnce(stage,error){const key=stage+':'+syncErrorKey(error);if(CLOUD.reportedSyncErrors[key])return;CLOUD.reportedSyncErrors[key]=true;console.warn('TaxMate sync failed '+JSON.stringify({category:'cloud_sync',safeCode:syncErrorKey(error),stage:stage}));}
 
 function syncGenerationCurrent(uid,generation){return CLOUD.hydrationUid===uid&&CLOUD.generation===generation&&cloudUser()&&cloudUser().uid===uid;}
 function syncOperationsForUser(uid){if(SYNC_RUNTIME.blocked)return[];const outbox=loadSyncOutbox();if(!outbox)return[];const ltdAllowed=ltdAccessDecision('cloud_sync').allowed;return TaxMateSync.normalizeOutbox(outbox).items.filter(operation=>(operation.kind!=='personal-state'||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid)&&(operation.kind!=='ltd-record'||ltdAllowed));}
