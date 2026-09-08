@@ -6298,13 +6298,34 @@ function pendingLtdRecoveryEnvelopes(uid){
   for(const operation of box.items){if(operation.kind!=='ltd-record'||(operation.uid||operation.ownerUid)!==uid||!operation.record)continue;TaxMateLtdSync.validateEnvelope(operation.record);records.push(operation.record);}
   return records;
 }
+function preserveDeletedOwnershipRecovery(uid,operations){
+  if(!operations.length)return;
+  assertActiveAccountUid(uid);assertAccountWriteBoundary();
+  const signature=[...new Map(operations.map(op=>[op.record.recordId+':'+op.record.checksum,{id:op.record.recordId,checksum:op.record.checksum}])).values()].sort((a,b)=>a.id.localeCompare(b.id)||a.checksum.localeCompare(b.checksum));
+  const key=accountSlotKey('ltd-deleted-recovery:'+TaxMateRevisionSync.fingerprint(signature));
+  if(localStorage.getItem(key)!==null)return;
+  const encoded=JSON.stringify({version:1,reason:'ownership_queue_predates_company_deletion',savedAt:Date.now(),canonical:localStorage.getItem(STORE_KEY)||JSON.stringify(S),outbox:localStorage.getItem(SYNC_OUTBOX_KEY),operations});
+  localStorage.setItem(key,encoded);
+  if(localStorage.getItem(key)!==encoded)throw new Error('ltd-recovery-backup-failed');
+}
 function reconcileLtdState(uid,envelopes,{queue=true}={}){
   const hydrate=ltdAccessDecision('cloud_hydrate'),write=ltdAccessDecision('cloud_sync');
   if(!hydrate.allowed)return{uploads:[],downloads:[],conflicts:[],blocked:hydrate.reason||'pro_required'};
   if(CLOUD.retentionNeedsAuthoritativeLtd){const next=TaxMateState.migrate(TaxMateLtdSync.applyRetentionDownloads(S,envelopes),Date.now(),DEVICE_ID);TaxMateState.validateState(next);S=next;persistRemoteState();CLOUD.retentionNeedsAuthoritativeLtd=false;}
+  const box=TaxMateSync.normalizeOutbox(loadSyncOutbox()),partition=TaxMateLtdSync.partitionDeletedOwnershipOperations(box.items,envelopes,uid);
   let result=TaxMateLtdSync.reconcile(S,envelopes,uid);
-  if(result.downloads.length||result.conflicts.length){const downloaded=result.downloads,pending=pendingLtdRecoveryEnvelopes(uid),next=TaxMateLtdSync.applyDownloads(S,envelopes.concat(pending)),candidate=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(candidate);const verified=TaxMateLtdSync.reconcile(candidate,envelopes,uid);if(verified.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:verified.conflicts});S=candidate;persistRemoteState();result={...verified,downloads:downloaded,recoveryInputs:{remote:envelopes.length,pending:pending.length}};}
+  if(result.downloads.length||result.conflicts.length||partition.retired.length){
+    const downloaded=result.downloads,pending=partition.kept.filter(op=>op.kind==='ltd-record'&&(op.uid||op.ownerUid)===uid&&(!op.uid||op.uid===uid)&&(!op.ownerUid||op.ownerUid===uid)).map(op=>op.record),next=TaxMateLtdSync.applyDownloads(S,envelopes.concat(pending)),candidate=TaxMateState.migrate(next,Date.now(),DEVICE_ID);TaxMateState.validateState(candidate);
+    const verified=TaxMateLtdSync.reconcile(candidate,envelopes,uid);if(verified.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:verified.conflicts});
+    const localOwnership=TaxMateLtdSync.recordsForSync(S).companyOwnershipVersions.map(record=>({kind:'ltd-record',uid,collection:'companyOwnershipVersions',companyId:record.entityId,record:TaxMateLtdSync.envelope('companyOwnershipVersions',record,record.entityId)}));
+    preserveDeletedOwnershipRecovery(uid,partition.retired.concat(TaxMateLtdSync.partitionDeletedOwnershipOperations(localOwnership,envelopes,uid).retired));
+    if(partition.retired.length){
+      persistCanonicalState(candidate);const nextBox={...box,items:partition.kept};assertAccountWriteBoundary();localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(nextBox));SYNC_OUTBOX=nextBox;
+    }
+    S=candidate;persistRemoteState();result={...verified,downloads:downloaded,recoveryInputs:{remote:envelopes.length,pending:pending.length}};
+  }
   if(result.conflicts.length)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',conflicts:result.conflicts});
+  const outbound=TaxMateLtdSync.partitionDeletedOwnershipOperations(result.uploads,envelopes,uid);preserveDeletedOwnershipRecovery(uid,outbound.retired);result={...result,uploads:outbound.kept,converged:outbound.kept.length===0};
   if(queue&&write.allowed)result.uploads.forEach(operation=>enqueueSyncOperation({...operation,ownerUid:uid}));
   return{...result,uploads:write.allowed?result.uploads:[],retainedLocalOnlyUploads:write.allowed?0:result.uploads.length,readOnly:!write.allowed};
 }

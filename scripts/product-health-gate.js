@@ -31,6 +31,6 @@ assert.equal(fs.existsSync(path.join(hostingRoot,'src','core','product-content.j
 const versions=read('src/core/versions.js');
 assert.match(versions,/APP_VERSION:\s*'2\.1\.21'/);
 assert.match(versions,/BUILD_ID:\s*'2026-09-08\.production-release\.1'/);
-assert.match(versions,/PWA_CACHE_VERSION:\s*'taxmate-v2-settings-alignment-20260908-1'/);
+assert.match(versions,/PWA_CACHE_VERSION:\s*'taxmate-v2-ownership-sync-20260908-1'/);
 assert.match(read('index.html'),/src\/core\/product-content\.js/);
 console.log(`PRODUCT_FUNCTION_HEALTH_GATE PASS REAL_DURABLE=${totals.REAL_DURABLE} INTENTIONALLY_HIDDEN=${totals.INTENTIONALLY_HIDDEN} BROKEN=0 SHELL=0 DEAD_VISIBLE=0 DUPLICATE_VISIBLE=0 MISPLACED=0 MISLABELLED=0`);

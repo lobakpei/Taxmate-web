@@ -26,3 +26,13 @@ test('active company timeline gaps and malformed deleted history remain rejected
  profile.deletedAt=1788472099371;profile.ownershipHistory[0].effectiveFrom='invalid-date';
  assert.throws(()=>Domain.validateCompanyProfile(profile),/ownership version/);
 });
+test('only owned ownership updates older than matching company deletions leave the sending queue',()=>{
+ const company='company:queue-test',uid='owner',deleted=[Sync.envelope('entities',{id:company,type:'limited_company',deletedAt:30},company),Sync.envelope('companyProfiles',{id:'profile:test',entityId:company,deletedAt:30},company)];
+ const operation=(overrides={})=>({kind:'ltd-record',uid,ownerUid:uid,companyId:company,collection:'companyOwnershipVersions',record:Sync.envelope('companyOwnershipVersions',{id:'ownership:2',entityId:company,createdAt:10,updatedAt:20},company),...overrides});
+ const old=operation(),later=operation({record:Sync.envelope('companyOwnershipVersions',{id:'ownership:3',entityId:company,createdAt:10,updatedAt:31},company)}),foreign=operation({ownerUid:'other'}),personal={kind:'personal-state',uid};
+ const all=[old,later,foreign,personal],bytes=JSON.stringify(all),result=Sync.partitionDeletedOwnershipOperations(all,deleted,uid);
+ assert.deepEqual(result.retired,[old]);assert.deepEqual(result.kept,[later,foreign,personal]);assert.equal(JSON.stringify(all),bytes);
+ assert.equal(Sync.partitionDeletedOwnershipOperations(all,deleted.slice(0,1),uid).retired.length,0);
+ const mismatch=[deleted[0],Sync.envelope('companyProfiles',{id:'profile:test',entityId:company,deletedAt:29},company)];assert.equal(Sync.partitionDeletedOwnershipOperations(all,mismatch,uid).retired.length,0);
+ assert.equal(Sync.partitionDeletedOwnershipOperations(all,deleted.map(row=>({...row,accountOwnerUid:'other'})),uid).retired.length,0);
+});
