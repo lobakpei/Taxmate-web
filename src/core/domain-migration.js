@@ -26,7 +26,7 @@
     if(!domain.persons.some(person=>person.id==='person:account-holder'))domain.persons.push({id:'person:account-holder',accountUid:null,origin:'legacy_v5'});
     const priorEntities=new Map((prior.entities||[]).map(entity=>[entity.id,entity])),legacyEntityIds=new Set();
     domain.entities=(prior.entities||[]).filter(entity=>entity.origin!=='legacy_v5');
-    domain.companyProfiles=(prior.companyProfiles||[]).map(profile=>CompanyProfileHistory.repairOwnershipHistory(CompanyProfile.normalize(profile)));
+    domain.companyProfiles=(prior.companyProfiles||[]).map(profile=>profile.deletedAt!=null?clone(profile):CompanyProfileHistory.repairOwnershipHistory(CompanyProfile.normalize(profile)));
     domain.companyTaxPeriods=(prior.companyTaxPeriods||[]).map(clone);domain.companyLossRecords=(prior.companyLossRecords||[]).map(clone);domain.salaryRecords=(prior.salaryRecords||[]).map(clone);domain.dividendDeclarations=(prior.dividendDeclarations||[]).map(clone);domain.personalIncomeLinks=(prior.personalIncomeLinks||[]).map(clone);domain.salesInvoices=(prior.salesInvoices||[]).map(clone);domain.supplierBills=(prior.supplierBills||[]).map(clone);domain.fixedAssets=(prior.fixedAssets||[]).map(clone);domain.bankReconciliations=(prior.bankReconciliations||[]).map(clone);
     const businesses=(state.businesses||[]).map(original=>{
       const business=clone(original),type=business.structure==='partnership'?'partnership':'sole_trade';
