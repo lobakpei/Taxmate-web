@@ -9,7 +9,8 @@ Date: 29 August 2026
 - Pro annual: £99.99/year.
 - Pro annual minor units: 9999.
 - Legacy/grandfathered pricing: none; TaxMate has not launched and has no paid users.
-- Unapproved previous-price, savings or free-month promotion copy: absent.
+- Approved launch display: standard £11.99/month struck through beside launch £9.99/month.
+- Unapproved claims that £11.99 was previously charged, or that promise a savings amount or free months: absent.
 - Plus remains £3.99/month or £29.99/year.
 
 The annual pricing decision is resolved. Current runtime, Plans UI, entitlement notifications, Help, Terms, plan contracts and deterministic billing helpers use the approved figures. Historical £7.99/month and £59.99/year evidence is retained unchanged only in reports carrying an explicit superseded-history banner; it is not accepted by current contract gates.

@@ -6,11 +6,12 @@
   'use strict';
   if(!Domain||!CompanyProfile||!CompanyTaxRules)throw new Error('TaxMate company-deadline dependencies are required');
 
-  const RULESET_VERSION='uk-company-deadlines.2026-08-22.1',VERIFIED_AT='2026-08-22',REVIEW_BY='2027-08-22';
+  const RULESET_VERSION='uk-company-deadlines.2026-09-05.1',VERIFIED_AT='2026-09-05',REVIEW_BY='2027-09-05';
   const SOURCES=Object.freeze([
     Object.freeze({id:'GOVUK-COMPANY-ACCOUNTS-AND-RETURNS',url:'https://www.gov.uk/prepare-file-annual-accounts-for-limited-company',title:'Accounts and tax returns for private limited companies'}),
     Object.freeze({id:'GOVUK-PAY-CORPORATION-TAX',url:'https://www.gov.uk/pay-corporation-tax',title:'Pay your Corporation Tax bill'}),
-    Object.freeze({id:'GOVUK-COMPANIES-HOUSE-ACCOUNTS',url:'https://www.gov.uk/government/publications/life-of-a-company-annual-requirements/life-of-a-company-part-1-accounts',title:'Preparing and filing Companies House accounts'})
+    Object.freeze({id:'GOVUK-COMPANIES-HOUSE-ACCOUNTS',url:'https://www.gov.uk/government/publications/life-of-a-company-annual-requirements/life-of-a-company-part-1-accounts',title:'Preparing and filing Companies House accounts'}),
+    Object.freeze({id:'GOVUK-CTM93030',url:'https://www.gov.uk/hmrc-internal-manuals/company-taxation-manual/ctm93030',title:'Company Tax Return filing date: relevant period of account and notice'})
   ]);
   const RULESET=Object.freeze({
     schemaVersion:1,rulesetVersion:RULESET_VERSION,jurisdiction:'UK',verifiedAt:VERIFIED_AT,reviewBy:REVIEW_BY,
@@ -27,7 +28,7 @@
     const errors=[];
     if(!plain(value)||value.schemaVersion!==1||value.rulesetVersion!==RULESET_VERSION||value.jurisdiction!=='UK'||value.verifiedAt!==VERIFIED_AT||value.reviewBy!==REVIEW_BY||value.supportedProfile!=='private_limited_by_shares'||value.currency!=='GBP')errors.push('company deadline identity is invalid');
     if(!value||value.normalCorporationTaxPaymentProfitLimitMinor!==150000000||value.firstAccountsMonthsFromIncorporation!==21||value.firstLongAccountsMonthsFromReferenceDate!==3||value.annualAccountsMonthsFromPeriodEnd!==9||value.corporationTaxPaymentMonthsFromPeriodEnd!==9||value.corporationTaxPaymentExtraDays!==1||value.companyTaxReturnMonthsFromPeriodEnd!==12)errors.push('company deadline values changed');
-    if(!value||!Array.isArray(value.officialSources)||value.officialSources.length!==3||value.officialSources.some(source=>!plain(source)||!/^GOVUK-/.test(source.id||'')||!/^https:\/\/www\.gov\.uk\//.test(source.url||'')||typeof source.title!=='string'||!source.title))errors.push('company deadline sources are invalid');
+    if(!value||!Array.isArray(value.officialSources)||value.officialSources.length!==4||value.officialSources.some(source=>!plain(source)||!/^GOVUK-/.test(source.id||'')||!/^https:\/\/www\.gov\.uk\//.test(source.url||'')||typeof source.title!=='string'||!source.title))errors.push('company deadline sources are invalid');
     return{valid:errors.length===0,errors};
   }
   function approvedRuleset(){const result=validateRuleset(RULESET);if(!result.valid)throw new Error('Invalid approved company deadline ruleset: '+result.errors.join('; '));return RULESET;}
@@ -55,12 +56,16 @@
     else{dueDate=addCalendarMonths(period.endDate,RULESET.annualAccountsMonthsFromPeriodEnd);basis='annual_private_company_accounts_9_months_from_period_end';}
     return deadline('companies_house_accounts',dueDate,asOfDate,sourceIds,{periodStartDate:period.startDate,periodEndDate:period.endDate,basis});
   }
-  function corporationTaxDeadlines(period,asOfDate){
+  function corporationTaxDeadlines(period,asOfDate,noticeServedDate=null){
     Domain.validateCompanyTaxPeriod(period);const sourceIds=['GOVUK-COMPANY-ACCOUNTS-AND-RETURNS','GOVUK-PAY-CORPORATION-TAX'],common={periodId:period.id,periodRevisionId:period.id+':'+period.revision,periodStartDate:period.startDate,periodEndDate:period.endDate};
     const payment=period.taxableProfitMinor!=null&&period.taxableProfitMinor>RULESET.normalCorporationTaxPaymentProfitLimitMinor
       ?reviewDeadline('corporation_tax_payment',['corporation_tax_instalment_payment_profile_not_supported'],sourceIds,common)
       :deadline('corporation_tax_payment',addDays(addCalendarMonths(period.endDate,RULESET.corporationTaxPaymentMonthsFromPeriodEnd),RULESET.corporationTaxPaymentExtraDays),asOfDate,sourceIds,Object.assign({basis:'normal_payment_9_months_and_1_day_after_period_end'},common));
-    const taxReturn=deadline('company_tax_return',addCalendarMonths(period.endDate,RULESET.companyTaxReturnMonthsFromPeriodEnd),asOfDate,['GOVUK-COMPANY-ACCOUNTS-AND-RETURNS'],Object.assign({basis:'return_12_months_after_period_end'},common));
+    const accountsStart=period.accountsStartDate,accountsEnd=period.accountsEndDate;
+    const validAccounts=Domain.isoDate(accountsStart)&&Domain.isoDate(accountsEnd)&&accountsStart<=period.startDate&&accountsEnd>=period.endDate&&accountsEnd<addCalendarMonths(accountsStart,18);
+    const invalidNotice=noticeServedDate!=null&&!Domain.isoDate(noticeServedDate);
+    const baseDate=validAccounts?[addCalendarMonths(period.endDate,12),addCalendarMonths(accountsEnd,12),...(Domain.isoDate(noticeServedDate)?[addCalendarMonths(noticeServedDate,3)]:[])].sort().at(-1):null;
+    const taxReturn=validAccounts&&!invalidNotice?deadline('company_tax_return',baseDate,asOfDate,['GOVUK-CTM93030'],Object.assign({basis:'later_of_return_period_plus_12_months_accounts_period_plus_12_months_and_notice_plus_3_months',noticeServedDate,noticeDateStatus:noticeServedDate?'recorded':'check_hmrc_notice_for_later_deadline',accountsStartDate:accountsStart,accountsEndDate:accountsEnd},common)):reviewDeadline('company_tax_return',['company_tax_return_period_of_account_or_notice_needs_checking'],['GOVUK-CTM93030'],common);
     return[payment,taxReturn];
   }
   function build(input){
@@ -69,7 +74,7 @@
     const gate=CompanyProfile.transactionGate(profile);if(!gate.allowed)return{status:'review_required',reasonCodes:gate.reasons,asOfDate,rulesetVersion:RULESET_VERSION,verifiedAt:VERIFIED_AT,reviewBy:REVIEW_BY,deadlines:[]};
     if(asOfDate>rules.reviewBy)return{status:'stale_rule',reasonCodes:['company_deadline_rule_review_expired'],asOfDate,rulesetVersion:RULESET_VERSION,verifiedAt:VERIFIED_AT,reviewBy:REVIEW_BY,deadlines:[]};
     const byId=new Map();for(const period of periods){Domain.validateCompanyTaxPeriod(period);if(period.entityId!==profile.entityId)throw new Error('Company deadline period references another entity');const old=byId.get(period.id);if(!old||period.revision>old.revision)byId.set(period.id,period);else if(period.revision===old.revision&&JSON.stringify(period)!==JSON.stringify(old))throw new Error('Company deadline period revision conflict');}
-    const selected=Array.from(byId.values()).sort((a,b)=>a.startDate.localeCompare(b.startDate)),deadlines=[accountsDeadline(profile,asOfDate)];for(const period of selected)deadlines.push(...corporationTaxDeadlines(period,asOfDate));
+    const selected=Array.from(byId.values()).sort((a,b)=>a.startDate.localeCompare(b.startDate)),deadlines=[accountsDeadline(profile,asOfDate)];for(const period of selected)deadlines.push(...corporationTaxDeadlines(period,asOfDate,input.noticeServedDateByPeriod&&input.noticeServedDateByPeriod[period.id]));
     const reasons=unique(deadlines.flatMap(item=>item.reasonCodes||[]));return{status:reasons.length?'review_required':'supported_deadlines',reasonCodes:reasons,asOfDate,rulesetVersion:RULESET_VERSION,verifiedAt:VERIFIED_AT,reviewBy:REVIEW_BY,deadlines};
   }
   return{RULESET_VERSION,VERIFIED_AT,REVIEW_BY,SOURCES,RULESET,validateRuleset,approvedRuleset,addCalendarMonths,addDays,lastDayOfTwelveMonths,deadlineStatus,accountsDeadline,corporationTaxDeadlines,build};

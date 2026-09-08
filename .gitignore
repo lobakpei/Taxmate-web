@@ -11,3 +11,9 @@ functions/.env.taxmate-staging
 functions/.secret.local
 .sync-runtime-browser-evidence/
 .paid-sync-browser-evidence/
+.ltd-actual-app-evidence/
+.ltd-fable-rereview-evidence/
+.ltd-sync-browser-evidence/
+.ltd-year-end-ui-evidence/
+.personal-shell-ui-evidence/
+firebase-emulators-*.json

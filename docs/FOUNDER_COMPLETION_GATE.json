@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "founderRequirementsConfirmed": true,
+  "status": "COMPLETE",
+  "uiWorkAuthorisedByGate": false,
+  "productionDeletionAuthorised": false,
+  "openItems": [],
+  "correctionRevision": "R4_ADMISSION_LIFECYCLE_COMPLETION",
+  "completionScope": "local_candidate_and_demo_emulators_only",
+  "founderAcceptance": "PENDING",
+  "fableUiIntegration": "NOT_STARTED",
+  "independentAcceptance": "PENDING",
+  "verifiedSourceFileCount": 346,
+  "sameSourceVerificationJobs": 14,
+  "verificationSummary": "EVIDENCE/.ltd-statutory-evidence-OTNGiZ/FINAL_QA_SUMMARY_R4.md",
+  "previousVerifiedSourceFileCount": 332,
+  "previousSameSourceVerificationJobs": 13,
+  "historicalVerificationSummary": "EVIDENCE/.ltd-statutory-evidence-AHfwCQ/FINAL_QA_SUMMARY.md",
+  "historicalZipSha256": "846b8edca18f720b118a8611045306e727a1701a6e94d8c0f595195915fa3c15"
+}

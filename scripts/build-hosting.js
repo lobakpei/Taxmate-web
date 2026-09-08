@@ -43,6 +43,7 @@ for (const kind of ['help', 'privacy', 'terms']) fs.writeFileSync(path.join(dest
 fs.cpSync(path.join(root, 'src'), path.join(destination, 'src'), {recursive: true});
 fs.rmSync(path.join(destination, 'src', 'core', 'legal.js'), {force: true});
 fs.cpSync(path.join(root, 'assets', 'brand', 'derived'), path.join(destination, 'assets', 'brand', 'derived'), {recursive: true});
+fs.cpSync(path.join(root, 'assets', 'fonts'), path.join(destination, 'assets', 'fonts'), {recursive: true});
 fs.mkdirSync(path.join(destination, 'vendor'), {recursive: true});
 fs.copyFileSync(path.join(root, 'vendor', 'jszip-3.10.1.min.js'), path.join(destination, 'vendor', 'jszip-3.10.1.min.js'));
 

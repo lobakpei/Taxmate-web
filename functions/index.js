@@ -1,20 +1,88 @@
 'use strict';
 const crypto=require('node:crypto');
 const {onCall,HttpsError,onRequest}=require('firebase-functions/v2/https');
+const {onDocumentWritten,onDocumentCreated}=require('firebase-functions/v2/firestore');
+const {onSchedule}=require('firebase-functions/v2/scheduler');
 const {defineSecret,defineString}=require('firebase-functions/params');
 const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldValue}=require('firebase-admin/firestore'); const {getStorage}=require('firebase-admin/storage');
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const FounderPromotions=require('./founder-promotions');
 const CompaniesHouseLookup=require('./companies-house-lookup');
+const RetentionPolicy=require('./retention-policy');
+const RetentionWorker=require('./retention-worker');
+const ReceiptCleanup=require('./receipt-cleanup');
+const ReceiptAdmission=require('./receipt-admission');
+const AdmissionLifecycle=require('./receipt-admission-lifecycle');
+const BillingService=require('./billing-service');
+const BillingEntitlements=require('./billing-entitlements');
+const BillingPlans=require('./billing-plans');
+const BillingWebhook=require('./billing-webhook');
+const BillingCheckout=require('./billing-checkout');
+const BillingReviewContext=require('./billing-review-context');
+const BillingPrices=require('./billing-price-config');
 const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET'), COMPANIES_HOUSE_API_KEY=defineSecret('COMPANIES_HOUSE_API_KEY');
 const PLUS_MONTHLY_PRICE=defineString('STRIPE_PLUS_MONTHLY_PRICE_ID',{default:''}),PLUS_ANNUAL_PRICE=defineString('STRIPE_PLUS_ANNUAL_PRICE_ID',{default:''});
 const PRO_MONTHLY_PRICE=defineString('STRIPE_PRO_MONTHLY_PRICE_ID',{default:''}),PRO_ANNUAL_PRICE=defineString('STRIPE_PRO_ANNUAL_PRICE_ID',{default:''});
 const LEGACY_PLUS_PRICES=defineString('STRIPE_PLUS_LEGACY_PRICE_IDS',{default:''}),LEGACY_PRO_PRICES=defineString('STRIPE_PRO_LEGACY_PRICE_IDS',{default:''});
+const LEGACY_PRO_ANNUAL_PRICES=defineString('STRIPE_PRO_LEGACY_ANNUAL_PRICE_IDS',{default:''});
 const APP_URL=defineString('PUBLIC_APP_URL',{default:'https://www.taxmate.uk'});
+const BILLING_MONEY_OPERATIONS=defineString('BILLING_MONEY_OPERATIONS_ENABLED',{default:'false'});
+const BILLING_CONSUMER_DISCLOSURES=defineString('BILLING_CONSUMER_DISCLOSURES_READY',{default:'false'});
 const baseOpts={region:'europe-west2',enforceAppCheck:process.env.FUNCTIONS_EMULATOR!=='true'},opts={...baseOpts,secrets:[STRIPE_SECRET]};
+// These triggers receive only committed Firestore changes. Failed or offline
+// client writes cannot destroy bytes, including another member's upload.
+for(const [name,document]of [['cleanupPersonalEntryReceipt','users/{uid}/entries/{entryId}'],['cleanupSharedEntryReceipt','partnerships/{code}/entries/{entryId}'],['cleanupMetaReceipt','users/{uid}/app/{document}'],['cleanupLtdReceipt','users/{uid}/ltd/v1/{collection}/{recordId}']]){
+  exports[name]=onDocumentWritten({region:'europe-west2',document,retry:true},async event=>{
+    const before=event.data?.before.data(),after=event.data?.after.data();
+    if(!before||!after||before.deletedAt!=null||![...ReceiptAdmission.receiptPaths(before)].some(path=>!ReceiptCleanup.liveReferences(after,path)))return;
+    if(event.params.uid){const retention=(await db.doc(`users/${event.params.uid}/retention/current`).get()).data();if(retention&&['purging','failed'].includes(retention.status))return;}
+    return ReceiptCleanup.acceptedEntryChange({db,bucket:getStorage().bucket(),before,after});
+  });
+}
+exports.prepareReceiptWrite=onCall(baseOpts,async req=>{
+  const user=auth(req);
+  try{return req.data?.records?await ReceiptAdmission.prepareBatch({db,uid:user.uid,records:req.data.records}):await ReceiptAdmission.prepareWrite({db,uid:user.uid,target:req.data?.target,payload:req.data?.payload});}
+  catch(error){throw new HttpsError(error.message==='receipt_reference_unavailable'?'failed-precondition':'permission-denied','Receipt reference admission failed',{reason:error.message});}
+});
+for(const [name,document]of [['cleanPersonalAdmission','users/{uid}/entries/{entryId}/receiptAdmissions/{writer}'],['cleanMetaAdmission','users/{uid}/app/{document}/receiptAdmissions/{writer}'],['cleanSharedAdmission','partnerships/{code}/entries/{entryId}/receiptAdmissions/{writer}'],['cleanLtdAdmission','users/{uid}/receiptLtdAdmissions/{document}']]){
+  exports[name]=onDocumentWritten({region:'europe-west2',document,retry:true},async event=>{
+    const after=event.data?.after,before=event.data?.before;
+    if(after?.exists)return AdmissionLifecycle.cleanupAdmission({db,path:after.ref.path,expectedToken:after.data().token});
+    if(before?.exists)return AdmissionLifecycle.cleanupConsumed({db,path:before.ref.path,before:before.data()});
+  });
+}
+exports.cleanRevokedSharedAdmissions=onDocumentWritten({region:'europe-west2',document:'partnerships/{code}/members/{uid}',retry:true},async event=>AdmissionLifecycle.cleanupUid({db,uid:event.params.uid,partnershipId:event.params.code}));
+exports.cleanRevokedPaidAdmissions=onDocumentWritten({region:'europe-west2',document:'users/{uid}/entitlements/current',retry:true},async event=>AdmissionLifecycle.cleanupUid({db,uid:event.params.uid}));
+exports.cleanResetAdmissions=onDocumentWritten({region:'europe-west2',document:'accountResets/{uid}',retry:true},async event=>{
+  if(['deleting','failed'].includes(event.data?.after.data()?.status))return AdmissionLifecycle.cleanupUid({db,uid:event.params.uid});
+});
+exports.runReceiptCleanupJob=onDocumentCreated({region:'europe-west2',document:'receiptCleanupWakeups/{requestId}',retry:true},async event=>{
+  return ReceiptCleanup.processJob({db,bucket:getStorage().bucket(),jobId:event.data.data().jobId});
+});
+exports.reconcileReceiptRetentionCompletion=onDocumentWritten({region:'europe-west2',document:'receiptCleanupJobs/{jobId}',retry:true},async event=>{
+  const job=event.data?.after.data();if(job?.status==='complete'&&job.retentionUid)return ReceiptCleanup.reconcileRetentionCleanup({db,uid:job.retentionUid,epoch:job.retentionEpoch});
+});
+// Source-only recovery registration: not deployed/activated by this handoff.
+// It resumes authorised receipt jobs, never starts an account retention purge.
+exports.recoverReceiptCleanupJobs=onSchedule({region:'europe-west2',schedule:'every 5 minutes',timeoutSeconds:540},async()=>ReceiptCleanup.recoverPending({db,bucket:getStorage().bucket()}));
+exports.cleanupReceipt=onCall(baseOpts,async req=>{
+  const user=auth(req),path=req.data&&req.data.path,id=ReceiptCleanup.receiptIdentity(path);
+  if(!id||id.uid!==user.uid)throw new HttpsError('permission-denied','Receipt owner required');
+  const control=(await db.doc(`users/${user.uid}/retention/current`).get()).data();
+  const entitlement=(await db.doc(`users/${user.uid}/entitlements/current`).get()).data()||{};
+  const decision=RetentionPolicy.decide(entitlement);
+  if(!RetentionPolicy.controlWritable(control)||decision.status==='expired'&&String(control?.cutoffDate||'')<decision.cutoffDate)throw new HttpsError('permission-denied','Account retention check required');
+  return ReceiptCleanup.cleanupReceipt({db,bucket:getStorage().bucket(),path});
+});
 function stripe(){
   const key=STRIPE_SECRET.value();
   if(!key||key!==key.trim()||/[\r\n]/.test(key))throw new HttpsError('failed-precondition','Billing configuration unavailable',{reason:'billing-config'});
+  const local=process.env.TAXMATE_STRIPE_EMULATOR_ORIGIN;
+  if(local){
+    if(process.env.FUNCTIONS_EMULATOR!=='true'||!String(process.env.GCLOUD_PROJECT||process.env.GOOGLE_CLOUD_PROJECT).startsWith('demo-'))throw new HttpsError('failed-precondition','Local payment adapter requires demo emulator');
+    const url=new URL(local);if(url.hostname!=='127.0.0.1'||url.protocol!=='http:'||!url.port)throw new HttpsError('failed-precondition','Invalid local payment adapter');
+    return new Stripe(key,{host:'127.0.0.1',port:Number(url.port),protocol:'http',maxNetworkRetries:0});
+  }
   return new Stripe(key);
 }
 function billingFailure(category){
@@ -28,7 +96,11 @@ function effectiveTier(entitlement,now=Date.now()){
   const paid=ACTIVE_SUBSCRIPTIONS.has(data.subscriptionStatus)&&TIER_WEIGHT[data.paidTier]>0&&(!data.currentPeriodEnd||Number(now)<Number(data.currentPeriodEnd))?data.paidTier:'free';
   const promotion=FounderPromotions.selectEffective(data.promotions,now)||(data.promotion&&FounderPromotions.activeGrant(data.promotion,now)?data.promotion:null);
   const promoted=promotion&&TIER_WEIGHT[promotion.tier]>0?promotion.tier:'free';
-  return TIER_WEIGHT[promoted]>TIER_WEIGHT[paid]?promoted:paid;
+  const projected=data.paidAccess,funded=projected?(Number(projected.proExpiresAt)>now?'pro':Number(projected.plusExpiresAt)>now?'plus':'free'):paid;
+  return TIER_WEIGHT[promoted]>TIER_WEIGHT[funded]?promoted:funded;
+}
+function retentionLifecycle(previous,next,now=Date.now()){
+  return RetentionPolicy.lifecycle(previous,next,now);
 }
 async function requireTier(uid,required){
   const snap=await db.doc(`users/${uid}/entitlements/current`).get(),tier=effectiveTier(snap.exists?snap.data():null,Date.now());
@@ -41,15 +113,13 @@ function promotionError(reason){
   if(reason==='redemption-limit-reached')return new HttpsError('resource-exhausted','Promotion redemption limit reached',{reason});
   return new HttpsError('not-found','Promotion code not found',{reason:'invalid'});
 }
-function priceDescriptor(priceId){
-  const configured=[
-    [PLUS_MONTHLY_PRICE.value(),'plus','monthly'],[PLUS_ANNUAL_PRICE.value(),'plus','yearly'],
-    [PRO_MONTHLY_PRICE.value(),'pro','monthly'],[PRO_ANNUAL_PRICE.value(),'pro','yearly']
-  ].find(([id])=>id&&id===priceId);
-  if(configured)return{tier:configured[1],cadence:configured[2]};
-  const legacy=(value,tier)=>String(value||'').split(',').map(id=>id.trim()).filter(Boolean).includes(priceId)?{tier,cadence:'monthly',legacy:true}:null;
-  return legacy(LEGACY_PLUS_PRICES.value(),'plus')||legacy(LEGACY_PRO_PRICES.value(),'pro')||{tier:'free',cadence:null};
-}
+function billingPriceConfiguration(){return{
+  STRIPE_PLUS_MONTHLY_PRICE_ID:PLUS_MONTHLY_PRICE.value(),STRIPE_PLUS_ANNUAL_PRICE_ID:PLUS_ANNUAL_PRICE.value(),
+  STRIPE_PRO_MONTHLY_PRICE_ID:PRO_MONTHLY_PRICE.value(),STRIPE_PRO_ANNUAL_PRICE_ID:PRO_ANNUAL_PRICE.value(),
+  STRIPE_PLUS_LEGACY_PRICE_IDS:LEGACY_PLUS_PRICES.value(),STRIPE_PRO_LEGACY_PRICE_IDS:LEGACY_PRO_PRICES.value(),
+  STRIPE_PRO_LEGACY_ANNUAL_PRICE_IDS:LEGACY_PRO_ANNUAL_PRICES.value()
+};}
+function priceDescriptor(priceId){return BillingPrices.describe(billingPriceConfiguration(),priceId);}
 function subscriptionPeriodEnd(subscription){
   const itemEnds=(subscription.items&&subscription.items.data||[]).map(item=>Number(item.current_period_end||0));
   return Math.max(Number(subscription.current_period_end||0),...itemEnds,0)*1000;
@@ -58,21 +128,47 @@ async function customerFor(user,client=stripe()){
   const ref=db.doc(`billingCustomers/${user.uid}`), snap=await ref.get(); if(snap.exists) return snap.data().stripeCustomerId;
   const c=await client.customers.create({email:user.token.email,metadata:{firebaseUid:user.uid}},{idempotencyKey:`taxmate-customer-${user.uid}`}); await ref.set({stripeCustomerId:c.id,createdAt:FieldValue.serverTimestamp()}); return c.id;
 }
-exports.createCheckoutSession=onCall(opts,async req=>{
-  const user=auth(req),tier=req.data&&req.data.tier,cadence=req.data&&req.data.cadence||'monthly';if(!['plus','pro'].includes(tier))throw new HttpsError('invalid-argument','Invalid tier');if(!['monthly','yearly'].includes(cadence))throw new HttpsError('invalid-argument','Invalid billing cadence');
-  const entitlementSnap=await db.doc(`users/${user.uid}/entitlements/current`).get();
-  if(entitlementSnap.exists&&FounderPromotions.hasPermanentPro(entitlementSnap.data().promotions,Date.now()))throw new HttpsError('already-exists','You already have permanent Pro access.');
-  const price=({plus:{monthly:PLUS_MONTHLY_PRICE.value(),yearly:PLUS_ANNUAL_PRICE.value()},pro:{monthly:PRO_MONTHLY_PRICE.value(),yearly:PRO_ANNUAL_PRICE.value()}})[tier][cadence];if(!price)throw billingFailure('billing-config');
-  let client;try{client=stripe();}catch(_){throw billingFailure('billing-config');}
-  let customer;try{customer=await customerFor(user,client);}catch(_){throw billingFailure('stripe-customer');}
-  let subscriptions;try{subscriptions=await client.subscriptions.list({customer,status:'all',limit:20});}catch(_){throw billingFailure('stripe-checkout');}
-  if(subscriptions.data.some(subscription=>!['canceled','incomplete_expired'].includes(subscription.status))) throw new HttpsError('already-exists','An existing subscription must be managed in the billing portal');
-  const checkout={mode:'subscription',customer,line_items:[{price,quantity:1}],allow_promotion_codes:true,automatic_tax:{enabled:false},success_url:`${APP_URL.value()}?billing=success`,cancel_url:`${APP_URL.value()}?billing=cancelled`,subscription_data:{metadata:{firebaseUid:user.uid,tier,billingCadence:cadence}}};
-  if(process.env.FUNCTIONS_EMULATOR!=='true')checkout.consent_collection={terms_of_service:'required'};
-  let session;try{session=await client.checkout.sessions.create(checkout);}catch(_){throw billingFailure('stripe-checkout');}
-  return {url:session.url};
-});
-exports.createBillingPortal=onCall(opts,async req=>{ const user=auth(req),customer=await customerFor(user); const s=await stripe().billingPortal.sessions.create({customer,return_url:APP_URL.value()}); return {url:s.url}; });
+function refreshBilling(uid,client=stripe()){return BillingEntitlements.reconcile({db,client,uid,descriptor:priceDescriptor,retentionLifecycle});}
+function billingServices(client=stripe()){return BillingService.createService({db,client,moneyOperationsEnabled:BILLING_MONEY_OPERATIONS.value()==='true',onRefundChanged:uid=>refreshBilling(uid,client),readReviewContext:(caseRecord,previewAmountMinor)=>BillingReviewContext.readContext({db,client,caseRecord,previewAmountMinor,descriptor:priceDescriptor,effectiveTier})});}
+function billingPlans(client=stripe()){return BillingPlans.createService({db,client,descriptor:priceDescriptor,priceFor:(tier,cadence)=>BillingPrices.current(billingPriceConfiguration(),tier,cadence),moneyOperationsEnabled:BILLING_MONEY_OPERATIONS.value()==='true',refresh:uid=>refreshBilling(uid,client)});}
+function billingCheckout(client=stripe()){const demo=process.env.FUNCTIONS_EMULATOR==='true'&&String(process.env.GCLOUD_PROJECT||process.env.GOOGLE_CLOUD_PROJECT||'').startsWith('demo-');return BillingCheckout.createService({db,client,targetPrice:billingPlans(client).targetPrice,customerFor,appUrl:APP_URL.value(),moneyOperationsEnabled:BILLING_MONEY_OPERATIONS.value()==='true',consumerDisclosuresReady:BILLING_CONSUMER_DISCLOSURES.value()==='true'&&(BillingCheckout.supplierDisclosureVerified||demo)});}
+async function checkPurchaseAccess(user){const snap=await db.doc(`users/${user.uid}/entitlements/current`).get();if(snap.exists&&FounderPromotions.hasPermanentPro(snap.data().promotions,Date.now()))throw new HttpsError('already-exists','You already have permanent Pro access.');}
+async function billingCall(req,run,role){
+  const user=auth(req);
+  if(role&&user.token[role]!==true)throw new HttpsError('permission-denied','Billing staff access required',{reason:'billing_staff_required'});
+  try{return await run(user);}catch(error){if(error instanceof HttpsError)throw error;if(error.billingReason)throw new HttpsError(error.billingCode||'failed-precondition','Billing action needs attention',{reason:error.billingReason});throw billingFailure('billing-unavailable');}
+}
+exports.getBillingHistory=onCall(opts,req=>billingCall(req,user=>billingServices().history(user.uid,req.data)));
+exports.getRefundCases=onCall(opts,req=>billingCall(req,user=>billingServices().listCases(user.uid)));
+exports.submitRefundRequest=onCall(opts,req=>billingCall(req,user=>billingServices().submit(user.uid,req.data)));
+exports.replyRefundRequest=onCall(opts,req=>billingCall(req,user=>billingServices().reply(user.uid,req.data)));
+exports.getBillingSupportCases=onCall(opts,req=>billingCall(req,()=>billingServices().staffList(req.data),'billingSupport'));
+exports.getBillingSupportCase=onCall(opts,req=>billingCall(req,()=>billingServices().staffRead(req.data?.caseId,req.data?.previewAmountMinor),'billingSupport'));
+exports.reviewRefundRequest=onCall(opts,req=>billingCall(req,user=>billingServices().review(user.uid,req.data),req.data?.decision==='needs_information'?'billingSupport':'billingApprover'));
+exports.executeReviewedRefund=onCall(opts,req=>billingCall(req,user=>billingServices().execute(user.uid,req.data),'billingRefundOperator'));
+exports.reconcileRefundRequest=onCall(opts,req=>billingCall(req,()=>billingServices().reconcile(req.data?.caseId),'billingSupport'));
+exports.previewPlanChange=onCall(opts,req=>billingCall(req,user=>billingPlans().quote(user.uid,req.data)));
+exports.confirmPlanChange=onCall(opts,req=>billingCall(req,user=>billingPlans().confirm(user.uid,req.data)));
+exports.getSubscriptionStatus=onCall(opts,req=>billingCall(req,async user=>{const client=stripe();await refreshBilling(user.uid,client);return billingPlans(client).status(user.uid);}));
+exports.cancelSubscriptionRenewal=onCall(opts,req=>billingCall(req,user=>billingPlans().cancel(user.uid,req.data)));
+exports.applyRefundRenewalDecision=onCall(opts,req=>billingCall(req,async user=>{
+  const client=stripe(),service=billingServices(client),record=(await service.staffRead(req.data?.caseId)).case;
+  if(record.revision!==req.data?.revision||record.renewalAction!=='stop_at_period_end'||!record.reviewedBy||record.decision==='needs_information')BillingService.fail('renewal_not_approved');
+  const {charge}=await service.ownedCharge(record.uid,record.paymentId),invoice=await BillingEntitlements.invoiceForCharge(client,charge),subscriptionId=invoice&&BillingEntitlements.subscriptionId(invoice);
+  if(!subscriptionId)BillingService.fail('payment_subscription_unavailable');
+  const result=await billingPlans(client).cancel(record.uid,{subscriptionId}),ref=db.doc(`billingRefundCases/${record.id}`);
+  await ref.update({renewalState:result.state,renewalSubscriptionId:subscriptionId,updatedAt:Date.now()});
+  await ref.collection('events').doc(`renewal_${record.revision}`).set({at:Date.now(),actor:user.uid,action:'stop_renewal',...result});
+  return{case:(await service.staffRead(record.id)).case};
+},'billingRefundOperator'));
+exports.getCheckoutOffer=onCall(opts,req=>billingCall(req,async user=>{await checkPurchaseAccess(user);return billingCheckout().offer(user,req.data);}));
+exports.createCheckoutSession=onCall(opts,req=>billingCall(req,async user=>{await checkPurchaseAccess(user);return billingCheckout().checkout(user,req.data);}));
+exports.getPurchaseConfirmations=onCall(opts,req=>billingCall(req,user=>billingCheckout().records(user.uid)));
+exports.createBillingPortal=onCall(opts,req=>billingCall(req,async user=>{
+  const client=stripe(),customer=await billingServices(client).customer(user.uid);if(!customer)BillingService.fail('billing_customer_not_found');
+  const session=await client.billingPortal.sessions.create({customer,return_url:APP_URL.value(),flow_data:{type:'payment_method_update',after_completion:{type:'redirect',redirect:{return_url:APP_URL.value()+'?billing=updated'}}}});
+  return{url:session.url};
+}));
 exports.redeemPromotion=onCall(baseOpts,async req=>{
   const user=auth(req),code=FounderPromotions.normalizeCode(req.data&&req.data.code);if(!code)throw new HttpsError('invalid-argument','Invalid promotion code');
   const promotion=db.doc(`founderPromotions/${code}`),redemption=db.doc(`promotionRedemptions/${FounderPromotions.redemptionId(code,user.uid)}`),entitlement=db.doc(`users/${user.uid}/entitlements/current`);
@@ -89,44 +185,15 @@ exports.redeemPromotion=onCall(baseOpts,async req=>{
     const effective=FounderPromotions.selectEffective(promotions,now),promotionAccess=FounderPromotions.accessProjection(promotions,now);
     tx.update(promotion,{redemptionCount:configuration.redemptionCount+1,updatedAt:FieldValue.serverTimestamp()});
     tx.create(redemption,{uid:user.uid,code,promoCode:code,grantedTier:configuration.tier,redeemedAt:FieldValue.serverTimestamp(),startsAt:configuration.startsAt,entitlementExpiresAt,source:'founder_promo',status:'active'});
-    tx.set(entitlement,{promotions,promotionAccess,promotion:effective?{status:'active',tier:effective.tier,expiresAt:effective.expiresAt,promoCode:effective.code}:null,serverVerifiedAt:now,updatedAt:FieldValue.serverTimestamp()},{merge:true});
+    const next={promotions,promotionAccess,promotion:effective?{status:'active',tier:effective.tier,expiresAt:effective.expiresAt,promoCode:effective.code}:null};
+    tx.set(entitlement,{...next,accountRetention:retentionLifecycle(previous,next,now),serverVerifiedAt:now,updatedAt:FieldValue.serverTimestamp()},{merge:true});
     result={tier:configuration.tier,expiresAt:entitlementExpiresAt,permanent:configuration.permanent===true,message:FounderPromotions.successMessage({...configuration,expiresAt:entitlementExpiresAt})};
   });
   return result;
 });
 exports.stripeWebhook=onRequest({region:'europe-west2',secrets:[STRIPE_SECRET,STRIPE_WEBHOOK_SECRET]},async(req,res)=>{
-  let event; try{ event=stripe().webhooks.constructEvent(req.rawBody,req.headers['stripe-signature'],STRIPE_WEBHOOK_SECRET.value()); }catch(e){ res.status(400).send('Invalid signature'); return; }
-  const eventRef=db.doc(`stripeWebhookEvents/${event.id}`);
-  try{
-    const claimed=await db.runTransaction(async tx=>{const snap=await tx.get(eventRef);if(snap.exists)return false;tx.create(eventRef,{type:event.type,state:'processing',eventCreated:Number(event.created)||0,receivedAt:FieldValue.serverTimestamp()});return true;});
-    if(!claimed){res.sendStatus(200);return;}
-    const object=event.data.object; let subscription=null,refund=null;
-    if(event.type.startsWith('checkout.session.')){if(object.subscription)subscription=await stripe().subscriptions.retrieve(typeof object.subscription==='string'?object.subscription:object.subscription.id);}
-    else if(event.type.startsWith('customer.subscription.'))subscription=object;
-    else if(event.type.startsWith('invoice.')){const id=typeof object.subscription==='string'?object.subscription:object.subscription&&object.subscription.id||object.parent&&object.parent.subscription_details&&object.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
-    else if(event.type==='charge.refunded'){
-      let invoiceId=typeof object.invoice==='string'?object.invoice:object.invoice&&object.invoice.id;
-      if(!invoiceId&&object.payment_intent){const payments=await stripe().invoicePayments.list({payment:{type:'payment_intent',payment_intent:typeof object.payment_intent==='string'?object.payment_intent:object.payment_intent.id},limit:1});const invoicePayment=payments.data[0];invoiceId=invoicePayment&&(typeof invoicePayment.invoice==='string'?invoicePayment.invoice:invoicePayment.invoice&&invoicePayment.invoice.id);}
-      if(invoiceId){const invoice=await stripe().invoices.retrieve(invoiceId);const id=typeof invoice.subscription==='string'?invoice.subscription:invoice.subscription&&invoice.subscription.id||invoice.parent&&invoice.parent.subscription_details&&invoice.parent.subscription_details.subscription;if(id)subscription=await stripe().subscriptions.retrieve(id);}
-      refund={full:object.refunded===true||Number(object.amount_refunded)>=Number(object.amount),amount:Number(object.amount)||0,amountRefunded:Number(object.amount_refunded)||0,currency:String(object.currency||'').toLowerCase()};
-    }
-    if(subscription){
-      const customer=await stripe().customers.retrieve(subscription.customer); const uid=subscription.metadata.firebaseUid||(customer.metadata&&customer.metadata.firebaseUid); if(uid){
-        const price=subscription.items.data[0]&&subscription.items.data[0].price.id,descriptor=priceDescriptor(price),tier=descriptor.tier,billingCadence=descriptor.cadence;
-        const status=subscription.status, active=['active','trialing'].includes(status), end=subscriptionPeriodEnd(subscription), eventCreated=Number(event.created||0)*1000;
-        const entitlement=db.doc(`users/${uid}/entitlements/current`);
-        await db.runTransaction(async tx=>{
-          const snap=await tx.get(entitlement),previous=snap.exists?snap.data():{};if(Number(previous.lastStripeEventCreated||0)>eventCreated)return;
-          if(refund&&refund.full){tx.set(entitlement,{subscriptionStatus:'refunded',paidTier:'free',lastPaidTier:tier,billingCadence,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,refundReviewState:'full-refund-applied',refundedSubscriptionId:subscription.id,refundedPeriodEnd:end,refundedAt:Date.now(),serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});return;}
-          if(refund){tx.set(entitlement,{refundReviewState:'manual-review',partialRefund:{amount:refund.amount,amountRefunded:refund.amountRefunded,currency:refund.currency,eventId:event.id},serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});return;}
-          const refundedSamePeriod=previous.refundedSubscriptionId===subscription.id&&Number(previous.refundedPeriodEnd||0)>=end;
-          tx.set(entitlement,{subscriptionStatus:refundedSamePeriod?'refunded':status,paidTier:active&&!refundedSamePeriod?tier:'free',lastPaidTier:tier,billingCadence,currentPeriodEnd:end,cancelAtPeriodEnd:!!subscription.cancel_at_period_end,refundReviewState:refundedSamePeriod?'full-refund-applied':null,serverVerifiedAt:Date.now(),lastStripeEventCreated:eventCreated,lastStripeEventId:event.id,updatedAt:FieldValue.serverTimestamp()},{merge:true});
-        });
-      }
-    }
-    await eventRef.set({state:'processed',processedAt:FieldValue.serverTimestamp()},{merge:true});
-    res.sendStatus(200);
-  }catch(error){await eventRef.delete().catch(()=>{});console.error('Stripe webhook failed',event.id,event.type,error);res.sendStatus(500);}
+  const client=stripe();
+  return BillingWebhook.createHandler({db,client,secret:STRIPE_WEBHOOK_SECRET.value(),refresh:uid=>refreshBilling(uid,client),refunds:billingServices(client),checkout:billingCheckout(client)})(req,res);
 });
 exports.createPartnership=onCall(baseOpts,async req=>{
   const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase(),bizId=String(req.data&&req.data.bizId||'').trim(),name=String(req.data&&req.data.name||'').trim();
@@ -169,6 +236,7 @@ exports.leavePartnership=onCall(baseOpts,async req=>{
   if(!memberSnap.exists)throw new HttpsError('permission-denied','Not a partnership member');
   const allMembers=await partnership.collection('members').get(),others=allMembers.docs.filter(doc=>doc.id!==user.uid);
   if(others.length)await member.delete();else await db.recursiveDelete(partnership);
+  await AdmissionLifecycle.cleanupUid({db,uid:user.uid,partnershipId:code});
   return{left:true,partnershipDeleted:others.length===0};
 });
 exports.deleteAccountData=onCall(opts,async req=>{
@@ -185,10 +253,12 @@ exports.deleteAccountData=onCall(opts,async req=>{
       const client=stripe(),[subscriptions,invoices]=await Promise.all([client.subscriptions.list({customer:stripeCustomerId,status:'all',limit:100}),client.invoices.list({customer:stripeCustomerId,limit:100})]);
       if(subscriptions.data.length||invoices.data.some(item=>item.paid&&Number(item.amount_paid)>0))throw new Error('billing_history_present');
     }
+    stage='admissions';await AdmissionLifecycle.cleanupUid({db,uid,force:true});
     stage='memberships';
     const memberships=await db.collectionGroup('members').where('uid','==',uid).get();
     for(const member of memberships.docs){const partnership=member.ref.parent.parent;if(!partnership)continue;const [root,allMembers]=await Promise.all([partnership.get(),partnership.collection('members').get()]),otherMembers=allMembers.docs.filter(doc=>doc.id!==uid);if(!otherMembers.length&&root.exists&&String((root.data()||{}).createdBy||'')===uid){await db.recursiveDelete(partnership);partnershipsDeleted++;}else{await member.ref.delete();partnershipRecordsRetained++;}}
-    stage='storage';await getStorage().bucket().deleteFiles({prefix:`receipts/${uid}/`,force:true});
+    stage='storage';const bucket=getStorage().bucket(),[receiptFiles]=await bucket.getFiles({prefix:`receipts/${uid}/`});
+    for(const file of receiptFiles)await ReceiptCleanup.cleanupReceiptWithRetry({db,bucket,path:file.name,ignorePersonalUid:uid});
     stage='promotions';const redemptions=await db.collection('promotionRedemptions').where('uid','==',uid).get();for(let i=0;i<redemptions.docs.length;i+=400){const batch=db.batch();for(const doc of redemptions.docs.slice(i,i+400))batch.delete(doc.ref);await batch.commit();}
     stage='billing';if(customer.exists){try{await stripe().customers.del(stripeCustomerId);}catch(error){if(error&&error.code!=='resource_missing')throw error;}await customerRef.delete();}
     stage='user_data';await db.recursiveDelete(db.doc(`users/${uid}`));await db.doc(`accountClaims/${uid}`).delete().catch(()=>{});await db.recursiveDelete(db.doc(`accountQuarantines/${uid}`)).catch(()=>{});
@@ -196,3 +266,11 @@ exports.deleteAccountData=onCall(opts,async req=>{
     return{deleted:true,resetEpoch,partnershipRecordsRetained,partnershipsDeleted,authIdentityRetained:true};
   }catch(error){await resetRef.set({schemaVersion:1,status:'failed',resetEpoch,correlationId,failedStage:stage,updatedAt:FieldValue.serverTimestamp()}).catch(()=>{});console.error('account-deletion-failed',{category:'account_deletion',stage,correlationId});throw new HttpsError('internal','Account deletion could not be completed',{reason:'delete_pipeline_failed',stage,correlationId});}
 });
+
+if(process.env.FUNCTIONS_EMULATOR==='true'){
+  exports.runRetentionPurgeDemo=onCall(baseOpts,async req=>{
+    const user=auth(req),projectId=process.env.GCLOUD_PROJECT||process.env.GOOGLE_CLOUD_PROJECT||'';
+    try{return await RetentionWorker.retentionRun({db,bucket:getStorage().bucket(),uid:user.uid,projectId});}
+    catch(error){console.error('retention-demo-failed',{category:'retention',safeCode:String(error&&error.message||'failed').replace(/[^a-z0-9_-]/gi,'_').slice(0,80)});throw new HttpsError('internal','Retention processing stopped safely',{reason:'retention_failed'});}
+  });
+}

@@ -6,8 +6,8 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(Money,Domain,Partnership,CompanyProfile,CompanyProfileHistory){
   'use strict';
   if(!Money||!Domain||!Partnership||!CompanyProfile||!CompanyProfileHistory) throw new Error('TaxMate domain migration dependencies are required');
-  const PROJECTION_VERSION=7,clone=value=>JSON.parse(JSON.stringify(value));
-  function emptyDomain(now,deviceId){const stamp=Number(now)||Date.now();return{schemaVersion:Domain.DOMAIN_SCHEMA_VERSION,projectionVersion:PROJECTION_VERSION,migrationStatus:'complete',migratedAt:stamp,updatedAt:stamp,deviceId:deviceId||'legacy-migration',persons:[],entities:[],companyProfiles:[],projects:[],paymentAccounts:[],economicEvents:[],companyTaxPeriods:[],companyLossRecords:[],salaryRecords:[],dividendDeclarations:[],personalIncomeLinks:[],migrationIssues:[],syncConflicts:[]};}
+  const PROJECTION_VERSION=8,clone=value=>JSON.parse(JSON.stringify(value));
+  function emptyDomain(now,deviceId){const stamp=Number(now)||Date.now();return{schemaVersion:Domain.DOMAIN_SCHEMA_VERSION,projectionVersion:PROJECTION_VERSION,migrationStatus:'complete',migratedAt:stamp,updatedAt:stamp,deviceId:deviceId||'legacy-migration',persons:[],entities:[],companyProfiles:[],projects:[],paymentAccounts:[],economicEvents:[],companyTaxPeriods:[],companyLossRecords:[],salaryRecords:[],dividendDeclarations:[],personalIncomeLinks:[],salesInvoices:[],supplierBills:[],fixedAssets:[],bankReconciliations:[],migrationIssues:[],syncConflicts:[]};}
   function latestLegacyRecords(entries,tombstones){
     const map=new Map(),compare=(left,right)=>{
       const time=(Number(left.updatedAt)||0)-(Number(right.updatedAt)||0);if(time)return time;
@@ -27,7 +27,7 @@
     const priorEntities=new Map((prior.entities||[]).map(entity=>[entity.id,entity])),legacyEntityIds=new Set();
     domain.entities=(prior.entities||[]).filter(entity=>entity.origin!=='legacy_v5');
     domain.companyProfiles=(prior.companyProfiles||[]).map(profile=>CompanyProfileHistory.repairOwnershipHistory(CompanyProfile.normalize(profile)));
-    domain.companyTaxPeriods=(prior.companyTaxPeriods||[]).map(clone);domain.companyLossRecords=(prior.companyLossRecords||[]).map(clone);domain.salaryRecords=(prior.salaryRecords||[]).map(clone);domain.dividendDeclarations=(prior.dividendDeclarations||[]).map(clone);domain.personalIncomeLinks=(prior.personalIncomeLinks||[]).map(clone);
+    domain.companyTaxPeriods=(prior.companyTaxPeriods||[]).map(clone);domain.companyLossRecords=(prior.companyLossRecords||[]).map(clone);domain.salaryRecords=(prior.salaryRecords||[]).map(clone);domain.dividendDeclarations=(prior.dividendDeclarations||[]).map(clone);domain.personalIncomeLinks=(prior.personalIncomeLinks||[]).map(clone);domain.salesInvoices=(prior.salesInvoices||[]).map(clone);domain.supplierBills=(prior.supplierBills||[]).map(clone);domain.fixedAssets=(prior.fixedAssets||[]).map(clone);domain.bankReconciliations=(prior.bankReconciliations||[]).map(clone);
     const businesses=(state.businesses||[]).map(original=>{
       const business=clone(original),type=business.structure==='partnership'?'partnership':'sole_trade';
       if(type==='partnership'){const confirmedShare=Partnership.sharePercent(business);business.share=confirmedShare||50;business.partnershipAmountBasis=confirmedShare==null?Partnership.UNCONFIRMED:Partnership.normalizedBasis(business,provenance);business.partnershipBasisSource=business.partnershipAmountBasis===Partnership.UNCONFIRMED?'unknown_legacy_import':(business.partnershipBasisSource||'taxmate_v5_contract');}

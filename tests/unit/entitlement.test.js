@@ -15,13 +15,23 @@ test('effective tier is the highest of paid and Founder promo sources',()=>{
 test('fixed promo and annual paid notifications use exact lifecycle copy',()=>{
   const expiry=now+30*86400000;
   assert.match(E.notification({promotions:{PROMO:{status:'active',tier:'pro',startsAt:now-1,expiresAt:expiry}},serverVerifiedAt:now},now).message,/free Pro access ends/);
-  assert.equal(E.notification({promotions:{PROMO:{status:'active',tier:'pro',startsAt:now-1,expiresAt:now+7*86400000}},serverVerifiedAt:now},now).message,'7 days of Pro left.');
-  assert.equal(E.notification({promotions:{PROMO:{status:'active',tier:'plus',startsAt:now-1,expiresAt:now+86400000}},serverVerifiedAt:now},now).message,'Your Plus access ends tomorrow.');
+  assert.match(E.notification({promotions:{PROMO:{status:'active',tier:'pro',startsAt:now-1,expiresAt:now+7*86400000}},serverVerifiedAt:now},now).message,/7 days of Pro left.*paid reports.*backup/);
+  assert.match(E.notification({promotions:{PROMO:{status:'active',tier:'plus',startsAt:now-1,expiresAt:now+86400000}},serverVerifiedAt:now},now).message,/Plus access ends tomorrow.*paid reports.*backup/);
   assert.match(E.notification({promotions:{PROMO:{status:'active',tier:'pro',startsAt:now-1000,expiresAt:now-1}},serverVerifiedAt:now},now).message,/now on Free/);
   assert.equal(E.notification({promotions:{PERM:{status:'active',tier:'pro',startsAt:now-1,expiresAt:null,permanent:true}},serverVerifiedAt:now},now),null);
-  assert.match(E.notification({subscriptionStatus:'active',paidTier:'pro',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message,/renews.*£99\.99/);
-  assert.match(E.notification({subscriptionStatus:'active',paidTier:'plus',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message,/renews.*£29\.99/);
-  assert.match(E.notification({subscriptionStatus:'active',paidTier:'plus',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:true,serverVerifiedAt:now},now).message,/plan ends/);
+  for(const paidTier of ['pro','plus']){
+    const message=E.notification({subscriptionStatus:'active',paidTier,billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:false,serverVerifiedAt:now},now).message;
+    assert.match(message,/renewal is due.*Manage subscription.*current plan and price/);
+    assert.doesNotMatch(message,/£/,'unverified legacy renewal prices must not be guessed');
+  }
+  assert.match(E.notification({subscriptionStatus:'active',paidTier:'plus',billingCadence:'yearly',currentPeriodEnd:now+30*86400000,cancelAtPeriodEnd:true,serverVerifiedAt:now},now).message,/Paid access ends.*paid PDF.*Full Backup/);
+  assert.match(E.notification({subscriptionStatus:'active',paidTier:'pro',billingCadence:'monthly',currentPeriodEnd:now+10*86400000,cancelAtPeriodEnd:true,serverVerifiedAt:now},now).message,/Paid access ends.*paid PDF.*Full Backup/);
+});
+test('former paid users see the exact tax-year retention boundary after access ends',()=>{
+  const endedAt=Date.UTC(2026,8,5,12),snapshot={subscriptionStatus:'canceled',paidTier:'free',lastPaidTier:'pro',currentPeriodEnd:endedAt,serverVerifiedAt:endedAt};
+  assert.equal(E.taxYearRetentionBoundary(endedAt).retainThroughDate,'2027-04-05');
+  assert.match(E.notification(snapshot,Date.UTC(2026,8,6,12)).message,/Paid report exports are locked.*5 April 2027.*backup/);
+  assert.match(E.notification(snapshot,Date.UTC(2027,3,6,12)).message,/retention period has ended/);
 });
 test('expired Pro promo copy reflects paid Plus fallback',()=>{
   const snapshot={subscriptionStatus:'active',paidTier:'plus',currentPeriodEnd:now+1000,promotions:{OLD:{status:'active',tier:'pro',startsAt:now-1000,expiresAt:now-1}},serverVerifiedAt:now};

@@ -80,12 +80,15 @@ test('account hydration preserves exact local scope while controls are offline a
   assert.match(source,/if\(SYNC_RUNTIME\.blocked\|\|ACCOUNT_TRANSITION_PENDING\|\|CLOUD\.deletionBlocked\|\|CLOUD\.firstSyncBlocked\)/);
   assert.match(source,/function firstSyncUseAccount\(\)[\s\S]*readAccountPresence\(user\.uid\)[\s\S]*associateLocal\(localStorage,scope/);
   assert.match(source,/function firstSyncOpenExisting\(\)[\s\S]*recordLocalAssociationDecision\(localStorage,scope,'open-cloud'/);
-  assert.match(source,/if\(fbConfigured\(\)&&!ACTIVE_ACCOUNT_SCOPE\)[\s\S]{0,300}data-auth-initialising[\s\S]{0,200}Restoring your account/);
+  // The gate and its notice are unchanged; the wording now comes from the six-language table.
+  assert.match(source,/if\(fbConfigured\(\)&&!ACTIVE_ACCOUNT_SCOPE\)[\s\S]{0,300}data-auth-initialising[\s\S]{0,200}shell\.restoringTitle/);
+  assert.match(require('../../scripts/i18n-audit').I18N.en['shell.restoringTitle'],/Restoring your account/);
   assert.match(source,/function beginAccountTransition\(correlation,options=\{\}\)[\s\S]{0,700}if\(options\.targetScope\)activateAccountScope\(options\.targetScope/);
   const transition=source.slice(source.indexOf('function beginAccountTransition('),source.indexOf('function accountReadWithTimeout('));assert.doesNotMatch(transition,/S=freshState\(\)/);
   assert.match(source,/CLOUD\.controlsCached=true;CLOUD\.firstSyncBlocked=TaxMateAccountStorage\.localAssociationPending\(localStorage\);CLOUD\.hydrationState='failed'[\s\S]{0,500}state:'retained-local'[\s\S]{0,500}render\(\);return/);
   assert.doesNotMatch(source,/renderAccountControlRetry|retryAccountSafetyCheck/);
   assert.match(source,/if\(OB&&OB\.pendingIntent\)\{AUTH_PENDING_INTENT=obIntentCopy\(OB\.pendingIntent\);return;\}[\s\S]*ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE\.kind==='firebase'/);
-  assert.match(source,/localNavigation=ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE\.kind==='local'&&scope\.kind==='firebase'/);
+  assert.match(source,/requestedNavigation=String\(options\.navigation\|\|''\),validRequestedNavigation=\['home','income','expenses','tax','receipts','more'\]\.includes\(requestedNavigation\)\?requestedNavigation:null/);
+  assert.match(source,/localNavigation=validRequestedNavigation\|\|\(ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE\.kind==='local'&&scope\.kind==='firebase'/);
   assert.match(source,/if\(!ACCOUNT_SCOPE_HAD_CANONICAL&&localNavigation\)S\.tab=localNavigation/);
 });

@@ -12,6 +12,7 @@
   --brand:#0AA968; --brand-deep:#067A4B; --brand-soft:#E6F7EF; --teal:#0D8C86;
   --coral:#E5484D; --coral-soft:#FDEDEE; --blue:#3478F6; --blue-soft:#EAF1FE;
   --amber:#B47D12; --amber-soft:#FCF3DF;
+  --money-in:#067A4B; --money-out:#E5484D; --money-in-navy:#5FD891; --money-out-navy:#FF8A8F;
   --r-l:24px; --r-m:18px; --r-s:12px;
   --font:'Plus Jakarta Sans',system-ui,-apple-system,sans-serif;
   --font-rtl:'Noto Sans Arabic','Plus Jakarta Sans',system-ui,sans-serif;
@@ -29,6 +30,7 @@
   --coral:#FF6B73; --coral-soft:rgba(229,72,77,.18);
   --blue:#6EA0FF; --blue-soft:rgba(52,120,246,.18);
   --amber:#E0A93A; --amber-soft:rgba(180,125,18,.20);
+  --money-in:#3DE89B; --money-out:#FF6B73;
   --e-card:0 1px 2px rgba(0,0,0,.30), 0 8px 24px rgba(0,0,0,.28);
   --e-hero:0 10px 30px rgba(0,0,0,.35);
   --e-sheet:0 -2px 24px rgba(0,0,0,.45);
@@ -153,9 +155,9 @@ body{
 .tm-row .nm{font-weight:800; font-size:15px; color:var(--ink)}
 .tm-row .mt{font-size:12.5px; color:var(--muted); margin-top:2px}
 .tm-row .rt{text-align:end}
-.tm-row .amt{font-weight:800; font-size:15px; color:var(--brand-deep)}
-[data-theme="dark"] .tm-row .amt{color:var(--brand)}
-.tm-row .amt.neg{color:var(--coral)}
+.tm-row .amt{font-weight:800; font-size:15px; color:var(--ink)}
+.tm-row .amt.pos{color:var(--money-in)}
+.tm-row .amt.neg{color:var(--money-out)}
 .tm-row .cta{font-size:12.5px; font-weight:800; color:var(--brand-deep); margin-top:2px}
 [data-theme="dark"] .tm-row .cta{color:var(--brand)}
 .tm-row .cta.attn{color:var(--amber)}
@@ -197,8 +199,10 @@ body{
 
 /* 11 — FIELD FAMILY ------------------------------------------------------- */
 .tm-field{margin-top:14px}
-.tm-flabel{display:flex; align-items:center; font-size:var(--t-label); font-weight:700; color:var(--ink); margin-bottom:6px}
+.tm-flabel{display:flex; align-items:center; flex-wrap:wrap; font-size:var(--t-label); font-weight:700; color:var(--ink); margin-bottom:6px}
 .tm-fhint{font-size:var(--t-hint); color:var(--muted); font-weight:500; margin-inline-start:6px}
+/* A field hint belongs under its label, not squeezed beside it (any locale, 360px). */
+.tm-flabel>.tm-fhint{flex:1 0 100%; margin:2px 0 0; line-height:1.45}
 .tm-inwrap{position:relative; display:flex; align-items:center}
 .tm-input{width:100%; font-family:inherit; font-size:15px; color:var(--ink);
   background:var(--card); border:1.5px solid var(--line); border-radius:var(--r-s);
@@ -250,8 +254,8 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-notice b{display:block; font-weight:800; margin-bottom:2px}
 .tm-notice.info{background:var(--blue-soft); color:var(--ink)}
 .tm-notice.info .i{color:var(--blue)}
-.tm-notice.ok{background:var(--brand-soft); color:var(--ink)}
-.tm-notice.ok .i{color:var(--brand-deep)}
+.tm-notice.ok{background:var(--amber-soft); color:var(--ink)}
+.tm-notice.ok .i{color:var(--amber)}
 .tm-notice.warn{background:var(--amber-soft); color:var(--ink)}
 .tm-notice.warn .i{color:var(--amber)}
 .tm-notice.neutral{background:color-mix(in srgb,var(--muted) 12%,var(--card)); color:var(--ink)}
@@ -272,8 +276,8 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-metric{background:var(--card); border:1px solid var(--line); border-radius:var(--r-s); padding:13px; text-align:start; cursor:pointer; font-family:inherit; width:100%}
 .tm-metric .l{font-size:12px; color:var(--muted); font-weight:700}
 .tm-metric .v{font-size:17px; font-weight:800; margin-top:3px}
-.tm-metric .v.pos{color:var(--brand-deep)} [data-theme="dark"] .tm-metric .v.pos{color:var(--brand)}
-.tm-metric .v.neg{color:var(--coral)}
+.tm-metric .v.pos{color:var(--money-in)}
+.tm-metric .v.neg{color:var(--money-out)}
 .tm-metric .st{font-size:11.5px; color:var(--muted); margin-top:2px}
 .tm-metric .st.attn{color:var(--amber); font-weight:700}
 .tm-recs{display:flex; flex-direction:column; gap:9px; margin-top:12px}
@@ -282,7 +286,8 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-rec .rl{font-weight:700; font-size:14px; color:var(--ink)}
 .tm-rec .rs{font-size:12px; color:var(--muted); margin-top:2px}
 .tm-rec .rv{font-weight:800; font-size:14px; text-align:end; color:var(--ink)}
-.tm-rec .rv.neg{color:var(--coral)}
+.tm-rec .rv.neg{color:var(--money-out)}
+.tm-rec .rv.pos{color:var(--money-in)}
 .tm-secondary-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .tm-secondary-actions .tm-btn{flex:1 1 150px;min-height:44px}
 .tm-step5-confirm{margin-top:18px}
@@ -291,7 +296,7 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-record-actions .tm-btn{min-height:44px}
 .tm-pill{display:inline-block; font-size:11px; font-weight:800; border-radius:999px; padding:3px 9px; margin-top:4px}
 .tm-pill.warn{background:var(--amber-soft); color:var(--amber)}
-.tm-pill.ok{background:var(--brand-soft); color:var(--brand-deep)}
+.tm-pill.ok{background:var(--amber-soft); color:var(--amber)}
 .tm-pill.rev{background:color-mix(in srgb,var(--muted) 14%,var(--card)); color:var(--muted)}
 .tm-summ{background:var(--card); border:1px solid var(--line); border-radius:var(--r-m); overflow:hidden; margin-top:12px}
 .tm-summ .r{display:flex; justify-content:space-between; align-items:center; gap:12px; padding:13px 15px; border-top:1px solid var(--line)}
@@ -303,9 +308,8 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-disc>summary::-webkit-details-marker{display:none}
 .tm-disc[open]>summary{border-bottom:1px solid var(--line)}
 .tm-disc .dc{padding:6px 15px 14px}
-.tm-total{display:flex; justify-content:space-between; align-items:center; background:var(--brand-soft);
-  border-radius:var(--r-s); padding:12px 14px; margin-top:12px; font-weight:800; font-size:14px; color:var(--brand-deep)}
-[data-theme="dark"] .tm-total{color:var(--brand)}
+.tm-total{display:flex; justify-content:space-between; align-items:center; background:var(--card); border:1px solid var(--line);
+  border-radius:var(--r-s); padding:12px 14px; margin-top:12px; font-weight:800; font-size:14px; color:var(--ink)}
 .tm-total.bad{background:var(--coral-soft); color:var(--coral)}
 
 /* 15 — COMPACT CALENDAR --------------------------------------------------- */
@@ -329,9 +333,11 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
   color:var(--brand-deep); background:var(--brand-soft); border:0; border-radius:10px; padding:8px; cursor:pointer; font-family:inherit}
 [data-theme="dark"] .tm-caltoday{color:var(--brand)}
 
-/* 16 — TOAST -------------------------------------------------------------- */
-.tm-toast{position:fixed; inset-inline:0; bottom:20px; display:flex; justify-content:center; z-index:120; pointer-events:none}
-.tm-toast .b{background:var(--ink); color:var(--bg); font-size:13px; font-weight:700; padding:12px 18px; border-radius:999px; box-shadow:var(--e-card); display:flex; align-items:center; gap:8px}
+/* 16 — CONFIRMATION STRIP ------------------------------------------------- */
+/* In the layout, not over it: a confirmation never overlaps a button, a sheet footer
+   or the next screen, and it is cleared when a sheet opens or the route changes. */
+.tm-toast{display:block; margin:10px 0 0; pointer-events:none}
+.tm-toast .b{background:var(--ink); color:var(--bg); font-size:13px; font-weight:700; padding:11px 16px; border-radius:var(--r-s); display:block}
 [data-theme="dark"] .tm-toast .b{background:var(--card); color:var(--ink); border:1px solid var(--line)}
 
 /* 17 — FOCUS & MOTION ----------------------------------------------------- */
@@ -351,3 +357,60 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-spacer{height:8px}
 .tm-plainbtn{appearance:none;background:none;border:0;padding:0;margin:0;font:inherit;color:inherit;cursor:pointer;text-align:inherit;width:100%}
 .tm-company-identity-stack{display:flex;flex-direction:column;gap:16px;margin-top:14px}
+
+/* ---- Fable R5: company year-end, statutory checklist, bank matching, RTI ---- */
+/* Money semantics (UI-02): every amount span carries pos / neg / nothing from moneyRole(). */
+.tm-num.pos,.pos{color:var(--money-in)}
+.tm-num.neg,.neg{color:var(--money-out)}
+.tm-summary-sheet .tm-num.pos,.tm-hero .tm-num.pos{color:var(--money-in-navy)}
+.tm-summary-sheet .tm-num.neg,.tm-hero .tm-num.neg{color:var(--money-out-navy)}
+.tm-todo{display:grid; grid-template-columns:minmax(0,1fr) auto; gap:10px; align-items:center; background:var(--card); border:1px solid var(--line); border-radius:var(--r-s); padding:12px 14px; margin-top:8px}
+.tm-todo .rl{font-weight:700; font-size:14px}
+.tm-todo .tm-btn.sm{white-space:nowrap}
+.tm-todo-list{display:flex; flex-direction:column; gap:8px; margin-top:6px}
+.tm-todo-summary{margin-top:12px}
+.tm-yearhead{display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; gap:8px; margin-top:8px; font-size:12.5px; color:var(--muted)}
+.tm-yearhead .tm-pill{margin-top:0}
+.tm-keyfigures .tm-summ{margin-top:10px}
+.tm-keyfigures .tm-summ .val{font-size:16px}
+.tm-matchline{margin-top:14px}
+.tm-matchline .tm-choice{display:block; padding:12px 14px}
+.tm-matchline .tm-choice .ct{overflow-wrap:anywhere; line-height:1.35}
+.tm-matchline .tm-choice .cb{margin-top:3px; overflow-wrap:anywhere}
+.tm-matchline .tm-question.sm{margin-bottom:2px; overflow-wrap:anywhere}
+.tm-matchline .tm-flabel{margin-top:8px}
+.tm-rec .rs.match{overflow-wrap:anywhere}
+.tm-rec .rl{overflow-wrap:anywhere}
+.tm-actionbar{display:flex; flex-direction:column; gap:10px; margin-top:14px}
+.tm-h.sm{font-size:13.5px; margin:14px 0 6px}
+.tm-question.sm{font-size:14.5px; margin:12px 0 6px}
+.tm-record-actions.col .tm-btn{width:100%}
+.tm-statsummary{width:100%; text-align:start; cursor:pointer; border:0; font-family:inherit}
+.tm-statsummary .tm-fhint{margin:4px 0 0}
+.tm-statcounts{display:flex; flex-wrap:wrap; gap:8px 12px; margin-top:10px}
+.tm-statcount{display:inline-flex; align-items:center; gap:6px; font-size:12px; font-weight:800}
+.tm-statcount .tm-pill{margin-top:0}
+.tm-statlist{gap:8px}
+.tm-statcard{background:var(--card); border:1px solid var(--line); border-radius:var(--r-m); overflow:hidden}
+.tm-statcard .tm-statitem{border:0; border-radius:0; box-shadow:none; width:100%; text-align:start; cursor:pointer}
+.tm-statcard .tm-statitem .rs{display:flex; flex-wrap:wrap; align-items:center; gap:4px 6px}
+.tm-statcard .tm-statitem .tm-pill{margin-top:6px}
+.tm-statcard .dc{padding:4px 14px 14px; border-top:1px solid var(--line)}
+.tm-statcard .dc>.tm-summ,.tm-statcard .dc>.tm-notice{margin-top:10px}
+.tm-basis{margin:0; padding:0 15px 10px; font-size:12px}
+.tm-sources{margin:6px 0 0; padding-inline-start:18px; font-size:12.5px; color:var(--muted); line-height:1.6}
+.tm-sources li{overflow-wrap:anywhere}
+.tm-reasons{margin:8px 0 0; padding-inline-start:18px; font-size:13.5px; line-height:1.6; color:var(--ink)}
+.tm-reasons li{margin-bottom:4px}
+.tm-links{display:flex; flex-wrap:wrap; gap:8px 14px; margin-top:6px}
+.tm-extlink{text-decoration:none; font-weight:800; font-size:13px; padding:4px 0; color:var(--brand-deep)}
+[data-theme="dark"] .tm-extlink{color:var(--brand)}
+.tm-check-needed{font-weight:800}
+.tm-readiness .tm-pill{margin-top:0}
+.tm-fact{margin-top:10px}
+.tm-fact .tm-choices.row .tm-choice{padding:10px 8px}
+.tm-statgroup{border-top:1px solid var(--line); padding-top:6px; margin-top:14px}
+.tm-bankline{border:1px solid var(--line); border-radius:var(--r-s); padding:8px 12px 12px; margin-top:10px}
+.tm-row .tm-price{margin-top:6px; text-align:start; line-height:1.4}
+.tm-price .tm-price-standard{color:var(--muted); font-weight:600; margin-inline-end:4px}
+.tm-row-locked .rt:empty{display:none}

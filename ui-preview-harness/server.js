@@ -38,7 +38,7 @@ const headers={
 function json(response,status,value){response.writeHead(status,{...headers,'content-type':'application/json; charset=utf-8'});response.end(JSON.stringify(value));}
 const semanticError=reasonCode=>({status:'failure',error:{reasonCode,copyKey:'error.fix_issue',params:{}}});
 function readBody(request){return new Promise((resolve,reject)=>{let size=0,body='';request.setEncoding('utf8');request.on('data',chunk=>{size+=Buffer.byteLength(chunk);if(size>2_000_000){reject(new Error('Request body too large'));request.destroy();return;}body+=chunk;});request.on('end',()=>{try{resolve(body?JSON.parse(body):{});}catch(error){reject(error);}});request.on('error',reject);});}
-function contentType(file){return file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.js')?'text/javascript; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':file.endsWith('.json')?'application/json; charset=utf-8':'application/octet-stream';}
+function contentType(file){return file.endsWith('.html')?'text/html; charset=utf-8':file.endsWith('.js')?'text/javascript; charset=utf-8':file.endsWith('.css')?'text/css; charset=utf-8':file.endsWith('.json')?'application/json; charset=utf-8':file.endsWith('.svg')?'image/svg+xml':file.endsWith('.png')?'image/png':file.endsWith('.woff2')?'font/woff2':'application/octet-stream';}
 function staticFile(request,response,url){
   const relative=url.pathname==='/'?'ui-preview-harness/index.html':decodeURIComponent(url.pathname).replace(/^\/+/,''),target=path.resolve(SOURCE_ROOT,relative);
   if(target!==SOURCE_ROOT&&!target.startsWith(SOURCE_ROOT+path.sep)){json(response,403,semanticError('path_forbidden'));return;}

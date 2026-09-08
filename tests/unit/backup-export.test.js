@@ -96,12 +96,10 @@ test('minimum required failure taxonomy remains distinct with a generic unknown 
   assert.equal(messages.size,cases.length);
 });
 
-test('Full Backup retained-data export remains available to Free, Plus, Pro and expired users',()=>{
-  const now=2_000_000_000_000,snapshots=[
-    {paidTier:'free',subscriptionStatus:'inactive'},
-    {paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:now+86400000,serverVerifiedAt:now},
-    {paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:now+86400000,serverVerifiedAt:now},
-    {paidTier:'free',lastPaidTier:'pro',subscriptionStatus:'expired',currentPeriodEnd:now-1,serverVerifiedAt:now}
-  ];
-  for(const snapshot of snapshots)assert.equal(CompanyAccess.decide({action:'full_backup',snapshot,now,hasExistingLtdData:true}).allowed,true);
+test('Ltd Full Backup follows active Pro or the tax-year retention window',()=>{
+  const now=Date.UTC(2026,8,5,12),ended=Date.UTC(2026,7,31,12),active={paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:now+86400000,serverVerifiedAt:now},retained={paidTier:'free',lastPaidTier:'pro',subscriptionStatus:'expired',currentPeriodEnd:ended,serverVerifiedAt:ended};
+  assert.equal(CompanyAccess.decide({action:'full_backup',snapshot:active,now,hasExistingLtdData:true}).allowed,true);
+  assert.equal(CompanyAccess.decide({action:'full_backup',snapshot:retained,now,hasExistingLtdData:true}).allowed,true);
+  assert.equal(CompanyAccess.decide({action:'full_backup',snapshot:retained,now:Date.UTC(2027,3,6,12),hasExistingLtdData:true}).reason,'tax_year_retention_ended');
+  assert.equal(CompanyAccess.decide({action:'full_backup',snapshot:{paidTier:'free',subscriptionStatus:'inactive'},now,hasExistingLtdData:true}).reason,'tax_year_retention_date_required');
 });

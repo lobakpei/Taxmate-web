@@ -25,7 +25,7 @@
     [...(local||[]),...(remote||[])].forEach(r=>{ if(!r||!r.id)return; const old=map.get(r.id),winner=preferredRecord(old,r); if(!old||winner===r) map.set(r.id,clone(r)); });
     return Array.from(map.values()).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
   }
-  const RECORD_METADATA_KEYS=new Set(['businessId','createdAt','deviceId','recordType','schemaVersion','source','taxYear','updatedAt']);
+  const RECORD_METADATA_KEYS=new Set(['businessId','createdAt','deviceId','recordType','retentionEpoch','schemaVersion','source','taxYear','updatedAt']);
   function canonicalRecordPayload(record){
     if(!plain(record))return record;
     const out={};
@@ -193,6 +193,11 @@
     next.lastSuccessAt=Number(now)||Date.now(); return next;
   }
   function due(outbox,now){ const at=Number(now)||Date.now(); return normalizeOutbox(outbox).items.filter(x=>!x.nextAttemptAt||Number(x.nextAttemptAt)<=at); }
+  function fenceOutbox(outbox,epochValue){
+    const epoch=Number(epochValue)||0,next=normalizeOutbox(outbox);
+    next.items=next.items.filter(item=>Number(item.retentionEpoch||item.record&&item.record.retentionEpoch||0)>=epoch);
+    return next;
+  }
   function status(input){
     const source=input||{},box=normalizeOutbox(source.outbox),pending=box.items.length;
     if(source.online===false) return {state:'offline',pending,message:pending?'Offline — '+pending+' change'+(pending===1?'':'s')+' waiting':'Offline'};
@@ -207,5 +212,5 @@
     if(pending||source.reconciliationState==='pending'||source.reconciliationState==='retrying'||source.ackState==='waiting') return {state:'waiting',pending,message:pending?'Syncing — '+pending+' change'+(pending===1?'':'s')+' waiting':'Finishing sync…'};
     return {state:'synced',pending:0,message:'Synced'};
   }
-  return {API_VERSION,compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,status,classifyError};
+  return {API_VERSION,compare,isTombstone,preferredRecord,mergeRecords,canonicalRecordPayload,sameRecordPayload,shouldWriteRecord,reconcileRecords,visible,touch,tombstone,mergeState,mergeMeta,mergeVersionedMap,cloudAccountState,emptyOutbox,normalizeOutbox,operationKey,enqueue,markAttempt,markFailure,acknowledge,due,fenceOutbox,status,classifyError};
 });

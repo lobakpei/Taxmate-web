@@ -40,7 +40,7 @@ Classification keys: `REAL_DURABLE` is a visible journey whose result is real an
 | REAL_DURABLE | Expenses | Delete receipt | `deleteReceipt` | Cloud Storage owner delete | image removed; expense retained | Owner | deletion survives reload | in-app result | Keep |
 | REAL_DURABLE | Receipts | Missing receipt list | `pageReceipts` | ledger query | actionable missing-image set | Plus | recalculated after reload | locked card on Free | Keep |
 | REAL_DURABLE | Receipts | Batch choose photos | batch input handler | Cloud Storage rules | images linked to selected expenses | Plus | survive reload | per-item safe failure state | Keep |
-| REAL_DURABLE | Receipts | Receipt Pack PDF | receipt pack renderer | local PDF engine over durable records | organised PDF download | Pro | source data survives reload | locked card or safe no-receipts state | Keep |
+| REAL_DURABLE | Receipts | Receipt Pack PDF | receipt pack renderer | local PDF engine over durable records | organised PDF download | Plus | source data survives reload | locked card or safe no-receipts state | Keep |
 | REAL_DURABLE | Tax | Tax estimate | `calcTax` | versioned tax engine | planning estimate | Free | deterministic recalculation | unsupported/incomplete state explained | Keep |
 | REAL_DURABLE | Tax | Trading allowance comparison | tax view | tax engine | lower-method comparison | Free | deterministic | shown only when applicable | Keep |
 | REAL_DURABLE | Tax | Mileage annual total | mileage control | state and tax engines | annual mileage input | Free | restored | numeric validation | Keep |
@@ -48,7 +48,7 @@ Classification keys: `REAL_DURABLE` is a visible journey whose result is real an
 | REAL_DURABLE | Tax | Payments on account inputs | tax adjustments | state and tax engines | estimate adjustments | Free | restored | numeric validation | Keep |
 | REAL_DURABLE | Tax | SA103 box/reference mapping | SA reference view | deterministic mapping engine | reference/working aid | Free | recalculated | future unsupported mapping is explained | Keep |
 | REAL_DURABLE | Tax | SA104 partnership working paper | `openSA104` | local PDF/working-paper engine | SA104 partnership aid | Pro | source records retained | locked on lower tiers | Keep |
-| REAL_DURABLE | Tax | Quarterly record summary | quarterly summary handler | local export engine | quarter record summary; no HMRC submission | Pro | source records retained | locked on lower tiers | Keep |
+| REAL_DURABLE | Tax | MTD quarterly record preparation | quarterly summary handler | local export engine | MTD quarterly working summary and submission-route guidance | Pro | source records retained | locked on lower tiers | Keep |
 | REAL_DURABLE | Tax | MTD eligibility guidance | MTD view | versioned threshold engine | guidance state | Free | recalculated | incomplete and unsupported states explicit | Keep |
 | REAL_DURABLE | Tax | PDF tax report | report renderer | local PDF engine | general tax report download | Plus | source records retained | locked or safe generation error | Keep |
 | REAL_DURABLE | Tax | JSON export | export handler | state serializer | data-only backup download | Free | importable later | safe generation error | Keep |

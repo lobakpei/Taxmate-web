@@ -43,7 +43,8 @@ test('auth keeps onboarding mounted until callback takeover and collapses repeat
 });
 
 test('Tax salary actions use the established spaced mobile control group',()=>{
-  assert.match(renderer,/nodes\.push\(h\('div',\{class:'tm-record-actions'\},\[\s*btn\(t\('tax\.record_salary'/);
+  assert.match(renderer,/actions\.push\(btn\(t\('tax\.record_salary'/);
+  assert.match(renderer,/nodes\.push\(h\('div',\{class:'tm-record-actions col'\},actions\)\)/);
   assert.match(css,/\.tm-record-actions\{[^}]*margin-top:12px/);
   assert.match(css,/\.tm-record-actions \.tm-btn\{min-height:44px\}/);
   assert.match(css,/@media \(max-width:420px\)[\s\S]*\.tm-record-actions\{gap:10px;margin-top:10px\}/);

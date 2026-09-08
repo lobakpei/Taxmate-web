@@ -69,7 +69,7 @@ test('SoftwareApplication JSON-LD is parseable and contains truthful claims only
 });
 
 test('Open Graph, language and canonical behavior are consistent',()=>{
-  assert.match(home,/<html lang="en-GB">/);
+  assert.match(home,/<html lang="en-GB"(?:\s[^>]*)?>/);
   assert.ok(home.includes(`<meta property="og:title" content="${title}">`));
   assert.ok(home.includes(`<meta property="og:description" content="${description}">`));
   assert.match(home,/<meta property="og:url" content="https:\/\/www\.taxmate\.uk\/">/);

@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-03.existing-ownership-recovery-candidate.1 -->
-<html lang="en-GB">
+<!-- build: 2026-09-08.production-release.1 -->
+<html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
 <script src="src/core/telemetry.js"></script>
@@ -29,7 +29,7 @@
 <meta name="twitter:image" content="https://www.taxmate.uk/taxmate-share-20260831-v2.png">
 <meta name="twitter:image:alt" content="TaxMate — May your income always be with you.">
 <script type="application/ld+json">{"@context":"https://schema.org","@type":"SoftwareApplication","name":"TaxMate UK","applicationCategory":"FinanceApplication","operatingSystem":"Web browser","url":"https://www.taxmate.uk/","image":"https://www.taxmate.uk/icon-512.png","description":"Simple bookkeeping and tax planning for UK sole traders and self-employed people. Track income and expenses and see your estimated tax as you go.","isAccessibleForFree":true,"offers":{"@type":"Offer","name":"Free","price":"0","priceCurrency":"GBP"}}</script>
-<link rel="manifest" href="manifest.json?v=20260903-10">
+<link rel="manifest" href="manifest.json?v=20260905-1">
 <link rel="stylesheet" href="src/ui/ltd/workbench.css">
 <link rel="icon" href="/favicon.ico" sizes="any">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png?v=20260903-8">
@@ -43,8 +43,8 @@
 <meta name="mobile-web-app-capable" content="yes">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
-<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Arabic:wght@400;600;700&display=swap"></noscript>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap">
+<noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Noto+Sans+Arabic:wght@400;600;700&display=swap"></noscript>
 <style>
 /* ════════════════════════════════════════════════════
    TAXMATE UK v2 — warm, modern, close to people
@@ -68,6 +68,9 @@ html{ touch-action:auto; }
   --amber-soft:#FCF3DF;
   --btn-dark:#16202B;
   --brand-action-ink:#10231B;
+  /* Money semantics (UI-01): independent of the brand palette. in = income / positive,
+     out = explicit cost or negative. Zero stays neutral; unknown values are never £0. */
+  --money-in:#067A4B; --money-out:#E5484D; --money-in-navy:#5FD891; --money-out-navy:#FF8A8F;
   --r-lg:24px; --r-md:18px; --r-sm:12px;
   --shadow:0 1px 2px rgba(22,32,43,.05),0 10px 30px rgba(22,32,43,.07);
   --shadow-sm:0 1px 2px rgba(22,32,43,.06);
@@ -167,7 +170,11 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .s{font-size:12.5px;color:var(--muted);margin-top:1px}
 .v{font-weight:800;font-size:15px;white-space:nowrap;color:var(--ink)}
 .chev{color:#C2C9D2;font-size:18px;font-weight:700}
-.pos{color:var(--brand-deep)} .neg{color:var(--coral)} .mut{color:var(--muted)}
+.pos,.v.pos,.row .v.pos,.entry .v.pos,.frow .fv.pos,.frow.total .fv.pos,.month .pos{color:var(--money-in)}
+.neg,.v.neg,.row .v.neg,.entry .v.neg,.frow .fv.neg,.frow.total .fv.neg,.month .neg{color:var(--money-out)}
+.mut{color:var(--muted)}
+.hero .big.pos,.hero .pv.pos,.hero .ho-val.pos,.hero .v.pos{color:var(--money-in-navy)}
+.hero .big.neg,.hero .pv.neg,.hero .ho-val.neg,.hero .v.neg{color:var(--money-out-navy)}
 
 /* figure rows */
 .frow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:15px}
@@ -210,8 +217,10 @@ main{padding:14px 20px 110px;max-width:640px;margin:0 auto}
 .tagchip.green{background:var(--brand-soft);color:var(--brand-deep)}
 
 .notice{border-radius:var(--r-md);padding:13px 15px;font-size:14px;line-height:1.5;margin-bottom:14px}
-.notice.green{background:var(--brand-soft);color:#065438}
-.notice.amber{background:var(--amber-soft);color:#6b4a06}
+/* UI-03: reminders and confirmations use the approved amber module. The legacy
+   "green" notice class is kept for markup stability but renders in the reminder
+   palette; income green is reserved for money in. */
+.notice.green,.notice.amber{background:var(--amber-soft);color:#6b4a06}
 
 /* ── home promo carousel (manual scroll-snap, no autoplay) ── */
 .cxr-wrap{margin-bottom:14px}
@@ -320,7 +329,7 @@ nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(255,255,2
   border-top:1px solid var(--line);display:flex;max-width:640px;margin:0 auto;padding:6px 6px calc(6px + env(safe-area-inset-bottom));
   border-radius:22px 22px 0 0}
 nav button{flex:1;background:none;border:0;cursor:pointer;padding:7px 2px;border-radius:16px;
-  display:flex;flex-direction:column;align-items:center;gap:3px;color:#97A1AE;font-size:10.5px;font-weight:700}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;color:#97A1AE;font-size:10.5px;font-weight:700}
 nav button svg{width:23px;height:23px;stroke:currentColor;fill:none;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 nav button.on{color:var(--brand-deep);background:var(--brand-soft)}
 .small{font-size:12px;color:var(--muted);line-height:1.55;margin:16px 4px}
@@ -357,14 +366,15 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   --teal:#16CFC5; --coral:#FF6B73; --coral-soft:rgba(255,107,115,.16);
   --blue:#6BA8FF; --blue-soft:rgba(107,168,255,.16);
   --amber:#F5B43C; --amber-soft:rgba(245,180,60,.16);
+  --money-in:#3DE89B; --money-out:#FF6B73;
   --shadow:0 2px 6px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.45);
   --shadow-sm:0 1px 3px rgba(0,0,0,.45);
 }
 :root[data-theme="dark"] .notice.amber{ color:#F5C45E; }
-:root[data-theme="dark"] .notice.green{ color:#5FE0A0; }
+:root[data-theme="dark"] .notice.green{ color:#F5C45E; }
 @media (prefers-color-scheme:dark){
   :root:not([data-theme="light"]) .notice.amber{ color:#F5C45E; }
-  :root:not([data-theme="light"]) .notice.green{ color:#5FE0A0; }
+  :root:not([data-theme="light"]) .notice.green{ color:#F5C45E; }
 }
 :root[data-theme="dark"] input[type=text],
 :root[data-theme="dark"] input[type=number],
@@ -404,6 +414,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     --teal:#16CFC5; --coral:#FF6B73; --coral-soft:rgba(255,107,115,.16);
     --blue:#6BA8FF; --blue-soft:rgba(107,168,255,.16);
     --amber:#F5B43C; --amber-soft:rgba(245,180,60,.16);
+    --money-in:#3DE89B; --money-out:#FF6B73;
     --shadow:0 2px 6px rgba(0,0,0,.5),0 12px 32px rgba(0,0,0,.45);
     --shadow-sm:0 1px 3px rgba(0,0,0,.45);
   }
@@ -487,10 +498,10 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <body>
 
 <div class="top">
-  <div class="brand-lockup header-brand-lockup">
+  <button type="button" class="brand-lockup header-brand-lockup web-brand-home" data-tm-click="webBrandHome()" data-i18n-aria="nav.home">
     <img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate">
     <img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate">
-  </div>
+  </button>
   <div class="year-pill"><select id="yearSel" data-tm-change="setYear(this.value)"></select></div>
 </div>
 
@@ -634,7 +645,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <div class="sb" id="sb-lock"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div style="text-align:center;padding:8px 0 4px">
-    <div style="font-size:40px;margin-bottom:8px">🔒</div>
     <span id="lock-badge" class="planbadge pro">Pro</span>
     <div class="stitle" id="lock-title" style="margin-top:12px;text-align:center"></div>
     <div class="s" id="lock-body" style="margin:8px 16px 20px;text-align:center"></div>
@@ -647,14 +657,13 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <div class="sb" id="sb-iosinstall"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div style="text-align:center;padding:4px 0 2px">
-    <div style="font-size:38px;margin-bottom:6px">📲</div>
     <div class="stitle" style="text-align:center" data-i18n="pwa.iosTitle"></div>
     <div class="s" style="margin:6px 16px 16px;text-align:center" data-i18n="pwa.iosBody"></div>
   </div>
   <div style="display:flex;flex-direction:column;gap:12px;margin:0 4px 16px">
     <div style="display:flex;align-items:flex-start;gap:12px">
       <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px">1</div>
-      <div class="s" style="margin:0;padding-top:2px"><span data-i18n="pwa.iosStep1"></span> <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1.5px solid var(--ink);border-radius:5px;vertical-align:middle;font-size:13px">⬆️</span></div>
+      <div class="s" style="margin:0;padding-top:2px"><span data-i18n="pwa.iosStep1"></span> <span style="display:inline-flex;align-items:center;justify-content:center;width:22px;height:22px;border:1.5px solid var(--ink);border-radius:5px;vertical-align:middle;font-size:13px">↑</span></div>
     </div>
     <div style="display:flex;align-items:flex-start;gap:12px">
       <div style="flex-shrink:0;width:26px;height:26px;border-radius:50%;background:var(--brand);color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:14px">2</div>
@@ -673,7 +682,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <div class="sb" id="sb-pwainstall"><div class="sheet">
   <div class="grab" data-tm-click="dismissInstallPromotion()"></div>
   <div style="text-align:center;padding:6px 0 4px">
-    <div style="font-size:38px;margin-bottom:6px">📲</div>
     <div class="stitle" style="text-align:center;margin-bottom:8px" data-i18n="pwa.homeTitle"></div>
     <div class="s" style="margin:0 16px 20px;text-align:center" data-i18n="pwa.homeBody"></div>
   </div>
@@ -687,7 +695,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <div class="sb" id="sb-andinstall"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
   <div style="text-align:center;padding:4px 0 2px">
-    <div style="font-size:38px;margin-bottom:6px">📲</div>
     <div class="stitle" style="text-align:center" data-i18n="pwa.andTitle"></div>
     <div class="s" style="margin:6px 16px 16px;text-align:center" data-i18n="pwa.andBody"></div>
   </div>
@@ -822,9 +829,19 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 </div></div>
 
 <!-- TaxMate Assistant uses the existing TaxMate sheet pattern and canonical task state. -->
+<div class="sb" id="sb-refund"><div class="sheet" data-refund-capability="connected">
+  <div class="grab"></div>
+  <div class="review01-dialog-head"><h2 class="stitle" data-billing-title></h2><button class="review01-close" data-tm-click="closeSheet('refund')" data-i18n-aria="c.cancel">×</button></div>
+  <div data-billing-body></div>
+</div></div>
+<div class="sb" id="sb-billing"><div class="sheet">
+  <div class="grab"></div>
+  <div class="review01-dialog-head"><h2 class="stitle" data-billing-title></h2><button class="review01-close" data-tm-click="closeSheet('billing')" data-i18n-aria="c.cancel">×</button></div>
+  <div data-billing-body></div>
+</div></div>
 <div class="sb" id="sb-assistant"><div class="sheet">
   <div class="grab" data-tm-click="closeParentSheet(this)"></div>
-  <div class="stitle" id="assistant-title"></div>
+  <div class="review01-dialog-head"><div class="stitle" id="assistant-title"></div><button class="review01-close" data-tm-click="closeSheet('assistant')" data-i18n-aria="c.cancel">×</button></div>
   <div class="sub" id="assistant-summary" style="margin-bottom:16px"></div>
   <div class="assistant-task-list" id="assistant-task-list"></div>
   <div class="assistant-hidden-wrap" id="assistant-hidden-wrap" hidden>
@@ -832,7 +849,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="assistant-task-list" id="assistant-hidden-list"></div>
   </div>
   <button class="btn ghost" id="assistant-show-hidden" style="margin-top:14px" data-tm-click="assistantToggleHidden()"></button>
-  <button class="btn ghost" style="margin-top:8px" data-tm-click="closeSheet('assistant')" data-i18n="c.cancel"></button>
 </div></div>
 
 <!-- Deterministic onboarding mount: present before deferred application startup. -->
@@ -855,6 +871,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/money.js"></script>
 <script src="src/core/state-schema.js"></script>
 <script src="src/core/account-storage.js"></script>
+<script src="src/core/retention-policy.js"></script>
 <script src="src/core/assistant.js"></script>
 <script src="src/core/domain-schema.js"></script>
 <script src="src/core/revision-sync.js"></script>
@@ -870,6 +887,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/company-remuneration.js"></script>
 <script src="src/core/company-scenario.js"></script>
 <script src="src/core/company-tax.js"></script>
+<script src="src/core/company-statutory.js"></script>
+<script src="src/core/company-books.js"></script>
 <script src="src/core/company-deadlines.js"></script>
 <script src="src/core/company-workspace.js"></script>
 <script src="src/core/domain-migration.js"></script>
@@ -886,6 +905,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/sync.js"></script>
 <script src="src/core/entitlement.js"></script>
 <script src="src/core/company-access.js"></script>
+<script src="src/core/local-receipts.js"></script>
+<script src="src/core/backup-transfer.js"></script>
 <script src="src/integration/ltd/CanonicalCompanyDriver.js"></script>
 <script src="src/integration/ltd/TaxMateLtdUIFacade.js"></script>
 <script src="src/ui/ltd/workbench-renderer.js"></script>
@@ -893,6 +914,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/core/product-content.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>
+<script defer src="src/app/billing-copy.js"></script>
+<script defer src="src/app/billing-ui.js"></script>
 <script defer src="src/integration/ltd/TaxMateLtdProductionAdapter.js"></script>
 <script defer src="src/app/audit.js"></script>
 <!-- ═══════════ ONBOARDING OVERLAY (catch-up flow) ═══════════ -->
@@ -1054,5 +1077,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-confetti{font-size:40px;text-align:center;margin-bottom:4px;animation:obpop .5s cubic-bezier(.2,.7,.2,1)}
   @keyframes obpop{from{transform:scale(0)}60%{transform:scale(1.2)}to{transform:scale(1)}}
 </style>
+<link rel="stylesheet" href="src/ui/direction-a.css?v=20260905-1">
 </body>
 </html>

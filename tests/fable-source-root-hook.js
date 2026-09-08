@@ -1,0 +1,10 @@
+'use strict';
+const Module=require('node:module');
+const path=require('node:path');
+const fs=require('node:fs');
+const os=require('node:os');
+const sourceRoot=path.resolve(__dirname,'..');
+const resolveFilename=Module._resolveFilename;
+Module._resolveFilename=function(request,parent,isMain,options){return resolveFilename.call(this,typeof request==='string'?request.replace('<SOURCE_ROOT>',sourceRoot):request,parent,isMain,options);};
+const writeFileSync=fs.writeFileSync;
+fs.writeFileSync=function(file,...args){const target=typeof file==='string'&&file.startsWith('/tmp/')?path.join(os.tmpdir(),path.basename(file)):file;return writeFileSync.call(this,target,...args);};

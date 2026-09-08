@@ -17,15 +17,16 @@ test('account UI and authentication expose Google only', () => {
   assert.match(app, /const provider = new firebase\.auth\.GoogleAuthProvider\(\)/);
 });
 
-test('tax hero is green in light mode and preserves the dark treatment in dark mode', () => {
-  assert.match(app, /<div class="hero tax-hero">/);
+test('Review 01 uses the shared card module for the tax summary', () => {
+  assert.match(app, /<div class="card review01-tax-summary">/);
   assert.doesNotMatch(app, /class="hero" style="background:linear-gradient\(135deg,#1B2B3C,#16202B\)"/);
   assert.match(html, /:root\[data-theme="dark"\] \.tax-hero\{background:linear-gradient\(135deg,#1B2B3C,#16202B\)\}/);
 });
 
-test('floating add glyph has an explicit optical centering correction', () => {
-  assert.match(app, /class="fab-plus" aria-hidden="true">\+<\/span>/);
-  assert.match(html, /\.fab-plus\{display:block;line-height:1;transform:translateY\(-2px\)\}/);
+test('Direction A add action has an explicit translated text label', () => {
+  assert.match(app, /direction-a-list-action/);
+  assert.match(app, /t\(isInc\?'f.addIncome':'f.addExpense'\)/);
+  assert.doesNotMatch(app, /class="fab-plus"/);
 });
 
 test('promotion redemption is independent and appears before every plan card', () => {
@@ -48,7 +49,7 @@ test('Plans UI keeps Plus cadence and exposes the complete Founder-approved Pro 
   assert.match(app,/£3\.99 \/ month/);
   assert.match(app,/£29\.99 \/ year/);
   assert.match(app,/const accessible=t\('billing\.monthlyAria'\)/);
-  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99\/month<\/bdi>/);
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
   assert.match(app,/£99\.99\/year/);
   assert.doesNotMatch(app,/Pro annual price not yet available|Annual Pro price pending|Founder decision pending/i);
   assert.doesNotMatch(app,/Was £11\.99/);
@@ -68,7 +69,7 @@ test('draft persistence has one-shot suppression while canonical emits always re
   assert.match(renderer,/else if\(!opts\.skipPaint\) paintIfChanged\(\)/);
   assert.match(renderer,/function paintIfChanged\(\)\{ if\(UI\.mountedKey!==renderKey\(\)\) paint\(\); \}/);
   assert.doesNotMatch(renderer,/if\s*\(\s*key\s*===\s*UI\.mountedKey\s*\)\s*\{?\s*return/);
-  assert.match(adapter,/canonicalListener=\(\)=>\{if\(!driver\)return;driver\.reload\(\);facade\.emit\(\);\};root\.addEventListener\('taxmate:canonical-state-updated',canonicalListener\)/);
+  assert.match(adapter,/canonicalListener=\(\)=>\{if\(!driver\)return;driver\.reload\(\);driver\.setEntitlementSnapshot\(b\.entitlementSnapshot\(\)\);facade\.emit\(\);\};root\.addEventListener\('taxmate:canonical-state-updated',canonicalListener\)/);
   assert.doesNotMatch(adapter,/isFixtureSession|fixtureRepository|fixtureSession/);
   assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
   assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)[\s\S]*paint\(\);\s*\}\s*\n\s*function paint/);

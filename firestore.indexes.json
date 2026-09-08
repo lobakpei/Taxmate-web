@@ -1,1 +1,1 @@
-{"indexes":[],"fieldOverrides":[]}
+{"indexes":[],"fieldOverrides":[{"collectionGroup":"receiptAdmissions","fieldPath":"uid","indexes":[{"order":"ASCENDING","queryScope":"COLLECTION_GROUP"}]},{"collectionGroup":"receiptLtdAdmissions","fieldPath":"uid","indexes":[{"order":"ASCENDING","queryScope":"COLLECTION_GROUP"}]},{"collectionGroup":"admissionPins","fieldPath":"uid","indexes":[{"order":"ASCENDING","queryScope":"COLLECTION_GROUP"}]}]}

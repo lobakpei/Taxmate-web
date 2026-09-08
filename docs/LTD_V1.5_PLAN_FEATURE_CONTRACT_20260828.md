@@ -12,7 +12,7 @@ Status: Founder approved and pricing-corrected for the isolated production-integ
 - Pro monthly standard price: £11.99/month.
 - Pro annual price: £99.99/year (`amountMinor: 9999`), Founder approved.
 - Existing-user migration, grandfathering or legacy pricing: none.
-- Forbidden copy: previous-price or struck-through-price wording, any claim that the launch price is a legacy price, and any unapproved savings or free-month claim.
+- Approved display: standard £11.99/month struck through beside launch £9.99/month. Do not describe £11.99 as a price previously charged to customers or add an unapproved savings or free-month claim.
 
 ## Exact semantic action matrix
 
@@ -20,7 +20,7 @@ Status: Founder approved and pricing-corrected for the isolated production-integ
 |---|---:|---:|---:|---|
 | Create company | Block | Block | Allow | `pro_required` |
 | Resume/save onboarding draft | Block | Block | Allow | `pro_required` |
-| Read/open an existing Ltd workspace or record | Retained read-only | Retained read-only | Allow | No write or calculation side effect |
+| Read/open an existing Ltd workspace or record | Retained to tax-year end | Retained to tax-year end | Allow | Read-only through 5 April; unavailable from 6 April |
 | Create income, expense, shared/personally-paid expense, loan or share record | Block | Block | Allow | `pro_required` |
 | Edit/delete a draft; correct/reverse a committed record | Block | Block | Allow | `pro_required` |
 | Plan or calculate company/Corporation Tax periods | Block | Block | Allow | `pro_required` |
@@ -32,20 +32,20 @@ Status: Founder approved and pricing-corrected for the isolated production-integ
 | Record effective-dated ownership change | Block | Block | Allow | `pro_required` |
 | Companies House lookup/recheck | Block | Block | Allow | `pro_required` |
 | Generate a new working pack | Block | Block | Allow | `pro_required` |
-| Ltd cloud inbound hydration | Retained read-only | Retained read-only | Allow | Outbound writes remain blocked |
+| Ltd cloud inbound hydration | Retained to tax-year end | Retained while Plus is effective | Allow | Outbound writes remain blocked; unknown retention date fails closed |
 | Ltd cloud outbound sync | Block | Block | Allow | `pro_required` |
-| Ltd Data-only / Full Backup export | Retained export | Retained export | Allow | Existing data only; no mutation |
+| Ltd Data-only / Full Backup export | Retained to tax-year end | Retained to tax-year end | Allow | Existing data only through 5 April; unavailable from 6 April |
 | Ltd restore/import | Block | Block | Allow | `pro_required` |
-| Download existing owned evidence | Retained read | Retained read | Allow | Existing owner evidence only |
+| Download existing owned evidence | Retained to tax-year end | Retained to tax-year end | Allow | Existing owner evidence only through 5 April |
 | Remove company | Block | Block | Allow | `pro_required`; destructive confirmation still required |
 | Delete account | Allow | Allow | Allow | authenticated deletion contract applies |
 | Read archived-access status | Allow | Allow | Allow | read-only |
 
-Free and Plus may receive the semantic Home row and may open an existing retained Ltd workspace in read-only mode. They may hydrate and export their existing company data and download existing owned evidence, but cannot invoke an active action, calculate, restore, write, correct or enrich Ltd records.
+Free retains eligible LTD history to the end of the UK tax year of the actual paid-access end; effective Plus retains LTD history without a time limit while paid access continues. Both can read and export eligible retained records, without Pro-only operations or new LTD cloud writes. Whole-account retention also covers ordinary and partnership history. Basic explicit JSON/ZIP restore is distinct from active LTD operations; unavailable LTD records cannot block ordinary backup/restore. Unknown trusted access-end dates require verification. See the Founder-confirmed completion contract and retention matrix for deletion epochs and production activation boundaries.
 
 ## Enforcement boundary
 
-`src/core/company-access.js` owns the canonical mapping. It returns `retained_read_export` for the narrow retained-data actions when existing Ltd data is present and `pro_required` for active Free/Plus actions. `CanonicalCompanyDriver` applies the guard before state-changing and calculation actions. The facade only routes semantic success/failure and does not derive entitlement. Ltd Firestore/backup enforcement remains independently tested and must use the effective server entitlement before production release.
+`src/core/company-access.js` owns the canonical mapping. It returns `retained_read_export` for the narrow retained-data actions only before the tax-year boundary, `tax_year_retention_ended` from 6 April and `tax_year_retention_date_required` when the access-end date is unavailable. It returns `pro_required` for active Free/Plus actions. `CanonicalCompanyDriver` applies the guard before state-changing and calculation actions. The facade only routes semantic success/failure and does not derive entitlement. Ltd Firestore/backup enforcement remains independently tested and must use the effective server entitlement before production release.
 
 The Founder Preview defaults to a verified active Pro fixture. Explicit local-only `tier=free` and `tier=plus` modes exist to verify that the same retained Ltd Home row is locked and active callbacks fail closed. No preview entitlement is sent to Firebase or production providers.
 
