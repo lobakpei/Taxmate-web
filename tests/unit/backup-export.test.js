@@ -18,6 +18,26 @@ test('no-receipt and multiple linked-receipt collection is read-only',async()=>{
   assert.equal(rows.length,2);assert.deepEqual(rows.map(row=>row.entryId),['e1','e2']);assert.equal(JSON.stringify(state),before);
 });
 
+test('an owned Firebase URL already in the archive is not resolved and downloaded again as an orphan',async()=>{
+  const path='receipts/u/e1.jpg',url='https://firebasestorage.googleapis.com/v0/b/demo/o/'+encodeURIComponent(path)+'?alt=media&token=synthetic';
+  const state=baseState([entry('e1',null,url)]),before=JSON.stringify(state);let downloads=0,resolves=0;
+  const rows=await Backup.collectReceipts({state,user:{uid:'u'},...owned,listStorage:async()=>[{fullPath:path,getDownloadURL:async()=>{resolves++;throw new Error('unexpected duplicate lookup');}}],download:async value=>{downloads++;assert.equal(value,url);return download(value);}});
+  assert.equal(rows.length,1);assert.equal(downloads,1);assert.equal(resolves,0);assert.equal(rows[0].originalPath,url);assert.equal(JSON.stringify(state),before);
+  const archive=await Portable.createArchive({state,receipts:rows,nodeBuffer:true}),inspected=await Portable.inspectArchive(archive.archive);
+  assert.equal(inspected.receipts.length,1);assert.equal(inspected.preview.orphans,0);
+});
+
+test('fetch failures retain the exact download stage and receipt context without a token or a misleading sign-in request',async()=>{
+  const url='https://firebasestorage.googleapis.com/v0/b/demo/o/receipts%2Fu%2Fe1.jpg?alt=media&token=private-token';
+  for(const orphan of [false,true]){
+    const state=baseState(orphan?[]:[entry('e1',null,url)]);
+    const error=await Backup.collectReceipts({state,user:{uid:'u'},...owned,correlation:'backup-focused-test',listStorage:async()=>orphan?[{fullPath:'receipts/u/e1.jpg',getDownloadURL:async()=>url}]:[],download:async()=>{throw new TypeError('Failed to fetch');}}).then(()=>null,value=>value);
+    const diagnostic=Backup.diagnostic(error);
+    assert.equal(diagnostic.stage,orphan?'orphan_download':'receipt_download');assert.equal(diagnostic.path,'receipts/u/e1.jpg');assert.equal(diagnostic.errorClass,'typeerror');assert.equal(diagnostic.correlation,'backup-focused-test');
+    assert.doesNotMatch(JSON.stringify(diagnostic)+Backup.message(error),/private-token|Sign in/);assert.match(Backup.message(error),/Stopped while downloading/);
+  }
+});
+
 test('stale Storage path safely falls back to the same record URL and remains fail-closed in the archive',async()=>{
   const state=baseState([entry('e1','receipts/u/stale.jpg','https://example.test/retained-download-token')]),before=JSON.stringify(state);
   const rows=await Backup.collectReceipts({state,user:{uid:'u'},...owned,storageUrl:async()=>{throw Object.assign(new Error('missing'),{code:'storage/object-not-found'});},listStorage:async()=>[],download});

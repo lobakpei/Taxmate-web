@@ -62,6 +62,20 @@ test('2.1.15 and 2.1.16 Founder clients remain compatible during the 2.1.17 roll
   }
 });
 
+test('the released frontend and supported intermediate versions can use the identity-gated Founder shortcut',async()=>{
+  const {VERSIONS}=require('../../src/core/versions');
+  assert.equal(Lookup.FOUNDER_CLIENT_VERSION,VERSIONS.APP_VERSION);
+  for(const clientVersion of ['2.1.18','2.1.21','2.1.25',VERSIONS.APP_VERSION]){
+    const {handler,calls}=harness({requiredFounderClientVersion:undefined});
+    const result=await handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}});
+    assert.equal(result.founderShortcut,true);assert.equal(result.verificationStatus,'manual_unverified');assert.equal(result.company.number,null);assert.equal(calls.fetch.length,0);assert.deepEqual(calls.tier,[{uid:founder.uid,tier:'pro'}]);
+  }
+  for(const clientVersion of ['','2.1.14','2.1.27','2.2.0','2.1.26-preview']){
+    const {handler,calls}=harness({requiredFounderClientVersion:undefined});
+    await assert.rejects(()=>handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}}),error=>error.code==='invalid-argument');assert.equal(calls.fetch.length,0);assert.equal(calls.tier.length,0);
+  }
+});
+
 test('ordinary, unverified, non-Google and unauthenticated identities receive the ordinary invalid-number result with zero provider access',async()=>{
   for(const auth of [ordinary,null,{...founder,token:{...founder.token,email_verified:false}},{...founder,token:{...founder.token,firebase:{sign_in_provider:'password'}}}]){
     const {handler,calls}=harness();

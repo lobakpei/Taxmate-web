@@ -63,7 +63,7 @@
   function message(error){
     const value=diagnostic(error),count=value.count||1,receipt=`${count} receipt${count===1?'':'s'}`;
     const copy={
-      [CATEGORIES.AUTH_CONNECTIVITY]:'Sign in and reconnect to the internet, then try Full Backup again. Your data was not changed.',
+      [CATEGORIES.AUTH_CONNECTIVITY]:"Full Backup couldn't connect to your receipt storage. Check your connection and try again. Your data was not changed.",
       [CATEGORIES.STORAGE_LIST]:"TaxMate couldn't check your receipt files. Check your connection and try again. Your data was not changed.",
       [CATEGORIES.FOREIGN_REFERENCE]:'TaxMate found a receipt reference that does not belong to this account. Full Backup stopped safely and your data was not changed.',
       [CATEGORIES.REFERENCED_RECEIPT]:`${receipt} referenced by your records could not be found. Full Backup stopped so nothing was omitted. Your data was not changed.`,
@@ -76,7 +76,8 @@
       [CATEGORIES.CANCELLED]:'Full Backup was cancelled. Your data was not changed.',
       [CATEGORIES.UNKNOWN]:"A full backup couldn't be created. Your data was not changed."
     };
-    const details=[value.recordId&&`Record ID: ${value.recordId}`,value.path&&`Path: ${value.path}`].filter(Boolean).join('\n');return copy[value.category]+(details?'\n\n'+details:'');
+    const steps={storage_list:'checking receipt files',receipt_resolve:'locating a receipt',receipt_download:'downloading a receipt',orphan_resolve:'locating an unlinked receipt',orphan_download:'downloading an unlinked receipt',archive_create:'creating the ZIP'};
+    const details=[steps[value.stage]&&`Stopped while ${steps[value.stage]}.`,value.recordId&&`Record ID: ${value.recordId}`,value.path&&`Path: ${value.path}`].filter(Boolean).join('\n');return copy[value.category]+(details?'\n\n'+details:'');
   }
   async function bounded(operation,options={}){
     const stage=options.stage||'backup_operation',correlation=options.correlation,recordId=options.recordId,path=options.path,outer=options.signal;
@@ -91,7 +92,8 @@
   async function firstDownload(urls,download,options={}){
     let lastError=null;
     for(const url of urls){try{return await bounded(signal=>download(url,{signal}),options);}catch(error){lastError=error;if(classify(error).backupCategory===CATEGORIES.CANCELLED)throw error;}}
-    const category=classify(lastError).backupCategory;if([CATEGORIES.AUTH_CONNECTIVITY,CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw lastError;
+    const category=classify(lastError).backupCategory;if([CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw lastError;
+    if(category===CATEGORIES.AUTH_CONNECTIVITY)throw failure(category,{count:1,cause:lastError,...options,stage:options.stage||'receipt_download'});
     throw failure(CATEGORIES.RECEIPT_DOWNLOAD,{count:1,cause:lastError,stage:options.stage||'receipt_download',correlation:options.correlation,recordId:options.recordId,path:options.path});
   }
   async function collectReceipts(input){
@@ -123,7 +125,7 @@
         skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:http(foreign)?'receipt_url':'receipt_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'receipt_owner',correlation,...context(group,source)});
       }
     }
-    const result=[],seen=new Set(),linkedPaths=new Set([...byPath.keys(),...[...byPath.values()].map(group=>group.ownedFallbackPath).filter(Boolean)]);
+    const result=[],seen=new Set(),linkedSources=[...byPath.keys(),...[...byPath.values()].map(group=>group.ownedFallbackPath).filter(Boolean)],linkedPaths=new Set(linkedSources.flatMap(source=>[source,receiptPath(source)].filter(Boolean)));
     let completed=0;const total=byPath.size+(input&&input.user?storageItems.filter(item=>item&&item.fullPath&&!linkedPaths.has(item.fullPath)).length:0);progress({stage:'receipt_download',completed,total});
     for(const [source,group] of byPath){
       const local=typeof input.localReceipt==='function'?await input.localReceipt(source):null;
@@ -134,7 +136,7 @@
         if(!input.user||typeof input.storageUrl!=='function')throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,stage:'receipt_resolve',correlation,...context(group,downloadSource)});
         const owned=receiptOwner(downloadSource)===uid&&activeUid===uid&&stateOwnerUid===uid;
         if(!owned){skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'receipt_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'receipt_owner',correlation,...context(group,downloadSource)});}
-        try{const resolved=await bounded(childSignal=>input.storageUrl(downloadSource,{signal:childSignal}),{signal,timeoutMs,deadlineAt,stage:'receipt_resolve',correlation,...context(group,downloadSource)});if(resolved)urls.push(resolved);}catch(error){const category=classify(error).backupCategory;if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if([CATEGORIES.AUTH_CONNECTIVITY,CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw error;else if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'receipt_resolve',correlation,...context(group,downloadSource)});}
+        try{const resolved=await bounded(childSignal=>input.storageUrl(downloadSource,{signal:childSignal}),{signal,timeoutMs,deadlineAt,stage:'receipt_resolve',correlation,...context(group,downloadSource)});if(resolved)urls.push(resolved);}catch(error){const category=classify(error).backupCategory;if(group.fallbackUrls.length&&fallbackResolutionError(error)){}else if([CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw error;else if(category===CATEGORIES.AUTH_CONNECTIVITY)throw failure(category,{count:1,cause:error,stage:'receipt_resolve',correlation,...context(group,downloadSource)});else if(!group.fallbackUrls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'receipt_resolve',correlation,...context(group,downloadSource)});}
       }
       urls=urls.concat(group.fallbackUrls).filter((value,index,list)=>http(value)&&list.indexOf(value)===index);
       if(!urls.length)throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,stage:'receipt_resolve',correlation,...context(group,downloadSource)});
@@ -148,7 +150,7 @@
       for(const item of storageItems){
         if(!item||!item.fullPath||seen.has(item.fullPath)||linkedPaths.has(item.fullPath))continue;
         if(receiptOwner(item.fullPath)!==String(input.user.uid||'')){skippedForeignCount++;if(typeof input.onForeignReference==='function')input.onForeignReference({kind:'orphan_path'});throw failure(CATEGORIES.FOREIGN_REFERENCE,{count:1,stage:'orphan_owner',correlation,recordId:'unlinked',path:item.fullPath});}
-        let url;try{url=await bounded(childSignal=>typeof item.getDownloadURL==='function'?item.getDownloadURL({signal:childSignal}):input.storageUrl(item.fullPath,{signal:childSignal}),{signal,timeoutMs,deadlineAt,stage:'orphan_resolve',correlation,recordId:'unlinked',path:item.fullPath});}catch(error){const category=classify(error).backupCategory;if([CATEGORIES.AUTH_CONNECTIVITY,CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw error;throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'orphan_resolve',correlation,recordId:'unlinked',path:item.fullPath});}
+        let url;try{url=await bounded(childSignal=>typeof item.getDownloadURL==='function'?item.getDownloadURL({signal:childSignal}):input.storageUrl(item.fullPath,{signal:childSignal}),{signal,timeoutMs,deadlineAt,stage:'orphan_resolve',correlation,recordId:'unlinked',path:item.fullPath});}catch(error){const category=classify(error).backupCategory;if([CATEGORIES.TIMEOUT,CATEGORIES.CANCELLED].includes(category))throw error;if(category===CATEGORIES.AUTH_CONNECTIVITY)throw failure(category,{count:1,cause:error,stage:'orphan_resolve',correlation,recordId:'unlinked',path:item.fullPath});throw failure(CATEGORIES.REFERENCED_RECEIPT,{count:1,cause:error,stage:'orphan_resolve',correlation,recordId:'unlinked',path:item.fullPath});}
         const binary=await firstDownload([url],download,{signal,timeoutMs,deadlineAt,stage:'orphan_download',correlation,recordId:'unlinked',path:item.fullPath});result.push({entryId:null,originalPath:item.fullPath,...binary});completed++;progress({stage:'orphan_download',completed,total,recordId:'unlinked',path:item.fullPath});
       }
     }
