@@ -75,7 +75,7 @@ test('one facade persists review to repository, portable backup and cloud projec
   const {facade,driver}=make(),before=driver.statutorySnapshot().checklist;
   const result=await facade.onSaveStatutoryReview({expectedRevision:0,sourceFingerprint:before.sourceFingerprint,facts:{noPayroll:fact(true),noDividends:fact(true)}});assert.equal(result.status,'ok');assert.equal(result.data.statutory.checklist.reviewStatus,'current');
   driver.reload();assert.equal(driver.statutorySnapshot().checklist.reviewStatus,'current');
-  const exported=State.createExport(driver.state,{appVersion:'2.1.24',buildId:'statutory-test'}),restored=State.importBackup(exported,driver.now(),'restore');State.validateState(restored);assert.equal(restored.domain.companyProfiles[0].statutoryReview.revision,1);
+  const exported=State.createExport(driver.state,{appVersion:'2.1.25',buildId:'statutory-test'}),restored=State.importBackup(exported,driver.now(),'restore');State.validateState(restored);assert.equal(restored.domain.companyProfiles[0].statutoryReview.revision,1);
   const records=Sync.recordsForSync(restored);assert.equal(records.companyProfiles[0].statutoryReview.facts.noPayroll.value,true);
   const restoredDriver=new CanonicalCompanyDriver({state:restored,now:driver.now,enforceEntitlement:false});assert.equal(restoredDriver.statutorySnapshot().checklist.reviewStatus,'current');
   const snapshot=JSON.stringify(driver.state);assert.equal((await facade.onSaveStatutoryReview({expectedRevision:0,sourceFingerprint:before.sourceFingerprint,facts:{}})).status,'review_required');assert.equal(JSON.stringify(driver.state),snapshot);
