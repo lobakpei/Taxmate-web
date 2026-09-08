@@ -6,13 +6,14 @@
 'use strict';
 
 const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
-const COPY_KEY_BY_REASON=Object.freeze({pro_required:'plan.ltd_pro_only',one_active_ltd_limit:'add.one_ltd_limit'});
+const COPY_KEY_BY_REASON=Object.freeze({pro_required:'plan.ltd_pro_only',tax_year_retention_ended:'plan.ltd_retention_ended',tax_year_retention_date_required:'plan.ltd_retention_date_required',one_active_ltd_limit:'add.one_ltd_limit'});
 const semanticError=(reasonCode='facade_failure',params={})=>({reasonCode,copyKey:COPY_KEY_BY_REASON[reasonCode]||'error.fix_issue',params:clone(params)});
 const fieldError=(field,reasonCode,copyKey='error.fix_issue',params={})=>({field,reasonCode,copyKey,params:clone(params)});
 const CALLBACKS=Object.freeze([
+  'onUpdatePayrollReporting','onSaveStatutoryReview',
   'onOpenHome','onAddBusiness','onAddBusinessCategoryChosen','onSelfEmployedStructureChosen','onOpenLegacyBusiness','onEditLegacyBusiness','onOpenExistingCompany','onResumeCompanyDraft','onSaveCompanyDraft','onContinueStep','onLookupCompaniesHouse','onRecheckCompaniesHouse','onPlanCompanyPeriods','onFixCompanyFact','onDraftChanged',
   'onOpenInfo','onCloseInfo','onBack','onDismissRequested','onDiscardConfirmed','onDiscardCancelled','onSetWorkspaceArea','onOpenMetric',
-  'onAddIncome','onAddExpense','onAddSharedExpense','onAddPersonallyPaidExpense','onAddDirectorLoanFunding','onRecordDirectorLoanRepayment','onRecordShareFunding','onOpenRecord','onEditDraft','onSaveDraftEdit','onDeleteDraft','onCorrectRecord',
+  'onAddIncome','onAddExpense','onAddSharedExpense','onAddPersonallyPaidExpense','onAddDirectorLoanFunding','onRecordDirectorLoanRepayment','onRecordShareFunding','onCreateSalesInvoice','onRecordSalesInvoicePayment','onCorrectSalesInvoice','onVoidSalesInvoice','onCreateSupplierBill','onRecordSupplierBillPayment','onCorrectSupplierBill','onVoidSupplierBill','onRegisterCompanyAsset','onRecordCompanyAssetPayment','onCorrectCompanyAsset','onVoidCompanyAsset','onRecordCompanyDepreciation','onReverseCompanyDepreciation','onReverseCompanyBookPayment','onMatchBankStatement','onDeleteBankReconciliation','onPrepareCompanyYear','onDownloadSelfFilingPack','onOpenRecord','onEditDraft','onSaveDraftEdit','onDeleteDraft','onCorrectRecord',
   'onRunCtEstimate','onRunScenario','onRecordSalary','onDeclareDividend','onRecordDividendPayment','onOpenCompanyEdit','onEditCompany','onOpenOwnershipChange','onChangeOwnership','onDownloadWorkingPack','onRemoveCompany','onResetPreview'
 ]);
 
@@ -55,6 +56,7 @@ class TaxMateLtdUIFacade{
   }
 
   onOpenHome(){this.route('home',{mode:this.driver.mode});return Promise.resolve(this.result({status:'ok',nextRoute:'home'}));}
+  onUpdatePayrollReporting(input){return this.execute('onUpdatePayrollReporting',input,this.driver.updatePayrollReporting);}
   onAddBusiness(){this.route('business.category-choice');return Promise.resolve(this.result({status:'ok',nextRoute:'business.category-choice'}));}
   onAddBusinessCategoryChosen(input){return this.execute('onAddBusinessCategoryChosen',input,this.driver.chooseBusinessCategory);}
   onSelfEmployedStructureChosen(input){return this.execute('onSelfEmployedStructureChosen',input,this.driver.chooseSelfEmployedStructure);}
@@ -76,7 +78,7 @@ class TaxMateLtdUIFacade{
   onDismissRequested(input={}){const route=this.workflow.currentRoute(),dirty=route?this.drafts.hasDirty(route.screenId):false,outcome=this.workflow.requestDismiss(input.reason||'cancel',dirty);this.emit();return Promise.resolve(this.result({status:outcome.kind==='confirm_discard'?'review_required':'ok',reviewReasons:outcome.kind==='confirm_discard'?['unsaved_changes_confirmation_required']:[],data:{outcome}}));}
   onDiscardConfirmed(){const route=this.workflow.currentRoute();if(route)this.drafts.clear(route.screenId);const outcome=this.workflow.confirmDiscard();this.workflow.enter('home',{mode:this.driver.mode});this.emit();return Promise.resolve(this.result({status:'ok',data:{outcome},nextRoute:'home'}));}
   onDiscardCancelled(){const outcome=this.workflow.cancelDiscard();this.emit();return Promise.resolve(this.result({status:'ok',data:{outcome}}));}
-  onSetWorkspaceArea(input={}){const area=['overview','money','tax','records'].includes(input.area)?input.area:'overview',route=`ltd.workspace.${area}`;return this.execute('onSetWorkspaceArea',input,function(){return this.routeAccess('read',route,{area});});}
+  onSetWorkspaceArea(input={}){const area=['overview','money','tax','records'].includes(input.area)?input.area:'overview',route=`ltd.workspace.${area}`;return this.execute('onSetWorkspaceArea',input,function(){return this.routeAccess('read',route,{area,...(area==='tax'&&input.view==='pay'?{view:'pay'}:{})});});}
   onOpenMetric(input={}){return this.execute('onOpenMetric',input,function(value){return this.routeAccess('read','ltd.workspace.metric-detail',{metricId:value.metricId||null});});}
 
   onAddIncome(input){return this.execute('onAddIncome',{...input,type:'company_income'},this.driver.transaction);}
@@ -86,6 +88,26 @@ class TaxMateLtdUIFacade{
   onAddDirectorLoanFunding(input){return this.execute('onAddDirectorLoanFunding',{...input,type:'director_loan_funding'},this.driver.transaction);}
   onRecordDirectorLoanRepayment(input){return this.execute('onRecordDirectorLoanRepayment',{...input,type:'director_loan_repayment'},this.driver.transaction);}
   onRecordShareFunding(input){return this.execute('onRecordShareFunding',{...input,type:'share_capital_funding'},this.driver.transaction);}
+  onCreateSalesInvoice(input){return this.execute('onCreateSalesInvoice',input,this.driver.createSalesInvoice);}
+  onRecordSalesInvoicePayment(input){return this.execute('onRecordSalesInvoicePayment',input,this.driver.recordSalesInvoicePayment);}
+  onCorrectSalesInvoice(input){return this.execute('onCorrectSalesInvoice',input,this.driver.correctSalesInvoice);}
+  onVoidSalesInvoice(input){return this.execute('onVoidSalesInvoice',input,this.driver.voidSalesInvoice);}
+  onCreateSupplierBill(input){return this.execute('onCreateSupplierBill',input,this.driver.createSupplierBill);}
+  onRecordSupplierBillPayment(input){return this.execute('onRecordSupplierBillPayment',input,this.driver.recordSupplierBillPayment);}
+  onCorrectSupplierBill(input){return this.execute('onCorrectSupplierBill',input,this.driver.correctSupplierBill);}
+  onVoidSupplierBill(input){return this.execute('onVoidSupplierBill',input,this.driver.voidSupplierBill);}
+  onRegisterCompanyAsset(input){return this.execute('onRegisterCompanyAsset',input,this.driver.registerCompanyAsset);}
+  onRecordCompanyAssetPayment(input){return this.execute('onRecordCompanyAssetPayment',input,this.driver.recordCompanyAssetPayment);}
+  onCorrectCompanyAsset(input){return this.execute('onCorrectCompanyAsset',input,this.driver.correctCompanyAsset);}
+  onVoidCompanyAsset(input){return this.execute('onVoidCompanyAsset',input,this.driver.voidCompanyAsset);}
+  onRecordCompanyDepreciation(input){return this.execute('onRecordCompanyDepreciation',input,this.driver.recordCompanyDepreciation);}
+  onReverseCompanyDepreciation(input){return this.execute('onReverseCompanyDepreciation',input,this.driver.reverseCompanyDepreciation);}
+  onReverseCompanyBookPayment(input){return this.execute('onReverseCompanyBookPayment',input,this.driver.reverseCompanyBookPayment);}
+  onMatchBankStatement(input){return this.execute('onMatchBankStatement',input,this.driver.matchBankStatement);}
+  onDeleteBankReconciliation(input){return this.execute('onDeleteBankReconciliation',input,this.driver.deleteBankReconciliation);}
+  onPrepareCompanyYear(input){return this.execute('onPrepareCompanyYear',input,this.driver.prepareCompanyYear);}
+  onSaveStatutoryReview(input){return this.execute('onSaveStatutoryReview',input,this.driver.saveStatutoryReview);}
+  onDownloadSelfFilingPack(input){return this.execute('onDownloadSelfFilingPack',input,this.driver.selfFilingPack);}
   onOpenRecord(input){return this.execute('onOpenRecord',input,this.driver.openRecord);}
   onEditDraft(input){return this.execute('onEditDraft',input,this.driver.openDraftEdit);}
   onSaveDraftEdit(input){return this.execute('onSaveDraftEdit',input,this.driver.saveDraftEdit);}

@@ -4,13 +4,41 @@ service cloud.firestore {
     function signedIn() { return request.auth != null; }
     function owner(uid) { return signedIn() && request.auth.uid == uid; }
     function entitlementPath(uid) { return /databases/$(database)/documents/users/$(uid)/entitlements/current; }
+    function retentionPath(uid) { return /databases/$(database)/documents/users/$(uid)/retention/current; }
+    function hasRetention(uid) { return exists(retentionPath(uid)); }
+    function retentionReady(uid) {
+      return (!hasRetention(uid) || get(retentionPath(uid)).data.status in ['complete', 'complete_with_warnings']) && !retentionDue(uid);
+    }
+    function retentionDue(uid) {
+      let ent = hasEntitlement(uid) ? get(entitlementPath(uid)).data : {};
+      let r = 'accountRetention' in ent ? ent.accountRetention : {};
+      return ('purgeRequired' in r && r.purgeRequired == true)
+        || ('deleteAfterAt' in r && r.deleteAfterAt is number && r.deleteAfterAt <= request.time.toMillis()
+          && !paidTierAtLeast(uid, ['plus','pro']) && !graceTierAtLeast(uid, ['plus','pro']) && !projectedPromotionAccess(uid,'plus') && !promotionTierAtLeast(uid,['plus','pro'])
+          && !('lastDeletionCutoffDate' in r && 'scheduledDeletionDate' in r && r.lastDeletionCutoffDate >= r.scheduledDeletionDate));
+    }
+    function retentionEpoch(uid) { return hasRetention(uid) ? get(retentionPath(uid)).data.epoch : 0; }
+    function readableAtRetentionEpoch(uid) {
+      return retentionReady(uid) && (resource == null || !hasRetention(uid) || (resource.data.retentionEpoch is number && resource.data.retentionEpoch == retentionEpoch(uid)));
+    }
+    function writableAtRetentionEpoch(uid) {
+      return retentionReady(uid) && (!hasRetention(uid) || (request.resource.data.retentionEpoch is number && request.resource.data.retentionEpoch == retentionEpoch(uid)));
+    }
     function hasEntitlement(uid) { return exists(entitlementPath(uid)); }
+    function graceTierAtLeast(uid, minimum) {
+      let ent = hasEntitlement(uid) ? get(entitlementPath(uid)).data : {};
+      return 'lastPaidTier' in ent && ent.lastPaidTier in minimum && 'graceUntil' in ent && ent.graceUntil > request.time.toMillis();
+    }
     function paidTierAtLeast(uid, minimum) {
-      return hasEntitlement(uid)
+      let ent = hasEntitlement(uid) ? get(entitlementPath(uid)).data : {};
+      let p = 'paidAccess' in ent ? ent.paidAccess : {};
+      return ('pro' in minimum && 'proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
+        || ('plus' in minimum && 'plusExpiresAt' in p && p.plusExpiresAt > request.time.toMillis())
+        || (hasEntitlement(uid) && !('paidAccess' in ent)
         && get(entitlementPath(uid)).data.subscriptionStatus in ['active', 'trialing']
         && get(entitlementPath(uid)).data.paidTier in minimum
         && (!('currentPeriodEnd' in get(entitlementPath(uid)).data)
-          || get(entitlementPath(uid)).data.currentPeriodEnd > request.time.toMillis());
+          || get(entitlementPath(uid)).data.currentPeriodEnd > request.time.toMillis()));
     }
     function promotionTierAtLeast(uid, minimum) {
       return hasEntitlement(uid)
@@ -43,8 +71,8 @@ service cloud.firestore {
         && request.resource.data.schemaVersion == 5;
     }
     function validLtdRecord(collection, recordId) {
-      return collection in ['persons', 'entities', 'companyProfiles', 'companyProfileRevisions', 'companyOwnershipVersions', 'projects', 'paymentAccounts', 'economicEvents', 'companyTaxPeriods', 'companyLossRecords', 'salaryRecords', 'dividendDeclarations', 'personalIncomeLinks']
-        && request.resource.data.keys().hasOnly(['schemaVersion', 'companyId', 'collection', 'documentId', 'recordId', 'revision', 'updatedAt', 'deviceId', 'deletedAt', 'payload', 'checksum'])
+      return collection in ['persons', 'entities', 'companyProfiles', 'companyProfileRevisions', 'companyOwnershipVersions', 'projects', 'paymentAccounts', 'economicEvents', 'companyTaxPeriods', 'companyLossRecords', 'salaryRecords', 'dividendDeclarations', 'personalIncomeLinks', 'salesInvoices', 'supplierBills', 'fixedAssets', 'bankReconciliations']
+        && request.resource.data.keys().hasOnly(['schemaVersion', 'companyId', 'collection', 'documentId', 'recordId', 'revision', 'updatedAt', 'deviceId', 'deletedAt', 'payload', 'checksum', 'retentionEpoch'])
         && request.resource.data.schemaVersion == 1
         && request.resource.data.companyId is string
         && request.resource.data.companyId.size() > 0
@@ -61,7 +89,8 @@ service cloud.firestore {
         && request.resource.data.deviceId is string
         && request.resource.data.deviceId.size() <= 128
         && request.resource.data.checksum is string
-        && request.resource.data.checksum.size() <= 128;
+        && request.resource.data.checksum.size() <= 128
+        && (!hasRetention(request.auth.uid) || (request.resource.data.retentionEpoch is number && request.resource.data.retentionEpoch == retentionEpoch(request.auth.uid)));
     }
     function activeLtdAnchorPath(uid) { return /databases/$(database)/documents/users/$(uid)/ltdControl/activeCompany; }
     function activeLtdMatches(uid) {
@@ -69,16 +98,65 @@ service cloud.firestore {
         && get(activeLtdAnchorPath(uid)).data.status == 'active_slot_claimed'
         && get(activeLtdAnchorPath(uid)).data.activeCompanyId == request.resource.data.companyId;
     }
+    function memberRecordVisible(partnershipId) {
+      let memberData = get(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid)).data;
+      return retentionReady(request.auth.uid)
+        && (!hasRetention(request.auth.uid) || resource.data.date >= get(retentionPath(request.auth.uid)).data.cutoffDate)
+        && (!('retentionCutoffDate' in memberData) || (resource.data.date is string && resource.data.date >= memberData.retentionCutoffDate));
+    }
+    function memberRecordWritable(partnershipId) {
+      let memberData = get(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid)).data;
+      return retentionReady(request.auth.uid) && writableAtRetentionEpoch(request.auth.uid)
+        && (!hasRetention(request.auth.uid) || request.resource.data.date >= get(retentionPath(request.auth.uid)).data.cutoffDate)
+        && (!('retentionCutoffDate' in memberData) || (request.resource.data.date is string && request.resource.data.date >= memberData.retentionCutoffDate));
+    }
+    function safeSharedReceipt() {
+      let data=request.resource.data;
+      return (data.get('receiptPath',null) == null && data.get('receiptUrl',null) == null)
+        || (resource != null && data.get('receiptPath',null) == resource.data.get('receiptPath',null) && data.get('receiptUrl',null) == resource.data.get('receiptUrl',null))
+        || ('receiptPath' in data && data.receiptPath is string && data.receiptPath.matches('receipts/' + request.auth.uid + '/[^/]+') && retentionReady(request.auth.uid));
+    }
+    function receiptAdmitted(path) {
+      return exists(path) && get(path).data.uid == request.auth.uid
+        && get(path).data.expiresAt > request.time.toMillis()
+        && get(path).data.payload == request.resource.data
+        && !existsAfter(path);
+    }
+    function ltdReceiptAdmitted(uid,collection,recordId) {
+      let path=/databases/$(database)/documents/users/$(uid)/receiptLtdAdmissions/current;
+      return exists(path) && get(path).data.uid == request.auth.uid
+        && get(path).data.expiresAt > request.time.toMillis()
+        && get(path).data.records[collection][recordId] == request.resource.data
+        && !existsAfter(path);
+    }
+    function admissionAccountReady(uid) {
+      let reset=/databases/$(database)/documents/accountResets/$(uid);
+      return retentionReady(uid) && (!exists(reset) || !(get(reset).data.status in ['deleting','failed']));
+    }
+    function liveAdmission(uid) {
+      return owner(uid) && resource.data.uid == uid
+        && resource.data.expiresAt > request.time.toMillis() && admissionAccountReady(uid);
+    }
+    function personalAdmissionReadable(uid) {
+      return liveAdmission(uid) && (!hasRetention(uid) || resource.data.payload.retentionEpoch == retentionEpoch(uid));
+    }
+    function sharedAdmissionReadable(partnershipId,uid) {
+      let memberPath=/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(uid);
+      return liveAdmission(uid) && member(partnershipId) && pro(uid)
+        && (!hasRetention(uid) || (resource.data.payload.retentionEpoch == retentionEpoch(uid) && resource.data.payload.date >= get(retentionPath(uid)).data.cutoffDate))
+        && (!('retentionCutoffDate' in get(memberPath).data) || resource.data.payload.date >= get(memberPath).data.retentionCutoffDate);
+    }
 
     match /users/{uid} {
       allow read, write: if owner(uid);
-      match /entries/{entryId} { allow read: if owner(uid); allow create, update: if owner(uid) && validRecord() && request.resource.data.id == entryId; allow delete: if false; }
-      match /app/{document=**} { allow read, write: if owner(uid); }
+      match /entries/{entryId} { allow read: if owner(uid) && readableAtRetentionEpoch(uid); allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && validRecord() && receiptAdmitted(/databases/$(database)/documents/users/$(uid)/entries/$(entryId)/receiptAdmissions/$(request.auth.uid)) && request.resource.data.id == entryId; allow delete: if false; }
+      match /app/{document} { allow read: if owner(uid) && readableAtRetentionEpoch(uid); allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && receiptAdmitted(/databases/$(database)/documents/users/$(uid)/app/$(document)/receiptAdmissions/$(request.auth.uid)); allow delete: if false; }
       match /entitlements/{document=**} { allow read: if owner(uid); allow write: if false; }
+      match /retention/{document=**} { allow read: if owner(uid); allow write: if false; }
       match /ltdControl/{document=**} { allow read: if owner(uid); allow write: if false; }
       match /ltd/v1/{collection}/{recordId} {
-        allow read: if owner(uid);
-        allow create, update: if owner(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId);
+        allow read: if owner(uid) && readableAtRetentionEpoch(uid);
+        allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId) && ltdReceiptAdmitted(uid,collection,recordId);
         allow delete: if false;
       }
     }
@@ -91,15 +169,36 @@ service cloud.firestore {
       match /members/{uid} {
         allow read: if member(partnershipId);
         allow create: if false;
-        allow update, delete: if request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid;
+        allow update: if (request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['retentionCutoffDate','retentionEpoch']);
+        allow delete: if (request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid) && retentionReady(uid);
       }
       match /entries/{entryId} {
-        allow read: if member(partnershipId);
-        allow create, update: if member(partnershipId) && pro(request.auth.uid) && validRecord() && request.resource.data.id == entryId;
+        allow read: if member(partnershipId) && memberRecordVisible(partnershipId);
+        allow create, update: if member(partnershipId) && memberRecordWritable(partnershipId) && safeSharedReceipt() && receiptAdmitted(/databases/$(database)/documents/partnerships/$(partnershipId)/entries/$(entryId)/receiptAdmissions/$(request.auth.uid)) && pro(request.auth.uid) && validRecord() && request.resource.data.id == entryId;
         allow delete: if false;
       }
     }
 
+    // Admission creation/update remains server-only. Consumption and the exact
+    // authorised ledger mutation must commit atomically; no replay is possible.
+    match /{target=**}/receiptAdmissions/{uid} {
+      allow delete: if owner(uid) && resource.data.uid == uid;
+      allow create, update: if false;
+    }
+    match /users/{uid}/entries/{entryId}/receiptAdmissions/{writer} {
+      allow get: if writer == uid && personalAdmissionReadable(uid);
+    }
+    match /users/{uid}/app/{document}/receiptAdmissions/{writer} {
+      allow get: if writer == uid && personalAdmissionReadable(uid);
+    }
+    match /partnerships/{partnershipId}/entries/{entryId}/receiptAdmissions/{uid} {
+      allow get: if sharedAdmissionReadable(partnershipId,uid);
+    }
+    match /users/{uid}/receiptLtdAdmissions/current {
+      allow get: if liveAdmission(uid) && pro(uid) && (!hasRetention(uid) || resource.data.retentionEpoch == retentionEpoch(uid));
+      allow delete: if owner(uid) && resource.data.uid == uid;
+      allow create, update: if false;
+    }
     match /accountResets/{uid} { allow read: if owner(uid); allow write: if false; }
     // Legacy cached clients read this server-owned safety document while they
     // upgrade. Reads stay UID-isolated and client writes remain impossible.

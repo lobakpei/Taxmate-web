@@ -96,7 +96,7 @@ test('social preview is the exact supplied Founder-approved 1200 by 630 PNG',()=
 });
 
 test('Home Add income uses a scoped white ink override without changing Add expense or the global action token',()=>{
-  assert.match(home,/\.homecta \.home-add-income\{color:#fff\}/);assert.match(app,/class="btn home-add-income" data-tm-click="openEntry\('income'\)"/);assert.match(app,/class="btn danger-soft" data-tm-click="openEntry\('expense'\)"/);assert.match(home,/--brand-action-ink:#10231B/);
+  assert.match(home,/\.homecta \.home-add-income\{color:#fff\}/);assert.match(app,/class="btn home-add-income" data-tm-click="openEntry\('income'\)"/);assert.match(app,/class="btn ghost" data-tm-click="openEntry\('expense'\)"/);assert.match(home,/--brand-action-ink:#10231B/);
 });
 
 test('App Icon stays out of Home, Tax and Ltd heroes and is limited to identity metadata/assets',()=>{

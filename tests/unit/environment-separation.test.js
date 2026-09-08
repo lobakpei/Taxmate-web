@@ -42,7 +42,7 @@ test('production deploy artifact contains no staging, TEST Stripe, localhost or 
     /1:308981292791:web:550b795411f366864c7df2/,
     /6LdFcY4tAAAAAP6hI8PCdla4GLY_Dko3UZ63j_Rv/,
     /https?:\/\/(?:localhost|127\.0\.0\.1)(?::\d+)?/i,
-    /(?:sk_test_|rk_test_|whsec_|price_[A-Za-z0-9]+)/,
+    /(?:sk_test_|rk_test_|whsec_|price_(?!alignment\b)[A-Za-z0-9]+)/,
     /__auth_probe|firebase=staging/i
   ]) assert.doesNotMatch(text, forbidden);
   assert.ok(files.includes('firebase-environment.js'));

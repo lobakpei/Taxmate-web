@@ -33,6 +33,8 @@
     value.onEditLegacyBusiness=async input=>{const result=await originalEditLegacy(input);if(result.status==='ok')bridge().exitToLegacyBusiness(null,input.businessId);return result;};
     const originalPack=value.onDownloadWorkingPack.bind(value);
     value.onDownloadWorkingPack=async input=>{const result=await originalPack(input);if(result.status==='ok'&&result.data)bridge().downloadWorkingPack(result.data);return result;};
+    const originalSelfFilingPack=value.onDownloadSelfFilingPack.bind(value);
+    value.onDownloadSelfFilingPack=async input=>{const result=await originalSelfFilingPack(input);if(result.data)bridge().downloadWorkingPack(result.data);return result;};
     return value;
   }
 
@@ -55,7 +57,7 @@
       root.TaxMateLtdUIFacade=facade;
       root.TaxMateLtdWorkbenchRenderer.setProductionMode(true);
       unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value);});
-      canonicalListener=()=>{if(!driver)return;driver.reload();facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
+      canonicalListener=()=>{if(!driver)return;driver.reload();driver.setEntitlementSnapshot(b.entitlementSnapshot());facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
       return facade;
     })().catch(error=>{ready=null;throw error;});
     return ready;
@@ -83,7 +85,7 @@
     openNewLimitedCompany:options=>openRoute('new-ltd',options),
     openExistingCompany:()=>openRoute('existing'),
     getSnapshot:()=>clone(snapshot),
-    refreshFromCanonicalState:()=>{if(driver){driver.reload();driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}return clone(snapshot);},
+    refreshFromCanonicalState:()=>{if(driver){driver.reload();driver.setEntitlementSnapshot(bridge().entitlementSnapshot());driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}return clone(snapshot);},
     isReady:()=>!!facade,
     dispose:()=>{if(unsubscribe)unsubscribe();if(canonicalListener)root.removeEventListener('taxmate:canonical-state-updated',canonicalListener);unsubscribe=null;canonicalListener=null;facade=null;driver=null;snapshot=null;ready=null;}
   });

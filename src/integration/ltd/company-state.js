@@ -5,7 +5,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(ProductionState,Domain,DomainMigration){
   'use strict';
   if(!ProductionState||!Domain||!DomainMigration)throw new Error('TaxMate company-state dependencies are required');
-  const COMPANY_STATE_SCHEMA_VERSION=8,COMPANY_EXPORT_SCHEMA_VERSION=5;
+  const COMPANY_STATE_SCHEMA_VERSION=9,COMPANY_EXPORT_SCHEMA_VERSION=6;
   const clone=value=>JSON.parse(JSON.stringify(value));
   const same=(left,right)=>JSON.stringify(left)===JSON.stringify(right);
   function validOriginalMigration(value){return value&&value.schemaVersion===1&&value.toCompanyStateSchemaVersion===COMPANY_STATE_SCHEMA_VERSION&&value.atomicBoundary==='repository_replace'&&value.rollbackSnapshotRequired===true;}

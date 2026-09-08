@@ -12,14 +12,24 @@ test('candidate reports contain only canonical TaxMate Stripe identities',()=>{
 });
 
 test('Checkout is server-priced, requires Terms and blocks a second live subscription',()=>{
+  const checkout=fs.readFileSync('functions/billing-checkout.js','utf8');
+  const plans=fs.readFileSync('functions/billing-plans.js','utf8');
   for(const name of ['PLUS_MONTHLY_PRICE','PLUS_ANNUAL_PRICE','PRO_MONTHLY_PRICE','PRO_ANNUAL_PRICE'])assert.match(source,new RegExp(name+'\\.value\\(\\)'));
-  assert.match(source,/\['monthly','yearly'\]\.includes\(cadence\)/);
-  assert.match(source,/billingCadence:cadence/);
-  assert.match(source,/subscriptions\.list\(\{customer,status:'all'/);
-  assert.match(source,/existing subscription must be managed in the billing portal/i);
-  assert.match(source,/checkout\.consent_collection=\{terms_of_service:'required'\}/);
-  assert.match(source,/FUNCTIONS_EMULATOR!=='true'/);
-  assert.match(source,/automatic_tax:\{enabled:false\}/);
+  assert.match(source,/BillingCheckout\.createService\(\{db,client,targetPrice:billingPlans\(client\)\.targetPrice/);
+  assert.match(plans,/const id=priceFor\(tier,cadence\)/);
+  assert.match(plans,/client\.prices\.retrieve\(id\)/);
+  assert.match(checkout,/\['monthly','yearly'\]\.includes\(data\?\.cadence\)/);
+  assert.match(checkout,/await targetPrice\(data\.tier,data\.cadence\)/);
+  assert.match(checkout,/billingCadence:offer\.cadence/);
+  assert.match(checkout,/client\.subscriptions\.list\(p\),\{customer:map\.data\(\)\.stripeCustomerId,status:'all'\}/);
+  assert.match(checkout,/some\(s=>!\['canceled','incomplete_expired'\]\.includes\(s\.status\)\)\)fail\('existing_subscription_manage'/);
+  assert.match(checkout,/data\?\.termsAccepted!==true\|\|data\.earlySupplyRequested!==true/);
+  assert.match(checkout,/consent_collection:\{terms_of_service:'required'\}/);
+  assert.match(checkout,/if\(!moneyOperationsEnabled\)fail\('money_operations_not_enabled'\)/);
+  assert.match(checkout,/if\(!consumerDisclosuresReady\)fail\('consumer_disclosures_not_verified'\)/);
+  assert.match(checkout,/automatic_tax:\{enabled:false\}/);
+  assert.match(checkout,/line_items:\[\{price:offer\.priceId,quantity:1\}\]/);
+  assert.doesNotMatch(checkout,/price_data/);
   assert.doesNotMatch(source,/price_data|unit_amount/);
 });
 
@@ -74,31 +84,50 @@ test('billing failures have safe client and server classifications',()=>{
   assert.match(app,/console\.warn\('billing-failure',\{category\}\)/);
   assert.match(source,/key!==key\.trim\(\)\|\|\/\[\\r\\n\]\//);
   assert.match(source,/console\.error\('billing-failure',\{category\}\)/);
-  assert.match(source,/billingFailure\('stripe-customer'\)/);
-  assert.match(source,/billingFailure\('stripe-checkout'\)/);
+  // The service refactor funnels unknown failures through one safe boundary.
+  // billing-error-boundary.test.js executes these actual functions and proves
+  // redaction, domain classifications, authentication and strict staff roles.
+  assert.match(source,/async function billingCall\(req,run,role\)/);
+  assert.match(source,/throw billingFailure\('billing-unavailable'\)/);
+  assert.match(source,/return new HttpsError\('internal','Payments are temporarily unavailable',\{reason:category\}\)/);
   assert.doesNotMatch(source,/billingFailure\([^)]*,\s*(?:error|e)\b/);
 });
 
 test('refund policy is server-projected without client fake unlocks',()=>{
-  assert.match(source,/event\.type==='charge\.refunded'/);
-  assert.match(source,/invoicePayments\.list/);
-  assert.match(source,/refundReviewState:'full-refund-applied'/);
-  assert.match(source,/refundReviewState:'manual-review'/);
-  assert.match(source,/refundedSamePeriod/);
-  assert.match(source,/paidTier:'free'/);
+  // Check the current module wiring, not the removed inline same-period
+  // implementation. The retry suite runs these modules together and checks
+  // partial/full refunds, independently funded access and no provider writes.
+  const webhook=fs.readFileSync('functions/billing-webhook.js','utf8');
+  const entitlements=fs.readFileSync('functions/billing-entitlements.js','utf8');
+  assert.match(source,/refunds:billingServices\(client\),checkout:billingCheckout\(client\)/);
+  assert.match(source,/onRefundChanged:uid=>refreshBilling\(uid,client\)/);
+  assert.ok(webhook.includes('charge\\.refunded$'));
+  assert.match(webhook,/await refunds\.refundEvent\(refund\)/);
+  assert.match(entitlements,/invoicePayments\.list/);
+  assert.match(entitlements,/refundedInvoices\.size\?'full-refund-applied':Object\.values\(invoiceRefunds\)\.some\(n=>n>0\)\?'manual-review':null/);
+  assert.match(entitlements,/i\.status==='paid'&&!refundedInvoices\.has\(i\.id\)/);
+  assert.match(entitlements,/paidTier:winner\?\.paidTier\|\|'free'/);
 });
 
-test('Stripe webhook verifies signatures and projects ordered server entitlement truth',()=>{
-  assert.match(source,/webhooks\.constructEvent\(req\.rawBody/);
-  assert.match(source,/stripeWebhookEvents\/\$\{event\.id\}/);
-  assert.match(source,/lastStripeEventCreated/);
-  assert.match(source,/paidTier:active&&!refundedSamePeriod\?tier:'free'/);
-  assert.match(source,/priceDescriptor\(price\)/);
-  assert.match(source,/billingCadence/);
-  assert.match(source,/function subscriptionPeriodEnd\(subscription\)/);
-  assert.match(source,/item\.current_period_end/);
+test('Stripe webhook verifies signatures and projects authoritative funded entitlement truth',()=>{
+  const webhook=fs.readFileSync('functions/billing-webhook.js','utf8');
+  const entitlements=fs.readFileSync('functions/billing-entitlements.js','utf8');
+  assert.match(source,/BillingWebhook\.createHandler\(\{db,client,secret:STRIPE_WEBHOOK_SECRET\.value\(\),refresh:uid=>refreshBilling\(uid,client\)/);
+  assert.match(source,/BillingEntitlements\.reconcile\(\{db,client,uid,descriptor:priceDescriptor,retentionLifecycle\}\)/);
+  assert.match(webhook,/webhooks\.constructEvent\(req\.rawBody,req\.headers\['stripe-signature'\],secret\)/);
+  assert.match(webhook,/stripeWebhookEvents\/\$\{event\.id\}/);
+  assert.match(webhook,/await refresh\(maps\.docs\[0\]\.id\)/);
+  assert.ok(webhook.indexOf('await refresh(maps.docs[0].id)')<webhook.indexOf("tx.update(ref,{state:'processed'"));
+  assert.match(entitlements,/inputs=await readFunding\(client,mapping\.data\(\)\.stripeCustomerId\)/);
+  assert.match(entitlements,/fundedSnapshot\(inputs,\{descriptor,now:stamp,previous,retentionLifecycle\}\)/);
+  assert.match(entitlements,/lease\.data\(\)\?\.token!==token\|\|lease\.data\(\)\?\.until<=now\(\)/);
+  assert.match(entitlements,/i\.status==='paid'&&!refundedInvoices\.has\(i\.id\)/);
+  assert.match(entitlements,/paidTier:winner\?\.paidTier\|\|'free'/);
+  assert.match(entitlements,/billingCadence:winner\?\.cadence/);
+  assert.match(entitlements,/i\.current_period_end/);
   assert.match(source,/STRIPE_PRO_LEGACY_PRICE_IDS/);
-  assert.match(source,/res\.sendStatus\(500\)/);
+  assert.match(source,/STRIPE_PRO_LEGACY_ANNUAL_PRICE_IDS/);
+  assert.match(webhook,/res\.sendStatus\(500\)/);
 });
 
 test('Founder promotions use canonical Firestore truth and one transactional UID redemption',()=>{

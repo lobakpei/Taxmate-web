@@ -4,7 +4,7 @@
 })(typeof globalThis!=='undefined'?globalThis:this,function(Entitlement,Domain,RevisionSync){
   'use strict';
   if(!Entitlement||!Domain||!RevisionSync)throw new Error('TaxMate company-access dependencies are required');
-  const ACCESS_SCHEMA_VERSION=3,ARCHIVE_RETENTION_MONTHS=24;
+  const ACCESS_SCHEMA_VERSION=4,UK_TAX_YEAR_START_MONTH=Entitlement.UK_TAX_YEAR_START_MONTH,UK_TAX_YEAR_START_DAY=Entitlement.UK_TAX_YEAR_START_DAY,DAY=86400000;
   const ALWAYS_ALLOWED=new Set(['account_delete','read_archived_access_status']);
   const RETAINED_DATA_ACTIONS=new Set(['read','portable_backup','full_backup','download_evidence']);
   const LTD_PRO_ACTIONS=new Set([
@@ -21,15 +21,27 @@
   const clone=value=>JSON.parse(JSON.stringify(value));
   const text=(value,max=256)=>typeof value==='string'&&value.trim().length>0&&value.trim().length<=max;
 
-  function addUtcMonths(timestamp,months){const source=new Date(Number(timestamp));if(!Number.isFinite(source.getTime()))throw new Error('Invalid retention timestamp');const day=source.getUTCDate(),target=new Date(Date.UTC(source.getUTCFullYear(),source.getUTCMonth()+months,1,source.getUTCHours(),source.getUTCMinutes(),source.getUTCSeconds(),source.getUTCMilliseconds())),lastDay=new Date(Date.UTC(target.getUTCFullYear(),target.getUTCMonth()+1,0)).getUTCDate();target.setUTCDate(Math.min(day,lastDay));return target.getTime();}
-  function latestAccessEnd(snapshot,now){const values=[snapshot&&snapshot.currentPeriodEnd,snapshot&&snapshot.graceUntil];const grants=snapshot&&snapshot.promotions&&typeof snapshot.promotions==='object'?Object.values(snapshot.promotions):[];for(const grant of grants)if(grant&&grant.expiresAt!=null)values.push(grant.expiresAt);return Math.max(Number(now)||Date.now(),...values.map(Number).filter(Number.isFinite));}
+  const ukDateParts=Entitlement.ukDateParts,taxYearRetentionBoundary=Entitlement.taxYearRetentionBoundary;
+  function dateOrdinal(parts){return Date.UTC(parts.year,parts.month-1,parts.day);}
+  function latestAccessEnd(snapshot={},now){
+    const at=Number(now)||Date.now(),values=[snapshot.accountRetention?.paidAccessEndedAt,snapshot.currentPeriodEnd,snapshot.graceUntil,snapshot.promotionAccess?.plusExpiresAt,snapshot.promotionAccess?.proExpiresAt,snapshot.paidAccess?.plusExpiresAt,snapshot.paidAccess?.proExpiresAt];
+    if(snapshot.subscriptionStatus==='refunded')values[1]=snapshot.refundedAt;
+    const grants=snapshot.promotions&&typeof snapshot.promotions==='object'?Object.values(snapshot.promotions):snapshot.promotion?[snapshot.promotion]:[];
+    for(const grant of grants)if(grant&&grant.expiresAt!=null&&['plus','pro'].includes(grant.tier))values.push(grant.expiresAt);
+    const ended=values.map(Number).filter(value=>Number.isFinite(value)&&value>0&&value<=at);
+    if(ended.length)return Math.max(...ended);
+    const archivedAt=Number(snapshot.ltdArchive?.startedAt);
+    return Number.isFinite(archivedAt)&&archivedAt>0&&archivedAt<=at?archivedAt:null;
+    // Verification time is never evidence of paid access ending.
+  }
   function retention(snapshot,now,hasExistingLtdData){
     const at=Number(now)||Date.now(),access=Entitlement.resolve(snapshot,at,false);
-    if(!hasExistingLtdData)return{state:'none',retainUntil:null,reminder:null};
-    if(access.tier==='pro')return{state:'active',retainUntil:null,reminder:null};
-    const archivedAt=Number(snapshot&&snapshot.ltdArchive&&snapshot.ltdArchive.startedAt)||latestAccessEnd(snapshot||{},at),retainUntil=Number(snapshot&&snapshot.ltdArchive&&snapshot.ltdArchive.deleteAfter)||addUtcMonths(archivedAt,ARCHIVE_RETENTION_MONTHS),days=Math.ceil((retainUntil-at)/86400000);
-    let reminder=null;if(days<=0)reminder='archive_retention_ended';else if(days<=7)reminder='archive_delete_7_days';else if(days<=30)reminder='archive_delete_30_days';
-    return{state:days<=0?'retention_ended':'archived',archivedAt,retainUntil,reminder};
+    if(!hasExistingLtdData)return{policy:'uk_tax_year_end',state:'none',retainUntil:null,retainThroughDate:null,deleteOnDate:null,reminder:null};
+    if(access.tier==='pro'||access.tier==='plus')return{policy:'uk_tax_year_end',state:'active',retainUntil:null,retainThroughDate:null,deleteOnDate:null,reminder:null};
+    const archivedAt=latestAccessEnd(snapshot||{},at);if(!archivedAt)return{policy:'uk_tax_year_end',state:'retention_unknown',retainUntil:null,retainThroughDate:null,deleteOnDate:null,reminder:'tax_year_retention_date_required'};
+    const boundary=taxYearRetentionBoundary(archivedAt),today=ukDateParts(at),deleteOn=ukDateParts(boundary.retainUntil),days=Math.round((dateOrdinal(deleteOn)-dateOrdinal(today))/DAY),ended=days<=0;
+    let reminder=null;if(ended)reminder='tax_year_retention_ended';else if(days<=7)reminder='tax_year_delete_7_days';else if(days<=30)reminder='tax_year_delete_30_days';
+    return{policy:'uk_tax_year_end',state:ended?'retention_ended':'retained_read_only',archivedAt,retainUntil:boundary.retainUntil,retainThroughDate:boundary.retainThroughDate,deleteOnDate:boundary.deleteOnDate,reminder};
   }
   function coreIdentityMatches(previous,next){return previous.id===next.id&&previous.createdAt===next.createdAt&&previous.origin==='company_v1_5'&&next.origin==='company_v1_5'&&previous.sourceTransaction.id===next.sourceTransaction.id&&previous.sourceTransaction.beneficiaryEntityId===next.sourceTransaction.beneficiaryEntityId&&previous.sourceTransaction.companyTransactionType===next.sourceTransaction.companyTransactionType;}
   function retainedTransition(previous,next,reasonCode){
@@ -47,13 +59,21 @@
     return tier==='free'||tier==='plus'||tier==='pro'?tier:null;
   }
   function decide(input){
-    const action=input&&input.action,at=Number(input&&input.now)||Date.now(),offline=input&&input.offline===true,access=Entitlement.resolve(input&&input.snapshot,at,offline),base={tier:access.tier,source:access.source};
-    if(ALWAYS_ALLOWED.has(action))return{...base,allowed:true,mode:'retained'};
-    if(action==='cloud_hydrate')return{...base,allowed:true,mode:access.tier==='pro'?'approved_mapping':'retained_discovery_read',requiredTier:'pro',writeAllowed:access.tier==='pro'};
+    const action=input&&input.action,at=Number(input&&input.now)||Date.now(),offline=input&&input.offline===true,snapshot=input&&input.snapshot||{},access=Entitlement.resolve(snapshot,at,offline),hasRetentionContext=!!(input&&input.hasExistingLtdData===true||snapshot&&snapshot.ltdArchive||snapshot&&snapshot.lastPaidTier==='pro'||snapshot&&snapshot.paidTier==='pro'),retained=retention(snapshot,at,hasRetentionContext),base={tier:access.tier,source:access.source};
+    if(ALWAYS_ALLOWED.has(action))return{...base,allowed:true,mode:'retained',retention:retained};
+    if(action==='cloud_hydrate'){
+      if(access.tier==='pro')return{...base,allowed:true,mode:'approved_mapping',requiredTier:'pro',writeAllowed:true,retention:retained};
+      if(retained.state==='retained_read_only'||retained.state==='active')return{...base,allowed:true,mode:'retained_discovery_read',requiredTier:'pro',writeAllowed:false,retention:retained};
+      const unknown=retained.state==='retention_unknown';return{...base,allowed:false,mode:unknown?'retention_unknown':'retention_ended',reason:unknown?'tax_year_retention_date_required':'tax_year_retention_ended',requiredTier:'pro',writeAllowed:false,retention:retained};
+    }
     if(RETAINED_DATA_ACTIONS.has(action)){
       if(access.tier==='pro')return{...base,allowed:true,mode:offline?'approved_offline_entitlement':'approved_mapping',requiredTier:'pro',mappingVersion:(input&&input.planMapping||FOUNDER_APPROVED_LTD_PLAN_MAPPING).version};
-      return input&&input.hasExistingLtdData===true
-        ?{...base,allowed:true,mode:'retained_read_export',requiredTier:'pro',writeAllowed:false}
+      return hasRetentionContext&&['retained_read_only','active'].includes(retained.state)
+        ?{...base,allowed:true,mode:'retained_read_export',requiredTier:'pro',writeAllowed:false,retention:retained}
+        :hasRetentionContext&&retained.state==='retention_unknown'
+          ?{...base,allowed:false,mode:'retention_unknown',reason:'tax_year_retention_date_required',requiredTier:'pro',writeAllowed:false,retention:retained}
+          :hasRetentionContext
+            ?{...base,allowed:false,mode:'retention_ended',reason:'tax_year_retention_ended',requiredTier:'pro',writeAllowed:false,retention:retained}
         :{...base,allowed:false,mode:'blocked',reason:'pro_required',requiredTier:'pro'};
     }
     if(LTD_PRO_ACTIONS.has(action)){
@@ -64,5 +84,5 @@
     }
     return{...base,allowed:false,mode:'blocked',reason:'unknown_company_action'};
   }
-  return{ACCESS_SCHEMA_VERSION,ARCHIVE_RETENTION_MONTHS,ALWAYS_ALLOWED,RETAINED_DATA_ACTIONS,LTD_PRO_ACTIONS,FOUNDER_APPROVED_LTD_PLAN_MAPPING,addUtcMonths,retention,retainedTransition,approvedTierFor,decide};
+  return{ACCESS_SCHEMA_VERSION,UK_TAX_YEAR_START_MONTH,UK_TAX_YEAR_START_DAY,ALWAYS_ALLOWED,RETAINED_DATA_ACTIONS,LTD_PRO_ACTIONS,FOUNDER_APPROVED_LTD_PLAN_MAPPING,ukDateParts,taxYearRetentionBoundary,latestAccessEnd,retention,retainedTransition,approvedTierFor,decide};
 });

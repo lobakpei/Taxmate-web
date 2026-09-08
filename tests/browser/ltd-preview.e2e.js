@@ -20,7 +20,8 @@ async function goto(page,pathName){await page.goto(`${origin}${pathName}`,{waitU
 
 async function main(){
   fs.mkdirSync(evidence,{recursive:true});
-  server=spawn(process.execPath,['ui-preview-harness/server.js',`--port=${port}`],{cwd:root,stdio:['ignore','pipe','pipe'],windowsHide:true});
+  const previewTemp=fs.mkdtempSync(path.join(evidence,'preview-state-'));
+  server=spawn(process.execPath,['ui-preview-harness/server.js',`--port=${port}`],{cwd:root,env:{...process.env,TEMP:previewTemp,TMP:previewTemp},stdio:['ignore','pipe','pipe'],windowsHide:true});
   let serverError='';server.stderr.on('data',chunk=>{serverError+=String(chunk);});
   await waitForServer();
   browser=await chromium.launch({headless:true,executablePath:chromePath()});
@@ -42,7 +43,23 @@ async function main(){
   await mobile.context.close();
 
   const desktop=await pageFor({width:1440,height:1000}),desktopPage=desktop.page;
-  for(const tier of ['plus','free']){await goto(desktopPage,`/?mode=existing&tier=${tier}&reset=1`);const row=desktopPage.getByRole('button',{name:/ToodaLoop Ltd/});check(await row.isEnabled(),`${tier} retains read access to the existing Ltd workspace`);await row.click();await desktopPage.getByRole('tab',{name:'Overview'}).waitFor();check(true,`${tier} can inspect retained company records after downgrade`);await goto(desktopPage,`/?mode=fresh&tier=${tier}&reset=1`);await desktopPage.getByRole('button',{name:'+ Add a business'}).click();await desktopPage.getByRole('button',{name:/Limited company/}).click();await desktopPage.getByText('Limited company tools are available on Pro.').waitFor();check(true,`${tier} create path returns the Pro gate without activating Ltd`);}
+  for(const tier of ['plus','free']){
+    await goto(desktopPage,`/?mode=existing&tier=${tier}&reset=1`);
+    const row=desktopPage.getByRole('button',{name:/ToodaLoop Ltd/});
+    if(tier==='plus'){
+      check(await row.isEnabled(),'Plus retains read access to the existing Ltd workspace');
+      await row.click();await desktopPage.getByRole('tab',{name:'Overview'}).waitFor();
+      check(true,'Plus can inspect retained company records after downgrade');
+    }else{
+      equal(await row.count(),0,'Free without a trusted paid-end date withholds the company identity');
+      const snapshot=await (await fetch(`${origin}/api/snapshot?mode=existing&tier=free`)).json();
+      equal(snapshot.companyLimit.reason,'tax_year_retention_date_required','Free requires the trusted retention date from the engine');
+      const placeholder=desktopPage.locator('[data-locked-company="tax_year_retention_date_required"]');
+      equal(await placeholder.count(),1,'Free displays the generic retained-company placeholder');
+      check((await placeholder.innerText()).includes('Limited company'),'Withheld company row uses the generic label');
+    }
+    await goto(desktopPage,`/?mode=fresh&tier=${tier}&reset=1`);await desktopPage.getByRole('button',{name:'+ Add a business'}).click();await desktopPage.getByRole('button',{name:/Limited company/}).click();await desktopPage.getByText('Limited company tools are available on Pro.').waitFor();check(true,`${tier} create path returns the Pro gate without activating Ltd`);
+  }
 
   await goto(desktopPage,'/?mode=fresh&tier=pro&reset=1');
   await desktopPage.getByRole('button',{name:'+ Add a business'}).click();

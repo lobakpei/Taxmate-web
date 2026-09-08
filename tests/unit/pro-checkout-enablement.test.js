@@ -19,12 +19,13 @@ test('official production hosts alone expose the production Pro checkout mode',(
 
 test('production purchase delegates to the existing App Check and Auth protected checkout callable',()=>{
   assert.match(actions,/['"]startProPurchase['"]/);
-  assert.match(app,/if\(availability\.mode==='production'\)\{[\s\S]*if\(!requireLoginForTier\(\)\)return\{status:'auth-required'\};[\s\S]*startBillingAction\('createCheckoutSession',\{tier:'pro',cadence:BILLING_CADENCE\}\)/);
+  assert.match(app,/if\(availability\.mode==='production'\|\|availability\.mode==='emulator'\)\{[\s\S]*if\(!requireLoginForTier\(\)\)return\{status:'auth-required'\};[\s\S]*startBillingAction\('createCheckoutSession',\{tier:'pro',cadence:BILLING_CADENCE\}\)/);
   assert.match(app,/const u=cloudUser\(\); if\(!u\) throw secureFunctionError\('auth-required'/);
   assert.match(app,/firebase\.appCheck\(\)\.getToken\(false\)/);
   assert.match(functions,/exports\.createCheckoutSession=onCall\(opts/);
-  assert.match(functions,/success_url:`\$\{APP_URL\.value\(\)\}\?billing=success`/);
-  assert.match(functions,/cancel_url:`\$\{APP_URL\.value\(\)\}\?billing=cancelled`/);
+  const checkout=fs.readFileSync('functions/billing-checkout.js','utf8');
+  assert.match(checkout,/success_url:appUrl\+'\?billing=success'/);
+  assert.match(checkout,/cancel_url:appUrl\+'\?billing=cancelled'/);
 });
 
 test('localhost review remains isolated from Stripe and production copy is not labelled local review',()=>{

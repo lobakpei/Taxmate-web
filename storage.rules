@@ -4,11 +4,32 @@ service firebase.storage {
     function imageUnderLimit() { return request.resource.size < 10 * 1024 * 1024 && request.resource.contentType.matches('image/.*'); }
     function entitlement(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/entitlements/current).data; }
     function hasEntitlement(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/entitlements/current); }
+    function hasRetention(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/retention/current); }
+    function retention(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/retention/current).data; }
+    function retentionReady(uid) { return (!hasRetention(uid) || retention(uid).status in ['complete', 'complete_with_warnings']) && !retentionDue(uid); }
+    function retentionDue(uid) {
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      let r = 'accountRetention' in ent ? ent.accountRetention : {};
+      return ('purgeRequired' in r && r.purgeRequired == true)
+        || ('deleteAfterAt' in r && r.deleteAfterAt is number && r.deleteAfterAt <= request.time.toMillis()
+          && !receiptAccess(uid) && !graceReceiptAccess(uid)
+          && !('lastDeletionCutoffDate' in r && 'scheduledDeletionDate' in r && r.lastDeletionCutoffDate >= r.scheduledDeletionDate));
+    }
+    function graceReceiptAccess(uid) {
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      return 'lastPaidTier' in ent && ent.lastPaidTier in ['plus','pro'] && 'graceUntil' in ent && ent.graceUntil > request.time.toMillis();
+    }
+    function receiptEpochReadable(uid) { return retentionReady(uid) && (!hasRetention(uid) || resource.metadata.retentionEpoch == retention(uid).epochString); }
+    function receiptEpochWritable(uid) { return retentionReady(uid) && (!hasRetention(uid) || request.resource.metadata.retentionEpoch == retention(uid).epochString); }
     function paidReceiptAccess(uid) {
-      return hasEntitlement(uid)
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      let p = 'paidAccess' in ent ? ent.paidAccess : {};
+      return ('proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
+        || ('plusExpiresAt' in p && p.plusExpiresAt > request.time.toMillis())
+        || (hasEntitlement(uid) && !('paidAccess' in ent)
         && entitlement(uid).subscriptionStatus in ['active', 'trialing']
         && entitlement(uid).paidTier in ['plus', 'pro']
-        && (!('currentPeriodEnd' in entitlement(uid)) || entitlement(uid).currentPeriodEnd > request.time.toMillis());
+        && (!('currentPeriodEnd' in entitlement(uid)) || entitlement(uid).currentPeriodEnd > request.time.toMillis()));
     }
     function promotionReceiptAccess(uid) {
       return hasEntitlement(uid)
@@ -26,9 +47,14 @@ service firebase.storage {
     }
     function receiptAccess(uid) { return paidReceiptAccess(uid) || projectedPromotionReceiptAccess(uid) || promotionReceiptAccess(uid); }
     match /receipts/{uid}/{fileName} {
-      allow read: if request.auth != null && request.auth.uid == uid;
-      allow create, update: if request.auth != null && request.auth.uid == uid && receiptAccess(uid) && imageUnderLimit();
-      allow delete: if request.auth != null && request.auth.uid == uid;
+      allow get: if request.auth != null && request.auth.uid == uid && receiptEpochReadable(uid);
+      allow list: if request.auth != null && request.auth.uid == uid && retentionReady(uid);
+      // Immutable uploads prevent replacement or metadata edits from bypassing
+      // shared-ledger permissions. Cleanup is server mediated for every tier;
+      // Free personal deletion remains available through accepted tombstones.
+      allow create: if request.auth != null && request.auth.uid == uid && receiptEpochWritable(uid) && receiptAccess(uid) && imageUnderLimit()
+        && !firestore.exists(/databases/(default)/documents/receiptObjects/$(uid)/files/$(fileName));
+      allow update, delete: if false;
     }
     match /{allPaths=**} { allow read, write: if false; }
   }

@@ -1,5 +1,7 @@
 # TaxMate Ltd V1.5 actual-app integration closeout
 
+> **SUPERSEDED RETENTION NOTE (5 September 2026):** the 24-month Ltd archive statement in this historical closeout is no longer current. The replacement contract retains affected Ltd data only through 5 April at the end of the UK tax year in which Pro access ended, with access unavailable from 6 April. See `docs/PLAN_FEATURE_CONTRACT.md` and `docs/LTD_V1.5_PLAN_FEATURE_CONTRACT_20260828.md`.
+
 Date: 2026-08-28
 
 Status: local candidate complete and awaiting independent source audit. This is not a production release approval.

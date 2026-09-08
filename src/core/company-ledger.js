@@ -10,13 +10,19 @@
   const TYPES=Object.freeze({
     COMPANY_INCOME:'company_income',COMPANY_EXPENSE:'company_expense',PERSONALLY_PAID_EXPENSE:'personally_paid_expense',
     DIRECTOR_LOAN_FUNDING:'director_loan_funding',DIRECTOR_LOAN_REPAYMENT:'director_loan_repayment',SHARE_CAPITAL_FUNDING:'share_capital_funding',OPENING_BALANCE:'opening_balance',
-    DIRECTOR_SALARY:'director_salary',PAYROLL_TAX_PAYMENT:'payroll_tax_payment',DIVIDEND_DECLARATION:'dividend_declaration',DIVIDEND_PAYMENT:'dividend_payment'
+    DIRECTOR_SALARY:'director_salary',PAYROLL_TAX_PAYMENT:'payroll_tax_payment',DIVIDEND_DECLARATION:'dividend_declaration',DIVIDEND_PAYMENT:'dividend_payment',
+    SALES_INVOICE_PAYMENT:'sales_invoice_payment',SUPPLIER_BILL_PAYMENT:'supplier_bill_payment',FIXED_ASSET_PURCHASE:'fixed_asset_purchase',FIXED_ASSET_PAYMENT:'fixed_asset_payment',DEPRECIATION_CHARGE:'depreciation_charge'
   });
   const ACCOUNTS=Object.freeze({
     COMPANY_BANK:Object.freeze({code:'COMPANY_BANK',group:'asset',label:'Company bank/cash'}),
+    TRADE_RECEIVABLES:Object.freeze({code:'TRADE_RECEIVABLES',group:'asset',label:'Customers still owe the company'}),
+    FIXED_ASSET_COST:Object.freeze({code:'FIXED_ASSET_COST',group:'asset',label:'Things the company owns at cost'}),
+    ACCUMULATED_DEPRECIATION:Object.freeze({code:'ACCUMULATED_DEPRECIATION',group:'asset',label:'Depreciation recorded to date'}),
     OPERATING_EXPENSE:Object.freeze({code:'OPERATING_EXPENSE',group:'expense',label:'Ordinary operating expense'}),
+    DEPRECIATION_EXPENSE:Object.freeze({code:'DEPRECIATION_EXPENSE',group:'expense',label:'Depreciation for the company year'}),
     TRADING_INCOME:Object.freeze({code:'TRADING_INCOME',group:'income',label:'Trading income'}),
     DIRECTOR_LOAN:Object.freeze({code:'DIRECTOR_LOAN',group:'liability',label:'Director/founder loan'}),
+    TRADE_PAYABLES:Object.freeze({code:'TRADE_PAYABLES',group:'liability',label:'Bills the company still has to pay'}),
     PAYE_NI_PAYABLE:Object.freeze({code:'PAYE_NI_PAYABLE',group:'liability',label:'PAYE and National Insurance due'}),
     DIVIDEND_PAYABLE:Object.freeze({code:'DIVIDEND_PAYABLE',group:'liability',label:'Declared dividend due'}),
     SHARE_CAPITAL:Object.freeze({code:'SHARE_CAPITAL',group:'equity',label:'Share capital'}),
@@ -29,11 +35,11 @@
   const clone=value=>JSON.parse(JSON.stringify(value));
   const text=(value,max=256)=>typeof value==='string'&&value.trim().length>0&&value.trim().length<=max;
   const sum=values=>Money.sumMinor(values,'Company ledger total');
-  const sourceKind=type=>type===TYPES.COMPANY_INCOME?'income':([TYPES.COMPANY_EXPENSE,TYPES.PERSONALLY_PAID_EXPENSE].includes(type)?'expense':(type===TYPES.DIRECTOR_SALARY?'salary':([TYPES.DIVIDEND_DECLARATION,TYPES.DIVIDEND_PAYMENT].includes(type)?'dividend':(type===TYPES.PAYROLL_TAX_PAYMENT?'tax':(type===TYPES.OPENING_BALANCE?'adjustment':(type===TYPES.DIRECTOR_LOAN_REPAYMENT?'transfer':'funding'))))));
+  const sourceKind=type=>type===TYPES.COMPANY_INCOME?'income':([TYPES.COMPANY_EXPENSE,TYPES.PERSONALLY_PAID_EXPENSE,TYPES.DEPRECIATION_CHARGE].includes(type)?'expense':(type===TYPES.DIRECTOR_SALARY?'salary':([TYPES.DIVIDEND_DECLARATION,TYPES.DIVIDEND_PAYMENT].includes(type)?'dividend':(type===TYPES.PAYROLL_TAX_PAYMENT?'tax':(type===TYPES.OPENING_BALANCE||type===TYPES.FIXED_ASSET_PURCHASE?'adjustment':([TYPES.SALES_INVOICE_PAYMENT,TYPES.SUPPLIER_BILL_PAYMENT,TYPES.FIXED_ASSET_PAYMENT,TYPES.DIRECTOR_LOAN_REPAYMENT].includes(type)?'transfer':'funding'))))));
   const safeMinor=(value,label)=>{Money.assertMinor(value,label,{nonNegative:true});return value;};
 
   function signature(facts){
-    return JSON.stringify([facts.type,facts.id,facts.entityId,facts.date,facts.amountMinor,facts.description||null,facts.invoicePartyId||null,facts.payerPaymentAccountId||null,facts.receiverPaymentAccountId||null,facts.payerOwnerType||null,facts.receiverOwnerType||null,facts.category||null,facts.treatmentBasis||null,facts.reimbursementExpected==null?null:facts.reimbursementExpected,facts.shareCapitalEvidenceConfirmed==null?null:facts.shareCapitalEvidenceConfirmed,facts.sharedExpense||null,facts.expenseFactProvenance||null,facts.companyTaxTreatment||null,facts.salarySnapshot||null,facts.dividendSnapshot||null,facts.openingBalances||null,facts.evidenceRefs||[]]);
+    return JSON.stringify([facts.type,facts.id,facts.entityId,facts.date,facts.amountMinor,facts.description||null,facts.invoicePartyId||null,facts.payerPaymentAccountId||null,facts.receiverPaymentAccountId||null,facts.payerOwnerType||null,facts.receiverOwnerType||null,facts.category||null,facts.treatmentBasis||null,facts.reimbursementExpected==null?null:facts.reimbursementExpected,facts.shareCapitalEvidenceConfirmed==null?null:facts.shareCapitalEvidenceConfirmed,facts.sharedExpense||null,facts.expenseFactProvenance||null,facts.settlement||null,facts.assetSnapshot||null,facts.depreciationSnapshot||null,facts.companyTaxTreatment||null,facts.salarySnapshot||null,facts.dividendSnapshot||null,facts.openingBalances||null,facts.evidenceRefs||[]]);
   }
 
   function validateFacts(facts,profile){
@@ -50,6 +56,9 @@
       }
     }
     if(facts.expenseFactProvenance!=null){const p=facts.expenseFactProvenance;if(!p||p.schemaVersion!==1||!['only_company','not_only_company','shared','unknown'].includes(p.companyUseScope)||typeof p.allocationDerived!=='boolean')throw new Error('Invalid expense fact provenance');}
+    if(facts.settlement!=null){const s=facts.settlement;if(!s||s.schemaVersion!==1||!text(s.kind,64)||!text(s.recordId,128)||!['unpaid','paid'].includes(s.paymentStatus))throw new Error('Invalid company settlement facts');}
+    if(facts.assetSnapshot!=null){const a=facts.assetSnapshot;if(!a||a.schemaVersion!==1||!text(a.assetId,128)||!Number.isSafeInteger(a.costMinor)||a.costMinor!==facts.amountMinor||!['paid','unpaid'].includes(a.paymentStatus))throw new Error('Invalid fixed asset facts');}
+    if(facts.depreciationSnapshot!=null){const d=facts.depreciationSnapshot;if(!d||d.schemaVersion!==1||!text(d.assetId,128)||!Domain.isoDate(d.periodStartDate)||!Domain.isoDate(d.periodEndDate)||d.periodStartDate>d.periodEndDate||!Number.isSafeInteger(d.amountMinor)||d.amountMinor!==facts.amountMinor)throw new Error('Invalid depreciation facts');}
     if(facts.salarySnapshot!=null)Domain.validateSalarySnapshot(facts.salarySnapshot);if(facts.dividendSnapshot!=null)Domain.validateDividendSnapshot(facts.dividendSnapshot);
     if(facts.evidenceRefs!=null&&(!Array.isArray(facts.evidenceRefs)||facts.evidenceRefs.some(ref=>!text(ref,512))))throw new Error('Invalid company evidence reference');
     if(facts.companyTaxTreatment!=null)CompanyTreatment.validateDecision(facts.companyTaxTreatment,facts,profile);
@@ -63,6 +72,9 @@
     if(facts.shareCapitalEvidenceConfirmed!=null)source.shareCapitalEvidenceConfirmed=facts.shareCapitalEvidenceConfirmed;
     if(facts.sharedExpense!=null)source.sharedExpense=clone(facts.sharedExpense);
     if(facts.expenseFactProvenance!=null)source.expenseFactProvenance=clone(facts.expenseFactProvenance);
+    if(facts.settlement!=null)source.settlement=clone(facts.settlement);
+    if(facts.assetSnapshot!=null)source.assetSnapshot=clone(facts.assetSnapshot);
+    if(facts.depreciationSnapshot!=null)source.depreciationSnapshot=clone(facts.depreciationSnapshot);
     if(facts.companyTaxTreatment!=null)source.companyTaxTreatment=clone(facts.companyTaxTreatment);
     if(facts.salarySnapshot!=null)source.salarySnapshot=clone(facts.salarySnapshot);if(facts.dividendSnapshot!=null)source.dividendSnapshot=clone(facts.dividendSnapshot);
     if(facts.evidenceRefs&&facts.evidenceRefs.length)source.evidenceRefs=clone(facts.evidenceRefs);
@@ -97,7 +109,7 @@
   function profileAndDateReasons(profile,facts){
     const gate=CompanyProfile.transactionGate(profile),reasons=gate.allowed?[]:[...gate.reasons];
     if(Domain.isoDate(profile&&profile.incorporationDate)&&facts.date<profile.incorporationDate)reasons.push('transaction_before_incorporation_review_required');
-    const operating=[TYPES.COMPANY_INCOME,TYPES.COMPANY_EXPENSE,TYPES.PERSONALLY_PAID_EXPENSE,TYPES.DIRECTOR_SALARY].includes(facts.type);
+    const operating=[TYPES.COMPANY_INCOME,TYPES.COMPANY_EXPENSE,TYPES.PERSONALLY_PAID_EXPENSE,TYPES.DIRECTOR_SALARY,TYPES.FIXED_ASSET_PURCHASE,TYPES.DEPRECIATION_CHARGE].includes(facts.type);
     if(operating&&profile&&profile.tradingStatus!=='trading')reasons.push('company_not_trading_review_required');
     if(operating&&Domain.isoDate(profile&&profile.tradingStartDate)&&facts.date<profile.tradingStartDate&&!CompanyTreatment.supportsPreTradingPosting(facts,profile))reasons.push('pre_trading_treatment_review_required');
     return reasons;
@@ -111,11 +123,14 @@
     if([TYPES.PAYROLL_TAX_PAYMENT,TYPES.DIVIDEND_PAYMENT].includes(facts.type)&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='entity'))reasons.push('company_payment_account_required');
     if((facts.type===TYPES.COMPANY_INCOME||expense)&&!text(facts.invoicePartyId,128))reasons.push('invoice_party_required');
     if(expense&&facts.invoicePartyId!==facts.entityId)reasons.push('company_invoice_party_review_required');
-    if(facts.type===TYPES.COMPANY_INCOME&&(!text(facts.receiverPaymentAccountId,128)||facts.receiverOwnerType!=='entity'))reasons.push('company_receiving_account_required');
-    if(facts.type===TYPES.COMPANY_EXPENSE&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='entity'))reasons.push('company_payment_account_required');
+    if(facts.type===TYPES.COMPANY_INCOME&&(!facts.settlement||facts.settlement.kind!=='sales_invoice')&&(!text(facts.receiverPaymentAccountId,128)||facts.receiverOwnerType!=='entity'))reasons.push('company_receiving_account_required');
+    if(facts.type===TYPES.COMPANY_EXPENSE&&(!facts.settlement||facts.settlement.kind!=='supplier_bill')&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='entity'))reasons.push('company_payment_account_required');
     if(facts.type===TYPES.PERSONALLY_PAID_EXPENSE&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='person'||facts.reimbursementExpected!==true))reasons.push('personal_payer_and_reimbursement_confirmation_required');
     if([TYPES.DIRECTOR_LOAN_FUNDING,TYPES.SHARE_CAPITAL_FUNDING].includes(facts.type)&&(!text(facts.payerPaymentAccountId,128)||!text(facts.receiverPaymentAccountId,128)||facts.payerOwnerType!=='person'||facts.receiverOwnerType!=='entity'))reasons.push('founder_to_company_payment_accounts_required');
     if(facts.type===TYPES.DIRECTOR_LOAN_REPAYMENT&&(!text(facts.payerPaymentAccountId,128)||!text(facts.receiverPaymentAccountId,128)||facts.payerOwnerType!=='entity'||facts.receiverOwnerType!=='person'))reasons.push('company_to_founder_payment_accounts_required');
+    if(facts.type===TYPES.SALES_INVOICE_PAYMENT&&(!text(facts.receiverPaymentAccountId,128)||facts.receiverOwnerType!=='entity'))reasons.push('company_receiving_account_required');
+    if([TYPES.SUPPLIER_BILL_PAYMENT,TYPES.FIXED_ASSET_PAYMENT].includes(facts.type)&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='entity'))reasons.push('company_payment_account_required');
+    if(facts.type===TYPES.FIXED_ASSET_PURCHASE&&facts.settlement&&facts.settlement.paymentStatus==='paid'&&(!text(facts.payerPaymentAccountId,128)||facts.payerOwnerType!=='entity'))reasons.push('company_payment_account_required');
     if(facts.receiverPaymentAccountId&&!paymentAccountMatches(paymentAccounts,facts.receiverPaymentAccountId,facts.receiverOwnerType,facts.entityId))reasons.push('receiving_payment_account_ownership_review_required');
     if(facts.payerPaymentAccountId&&!paymentAccountMatches(paymentAccounts,facts.payerPaymentAccountId,facts.payerOwnerType,facts.entityId))reasons.push('payer_payment_account_ownership_review_required');
     return reasons;
@@ -123,6 +138,11 @@
 
   function classificationReasons(facts){
     if(facts.type===TYPES.DIRECTOR_SALARY&&(!facts.salarySnapshot||facts.treatmentBasis!=='confirmed_payroll_result'||!facts.companyTaxTreatment||facts.companyTaxTreatment.status!=='supported_calculated'))return['confirmed_salary_record_required'];
+    if(facts.type===TYPES.DEPRECIATION_CHARGE&&(!facts.depreciationSnapshot||facts.treatmentBasis!=='straight_line_depreciation'||!facts.companyTaxTreatment||facts.companyTaxTreatment.taxTreatment!=='non_deductible_add_back'))return['depreciation_calculation_required'];
+    if(facts.type===TYPES.FIXED_ASSET_PURCHASE&&(!facts.assetSnapshot||facts.treatmentBasis!=='fixed_asset_purchase_confirmed'))return['fixed_asset_facts_required'];
+    if(facts.type===TYPES.SALES_INVOICE_PAYMENT&&facts.treatmentBasis!=='sales_invoice_payment_confirmed')return['sales_invoice_payment_confirmation_required'];
+    if(facts.type===TYPES.SUPPLIER_BILL_PAYMENT&&facts.treatmentBasis!=='supplier_bill_payment_confirmed')return['supplier_bill_payment_confirmation_required'];
+    if(facts.type===TYPES.FIXED_ASSET_PAYMENT&&facts.treatmentBasis!=='fixed_asset_payment_confirmed')return['fixed_asset_payment_confirmation_required'];
     if(facts.type===TYPES.PAYROLL_TAX_PAYMENT&&facts.treatmentBasis!=='confirmed_payroll_tax_payment')return['payroll_tax_payment_confirmation_required'];
     if(facts.type===TYPES.DIVIDEND_DECLARATION&&(!facts.dividendSnapshot||facts.dividendSnapshot.status!=='declared'||facts.treatmentBasis!=='confirmed_dividend_declaration'))return['confirmed_dividend_declaration_required'];
     if(facts.type===TYPES.DIVIDEND_PAYMENT&&(!facts.dividendSnapshot||facts.dividendSnapshot.status!=='paid'||facts.treatmentBasis!=='confirmed_dividend_payment'))return['confirmed_dividend_payment_required'];
@@ -156,11 +176,17 @@
       if(current.directorLoan.balanceMinor<facts.amountMinor)return draftResult(facts,['director_loan_overdrawn_not_supported'],existing);
       if(current.cashMinor<facts.amountMinor)return draftResult(facts,['insufficient_recorded_company_cash'],existing);
     }
+    if(facts.type===TYPES.SALES_INVOICE_PAYMENT&&current.balances.TRADE_RECEIVABLES<facts.amountMinor)return draftResult(facts,['sales_invoice_payment_exceeds_amount_owed'],existing);
+    if([TYPES.SUPPLIER_BILL_PAYMENT,TYPES.FIXED_ASSET_PAYMENT].includes(facts.type)){
+      if(current.balances.TRADE_PAYABLES<facts.amountMinor)return draftResult(facts,['supplier_payment_exceeds_recorded_bills'],existing);
+      if(current.cashMinor<facts.amountMinor)return draftResult(facts,['insufficient_recorded_company_cash'],existing);
+    }
+    if(facts.type===TYPES.FIXED_ASSET_PURCHASE&&facts.settlement&&facts.settlement.paymentStatus==='paid'&&current.cashMinor<facts.amountMinor)return draftResult(facts,['insufficient_recorded_company_cash'],existing);
     if(facts.type===TYPES.COMPANY_INCOME)return postedResult(facts,(journal,allocation)=>[
-      posting(journal,allocation,ACCOUNTS.COMPANY_BANK,facts.amountMinor,0,{sequence:1,paymentAccountId:facts.receiverPaymentAccountId}),posting(journal,allocation,ACCOUNTS.TRADING_INCOME,0,facts.amountMinor,{sequence:2})
+      posting(journal,allocation,facts.settlement&&facts.settlement.kind==='sales_invoice'?ACCOUNTS.TRADE_RECEIVABLES:ACCOUNTS.COMPANY_BANK,facts.amountMinor,0,{sequence:1,...(facts.receiverPaymentAccountId?{paymentAccountId:facts.receiverPaymentAccountId}:{})}),posting(journal,allocation,ACCOUNTS.TRADING_INCOME,0,facts.amountMinor,{sequence:2})
     ],ledgerEvents,existing);
     if(facts.type===TYPES.COMPANY_EXPENSE)return postedResult(facts,(journal,allocation)=>[
-      posting(journal,allocation,ACCOUNTS.OPERATING_EXPENSE,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,paymentAccountId:facts.payerPaymentAccountId})
+      posting(journal,allocation,ACCOUNTS.OPERATING_EXPENSE,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,facts.settlement&&facts.settlement.kind==='supplier_bill'?ACCOUNTS.TRADE_PAYABLES:ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,...(facts.payerPaymentAccountId?{paymentAccountId:facts.payerPaymentAccountId}:{})})
     ],ledgerEvents,existing);
     if(facts.type===TYPES.PERSONALLY_PAID_EXPENSE)return postedResult(facts,(journal,allocation)=>[
       posting(journal,allocation,ACCOUNTS.OPERATING_EXPENSE,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.DIRECTOR_LOAN,0,facts.amountMinor,{sequence:2})
@@ -182,6 +208,21 @@
     ],ledgerEvents,existing);
     if(facts.type===TYPES.DIRECTOR_LOAN_REPAYMENT)return postedResult(facts,(journal,allocation)=>[
       posting(journal,allocation,ACCOUNTS.DIRECTOR_LOAN,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,paymentAccountId:facts.payerPaymentAccountId})
+    ],ledgerEvents,existing);
+    if(facts.type===TYPES.SALES_INVOICE_PAYMENT)return postedResult(facts,(journal,allocation)=>[
+      posting(journal,allocation,ACCOUNTS.COMPANY_BANK,facts.amountMinor,0,{sequence:1,paymentAccountId:facts.receiverPaymentAccountId}),posting(journal,allocation,ACCOUNTS.TRADE_RECEIVABLES,0,facts.amountMinor,{sequence:2})
+    ],ledgerEvents,existing);
+    if(facts.type===TYPES.SUPPLIER_BILL_PAYMENT)return postedResult(facts,(journal,allocation)=>[
+      posting(journal,allocation,ACCOUNTS.TRADE_PAYABLES,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,paymentAccountId:facts.payerPaymentAccountId})
+    ],ledgerEvents,existing);
+    if(facts.type===TYPES.FIXED_ASSET_PURCHASE)return postedResult(facts,(journal,allocation)=>[
+      posting(journal,allocation,ACCOUNTS.FIXED_ASSET_COST,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,facts.settlement&&facts.settlement.paymentStatus==='unpaid'?ACCOUNTS.TRADE_PAYABLES:ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,...(facts.payerPaymentAccountId?{paymentAccountId:facts.payerPaymentAccountId}:{})})
+    ],ledgerEvents,existing);
+    if(facts.type===TYPES.FIXED_ASSET_PAYMENT)return postedResult(facts,(journal,allocation)=>[
+      posting(journal,allocation,ACCOUNTS.TRADE_PAYABLES,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.COMPANY_BANK,0,facts.amountMinor,{sequence:2,paymentAccountId:facts.payerPaymentAccountId})
+    ],ledgerEvents,existing);
+    if(facts.type===TYPES.DEPRECIATION_CHARGE)return postedResult(facts,(journal,allocation)=>[
+      posting(journal,allocation,ACCOUNTS.DEPRECIATION_EXPENSE,facts.amountMinor,0,{sequence:1}),posting(journal,allocation,ACCOUNTS.ACCUMULATED_DEPRECIATION,0,facts.amountMinor,{sequence:2})
     ],ledgerEvents,existing);
     return postedResult(facts,(journal,allocation)=>[
       posting(journal,allocation,ACCOUNTS.COMPANY_BANK,facts.amountMinor,0,{sequence:1,paymentAccountId:facts.receiverPaymentAccountId}),posting(journal,allocation,ACCOUNTS.SHARE_CAPITAL,0,facts.amountMinor,{sequence:2})

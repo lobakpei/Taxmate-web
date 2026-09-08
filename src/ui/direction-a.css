@@ -1,0 +1,618 @@
+/* ============================================================================
+   TaxMate Direction A — real-app presentation bridge
+   Visual contract: TaxMate_DirectionA_Package_v2.zip / src/directionA.css
+   Scope is deliberately locked to html[data-direction-a="true"]. No data,
+   tax, auth, storage, sync, entitlement or routing behaviour lives here.
+   ============================================================================ */
+@font-face{
+  font-family:'Plus Jakarta Sans';font-style:normal;font-weight:500 800;font-display:swap;
+  src:url('/assets/fonts/plus-jakarta-sans-latin-500-800.woff2') format('woff2');
+  unicode-range:U+0000-00FF,U+0131,U+0152-0153,U+02BB-02BC,U+02C6,U+02DA,U+02DC,U+0304,U+0308,U+0329,U+2000-206F,U+20AC,U+2122,U+2191,U+2193,U+2212,U+2215,U+FEFF,U+FFFD;
+}
+html[data-direction-a="true"]{
+  --bg:#F6F3EC;--card:#FFFFFF;--ink:#101821;--muted:#68717B;--line:#E4DFD4;
+  --navy:#0F1620;--navy2:#182230;--navy-ink:#FFFFFF;
+  --navy-mute:rgba(255,255,255,.62);--navy-line:rgba(255,255,255,.14);
+  --y:#FFBE0A;--y-ink:#0F1620;--y-soft:#FFF3CC;
+  --brand:#0F1620;--brand-deep:#0F1620;--brand-soft:#ECE8DF;--teal:#2A6F7A;
+  --green:#167A43;--green-soft:#E4F3EA;--coral:#BD3037;--coral-soft:#FBE7E6;
+  --blue:#2F5FA8;--blue-soft:#E6EDF8;--amber:#795300;--amber-soft:#FFF3CC;
+  --money-in:#167A43;--money-out:#BD3037;--money-in-navy:#5FD891;--money-out-navy:#FF8A8F;
+  --btn-dark:#0F1620;--brand-action-ink:#0F1620;
+  --r-l:24px;--r-m:16px;--r-s:12px;--r-lg:24px;--r-md:16px;--r-sm:12px;
+  --font:'Plus Jakarta Sans',system-ui,-apple-system,"Segoe UI",sans-serif;
+  --e-card:0 1px 2px rgba(16,24,33,.03);--e-sheet:0 -2px 24px rgba(16,24,33,.10);
+  --shadow:var(--e-card);--shadow-sm:var(--e-card);
+  --t-title:22px;--t-sheet:21px;--t-question:17px;--t-section:15px;
+  --t-label:13px;--t-body:14.5px;--t-hint:12.5px;--t-button:15px;
+  --nav-h:72px;
+}
+html[data-direction-a="true"][data-theme="dark"],
+html[data-direction-a="true"] .tm-app[data-theme="dark"]{
+  --bg:#111A26;--card:#1B2634;--ink:#F2F4F7;--muted:#A4AFBD;--line:#2F3C4D;
+  --navy:#0A0F16;--navy2:#131C27;--brand:#F2F4F7;--brand-deep:#F2F4F7;
+  --brand-soft:#2F3C4D;--green:#5FD891;--green-soft:rgba(95,216,145,.14);
+  --coral:#FF8A8F;--coral-soft:rgba(255,138,143,.16);
+  --blue:#8FB3E8;--blue-soft:rgba(143,179,232,.14);
+  --amber:#F2C14E;--amber-soft:#322B1B;
+  --money-in:#5FD891;--money-out:#FF8A8F;
+  --btn-dark:#F2F4F7;--e-card:0 1px 2px rgba(0,0,0,.25);
+  --shadow:var(--e-card);--shadow-sm:var(--e-card);
+}
+
+/* The legacy inline sheet also has an automatic colour-scheme block with a
+   deliberately high-specificity selector. Keep automatic mode, but make its
+   computed palette the approved Direction A palette in either OS scheme. */
+@media (prefers-color-scheme:light){
+  html[data-direction-a="true"][data-direction-a="true"]:not([data-theme]){
+    --bg:#F6F3EC;--card:#FFFFFF;--ink:#101821;--muted:#68717B;--line:#E4DFD4;
+    --navy:#0F1620;--navy2:#182230;--brand:#0F1620;--brand-deep:#0F1620;
+    --brand-soft:#ECE8DF;--green:#167A43;--green-soft:#E4F3EA;
+    --coral:#BD3037;--coral-soft:#FBE7E6;--blue:#2F5FA8;--blue-soft:#E6EDF8;
+    --amber:#795300;--amber-soft:#FFF3CC;--btn-dark:#0F1620;
+    --money-in:#167A43;--money-out:#BD3037;
+  }
+}
+@media (prefers-color-scheme:dark){
+  html[data-direction-a="true"][data-direction-a="true"]:not([data-theme]){
+    --bg:#111A26;--card:#1B2634;--ink:#F2F4F7;--muted:#A4AFBD;--line:#2F3C4D;
+    --navy:#0A0F16;--navy2:#131C27;--brand:#F2F4F7;--brand-deep:#F2F4F7;
+    --brand-soft:#2F3C4D;--green:#5FD891;--green-soft:rgba(95,216,145,.14);
+    --coral:#FF8A8F;--coral-soft:rgba(255,138,143,.16);
+    --blue:#8FB3E8;--blue-soft:rgba(143,179,232,.14);
+    --amber:#F2C14E;--amber-soft:#322B1B;
+    --money-in:#5FD891;--money-out:#FF8A8F;
+    --btn-dark:#F2F4F7;--e-card:0 1px 2px rgba(0,0,0,.25);
+  }
+}
+
+html[data-direction-a="true"],html[data-direction-a="true"] body{margin:0;padding:0;min-height:100%;background:var(--bg)}
+html[data-direction-a="true"] body{color:var(--ink);font-family:var(--font);font-size:var(--t-body);line-height:1.5;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+html[data-direction-a="true"] button,
+html[data-direction-a="true"] input,
+html[data-direction-a="true"] select,
+html[data-direction-a="true"] textarea{font-family:inherit}
+html[data-direction-a="true"] :focus-visible{outline:3px solid var(--y);outline-offset:2px;border-radius:8px}
+html[data-direction-a="true"] .num,
+html[data-direction-a="true"] .tm-num{font-variant-numeric:tabular-nums;unicode-bidi:isolate;direction:ltr;white-space:nowrap}
+
+/* Global page shell ---------------------------------------------------------- */
+html[data-direction-a="true"] body:not(.ltd-active)>.top{
+  width:100%;max-width:520px;min-height:56px;margin:0 auto;padding:12px 16px 8px;
+  background:var(--navy);display:flex;align-items:center;gap:12px;
+}
+html[data-direction-a="true"] .header-brand-lockup{width:auto;height:22px}
+html[data-direction-a="true"] .web-brand-home{appearance:none;border:0;padding:0;background:transparent;color:inherit;cursor:pointer;box-shadow:none;border-radius:0;flex-shrink:0}
+html[data-direction-a="true"] .web-brand-home>img{display:block;width:auto;height:inherit}
+html[data-direction-a="true"] .web-brand-home:focus-visible{outline:2px solid #FFBE0A;outline-offset:4px;box-shadow:0 0 0 1px #101821}
+html[data-direction-a="true"] body:not(.ltd-active)>.top .brand-logo-light{display:none!important}
+html[data-direction-a="true"] body:not(.ltd-active)>.top .brand-logo-dark{display:block!important;width:auto;height:22px}
+html[data-direction-a="true"] .year-pill{margin-inline-start:auto}
+html[data-direction-a="true"] .year-pill select{
+  appearance:none;color:#fff;background:transparent;border:1px solid var(--navy-line);
+  border-radius:999px;padding:6px 28px 6px 11px;font-size:12.5px;font-weight:700;box-shadow:none;
+}
+html[data-direction-a="true"] .year-pill::after{color:var(--navy-mute);inset-inline-end:11px}
+html[data-direction-a="true"] body:not(.ltd-active)>main{
+  width:100%;max-width:520px;min-height:calc(100vh - 56px);margin:0 auto;
+  padding:0 16px calc(var(--nav-h) + 40px + env(safe-area-inset-bottom));
+}
+html[data-direction-a="true"] .h1{font-size:var(--t-title);font-weight:800;letter-spacing:-.5px;line-height:1.2;margin:4px 0 12px;color:var(--ink)}
+html[data-direction-a="true"] .h2{font-size:var(--t-section);font-weight:800;letter-spacing:0;margin:20px 0 10px;color:var(--ink)}
+html[data-direction-a="true"] .sub{font-size:var(--t-hint);color:var(--muted)}
+html[data-direction-a="true"] body[data-direction-page="income"]>#page>.h1:first-child,
+html[data-direction-a="true"] body[data-direction-page="expenses"]>#page>.h1:first-child,
+html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child,
+html[data-direction-a="true"] body[data-direction-page="receipts"]>#page>.h1:first-child{
+  background:var(--navy);color:#fff;margin:0 -16px 12px;padding:4px 16px 14px;
+  border-radius:0 0 22px 22px;
+}
+
+/* Approved navy summary sheet ---------------------------------------------- */
+html[data-direction-a="true"] .hero{
+  background:var(--navy);color:#fff;box-shadow:none;border-radius:0 0 28px 28px;
+  margin:0 -16px 14px;padding:0 16px 20px;position:relative;overflow:hidden;
+}
+html[data-direction-a="true"] .hero::before{display:none}
+html[data-direction-a="true"] .hero .hi{font-size:15px;font-weight:700;color:rgba(255,255,255,.88);opacity:1;margin:12px 0 0}
+html[data-direction-a="true"] .hero .label{font-size:12.5px;font-weight:600;color:var(--navy-mute);opacity:1;margin-top:10px}
+html[data-direction-a="true"] .hero .big{font-size:46px;font-weight:800;letter-spacing:-1.8px;line-height:1.05;margin:2px 0;color:#fff}
+html[data-direction-a="true"] .hero .hero-owe{
+  display:flex;justify-content:space-between;align-items:flex-start;gap:12px;background:none;
+  border-radius:0;border-top:2px solid var(--y);padding:12px 0 0;margin:14px 0 0;color:#fff;
+}
+html[data-direction-a="true"] .hero .hero-owe .ho-label{font-size:14px;font-weight:800;color:var(--y);opacity:1}
+html[data-direction-a="true"] .hero .hero-owe .ho-val{font-size:18px;font-weight:800;color:#fff;white-space:nowrap}
+html[data-direction-a="true"] .hero .pills{display:flex;flex-direction:column;gap:0;margin-top:8px;border-top:1px solid var(--navy-line)}
+html[data-direction-a="true"] .hero .pill{
+  width:100%;min-width:0;display:flex;align-items:baseline;justify-content:space-between;gap:10px;
+  background:none;border:0;border-bottom:1px solid var(--navy-line);border-radius:0;padding:9px 0;
+  color:#fff;text-align:start;box-shadow:none;backdrop-filter:none;min-height:40px;
+}
+html[data-direction-a="true"] .hero .pill:last-child{border-bottom:0}
+html[data-direction-a="true"] .hero .pill .pl{font-size:13px;font-weight:500;color:var(--navy-mute);opacity:1}
+html[data-direction-a="true"] .hero .pill .pv{font-size:15.5px;font-weight:700;color:#fff;margin:0}
+html[data-direction-a="true"] .hero [data-home-partnership-share-note],
+html[data-direction-a="true"] .hero [data-home-partnership-review]{font-size:12.5px!important;color:var(--navy-mute);line-height:1.45}
+html[data-direction-a="true"] .hero[data-home-ltd-only-hero] .pill{justify-content:center;background:var(--y);color:var(--y-ink);border-radius:16px;border:0;padding:14px 16px}
+
+/* Cards, rows, lists --------------------------------------------------------- */
+html[data-direction-a="true"] .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:14px;box-shadow:var(--e-card);margin-bottom:10px}
+html[data-direction-a="true"] .card.flat{box-shadow:none}
+html[data-direction-a="true"] .card .t,
+html[data-direction-a="true"] .card .ct{font-size:14.5px;font-weight:800;color:var(--ink)}
+html[data-direction-a="true"] .card .s,
+html[data-direction-a="true"] .card .cs{font-size:12.5px;color:var(--muted);line-height:1.5;margin-top:2px}
+html[data-direction-a="true"] .row{
+  width:100%;min-height:56px;display:flex;align-items:center;gap:12px;background:var(--card);
+  color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;
+  text-align:start;box-shadow:none;margin:0;font-size:var(--t-body);
+}
+html[data-direction-a="true"] .row+.row{margin-top:8px;padding-top:12px;border-top:1px solid var(--line)}
+html[data-direction-a="true"] button.row{appearance:none;cursor:pointer}
+html[data-direction-a="true"] .row .grow{flex:1;min-width:0}
+html[data-direction-a="true"] .row .t,
+html[data-direction-a="true"] .row .nm{display:block;font-weight:800;font-size:14.5px;line-height:1.3;color:var(--ink)}
+html[data-direction-a="true"] .row .s,
+html[data-direction-a="true"] .row .mt{display:block;font-size:12.5px;color:var(--muted);margin-top:2px;line-height:1.45}
+html[data-direction-a="true"] .row .v,
+html[data-direction-a="true"] .row .amt{display:block;font-weight:800;font-size:14.5px;color:var(--ink);white-space:nowrap}
+/* Money semantics (UI-01): one rule set for every amount in the personal shell.
+   Specificity deliberately beats .frow .fv / .row .v / .entry .v ink defaults. */
+html[data-direction-a="true"] .pos,
+html[data-direction-a="true"] .row .pos,
+html[data-direction-a="true"] .row .v.pos,
+html[data-direction-a="true"] .entry .v.pos,
+html[data-direction-a="true"] .frow .fv.pos,
+html[data-direction-a="true"] .frow.total .fv.pos,
+html[data-direction-a="true"] .row .amt.in{color:var(--money-in)}
+html[data-direction-a="true"] .neg,
+html[data-direction-a="true"] .row .neg,
+html[data-direction-a="true"] .row .v.neg,
+html[data-direction-a="true"] .entry .v.neg,
+html[data-direction-a="true"] .frow .fv.neg,
+html[data-direction-a="true"] .frow.total .fv.neg,
+html[data-direction-a="true"] .row .amt.out{color:var(--money-out)}
+html[data-direction-a="true"] .hero .big.pos,
+html[data-direction-a="true"] .hero .pill .pv.pos,
+html[data-direction-a="true"] .hero .hero-owe .ho-val.pos{color:var(--money-in-navy)}
+html[data-direction-a="true"] .hero .big.neg,
+html[data-direction-a="true"] .hero .pill .pv.neg,
+html[data-direction-a="true"] .hero .hero-owe .ho-val.neg{color:var(--money-out-navy)}
+html[data-direction-a="true"] .avatar,
+html[data-direction-a="true"] .row .av{
+  width:36px;height:36px;border-radius:10px;display:grid;place-items:center;flex:0 0 36px;
+  background:var(--navy)!important;color:#fff!important;font-size:13px;font-weight:800;
+}
+html[data-direction-a="true"] .row .link,
+html[data-direction-a="true"] .row .cta{font-size:12.5px;font-weight:700;color:var(--muted);white-space:nowrap}
+html[data-direction-a="true"] [data-home-business-list]{background:transparent;border:0;padding:0;box-shadow:none;display:flex;flex-direction:column;gap:8px}
+html[data-direction-a="true"] [data-home-business-list]>.row+.row{margin:0}
+html[data-direction-a="true"] .elist{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:none;overflow:hidden;margin-bottom:10px}
+html[data-direction-a="true"] .entry{display:flex;align-items:center;gap:12px;padding:12px 14px;min-height:56px;color:var(--ink)}
+html[data-direction-a="true"] .entry+.entry{border-top:1px solid var(--line)}
+html[data-direction-a="true"] .entry .edot{width:34px;height:34px;border-radius:10px;font-size:0;display:grid;place-items:center;flex:0 0 34px;background:var(--brand-soft)!important}
+html[data-direction-a="true"] .entry .edot::after{content:'↗';font-size:16px;font-weight:800;color:var(--money-in)}
+html[data-direction-a="true"] .entry[data-entry-kind="expense"] .edot::after,
+html[data-direction-a="true"] body[data-direction-page="expenses"] .entry .edot::after{content:'↘';color:var(--money-out)}
+html[data-direction-a="true"] .entry[data-entry-kind="income"] .edot::after{content:'↗';color:var(--money-in)}
+html[data-direction-a="true"] .month{font-size:13px;font-weight:800;color:var(--muted);padding:16px 4px 8px;text-transform:none}
+html[data-direction-a="true"] .frow{display:flex;justify-content:space-between;align-items:baseline;gap:12px;padding:10px 0;border-bottom:1px solid var(--line);font-size:14px}
+html[data-direction-a="true"] .frow .fv:not(.pos):not(.neg){color:var(--ink)}
+html[data-direction-a="true"] .frow .fv{font-weight:800;white-space:nowrap}
+
+/* Buttons and segmented controls ------------------------------------------- */
+html[data-direction-a="true"] .btn,
+html[data-direction-a="true"] .tm-btn{
+  appearance:none;border:0;cursor:pointer;font-weight:800;font-size:var(--t-button);
+  border-radius:var(--r-m);padding:14px 16px;width:100%;min-height:50px;
+  display:inline-flex;align-items:center;justify-content:center;gap:8px;box-shadow:none;white-space:normal;line-height:1.3;
+}
+html[data-direction-a="true"] .btn:not(.ghost):not(.soft):not(.danger-soft):not(.coral):not(.ink),
+html[data-direction-a="true"] .tm-btn.p{background:var(--y);color:var(--y-ink)}
+html[data-direction-a="true"] .btn.ghost,
+html[data-direction-a="true"] .btn.soft,
+html[data-direction-a="true"] .tm-btn.g{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+html[data-direction-a="true"] .btn.ink,
+html[data-direction-a="true"] .tm-btn.s{background:var(--navy);color:#fff}
+html[data-direction-a="true"][data-theme="dark"] .btn.ink,
+html[data-direction-a="true"][data-theme="dark"] .tm-btn.s{background:#F2F4F7;color:#0F1620}
+html[data-direction-a="true"] .btn.danger-soft,
+html[data-direction-a="true"] .tm-btn.ds{background:var(--coral-soft);color:var(--coral)}
+html[data-direction-a="true"] .btn.coral,
+html[data-direction-a="true"] .tm-btn.d{background:var(--coral);color:#fff}
+html[data-direction-a="true"] .btn:disabled,
+html[data-direction-a="true"] .tm-btn:disabled{opacity:.5;cursor:not-allowed}
+html[data-direction-a="true"] .homecta{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:12px 0}
+html[data-direction-a="true"] .homecta .btn{min-width:0;padding-inline:10px;font-size:14px}
+html[data-direction-a="true"] .direction-a-list-action{position:sticky;top:0;z-index:20;margin:0;padding:10px 0;background:var(--bg)}
+html[data-direction-a="true"] .direction-a-list-action .fab{position:static;width:100%;height:auto;border-radius:var(--r-m);background:var(--y);color:var(--y-ink);font-size:var(--t-button);box-shadow:none}
+html[data-direction-a="true"] .fab-plus{transform:none;font-size:18px;line-height:1}
+html[data-direction-a="true"] .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin:12px 0 4px}
+html[data-direction-a="true"] .seg button{flex:1;min-width:0;border:0;background:none;color:var(--muted);font-size:13px;font-weight:700;padding:9px 4px;border-radius:10px;min-height:40px;white-space:normal;line-height:1.2;box-shadow:none}
+html[data-direction-a="true"] .seg button.on{background:var(--navy);color:#fff}
+html[data-direction-a="true"][data-theme="dark"] .seg button.on{background:#F2F4F7;color:#0F1620}
+html[data-direction-a="true"] .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
+html[data-direction-a="true"] .chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:6px;padding:4px 8px;line-height:1.4;white-space:nowrap;border:1px solid transparent;box-shadow:none}
+html[data-direction-a="true"] .chip:not(.on){background:var(--brand-soft);color:var(--muted)}
+html[data-direction-a="true"] .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
+
+/* Forms, notices and disclosure -------------------------------------------- */
+html[data-direction-a="true"] input[type=text],
+html[data-direction-a="true"] input[type=number],
+html[data-direction-a="true"] input[type=date],
+html[data-direction-a="true"] select,
+html[data-direction-a="true"] textarea,
+html[data-direction-a="true"] .tm-input{
+  width:100%;min-height:50px;font:inherit;font-size:16px;font-weight:600;color:var(--ink);
+  background:var(--card);border:1.5px solid var(--line);border-radius:var(--r-s);padding:12px 14px;
+}
+html[data-direction-a="true"] input:focus,
+html[data-direction-a="true"] select:focus,
+html[data-direction-a="true"] textarea:focus{outline:none;border-color:var(--navy);box-shadow:0 0 0 3px var(--y-soft)}
+html[data-direction-a="true"][data-theme="dark"] input:focus,
+html[data-direction-a="true"][data-theme="dark"] select:focus{border-color:var(--y);background:var(--card)}
+html[data-direction-a="true"] .fg label,
+html[data-direction-a="true"] .flabel,
+html[data-direction-a="true"] .tm-flabel{font-size:var(--t-label);font-weight:700;color:var(--ink);margin-bottom:6px}
+html[data-direction-a="true"] .fhint,
+html[data-direction-a="true"] .hint,
+html[data-direction-a="true"] .tm-fhint{font-size:var(--t-hint);color:var(--muted);line-height:1.5}
+html[data-direction-a="true"] .notice,
+html[data-direction-a="true"] .tm-notice{border-radius:var(--r-m);padding:12px 14px;font-size:13.5px;line-height:1.5;box-shadow:none}
+html[data-direction-a="true"] .notice.green,
+html[data-direction-a="true"] .notice.amber,
+html[data-direction-a="true"] .tm-notice.ok,
+html[data-direction-a="true"] .tm-notice.warn{background:var(--amber-soft);color:var(--amber)}
+html[data-direction-a="true"] .tm-notice.info{background:var(--blue-soft);color:var(--blue)}
+html[data-direction-a="true"] .direction-a-inline-icon{width:15px;height:15px;display:inline-block;vertical-align:-2px;margin-inline-end:6px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+html[data-direction-a="true"] .direction-a-privacy{display:flex;align-items:flex-start;color:var(--muted);line-height:1.5;margin-top:14px}
+html[data-direction-a="true"] details.sec,
+html[data-direction-a="true"] details.help,
+html[data-direction-a="true"] .tm-disc{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:none;overflow:hidden}
+
+/* Bottom navigation --------------------------------------------------------- */
+html[data-direction-a="true"] body:not(.ltd-active)>#nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:100;width:100%;max-width:none;height:auto;
+  display:grid;grid-template-columns:repeat(5,1fr);margin:0;padding:0 0 env(safe-area-inset-bottom);
+  background:var(--navy);border:0;border-radius:0;backdrop-filter:none;
+}
+html[data-direction-a="true"] body:not(.ltd-active)>#nav button{
+  min-height:var(--nav-h);padding:0 2px;border-radius:0;background:none;color:rgba(255,255,255,.5);
+  font-size:10.5px;font-weight:700;gap:3px;display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.2;
+}
+html[data-direction-a="true"] body:not(.ltd-active)>#nav button svg{width:36px;height:24px;padding:2px 8px;box-sizing:border-box;border-radius:9px;background:transparent;display:block}
+html[data-direction-a="true"] body:not(.ltd-active)>#nav button span{display:block}
+html[data-direction-a="true"] body:not(.ltd-active)>#nav button.on{color:#fff;background:none}
+html[data-direction-a="true"] body:not(.ltd-active)>#nav button.on svg{background:var(--y);color:var(--navy)}
+
+/* Home assistant trigger and modal ----------------------------------------- */
+html[data-direction-a="true"] .assistant-home-card{margin:10px 0 0}
+html[data-direction-a="true"] .assistant-home-card .assistant-count{display:block;font-size:12.5px;color:var(--muted);margin-top:2px}
+html[data-direction-a="true"] .assistant-home-card .link{margin:0;color:var(--muted)}
+html[data-direction-a="true"] .sb{background:rgba(15,22,32,.5);align-items:flex-end;justify-content:center}
+html[data-direction-a="true"] .sb>.sheet{
+  width:100%;max-width:520px;max-height:92vh;margin:0;padding:10px 20px calc(26px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);
+  border-radius:24px 24px 0 0;box-sizing:border-box;box-shadow:var(--e-sheet);overflow-y:auto;overflow-x:hidden;
+}
+html[data-direction-a="true"] .sb>.sheet>.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 12px}
+html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;margin:0 0 4px;color:var(--ink)}
+html[data-direction-a="true"] .sb>.sheet>.btn:last-child,
+html[data-direction-a="true"] .sb>.sheet>.sact:last-child{margin-bottom:calc(12px + env(safe-area-inset-bottom))}
+html[data-direction-a="true"] #sb-assistant>.sheet{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+html[data-direction-a="true"] #sb-assistant .assistant-task-list{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;margin-top:10px}
+html[data-direction-a="true"] #sb-assistant .assistant-task{border:0;border-radius:0;padding:12px 14px;box-shadow:none}
+html[data-direction-a="true"] #sb-assistant .assistant-task+.assistant-task{border-top:1px solid var(--line)}
+html[data-direction-a="true"] #sb-assistant .assistant-task-title{font-size:14px}
+html[data-direction-a="true"] #sb-assistant .assistant-task-actions .btn{width:auto;min-height:40px;padding:9px 14px;font-size:13px}
+html[data-direction-a="true"] .toast{background:var(--navy);color:#fff;border-radius:14px;font-size:13.5px;font-weight:800;box-shadow:none}
+html[data-direction-a="true"] .cxr-emoji,
+html[data-direction-a="true"] .empty .big-emoji{display:none}
+html[data-direction-a="true"] .cxr-inner{gap:0}
+html[data-direction-a="true"] .homecta .btn.danger-soft{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+
+/* Personal onboarding ------------------------------------------------------- */
+html[data-direction-a="true"] #ob-root.active{background:var(--bg)}
+html[data-direction-a="true"] #ob-root .ob-wrap{max-width:520px;padding-inline:16px}
+html[data-direction-a="true"] #ob-root .ob-logo{height:22px;margin:12px 0 18px}
+html[data-direction-a="true"] #ob-root h1{font-size:var(--t-title);letter-spacing:-.5px}
+html[data-direction-a="true"] #ob-root .ob-card,
+html[data-direction-a="true"] #ob-root .ob-tile{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:var(--e-card)}
+html[data-direction-a="true"] #ob-root .ob-tile .ob-emoji,
+html[data-direction-a="true"] #ob-root .ob-confetti{display:none}
+html[data-direction-a="true"] #ob-root .ob-btn{background:var(--y);color:var(--y-ink);border-radius:var(--r-m);box-shadow:none;min-height:50px}
+html[data-direction-a="true"] #ob-root .ob-btn.ghost,
+html[data-direction-a="true"] #ob-root .ob-btn.soft{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+html[data-direction-a="true"] .ob-pfill{background:var(--y)}
+
+/* LTD real renderer --------------------------------------------------------- */
+html[data-direction-a="true"] #taxmate-ltd-ui-root,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font);overflow-x:hidden}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{width:100%;max-width:520px;margin:0 auto;padding:0 16px calc(var(--nav-h) + 40px + env(safe-area-inset-bottom));min-height:100vh;display:block}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0 8px;min-height:56px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand{font-size:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand::before{content:'';display:block;width:119px;height:22px;background:url('/assets/brand/derived/taxmate-brand-logo-dark.svg') left center/contain no-repeat}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand .mk,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand .mk2{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-year,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsperiod{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;background:transparent;color:#fff;border:1px solid var(--navy-line);border-radius:999px;padding:6px 11px;box-shadow:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsback{appearance:none;border:0;background:none;color:var(--ink);font-weight:700;font-size:14px;min-height:44px;padding:8px 0}
+/* White only on the navy surfaces (summary sheet, desktop rail); standalone detail screens keep ink so Back is readable. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-wsback,html[data-direction-a="true"] #taxmate-ltd-ui-root .rail .tm-wsback{color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wstitle{font-size:var(--t-title);font-weight:800;letter-spacing:-.5px;line-height:1.15;color:inherit;margin:4px 0 3px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsmeta{font-size:12.5px;color:inherit;opacity:.62}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet{background:var(--navy);color:#fff;margin:0 -16px;padding:0 16px 20px;border-radius:0 0 28px 28px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet.slim{padding-bottom:14px;border-radius:0 0 22px 22px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero{background:transparent;border-radius:0;padding:0;margin:10px 0 0;box-shadow:none;overflow:visible;color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero::after{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero .lbl{font-size:14px;font-weight:800;color:var(--y);opacity:1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero .big{font-size:46px;letter-spacing:-1.8px;color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero .strip{background:none;border-top:2px solid var(--y);border-radius:0;padding:12px 0 0;margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin:12px 0 4px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs button{flex:1;min-width:0;border:0;background:none;color:var(--muted);font-size:13px;font-weight:700;padding:9px 4px;border-radius:10px;min-height:40px;white-space:normal;line-height:1.2;text-overflow:clip}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs button.on{background:var(--navy);color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-h{font-size:var(--t-section);font-weight:800;margin:20px 0 10px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:12px;align-items:center;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;min-height:56px;color:var(--ink)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .av{width:36px;height:36px;border-radius:10px;background:var(--navy);color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .nm{font-size:14.5px;font-weight:800;line-height:1.3}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .mt{font-size:12.5px;color:var(--muted);margin-top:2px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .amt{font-size:14.5px;font-weight:800;color:var(--ink)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .cta{font-size:12.5px;color:var(--muted)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metrics{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:14px;box-shadow:var(--e-card)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .l{font-size:12.5px;color:var(--muted)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .v{font-size:17px;font-weight:800}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .v.pos{color:var(--money-in)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .v.neg{color:var(--money-out)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-recs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-rec{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;min-height:56px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice{background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:var(--r-m);padding:14px;min-height:60px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice.on{border-color:var(--navy)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-field{margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-inwrap{border-radius:var(--r-s)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-notice.neutral{background:var(--card);border:1px solid var(--line);color:var(--ink)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summ{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);box-shadow:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-total{background:var(--card);border:1px solid var(--line);color:var(--ink);border-radius:var(--r-s)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-total.bad{background:var(--coral-soft);color:var(--coral)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-progress i{background:var(--y)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-sheet{background:var(--card);color:var(--ink);border-radius:24px 24px 0 0;box-shadow:var(--e-sheet);max-width:520px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-scrim{background:rgba(15,22,32,.5)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-toast{display:block;margin:10px 0 0;position:static}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-toast .b{background:var(--navy);color:#fff;border-radius:var(--r-s);display:block;padding:11px 16px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col.workspace-host{max-width:none;padding:0;min-height:100vh}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.side{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main>.tm-col{padding-top:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav{
+  position:fixed;left:0;right:0;bottom:0;z-index:50;display:grid;grid-template-columns:repeat(4,1fr);
+  width:100%;max-width:none;margin:0;padding:0 0 env(safe-area-inset-bottom);border:0;border-radius:0;
+  background:var(--navy);backdrop-filter:none;
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button{
+  appearance:none;border:0;background:none;color:rgba(255,255,255,.5);font-size:10.5px;font-weight:700;
+  min-height:var(--nav-h);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on{color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-navicon{display:block;width:21px;height:21px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round;box-sizing:content-box}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-navicon{width:21px;height:21px;border-radius:9px;background:var(--y);color:var(--navy);padding:2px 8px}
+
+/* Desktop rails use the same approved geometry as the Fable prototype. */
+@media (min-width:1024px){
+  html[data-direction-a="true"] body:not(.ltd-active)>.top{
+    position:fixed;top:0;bottom:0;left:max(0px,calc(50% - 650px));width:232px;max-width:none;
+    padding:22px 16px 40px 40px;align-items:flex-start;
+  }
+  html[data-direction-a="true"] body:not(.ltd-active)>.top .year-pill{display:none}
+  html[data-direction-a="true"] body:not(.ltd-active)>main{max-width:640px;padding:22px 0 40px;min-height:100vh}
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav{
+    position:fixed;top:72px;bottom:auto;left:max(0px,calc(50% - 622px));right:auto;width:176px;
+    display:flex;flex-direction:column;padding:0;background:transparent;z-index:101;
+  }
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav button{
+    min-height:44px;display:flex;flex-direction:row;justify-content:flex-start;gap:10px;padding:11px 12px;
+    color:rgba(255,255,255,.6);font-size:14px;border-radius:10px;
+  }
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav button.on{background:rgba(255,255,255,.08);color:#fff}
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav button svg{padding:0;width:21px;height:21px;background:none}
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav button.on svg{background:none;color:var(--y)}
+  html[data-direction-a="true"] body:not(.ltd-active)>main>.hero:first-child{border-radius:22px;margin:0 0 14px;padding:0 20px 20px}
+  html[data-direction-a="true"] body[data-direction-page="income"]>#page>.h1:first-child,
+  html[data-direction-a="true"] body[data-direction-page="expenses"]>#page>.h1:first-child,
+  html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child,
+  html[data-direction-a="true"] body[data-direction-page="receipts"]>#page>.h1:first-child{border-radius:22px;margin:0 0 12px;padding:14px 20px}
+  html[data-direction-a="true"] .homecta{grid-template-columns:1fr 1fr}
+  html[data-direction-a="true"] .sb{align-items:center}
+  html[data-direction-a="true"] .sb>.sheet{border-radius:24px;max-height:88vh;margin:16px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{max-width:640px;padding:22px 0 40px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col.workspace-host{max-width:none;padding:0}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell{display:grid;grid-template-columns:232px minmax(0,640px);gap:32px;max-width:1040px;margin:0 auto;padding:0 32px 40px 0;align-items:start}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail{display:flex;position:sticky;top:0;min-height:100vh;margin-inline-start:-40px;padding:22px 16px 40px 40px;background:var(--navy);flex-direction:column;gap:4px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .tm-logo{display:block;width:auto;height:22px;margin:0 0 22px 12px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d{display:flex;flex-direction:column;gap:4px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d button{appearance:none;border:0;background:none;color:rgba(255,255,255,.6);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;min-height:44px;text-align:start}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d button.on{background:rgba(255,255,255,.08);color:#fff}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d button.on .tm-navicon{color:var(--y)}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .back-d{margin-top:20px;color:rgba(255,255,255,.7)}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main{padding-top:22px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main>.tm-col{max-width:none;padding:0 0 40px;min-height:0}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.side{display:none}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.side .card{margin:0}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav{display:none}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet{margin:0;border-radius:22px;padding:0 20px 20px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-scrim{align-items:center}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-sheet{border-radius:24px;max-height:88vh}
+}
+
+@media (max-width:374px){
+  html[data-direction-a="true"] .hero .big,
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-hero .big{font-size:40px}
+  html[data-direction-a="true"] .btn,html[data-direction-a="true"] .tm-btn{font-size:14px}
+  html[data-direction-a="true"] .homecta{gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  html[data-direction-a="true"] *,html[data-direction-a="true"] *::before,html[data-direction-a="true"] *::after{animation:none!important;transition:none!important}
+}
+
+/* ---- Fable R5: company year-end, statutory checklist, bank matching, RTI ---- */
+/* Money semantics (UI-02) inside the Ltd renderer: spans carry pos/neg from moneyRole(). */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .pos,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-num.pos,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .amt.pos,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-rec .rv.pos{color:var(--money-in)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .neg,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-num.neg,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .amt.neg,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-rec .rv.neg{color:var(--money-out)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-num.pos{color:var(--money-in-navy)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-num.neg{color:var(--money-out-navy)}
+/* Status pills and success notices use the approved yellow/amber module, never income green. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pill.ok{background:var(--y-soft);color:var(--y-ink)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app[data-theme="dark"] .tm-pill.ok,html[data-direction-a="true"][data-theme="dark"] #taxmate-ltd-ui-root .tm-pill.ok{background:var(--amber-soft);color:var(--amber)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-notice.ok .i,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-notice.warn .i{color:var(--amber)}
+
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-yearhead{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-top:8px;font-size:12.5px;color:var(--muted)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-keyfigures .tm-summ .val{font-size:16px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo .tm-btn.sm{width:auto;min-height:40px;padding:8px 14px;font-size:13px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-matchline .tm-choice{display:block;padding:12px 14px;min-height:52px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-matchline .tm-choice.on{border-color:var(--navy);background:var(--y-soft)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-h.sm{font-size:13.5px;margin:14px 0 6px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-question.sm{font-size:14.5px;margin:12px 0 6px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statsummary{width:100%;text-align:start;cursor:pointer;border:0;font-family:inherit;display:flex}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statcard{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statcard .tm-statitem{border:0;border-radius:0;width:100%;text-align:start;cursor:pointer}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statcard .dc{padding:4px 14px 14px;border-top:1px solid var(--line)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-extlink{color:var(--teal);font-weight:800;text-decoration:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app[data-theme="dark"] .tm-extlink,html[data-direction-a="true"][data-theme="dark"] #taxmate-ltd-ui-root .tm-extlink{color:var(--blue)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-reasons{font-size:var(--t-body)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bankline{border:1px solid var(--line);border-radius:var(--r-s);padding:8px 12px 12px;margin-top:10px;background:var(--card)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statgroup{border-top:1px solid var(--line);padding-top:6px;margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .tm-price{margin-top:6px;text-align:start;line-height:1.4;color:var(--ink);font-weight:800}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-price .tm-price-standard{color:var(--muted);font-weight:600;margin-inline-end:4px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row-locked .rt:empty{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choices.row{flex-direction:row;gap:6px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choices.row>*{flex:1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choice{min-height:44px;padding:10px 8px;justify-content:center;text-align:center}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choice .ct{font-size:13.5px}
+
+/* Founder-approved Direction A review 01, 2026-09-07.
+   Visual authority: 9e5039b9c14efd31f62a043fa43af300ab7d26ba8b845b1146de1e58a4dce375.
+   Shared states apply to detail screens as well as the four main sections. */
+html[data-direction-a="true"] .btn.p:hover:not(:disabled),
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn.p:hover:not(:disabled),
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn.p:active:not(:disabled){background:var(--y);border-color:var(--y);color:#0F1620;filter:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn:disabled{opacity:.55;cursor:not-allowed}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-hero{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:16px;box-shadow:var(--e-card);padding:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-hero::after{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-hero .big{font-size:34px;color:var(--ink);letter-spacing:-1px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-hero .hi,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-hero .lbl{color:var(--muted);opacity:1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-toast .b{background:none;color:var(--ink);border:0;border-radius:0;padding:8px 0;font-size:13px;box-shadow:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice.on,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-matchline .tm-choice.on{background:var(--card);border-color:var(--y);box-shadow:inset 0 0 0 1px var(--y)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice-amount{display:block;margin-top:7px;font-size:14px;font-weight:800;direction:ltr;unicode-bidi:isolate}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-match-amount{font-size:34px;font-weight:800;letter-spacing:-1px;margin:8px 0 16px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-matchline .ct,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-matchline .cb{overflow-wrap:anywhere;white-space:normal;text-overflow:clip}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-logo{height:22px;width:auto}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-top{min-height:64px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button{font-size:11px;line-height:1.2;padding:4px 3px;gap:4px;color:#B8BCC1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button .tm-navicon{width:20px;height:20px;padding:3px 8px;box-sizing:content-box;border-radius:9px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-navicon{width:20px;height:20px;padding:3px 8px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric{display:flex;justify-content:space-between;align-items:baseline;width:100%;border:0;border-top:1px solid var(--line);border-radius:0;padding:11px 0;gap:12px;box-shadow:none;text-align:start}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .v{font-size:14px;white-space:nowrap}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .l{font-size:14px;overflow-wrap:anywhere}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .st{display:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-review-tax{border-top:0;display:block;padding:0 0 12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-tax .v{font-size:22px;margin-top:8px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:12px;overflow:hidden}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links .tm-rec{border:0;border-radius:0;border-top:1px solid var(--line);margin:0;min-height:60px;padding:13px 14px;text-align:start}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links .tm-rec:first-child{border-top:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo{min-height:60px;padding:13px 14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo .rl{font-size:14px;line-height:1.5}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-sheet .tm-btn{min-height:50px}
+html[data-direction-a="true"] .hero .big{font-size:44px;letter-spacing:-1.7px;line-height:1.12;margin:4px 0 12px}
+html[data-direction-a="true"] .hero .hero-owe .ho-val{font-size:20px}
+html[data-direction-a="true"] .review01-hero-scope{font-size:12.5px;line-height:1.5;color:#B8BCC1;margin-top:12px}
+html[data-direction-a="true"] body[data-direction-page="income"]>#page>.h1 .num.pos{color:var(--money-in-navy)}
+html[data-direction-a="true"] body[data-direction-page="expenses"]>#page>.h1 .num.neg{color:var(--money-out-navy)}
+/* An explicit light LTD choice must not inherit the OS dark palette. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app[data-theme="light"]{
+  --bg:#F6F3EC;--card:#FFFFFF;--ink:#101821;--muted:#68717B;--line:#E4DFD4;
+  --navy:#0F1620;--navy2:#182230;--brand:#0F1620;--brand-deep:#0F1620;
+  --brand-soft:#ECE8DF;--green:#167A43;--coral:#BD3037;
+  --money-in:#167A43;--money-out:#BD3037;--amber:#795300;--amber-soft:#FFF3CC;
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn.s{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-review-tax .v{font-size:22px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{background:transparent;border:0;box-shadow:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head .tm-stitle{font-size:21px;line-height:1.3;margin:0;font-weight:800;min-width:0;flex:1;overflow-wrap:anywhere}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;border:0;background:none;color:var(--ink);font-size:22px;cursor:pointer}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsmeta{display:flex;flex-wrap:wrap;gap:4px 8px}
+
+/* The same joined-row and short-detail modules in the actual personal app. */
+html[data-direction-a="true"] [data-home-business-list],
+html[data-direction-a="true"] .review01-rows{display:block;gap:0;border:1px solid var(--line);border-radius:16px;background:var(--card);overflow:hidden;padding:0;margin:12px 0}
+html[data-direction-a="true"] [data-home-business-list]>.row,
+html[data-direction-a="true"] .review01-rows>.row{border:0;border-radius:0;margin:0;padding:13px 14px;min-height:60px}
+html[data-direction-a="true"] [data-home-business-list]>.row+.row,
+html[data-direction-a="true"] .review01-rows>.row+.row{border-top:1px solid var(--line);margin:0}
+html[data-direction-a="true"] [data-home-business-list] .avatar{display:none}
+html[data-direction-a="true"] .row .t,
+html[data-direction-a="true"] .entry .t{overflow-wrap:anywhere;font-size:14px;font-weight:700;line-height:1.5}
+html[data-direction-a="true"] .row .v,
+html[data-direction-a="true"] .entry .v{flex-shrink:0;font-size:14px}
+html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 14px;padding:4px 16px 20px;border-radius:0 0 24px 24px}
+html[data-direction-a="true"] .review01-tax-summary .big{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-1px;margin:8px 0}
+html[data-direction-a="true"] .review01-tax-summary .hi,
+html[data-direction-a="true"] .review01-tax-summary .label{font-size:12.5px;color:var(--muted)}
+html[data-direction-a="true"] .review01-details{margin:12px 0}
+html[data-direction-a="true"] .review01-details>summary{cursor:pointer;min-height:44px;font-size:14px;font-weight:700;align-content:center;color:var(--ink)}
+html[data-direction-a="true"] .review01-summary-hint{display:block;font-size:12.5px;font-weight:500;color:var(--muted);margin-top:4px}
+html[data-direction-a="true"] .review01-details>.card{border:0;border-radius:0;padding:10px 0;margin:0;box-shadow:none}
+html[data-direction-a="true"] .review01-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px}
+html[data-direction-a="true"] .review01-dialog-head .stitle{margin:0;flex:1}
+html[data-direction-a="true"] .review01-close{min-width:44px;height:44px;border:0;background:none;color:var(--ink);font-size:22px;cursor:pointer}
+html[data-direction-a="true"] #sb-assistant .assistant-task{padding:0}
+html[data-direction-a="true"] .assistant-task-row{display:flex;align-items:center;gap:12px;background:none;border:0;color:var(--ink);text-align:start;width:100%;min-height:60px;padding:13px 14px;cursor:pointer}
+html[data-direction-a="true"] .assistant-task-row .grow{flex:1;min-width:0}
+html[data-direction-a="true"] .assistant-task-row .assistant-task-title{display:block;font-size:14px;font-weight:700;overflow-wrap:anywhere}
+html[data-direction-a="true"] .assistant-task-context{display:block;font-size:12.5px;color:var(--muted);overflow-wrap:anywhere}
+html[data-direction-a="true"] .assistant-task-row .link{flex-shrink:0;font-size:12.5px}
+html[data-direction-a="true"] #sb-assistant .assistant-task-list{gap:0;border:1px solid var(--line);border-radius:16px;overflow:hidden;background:var(--card)}
+html[data-direction-a="true"] #sb-assistant .assistant-task{border:0;border-radius:0}
+html[data-direction-a="true"] #sb-assistant .assistant-task+.assistant-task{border-top:1px solid var(--line)}
+html[data-direction-a="true"] .review01-task-context .btn{margin:6px 0}
+html[data-direction-a="true"] #sb-refund .flabel{display:block;margin:16px 0 6px;font-size:13px;font-weight:700}
+html[data-direction-a="true"] :is(#sb-refund,#sb-billing,[data-billing-overview]) :is(select,textarea){width:100%;min-height:50px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:12px;font:inherit}
+html[data-direction-a="true"] #sb-refund textarea{min-height:96px}
+html[data-direction-a="true"] .review01-billing-kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
+html[data-direction-a="true"] .review01-billing-kv strong{min-width:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+html[data-direction-a="true"] .review01-billing-event{padding:12px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
+html[data-direction-a="true"] .review01-billing-id{overflow-wrap:anywhere;font-size:12.5px;color:var(--muted)}
+html[data-direction-a="true"] .review01-billing-source{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:13px;color:var(--muted)}
+html[data-direction-a="true"] [data-billing-money]{white-space:nowrap;font-variant-numeric:tabular-nums}
+html[data-direction-a="true"] [data-staff-context] h3{margin-top:20px}
+html[data-direction-a="true"] [data-staff-context] details{margin:12px 0;overflow-wrap:anywhere}
+html[data-direction-a="true"] :is(#sb-billing,#sb-refund) .btn{white-space:normal;margin-top:10px}
+html[data-direction-a="true"] :is(#sb-billing,#sb-refund) .flabel{display:block;margin:16px 0 6px}
+html[data-direction-a="true"] .review01-billing-consent{display:flex;gap:12px;align-items:flex-start;margin:18px 0;line-height:1.6}
+html[data-direction-a="true"] #sb-billing{z-index:10020}
+html[data-direction-a="true"] .review01-billing-consent input{flex:0 0 22px;width:22px;height:22px;margin-top:3px;accent-color:var(--mint)}
+html[data-direction-a="true"] [data-billing-page] :is(select,textarea,input[type="number"]){width:100%;min-height:50px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--ink);padding:12px;font:inherit}
+html[data-direction-a="true"] .review01-rows .small{display:block;white-space:normal;overflow-wrap:anywhere}
+html[data-direction-a="true"] .btn.ink:hover:not(:disabled){background:var(--navy);color:#fff;filter:none}
+html[data-direction-a="true"][data-theme="dark"] .btn.ink:hover:not(:disabled){background:#F2F4F7;color:#0F1620}
+html[data-direction-a="true"] .btn:not(.ghost):not(.soft):not(.danger-soft):not(.coral):not(.ink):hover:not(:disabled){background:var(--y);color:#0F1620;filter:none}
+html[data-direction-a="true"] .btn:active,html[data-direction-a="true"] #ob-root .ob-btn:active{transform:none;filter:none}
+@media(min-width:1024px){
+  html[data-direction-a="true"] body:not(.ltd-active)>.top{left:max(0px,calc(50% - 520px))}
+  html[data-direction-a="true"] body:not(.ltd-active)>#nav{left:max(0px,calc(50% - 492px))}
+  html[data-direction-a="true"] body:not(.ltd-active)>main{margin-inline-start:calc(50% - 256px);margin-inline-end:32px}
+  html[data-direction-a="true"] .review01-page-title{margin:0 0 14px;padding:14px 20px;border-radius:22px}
+}

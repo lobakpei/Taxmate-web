@@ -126,6 +126,8 @@
     const result=[],seen=new Set(),linkedPaths=new Set([...byPath.keys(),...[...byPath.values()].map(group=>group.ownedFallbackPath).filter(Boolean)]);
     let completed=0;const total=byPath.size+(input&&input.user?storageItems.filter(item=>item&&item.fullPath&&!linkedPaths.has(item.fullPath)).length:0);progress({stage:'receipt_download',completed,total});
     for(const [source,group] of byPath){
+      const local=typeof input.localReceipt==='function'?await input.localReceipt(source):null;
+      if(local){const legacy=group.associations.filter(item=>item.recordType==='legacy_entry');result.push({entryId:group.associations.length===1&&legacy.length===1?legacy[0].recordId:null,originalPath:source,associations:group.associations,...local});seen.add(source);completed++;continue;}
       const downloadSource=group.ownedFallbackPath||source;
       let urls=http(downloadSource)?[downloadSource]:[];
       if(!urls.length){
@@ -150,6 +152,7 @@
         const binary=await firstDownload([url],download,{signal,timeoutMs,deadlineAt,stage:'orphan_download',correlation,recordId:'unlinked',path:item.fullPath});result.push({entryId:null,originalPath:item.fullPath,...binary});completed++;progress({stage:'orphan_download',completed,total,recordId:'unlinked',path:item.fullPath});
       }
     }
+    for(const row of input.localItems||[])if(!seen.has(row.path)&&!linkedPaths.has(row.path)){const binary=await input.localReceipt(row.path);if(!binary)throw failure(CATEGORIES.REFERENCED_RECEIPT);result.push({entryId:null,originalPath:row.path,...binary});seen.add(row.path);}
     Object.defineProperties(result,{skippedForeignCount:{value:skippedForeignCount,enumerable:false},skippedUnavailableCount:{value:skippedUnavailableCount,enumerable:false}});return result;
   }
   return Object.freeze({CATEGORIES,CODES,failure,classify,diagnostic,message,bounded,collectReceipts,receiptPath,receiptOwner,fallbackResolutionError});

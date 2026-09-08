@@ -16,7 +16,7 @@ const hosting=read('firebase.json');
 const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, BH15 9EL';
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
-  assert.equal(Legal.POLICY_VERSION,'2026-08-29');
+  assert.equal(Legal.POLICY_VERSION,'2026-09-07.billing.1');
   assert.equal(Legal.PUBLIC_CORRESPONDENCE_ADDRESS,APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS);
   assert.equal(privacy,Legal.publicPage('privacy'));
   assert.equal(terms,Legal.publicPage('terms'));
@@ -33,7 +33,7 @@ test('public and in-app legal surfaces share the current policy identity and cor
   assert.match(privacy,/objection/i);
   assert.match(terms,/Free, Plus (?:&|&amp;) Pro/i);
   assert.match(terms,/14 days/i);
-  assert.match(terms,/mandatory statutory rights/i);
+  assert.match(terms,/mandatory rights are separate and unaffected/i);
   assert.match(app,/£3\.99/);
   assert.match(app,/£29\.99/);
   assert.match(app,/£9\.99\/month/);
@@ -47,15 +47,21 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/£99\.99\s*\/\s*year|£99\.99 per year/);
     assert.doesNotMatch(text,/(?:Pro annual price not yet available|annual price has not been approved|annual price has been approved or offered|No Pro annual price has been approved or offered|Founder decision pending)/i);
     assert.doesNotMatch(text,/Was £11\.99|(?:two|2) months? free|save £\d+(?:\.\d{2})? on Pro|Pro savings/i);
+    assert.match(text,/standard price of £11\.99 struck through beside the £9\.99 launch price/i);
+    assert.match(text,/through 5 April[\s\S]*from 6 April/i);
+    assert.match(text,/normally for six years/i);
   }
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s>\s*<bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
+  assert.match(read('help.html'),/Plus adds multiple businesses, receipt photos, Receipt Pack PDF/);
+  assert.match(read('help.html'),/prepare MTD quarterly updates[\s\S]*HMRC-compatible submission route/i);
   assert.match(app,/Billed yearly/);
   assert.doesNotMatch(app,/Pay once for the year/i);
   for(const text of [terms,Legal.termsHtml]){
     assert.match(text,/Stripe Tax is off/i);
     assert.match(text,/no VAT amount is added/i);
-    assert.match(text,/successful full refund ends the refunded paid entitlement/i);
-    assert.match(text,/partial refund is marked for manual review/i);
-    assert.match(text,/Nothing removes mandatory statutory rights/i);
+    assert.match(text,/successful full refund removes its corresponding funded entitlement, not unrelated valid plans or later paid periods/i);
+    assert.match(text,/partial refund does not automatically change access/i);
+    assert.match(text,/mandatory rights are separate and unaffected/i);
   }
   assert.doesNotMatch(app,/\+\s*VAT|includes VAT|VAT invoice/i);
   for(const text of [privacy,Legal.privacyHtml]){
@@ -98,9 +104,10 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(app,/'X-Firebase-AppCheck':appCheck\.token/);
   assert.match(app,/callSecureFunction\('joinPartnership',\{code\}\)/);
   assert.match(app,/callSecureFunction\('leavePartnership',\{code\}\)/);
-  assert.match(functions,/deleteFiles\(\{prefix:`receipts\/\$\{uid\}\//);
+  assert.match(functions,/ReceiptCleanup\.cleanupReceiptWithRetry\(\{db,bucket,path:file\.name,ignorePersonalUid:uid\}\)/);
+  assert.doesNotMatch(functions,/deleteFiles\(/);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
-  assert.match(functions,/checkout\.consent_collection=\{terms_of_service:'required'\}/);
+  assert.match(read('functions/billing-checkout.js'),/consent_collection:\{terms_of_service:'required'\}/);
   assert.match(functions,/FUNCTIONS_EMULATOR!=='true'/);
   assert.match(app,/window\.TAXMATE_FIREBASE_ENVIRONMENT/);
   assert.doesNotMatch(app,/FIREBASE_STAGING_CONFIG|FIREBASE_STAGING_HOSTS|firebase=staging/);

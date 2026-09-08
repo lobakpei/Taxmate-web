@@ -75,7 +75,7 @@ test('shared Pro gate uses the canonical promotion backend and approved pricing 
   const proGate=app.match(/function obScrProGate\(\)\{[\s\S]*?\n\}/)[0];
   assert.match(app,/const PRO_PRICE_CONTRACT = Object\.freeze\(\{currency:'GBP',monthly:Object\.freeze\(\{launchMinor:999,standardMinor:1199\}\),annual:Object\.freeze\(\{amountMinor:9999\}\)\}\)/);
   assert.match(app,/const accessible=t\('billing\.monthlyAria'\)/);
-  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99\/month<\/bdi>/);
+  assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
   assert.match(app,/£99\.99\/year/);
   assert.equal((app.match(/await redeemPromotionThroughCanonicalBackend\(code\)/g)||[]).length,2);
   assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized\}\);\s*await loadEntitlementFromCloud\(user\.uid\)/);
@@ -89,7 +89,10 @@ test('shared Pro gate uses the canonical promotion backend and approved pricing 
 test('dark and light record rows use theme-safe ink while negative values remain coral',()=>{
   assert.match(css,/\.tm-rec\{[^}]*color:var\(--ink\)/s);
   assert.match(css,/\.tm-rec \.rv\{[^}]*color:var\(--ink\)/s);
-  assert.match(css,/\.tm-rec \.rv\.neg\{color:var\(--coral\)\}/);
+  // Negative amounts keep the same coral value, now through the money-out semantic token.
+  assert.match(css,/\.tm-rec \.rv\.neg\{color:var\(--money-out\)\}/);
+  assert.match(css,/--money-out:#E5484D/);
+  assert.match(css,/\[data-theme="dark"\][\s\S]{0,400}--money-out:#FF6B73/);
   assert.doesNotMatch(css,/\.tm-rec(?: \.rv)?\{[^}]*color:(?:#000|black)/i);
 });
 
@@ -104,6 +107,6 @@ test('focused CTA and Ltd Step 5 fixes keep green action text white and separate
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{
   const versions=require('../../src/core/versions').VERSIONS;
-  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.20',build:'2026-09-03.existing-ownership-recovery-candidate.1',cache:'taxmate-v2-existing-ownership-recovery-candidate-1'});
+  assert.deepEqual({version:versions.APP_VERSION,build:versions.BUILD_ID,cache:versions.PWA_CACHE_VERSION},{version:'2.1.21',build:'2026-09-08.production-release.1',cache:'taxmate-v2-production-20260908-1'});
   assert.doesNotMatch(app,/previewPartnershipInvitation|entitlement\s*=\s*['"]pro['"]/);
 });
