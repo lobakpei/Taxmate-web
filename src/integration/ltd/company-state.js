@@ -24,7 +24,16 @@
     if(validOriginalMigration(original.companyStateMigration)){
       source.companyStateMigration=clone(original.companyStateMigration);
       source.companyStateReconciliation={schemaVersion:1,reason:'legacy_projection_structural_change',fromDomainSchemaVersion:Number(original.domain&&original.domain.schemaVersion)||0,toDomainSchemaVersion:Domain.DOMAIN_SCHEMA_VERSION,fromProjectionVersion:Number(original.domain&&original.domain.projectionVersion)||0,toProjectionVersion:DomainMigration.PROJECTION_VERSION,previousDomainUpdatedAt:Number(original.domain&&original.domain.updatedAt)||0,appliedAt:stamp,deviceId:deviceId||'company-domain-migration'};
-    }else source.companyStateMigration={schemaVersion:1,fromCompanyStateSchemaVersion:Number(original.companyStateSchemaVersion)||0,toCompanyStateSchemaVersion:COMPANY_STATE_SCHEMA_VERSION,fromStateSchemaVersion:Number(original.v)||1,toStateSchemaVersion:ProductionState.STATE_SCHEMA_VERSION,migratedAt:stamp,deviceId:deviceId||'company-domain-migration',atomicBoundary:'repository_replace',rollbackSnapshotRequired:true};
+    }else{
+      source.companyStateMigration={schemaVersion:1,fromCompanyStateSchemaVersion:Number(original.companyStateSchemaVersion)||0,toCompanyStateSchemaVersion:COMPANY_STATE_SCHEMA_VERSION,fromStateSchemaVersion:Number(original.v)||1,toStateSchemaVersion:ProductionState.STATE_SCHEMA_VERSION,migratedAt:stamp,deviceId:deviceId||'company-domain-migration',atomicBoundary:'repository_replace',rollbackSnapshotRequired:true};
+      // A normal prior-version save records its then-current projection. Preserve
+      // that history while describing this upgrade with the new schema targets.
+      const previous=original.companyStateReconciliation;
+      if(previous!=null&&Number(original.companyStateSchemaVersion)<COMPANY_STATE_SCHEMA_VERSION&&previous.schemaVersion===1&&previous.reason==='legacy_projection_structural_change'&&previous.toDomainSchemaVersion===Number(original.domain&&original.domain.schemaVersion)&&previous.toProjectionVersion===Number(original.domain&&original.domain.projectionVersion)&&Number.isFinite(Number(previous.appliedAt))&&typeof previous.deviceId==='string'&&previous.deviceId){
+        source.companyStateMigration.previousReconciliation=clone(previous);
+        source.companyStateReconciliation={schemaVersion:1,reason:'legacy_projection_structural_change',fromDomainSchemaVersion:Number(original.domain.schemaVersion),toDomainSchemaVersion:Domain.DOMAIN_SCHEMA_VERSION,fromProjectionVersion:Number(original.domain.projectionVersion),toProjectionVersion:DomainMigration.PROJECTION_VERSION,previousDomainUpdatedAt:Number(original.domain.updatedAt)||0,appliedAt:stamp,deviceId:deviceId||'company-domain-migration'};
+      }
+    }
     return source;
   }
   function validateState(input){ProductionState.validateState(input);if(!input||input.companyStateSchemaVersion!==COMPANY_STATE_SCHEMA_VERSION)throw new Error('Invalid company state schema');Domain.validateDomainState(input.domain);const m=input.companyStateMigration;if(!validOriginalMigration(m))throw new Error('Invalid company state migration provenance');const r=input.companyStateReconciliation;if(r!=null&&(r.schemaVersion!==1||r.reason!=='legacy_projection_structural_change'||r.toDomainSchemaVersion!==Domain.DOMAIN_SCHEMA_VERSION||r.toProjectionVersion!==DomainMigration.PROJECTION_VERSION||!Number.isFinite(Number(r.appliedAt))||typeof r.deviceId!=='string'||!r.deviceId))throw new Error('Invalid company state reconciliation provenance');return true;}
