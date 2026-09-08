@@ -316,7 +316,7 @@ en:{
  'cc.doRename':'Rename',
  'cc.doDelete':'Remove from list',
  'cc.deleted':'Removed',
- 'cc.emojiHint':'Tap below and pick any emoji from your keyboard to use as the icon.','cc.emojiErr':'Please choose an icon',
+ 'cc.emojiHint':'Choose an icon below. The folder icon is selected by default.','cc.emojiErr':'Please choose an icon',
  'cc.delDataT':'Remove this category?',
  'cc.delDataM':'This category has {n} entr{s}. Removing it won\'t delete those entries — they\'ll keep their category. You can re-add it later.',
  'cc.cantDeleteUsed':'This category has entries — it will stay visible until those are removed.',
@@ -805,7 +805,7 @@ zh:{
  'cc.doRename':'重新命名',
  'cc.doDelete':'從列表移除',
  'cc.deleted':'已移除',
- 'cc.emojiHint':'點下方輸入框，用鍵盤揀一個 emoji 做圖示。','cc.emojiErr':'請揀一個圖示',
+ 'cc.emojiHint':'點選下方圖示；預設為資料夾圖示。','cc.emojiErr':'請揀一個圖示',
  'cc.delDataT':'移除此分類？',
  'cc.delDataM':'此分類有 {n} 筆記錄。移除不會刪除這些記錄，它們會保留原分類。你可稍後再加回。',
  'cc.cantDeleteUsed':'此分類有記錄使用中 — 會繼續顯示直至相關記錄移除。',
@@ -1294,7 +1294,7 @@ pl:{
  'cc.doRename':'Zmień nazwę',
  'cc.doDelete':'Usuń z listy',
  'cc.deleted':'Usunięto',
- 'cc.emojiHint':'Dotknij poniżej i użyj klawiatury, aby wybrać emoji.','cc.emojiErr':'Wybierz emoji',
+ 'cc.emojiHint':'Wybierz ikonę poniżej. Domyślnie wybrana jest ikona folderu.','cc.emojiErr':'Wybierz emoji',
  'cc.delDataT':'Usunąć tę kategorię?',
  'cc.delDataM':'Ta kategoria ma {n} wpisów. Usunięcie ich nie skasuje.',
  'cc.cantDeleteUsed':'Ta kategoria ma wpisy — pozostanie widoczna.',
@@ -1783,7 +1783,7 @@ ro:{
  'cc.doRename':'Redenumește',
  'cc.doDelete':'Elimină din listă',
  'cc.deleted':'Eliminat',
- 'cc.emojiHint':'Atinge mai jos și folosește tastatura pentru a alege un emoji.','cc.emojiErr':'Alege un emoji',
+ 'cc.emojiHint':'Alege o pictogramă de mai jos. Dosarul este selectat implicit.','cc.emojiErr':'Alege un emoji',
  'cc.delDataT':'Elimini această categorie?',
  'cc.delDataM':'Această categorie are {n} intrări. Eliminarea nu le va șterge.',
  'cc.cantDeleteUsed':'Această categorie are intrări — va rămâne vizibilă.',
@@ -2272,7 +2272,7 @@ es:{
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
  'cc.deleted':'Quitado',
- 'cc.emojiHint':'Toca abajo y usa tu teclado para elegir un emoji.','cc.emojiErr':'Elige un emoji',
+ 'cc.emojiHint':'Elige un icono abajo. La carpeta está seleccionada por defecto.','cc.emojiErr':'Elige un emoji',
  'cc.delDataT':'¿Quitar esta categoría?',
  'cc.delDataM':'Esta categoría tiene {n} entradas. Quitarla no las eliminará.',
  'cc.cantDeleteUsed':'Esta categoría tiene entradas — seguirá visible.',
@@ -2761,7 +2761,7 @@ ur:{
  'cc.doRename':'Renombrar',
  'cc.doDelete':'Quitar de la lista',
  'cc.deleted':'Quitado',
- 'cc.emojiHint':'نیچے ٹیپ کریں اور اپنے کی بورڈ سے ایموجی منتخب کریں۔','cc.emojiErr':'ایک ایموجی منتخب کریں','cc.delDataT':'یہ زمرہ ہٹائیں؟','cc.delDataM':'اس زمرے میں {n} اندراجات ہیں۔ ہٹانے سے وہ حذف نہیں ہوں گے۔',
+ 'cc.emojiHint':'نیچے ایک آئیکن منتخب کریں۔ فولڈر کا آئیکن پہلے سے منتخب ہے۔','cc.emojiErr':'ایک ایموجی منتخب کریں','cc.delDataT':'یہ زمرہ ہٹائیں؟','cc.delDataM':'اس زمرے میں {n} اندراجات ہیں۔ ہٹانے سے وہ حذف نہیں ہوں گے۔',
  'cc.cantDeleteUsed':'اس زمرے میں اندراجات ہیں — یہ نظر آتا رہے گا۔',
  'b.trade':'Tipo de trabajo',
  'b.tradeHint':'Sugeriremos categorías de gastos — puedes cambiarlas cuando quieras.',
@@ -4754,23 +4754,6 @@ function pageMore(){
   </div>`;
 
   const organiseSection = [
-    (()=>{
-      // gather all custom cats across businesses, grouped by business
-      const rows = [];
-      S.businesses.forEach(b=>{
-        const bc = S.customCats[b.id]||{};
-        const cats = (bc.expense||[]).concat(bc.income||[]);
-        if(!cats.length) return;
-        rows.push(`<div style="font-size:12px;font-weight:700;color:var(--muted);padding:8px 0 4px">${esc(b.name)}</div>`);
-        cats.forEach(c=>{
-          rows.push(`<div class="frow"><span class="fl"> ${esc(c.name)}</span>
-            <button class="link danger" data-tm-click="confirmAction('${esc(c.name).replace(/'/g,"\\'")}',t('cc.deleteM'),()=>deleteCustomCat('${c.id}'))">✕</button></div>`);
-        });
-      });
-      return rows.length ? `<div class="card">
-        <div class="t" style="margin-bottom:10px">${t('cc.manage')}</div>${rows.join('')}
-      </div>` : '';
-    })(),
     S.folders.length?`<div class="card">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
         <div class="t">${t('fd.manage')}</div>
@@ -5027,15 +5010,17 @@ function lastGrapheme(v){
   }
 }
 function onEmojiInput(v){
-  CC_EMOJI = lastGrapheme(v);
+  CC_EMOJI = isEmojiIcon(lastGrapheme(v))?lastGrapheme(v):'📁';
   const ei=document.getElementById('cc-emoji-input');
-  if(ei){ ei.value = CC_EMOJI; ei.classList.remove('err'); }
+  if(ei){ ei.textContent = CC_EMOJI; ei.classList.remove('err'); }
+  document.querySelectorAll('#cc-emojis button').forEach(button=>{const selected=button.textContent===CC_EMOJI;button.classList.toggle('on',selected);button.setAttribute('aria-pressed',String(selected));});
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
 }
 function openCatSheet(){
   document.getElementById('cc-name').value='';
-  CC_EMOJI = '';
-  const ei=document.getElementById('cc-emoji-input'); if(ei){ ei.value=''; ei.classList.remove('err'); }
+  CC_EMOJI = '📁';
+  document.getElementById('cc-emojis').innerHTML=['📁',...CAT_EMOJIS].map(e=>`<button type="button" class="emojibtn" aria-label="${e}" data-tm-click="onEmojiInput('${e}')">${e}</button>`).join('');
+  onEmojiInput(CC_EMOJI);
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
   document.getElementById('cc-name').classList.remove('err');
   document.getElementById('cc-name-err').classList.remove('show');
@@ -5147,11 +5132,7 @@ function saveCat(){
     document.getElementById('cc-name-err').classList.add('show');
     return;
   }
-  if(!CC_EMOJI){
-    const ei=document.getElementById('cc-emoji-input'); if(ei) ei.classList.add('err');
-    document.getElementById('cc-emoji-err').classList.add('show');
-    return;
-  }
+  if(!isEmojiIcon(CC_EMOJI)) CC_EMOJI='📁';
   const bizId = entryBizId();
   const list = bizCustom(bizId, EN.kind);
   const c = {id:'c_'+uid(), name, e:CC_EMOJI, dot:CAT_COLOURS[list.length%CAT_COLOURS.length], custom:true, bizId};

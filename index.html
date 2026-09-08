@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-08.ownership-sync.1 -->
+<!-- build: 2026-09-08.founder-fixes.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -768,7 +768,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
   <div class="fg"><label data-i18n="cc.emoji"></label>
     <div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.emojiHint"></div>
-    <input type="text" id="cc-emoji-input" style="text-align:center;font-size:32px;padding:14px" data-tm-input="onEmojiInput(this.value)">
+    <div id="cc-emoji-input" aria-live="polite" style="text-align:center;font-size:32px;padding:8px">📁</div>
+    <div id="cc-emojis" class="emoji-grid"></div>
     <div class="ferr" id="cc-emoji-err" data-i18n="cc.emojiErr"></div></div>
   <div class="sact">
     <button class="btn ghost" data-tm-click="closeSheet('cat')" data-i18n="c.cancel"></button>
