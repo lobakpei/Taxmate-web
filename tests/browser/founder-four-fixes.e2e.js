@@ -29,7 +29,7 @@ async function run(){
    check(await page.locator('#cc-emojis button').count()===31,`${width} ${kind}: 31 selectable icons`);
    check(await page.locator('#cc-emojis button[aria-pressed="true"]').textContent()==='📁',`${width} ${kind}: default folder selected`);
    await page.locator('#cc-name').fill(`Local ${kind} category`);
-   if(kind==='expense'){await page.locator('#cc-emojis button').filter({hasText:'🧾'}).click();check(await page.locator('#cc-emoji-input').textContent()==='🧾',`${width}: receipt emoji is selected by clicking`);}
+   if(kind==='expense'){await page.locator('#cc-emojis button').filter({hasText:'🧾'}).click();check(await page.locator('#cc-emoji-input').inputValue()==='🧾',`${width}: receipt emoji is selected by clicking`);}
    await page.screenshot({path:path.join(evidence,`emoji-${kind}-${width}.png`),fullPage:true});
    await page.locator('[data-tm-click="saveCat()"]').click();
    check(await page.evaluate(kind=>S.customCats['test-trade'][kind].some(c=>c.name===`Local ${kind} category`&&c.e===(kind==='expense'?'🧾':'📁')),kind),`${width} ${kind}: category created through UI`);

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-09.startup-sync.1 -->
+<!-- build: 2026-09-09.income-amount-emoji.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -528,8 +528,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
   <div class="fg">
     <label for="en-amount"><span data-i18n="f.amount"></span><span style="color:var(--coral);font-weight:800"> *</span></label>
-    <div class="amt"><span class="cur">£</span>
-      <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" max="10000000" placeholder="0.00"></div>
+    <div class="amt entry-amount"><span class="cur" id="en-currency">£</span>
+      <input type="number" id="en-amount" inputmode="decimal" step="0.01" min="0" max="10000000" placeholder="0.00" aria-describedby="en-currency en-amount-hint en-amount-err"></div>
+    <div class="fhint" id="en-amount-hint" hidden></div>
     <div class="ferr" id="en-amount-err" data-i18n="f.amountErr"></div>
   </div>
   <div class="fg" id="en-biz-group"><label for="en-biz" data-i18n="f.business"></label><select id="en-biz" data-tm-change="paintEntry()"></select></div>
@@ -766,9 +767,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="stitle" data-i18n="cc.add"></div>
   <div class="fg"><label for="cc-name" data-i18n="cc.name"></label><input type="text" id="cc-name" maxlength="24">
     <div class="ferr" id="cc-name-err" data-i18n="b.nameErr"></div></div>
-  <div class="fg"><label data-i18n="cc.emoji"></label>
-    <div class="fhint" style="margin:-2px 0 8px" data-i18n="cc.emojiHint"></div>
-    <div id="cc-emoji-input" aria-live="polite" style="text-align:center;font-size:32px;padding:8px">📁</div>
+  <div class="fg"><label for="cc-emoji-input" data-i18n="cc.emoji"></label>
+    <div class="fhint" id="cc-emoji-hint" style="margin:-2px 0 8px"></div>
+    <input type="text" id="cc-emoji-input" style="text-align:center;font-size:32px;padding:14px" data-tm-input="onEmojiInput(this.value)" aria-describedby="cc-emoji-hint">
     <div id="cc-emojis" class="emoji-grid"></div>
     <div class="ferr" id="cc-emoji-err" data-i18n="cc.emojiErr"></div></div>
   <div class="sact">
