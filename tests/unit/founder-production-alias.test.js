@@ -70,7 +70,7 @@ test('the released frontend and supported intermediate versions can use the iden
     const result=await handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}});
     assert.equal(result.founderShortcut,true);assert.equal(result.verificationStatus,'manual_unverified');assert.equal(result.company.number,null);assert.equal(calls.fetch.length,0);assert.deepEqual(calls.tier,[{uid:founder.uid,tier:'pro'}]);
   }
-  for(const clientVersion of ['','2.1.14','2.1.27','2.2.0','2.1.26-preview']){
+  for(const clientVersion of ['','2.1.14','2.1.28','2.2.0','2.1.27-preview']){
     const {handler,calls}=harness({requiredFounderClientVersion:undefined});
     await assert.rejects(()=>handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}}),error=>error.code==='invalid-argument');assert.equal(calls.fetch.length,0);assert.equal(calls.tier.length,0);
   }

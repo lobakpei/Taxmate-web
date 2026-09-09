@@ -969,7 +969,9 @@
       "statutory.evidence_short": "Name the evidence you are relying on.",
       "nav.company_sections": "Company sections",
       "design.kind_income": "Income",
-      "design.kind_expense": "Expense"
+      "design.kind_expense": "Expense",
+      "error.company_slot_retained": "Your account is still linked to a company you removed. Contact TaxMate support before continuing company setup. Your records and saved answers are kept.",
+      "error.company_draft_not_found": "This company draft is no longer available. Return to your businesses and reopen setup. Your bookkeeping records are unchanged."
     },
     "zh-HK": {
       "review01.checks": "核對事項",
@@ -1904,7 +1906,9 @@
       "statutory.evidence_short": "寫低你依據嘅證據。",
       "nav.company_sections": "公司分頁",
       "design.kind_income": "收入",
-      "design.kind_expense": "支出"
+      "design.kind_expense": "支出",
+      "error.company_slot_retained": "你的帳戶仍連結到之前已移除的公司。請聯絡 TaxMate 支援，處理後才可繼續設定公司。現有記錄和已填答案會保留。",
+      "error.company_draft_not_found": "這份公司草稿已無法使用。請返回業務列表，重新開啟公司設定。你的記帳資料沒有改動。"
     },
     "pl": {
       "review01.checks": "Sprawdź informacje",
@@ -2839,7 +2843,9 @@
       "statutory.evidence_short": "Podaj dowód, na którym się opierasz.",
       "nav.company_sections": "Sekcje spółki",
       "design.kind_income": "Przychód",
-      "design.kind_expense": "Wydatek"
+      "design.kind_expense": "Wydatek",
+      "error.company_slot_retained": "Twoje konto jest nadal powiązane z usuniętą spółką. Skontaktuj się z pomocą TaxMate, zanim będziesz kontynuować konfigurację. Twoje dane i zapisane odpowiedzi zostają zachowane.",
+      "error.company_draft_not_found": "Ten szkic spółki nie jest już dostępny. Wróć do listy działalności i ponownie otwórz konfigurację. Dane księgowe pozostają bez zmian."
     },
     "ro": {
       "review01.checks": "Verificări",
@@ -3774,7 +3780,9 @@
       "statutory.evidence_short": "Numește dovada pe care te bazezi.",
       "nav.company_sections": "Secțiunile societății",
       "design.kind_income": "Venit",
-      "design.kind_expense": "Cheltuială"
+      "design.kind_expense": "Cheltuială",
+      "error.company_slot_retained": "Contul este încă asociat unei companii pe care ai eliminat-o. Contactează asistența TaxMate înainte de a continua configurarea. Înregistrările și răspunsurile salvate sunt păstrate.",
+      "error.company_draft_not_found": "Această ciornă a companiei nu mai este disponibilă. Revino la lista activităților și redeschide configurarea. Înregistrările contabile nu au fost modificate."
     },
     "es": {
       "review01.checks": "Comprobaciones",
@@ -4709,7 +4717,9 @@
       "statutory.evidence_short": "Indica la prueba en la que te basas.",
       "nav.company_sections": "Secciones de la sociedad",
       "design.kind_income": "Ingreso",
-      "design.kind_expense": "Gasto"
+      "design.kind_expense": "Gasto",
+      "error.company_slot_retained": "Tu cuenta sigue vinculada a una empresa que eliminaste. Contacta con el soporte de TaxMate antes de continuar la configuración. Se conservan tus registros y respuestas guardadas.",
+      "error.company_draft_not_found": "Este borrador de empresa ya no está disponible. Vuelve a la lista de negocios y abre de nuevo la configuración. Tus registros contables no han cambiado."
     },
     "ur": {
       "review01.checks": "معلومات کا جائزہ",
@@ -5644,7 +5654,9 @@
       "statutory.evidence_short": "جس ثبوت پر انحصار ہے اس کا نام لکھیں۔",
       "nav.company_sections": "کمپنی کے حصے",
       "design.kind_income": "آمدنی",
-      "design.kind_expense": "خرچ"
+      "design.kind_expense": "خرچ",
+      "error.company_slot_retained": "آپ کا اکاؤنٹ اب بھی اس کمپنی سے منسلک ہے جسے آپ نے ہٹا دیا تھا۔ کمپنی کی ترتیب جاری رکھنے سے پہلے TaxMate سپورٹ سے رابطہ کریں۔ آپ کے ریکارڈ اور محفوظ جوابات برقرار ہیں۔",
+      "error.company_draft_not_found": "کمپنی کا یہ مسودہ اب دستیاب نہیں ہے۔ اپنے کاروباروں کی فہرست پر واپس جائیں اور ترتیب دوبارہ کھولیں۔ آپ کے حساب کتاب کے ریکارڈ تبدیل نہیں ہوئے۔"
     }
   },
   "design_scaffolding": {
