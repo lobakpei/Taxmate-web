@@ -96,7 +96,15 @@ function billingStaffMore(){billingOperation(async()=>{const r=await billingFetc
 function billingStaffRenewal(){billingStaffAction('applyRefundRenewalDecision');}
 function billingStaffAction(name){const c=BILLING_UI.staffCase.case;billingOperation(async()=>{await billingFetch(name,{caseId:c.id,revision:c.revision,contextVersion:BILLING_UI.staffCase.context?.version||null});BILLING_UI.staffCase=await billingFetch('getBillingSupportCase',{caseId:c.id});},false);}
 function billingStartPurchase(tier){startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});}
-async function billingHandleReturn(){const state=window.TAXMATE_BILLING_RETURN;if(!state)return;window.TAXMATE_BILLING_RETURN=null;if(OB?.pendingIntent){await obRefreshPaidAccess();return;}openBillingOverview();billingScreen('plans');await billingRefresh();}
+function billingRememberCheckout(){
+  const uid=cloudUser()?.uid;if(!uid||!TaxMateAccountStorage.activeUidMatches(ACTIVE_ACCOUNT_SCOPE,uid))return false;
+  try{sessionStorage.setItem(TaxMateAccountStorage.sessionKey(ACTIVE_ACCOUNT_SCOPE,'billing-return'),JSON.stringify({uid,startedAt:Date.now(),pendingIntent:OB?.pendingIntent&&firstSyncSurfaceOpen()?obIntentCopy(OB.pendingIntent):null}));return true;}catch(_){return false;}
+}
+async function billingHandleReturn(){
+  const state=window.TAXMATE_BILLING_RETURN;window.TAXMATE_BILLING_RETURN=null;
+  if(!state||!['success','cancelled'].includes(state.status)||state.uid!==cloudUser()?.uid||state.interaction!==TaxMateForegroundUI.interactionVersion())return;
+  if(state.intent){if(OB?.pendingIntent)await obRefreshPaidAccess();return;}openBillingOverview();billingScreen('plans');await billingRefresh();
+}
 async function billingBeginPurchase(tier,cadence){
   if(!requireLoginForTier())return{status:'login-required'};
   if(!BILLING_UI.uid||BILLING_UI.uid!==cloudUser().uid){billingResetState();BILLING_UI.uid=cloudUser().uid;}
@@ -109,7 +117,7 @@ function billingDownloadOffer(){const q=BILLING_UI.purchaseOffer;if(q)billingDow
 function billingAcceptOffer(){const q=BILLING_UI.purchaseOffer;if(!q)return;const data={offerId:q.id,termsAccepted:document.getElementById('billing-terms').checked,earlySupplyRequested:document.getElementById('billing-early').checked};if(!data.termsAccepted||!data.earlySupplyRequested){document.querySelector('#sb-billing [data-billing-error]').textContent=bt('consentRequired');return;}
   billingOperation(async()=>{const r=await billingFetch('createCheckoutSession',data);BILLING_UI.purchaseRecord=r.confirmation;BILLING_UI.checkoutUrl=r.url;billingShowPurchase(r.confirmation,r.url);},false);
 }
-function billingShowPurchase(r,url){billingSheet(bt('purchaseRecords'),`<p>${esc(r.addressee)}</p>${billingKv(bt('effective'),billingDate(r.providedAt))}<p>${esc(bt(r.outcome?.paymentStatus==='paid'?'paid':'pending_payment'))}</p><p>${esc(bt('confirmationNote'))}</p><details class="card"><summary>${esc(bt('terms'))} · ${esc(bt('englishContract'))}</summary>${r.termsHtml}</details>${billingButton(bt('contractDownload'),`billingDownloadPurchase('${r.id}')`)}${url?`<a class="btn" target="_self" rel="noopener noreferrer" href="${esc(url)}">${esc(bt('openPayment'))}</a>`:''}`);}
+function billingShowPurchase(r,url){billingSheet(bt('purchaseRecords'),`<p>${esc(r.addressee)}</p>${billingKv(bt('effective'),billingDate(r.providedAt))}<p>${esc(bt(r.outcome?.paymentStatus==='paid'?'paid':'pending_payment'))}</p><p>${esc(bt('confirmationNote'))}</p><details class="card"><summary>${esc(bt('terms'))} · ${esc(bt('englishContract'))}</summary>${r.termsHtml}</details>${billingButton(bt('contractDownload'),`billingDownloadPurchase('${r.id}')`)}${url?`<a class="btn" target="_self" rel="noopener noreferrer" data-tm-click="billingRememberCheckout()" href="${esc(url)}">${esc(bt('openPayment'))}</a>`:''}`);}
 async function billingPurchases(){await billingOperation(async()=>{const r=await billingFetch('getPurchaseConfirmations');BILLING_UI.purchaseRecords=r.records;billingSheet(bt('purchaseRecords'),r.records.length?`<div class="review01-rows">${r.records.map(c=>billingRow(billingDate(c.providedAt),`billingPurchaseRecord('${c.id}')`,t('tier.'+c.tier)+' · '+bt(c.outcome?.paymentStatus==='paid'?'paid':'pending_payment'))).join('')}</div>`:`<p>${esc(bt('emptyPayments'))}</p>`);},false);}
 function billingPurchaseRecord(id){const r=BILLING_UI.purchaseRecords?.find(c=>c.id===id);if(r){BILLING_UI.purchaseRecord=r;billingShowPurchase(r);}}
 function billingDownloadPurchase(id){const r=BILLING_UI.purchaseRecord;if(r?.id===id)billingDownloadHtml('TaxMate-purchase-'+id+'.html',`<h1>TaxMate</h1><p>${esc(r.addressee)}</p><p>${esc(new Date(r.providedAt).toISOString())}</p><p>${esc(r.tier+' · '+r.cadence+' · '+billingMoney(r.priceMinor,r.currency))}</p><p>${esc(r.earlySupplyText)}</p><p>${esc(bt('confirmationNote'))}</p>${r.termsHtml}`);}
