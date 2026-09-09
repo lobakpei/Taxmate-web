@@ -85,10 +85,10 @@ test('account hydration preserves exact local scope while controls are offline a
   assert.match(require('../../scripts/i18n-audit').I18N.en['shell.restoringTitle'],/Restoring your account/);
   assert.match(source,/function beginAccountTransition\(correlation,options=\{\}\)[\s\S]{0,700}if\(options\.targetScope\)activateAccountScope\(options\.targetScope/);
   const transition=source.slice(source.indexOf('function beginAccountTransition('),source.indexOf('function accountReadWithTimeout('));assert.doesNotMatch(transition,/S=freshState\(\)/);
-  assert.match(source,/CLOUD\.controlsCached=true;CLOUD\.firstSyncBlocked=TaxMateAccountStorage\.localAssociationPending\(localStorage\);CLOUD\.hydrationState='failed'[\s\S]{0,500}state:'retained-local'[\s\S]{0,500}render\(\);return/);
+  assert.match(source,/CLOUD\.controlsCached=true;CLOUD\.firstSyncBlocked=TaxMateAccountStorage\.localAssociationPending\(localStorage\);CLOUD\.hydrationState='failed'[\s\S]{0,500}state:'retained-local'[\s\S]{0,500}renderBackgroundAccount\(\);return/);
   assert.doesNotMatch(source,/renderAccountControlRetry|retryAccountSafetyCheck/);
-  assert.match(source,/if\(OB&&OB\.pendingIntent\)\{AUTH_PENDING_INTENT=obIntentCopy\(OB\.pendingIntent\);return;\}[\s\S]*ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE\.kind==='firebase'/);
+  assert.match(source,/if\(OB&&OB\.pendingIntent&&firstSyncSurfaceOpen\(\)\)\{AUTH_PENDING_INTENT=obIntentCopy\(OB\.pendingIntent\);AUTH_PENDING_INTENT_INTERACTION=TaxMateForegroundUI\.interactionVersion\(\)/);
   assert.match(source,/requestedNavigation=String\(options\.navigation\|\|''\),validRequestedNavigation=\['home','income','expenses','tax','receipts','more'\]\.includes\(requestedNavigation\)\?requestedNavigation:null/);
-  assert.match(source,/localNavigation=validRequestedNavigation\|\|\(ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE\.kind==='local'&&scope\.kind==='firebase'/);
-  assert.match(source,/if\(!ACCOUNT_SCOPE_HAD_CANONICAL&&localNavigation\)S\.tab=localNavigation/);
+  assert.match(source,/S\.tab=validRequestedNavigation\|\|'home';BILLING_VIEW=false/);
+  assert.match(source,/activateAccountScope\(scope,\{force:resetResult\?\.status==='reset',navigation:priorNavigation\}\)/);
 });

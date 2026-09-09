@@ -2,7 +2,7 @@
   'use strict';
 
   const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
-  let ready=null,driver=null,facade=null,snapshot=null,unsubscribe=null,canonicalListener=null;
+  let ready=null,driver=null,facade=null,snapshot=null,unsubscribe=null,canonicalListener=null,backgroundRefresh=false;
 
   function bridge(){
     if(!root.TaxMateLtdProductionBridge)throw new Error('TaxMate Ltd production bridge is unavailable');
@@ -59,8 +59,8 @@
       facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),actionTimeoutMs:30000,trace:event=>console.info('Ltd action trace',event),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));
       root.TaxMateLtdUIFacade=facade;
       root.TaxMateLtdWorkbenchRenderer.setProductionMode(true);
-      unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value);});
-      canonicalListener=()=>{if(!driver)return;driver.reload();driver.setEntitlementSnapshot(b.entitlementSnapshot());facade.emit();};root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
+      unsubscribe=facade.subscribe(value=>{snapshot=value;root.TaxMateLtdWorkbenchRenderer.render(b.mount(),facade,value,{background:backgroundRefresh});});
+      canonicalListener=()=>refreshFromCanonicalState();root.addEventListener('taxmate:canonical-state-updated',canonicalListener);
       return facade;
     })().catch(error=>{ready=null;throw error;});
     return ready;
@@ -82,13 +82,18 @@
     return f.getSnapshot();
   }
 
+  function refreshFromCanonicalState(){
+    if(driver){backgroundRefresh=true;try{driver.reload();driver.setEntitlementSnapshot(bridge().entitlementSnapshot());driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}finally{backgroundRefresh=false;}}
+    return clone(snapshot);
+  }
+
   root.TaxMateLtdProductionAdapter=Object.freeze({
     initialise,
     openAddBusiness:()=>openRoute('add'),
     openNewLimitedCompany:options=>openRoute('new-ltd',options),
     openExistingCompany:()=>openRoute('existing'),
     getSnapshot:()=>clone(snapshot),
-    refreshFromCanonicalState:()=>{if(driver){driver.reload();driver.setEntitlementSnapshot(bridge().entitlementSnapshot());driver.setTrustedActiveCompanyId(bridge().activeCompanyId());driver.setPersonalTaxJurisdiction(bridge().personalTaxJurisdiction());facade.emit();}return clone(snapshot);},
+    refreshFromCanonicalState,
     isReady:()=>!!facade,
     dispose:()=>{if(unsubscribe)unsubscribe();if(canonicalListener)root.removeEventListener('taxmate:canonical-state-updated',canonicalListener);unsubscribe=null;canonicalListener=null;facade=null;driver=null;snapshot=null;ready=null;}
   });

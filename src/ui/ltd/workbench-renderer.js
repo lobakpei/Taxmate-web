@@ -52,7 +52,7 @@
       if(k==='class'){ if(isSvg) n.setAttribute('class', v); else n.className = v; }
       else if(k==='text') n.textContent = String(v);
       else if(k==='html') n.innerHTML = v;
-      else if(k.slice(0,2)==='on') n.addEventListener(k.slice(2).toLowerCase(), v);
+      else if(k.slice(0,2)==='on'){var event=k.slice(2).toLowerCase();n.addEventListener(event,v);if(!n.taxmateHandlers)n.taxmateHandlers={};n.taxmateHandlers[event]=v;}
       else if(k==='dataset'){ for(var d in v) n.dataset[d]=v[d]; }
       else n.setAttribute(k, v);
     }
@@ -312,7 +312,7 @@
     var inner=[input];
     if(affixPre) inner.push(h('span',{class:'tm-affix pre',text:affixPre}));
     if(affixSuf) inner.push(h('span',{class:'tm-affix suf',text:affixSuf}));
-    return h('div',{class:'tm-field'},[
+    return h('div',{class:'tm-field','data-field-container':fkey(scope,fid)},[
       labelRow(o.label,o.infoId,o.hint),
       h('div',{class:wrapCls},inner),
       errNode(scope,fid)
@@ -325,7 +325,7 @@
       dataset:{fkey:fkey(scope,fid), field:fid},
       onChange:function(e){ setField(scope,fid,e.target.value); if(o.persist!==false) persistDraft(scope,fid,'select-one',e.target.value); if(o.onChange)o.onChange(e.target.value); paint(); }
     }, o.options.map(function(op){ return h('option',{value:op[0], selected: String(cur)===String(op[0])?'selected':null},op[1]); }));
-    return h('div',{class:'tm-field'},[
+    return h('div',{class:'tm-field','data-field-container':fkey(scope,fid)},[
       labelRow(o.label,o.infoId,o.hint),
       h('div',{class:'tm-inwrap'},[sel, h('span',{class:'tm-selarrow',text:'\u25BC'})]),
       errNode(scope,fid)
@@ -359,7 +359,7 @@
     ]);
     var kids=[labelRow(o.label,o.infoId,o.hint), wrap, errNode(scope,fid)];
     if(UI.cal===fkey(scope,fid)) kids.push(calendar(function(newIso){ setField(scope,fid,newIso); if(o.persist!==false) persistDraft(scope,fid,'date',newIso); UI.cal=null; if(o.onChange)o.onChange(newIso); paint(); }, iso));
-    return h('div',{class:'tm-field'},kids);
+    return h('div',{class:'tm-field','data-field-container':fkey(scope,fid)},kids);
   }
   function persistDraft(sid,fid,type,value){
     // only persist for facade-backed onboarding/edit screens (real screenIds), not ui.* sheets
@@ -2946,7 +2946,7 @@
 
   // Public entry (subscribed). Every facade emit repaints except the explicit,
   // one-shot synchronous onDraftChanged emit armed by persistDraft above.
-  function render(mount, facade, snapshot){
+  function render(mount, facade, snapshot, options){
     LAST.mount=mount; LAST.facade=facade; LAST.snapshot=snapshot;
     if(!snapshot){ mount.replaceChildren(h('div',{style:'padding:24px',text:'\u2026'})); return; }
     var rId=routeId();
@@ -2957,10 +2957,10 @@
       UI.skipNextDraftEmitRender-=1;
       return; // consume only the draft persistence emit; preserve blur-to-click
     }
-    paint();
+    paint(options&&options.background===true);
   }
 
-  function paint(){
+  function paint(background){
     var mount=LAST.mount; if(!mount||!LAST.snapshot) return;
     var focusedBrand=mount.contains(document.activeElement)&&document.activeElement.matches('[data-web-brand-home]')?document.activeElement:null;
     var keepBrandFocus=focusedBrand&&focusedBrand.dataset.webBrandRoute===routeId()&&!UI.sheet&&!overlays().length&&!pendingDiscard()&&!UI.webHomeDiscard?focusedBrand.dataset.webBrandHome:null;
@@ -2990,7 +2990,7 @@
     // UI-local sheet
     if(UI.sheet){ var sh=renderSheet(); if(sh) app.append(sh); }
     if(UI.webHomeBaseline===null&&!busy())UI.webHomeBaseline=webFormSnapshot(app);
-    mount.replaceChildren(app);
+    if(background&&root.TaxMateForegroundUI){var fragment=document.createDocumentFragment();fragment.append(app);root.TaxMateForegroundUI.update(mount,fragment);}else mount.replaceChildren(app);
     // A normal same-route data refresh must not drop the Web brand's focus.
     // Never carry it across navigation or steal focus from a modal/form.
     if(keepBrandFocus){var brand=mount.querySelector('[data-web-brand-home="'+keepBrandFocus+'"]');if(brand&&!brand.closest('[inert]'))brand.focus({preventScroll:true});}
