@@ -217,6 +217,7 @@
 
   /* ---- action runner: every state change goes through the facade -------- */
   function run(cb, input, opts){
+    if(cb==='onSaveCompanyDraft')captureSetupInputs();
     opts = opts||{};
     var f=LAST.facade;
     if(busy()){
@@ -550,6 +551,13 @@
 
   /* ---- discard confirmation (from navigation.pendingDiscard) ------------ */
   function discardSheet(webHome){
+    if(!webHome&&S().setupExit){
+      var state=S().setupExit,reason=state.status==='completed'?'setup.completed':state.status==='legacy'?'setup.legacy_slot':state.status==='has_records'?'setup.has_records':state.status==='loading'?'setup.checking':state.reason==='setup_changed_review_again'?'setup.changed':state.reason==='setup_discard_uncertain'?'setup.uncertain':state.status==='unavailable'?'setup.unavailable':null;
+      return sheet({child:true,title:t('setup.exit_title'),body:[h('p',{class:'tm-muted',text:t('setup.exit_body')}),h('p',{class:'tm-muted',text:t('setup.remove_consequence')}),reason?notice('neutral',null,t(reason)):null],foot:[
+        btn(t('setup.keep_exit'),'p',function(){run('onSaveCompanyDraft',{},{onOk:function(){UI.sheet=null;paint();}});},{disabled:state.reason==='setup_discard_uncertain'}),
+        btn(t('setup.remove_draft'),'d',function(){run('onDiscardCompanySetup',{},{onOk:function(){UI.cache={};UI.choices={};UI.sheet=null;paint();}});},{disabled:!state.canDiscard}),
+        btn(t('design.keep_editing'),'g',function(){run('onDiscardCancelled',{},{});})],onClose:function(){run('onDiscardCancelled',{},{});}});
+    }
     var result=sheet({ child:true, title:t('design.discard_title'),
       body:[ h('p',{class:'tm-muted',text:t('design.discard_body')}) ],
       foot:[
@@ -580,6 +588,7 @@
     return h('button',{class:className+' web-brand-home',type:'button','aria-label':t('web.logo_home'),dataset:{webBrandHome:location||'home',webBrandRoute:routeId()},onClick:function(){
       if(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard||busy())return;
       flushActive();
+      if(/^ltd\.onboarding\./.test(routeId())){captureSetupInputs();run('onDismissRequested',{reason:'home'},{});return;}
       if(UI.webHomeBaseline!==null&&webFormSnapshot(LAST.mount)!==UI.webHomeBaseline){UI.webHomeDiscard=true;paint();return;}
       run('onOpenHome',{},{});
     }},children);
@@ -710,8 +719,8 @@
     var wrap=frag();
     var pr=h('div',{class:'tm-progress'},[]); var fill=h('i'); fill.style.width=Math.round(100*stepN/5)+'%'; pr.appendChild(fill);
     wrap.append(h('div',{class:'tm-top'},[
-      h('button',{class:'tm-wsback',type:'button',onClick:function(){ run('onBack',{},{}); }},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
-      h('button',{class:'tm-linkbtn',type:'button',onClick:function(){ run('onDismissRequested',{reason:'cancel'},{}); }}, t('common.cancel'))
+      h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onBack',{},{});}},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
+      h('button',{class:'tm-linkbtn',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onDismissRequested',{reason:'cancel'},{});}}, t('common.cancel'))
     ]));
     wrap.append(pr);
     wrap.append(h('div',{class:'tm-kick',text:t('setup.step_of',{step:stepN,total:5})}));
@@ -1022,6 +1031,11 @@
   function currentFigureReasons(){
     var w=S().workspace||{},p=w.projection||{};
     return [].concat(w.companyYearFigures&&w.companyYearFigures.reasonCodes||[],(p.reviewItems||[]).map(function(item){return item.reasonCode;}),(p.periods||[]).flatMap(function(period){return period.reasonCodes||[];}));
+  }
+  function captureSetupInputs(){
+    flushActive();var sid=routeId();if(!/^ltd\.onboarding\./.test(sid)||!LAST.mount)return;
+    var values=Array.from(LAST.mount.querySelectorAll('input[data-field],textarea[data-field],select[data-field]')).filter(function(input){return input.dataset.fkey&&input.dataset.fkey.indexOf(sid+'::')===0&&input.dataset.persist!=='false';}).map(function(input){var type=input.dataset.raw==='date'?'date':input.type==='checkbox'?'checkbox':'text',value=input.type==='checkbox'?input.checked:input.value;if(type==='date')value=/^\d{4}-\d{2}-\d{2}$/.test(value)?value:displayToISO(value.trim())||value;return{id:input.dataset.field,type:type,value:value};});
+    values.forEach(function(field){persistDraft(sid,field.id,field.type,field.value);});
   }
   function taxDisplayState(){
     var p=S().workspace&&S().workspace.projection,ct=metric('corporationTax'),codes=currentFigureReasons();
@@ -2966,10 +2980,6 @@
     // footer button, a cancel control or the next sheet (UI-09).
     if(UI.toast) col.append(h('div',{class:'tm-toast',role:'status','aria-live':'polite'},[h('div',{class:'b',text:UI.toast})]));
     col.append(screen);
-    // Draft removal remains in the setup task, behind the existing confirmation.
-    if(/^ltd\.onboarding\./.test(routeId())&&S().company&&S().company.profile&&can('remove_company'))col.append(disclosure('setup.options',t('todo.details'),[
-      btn(t('design.remove_action'),'g sm',function(){openSheet('remove');},{dataset:{action:'setup-remove-draft'}})
-    ]));
     if(UI.sheet||overlays().length||UI.webHomeDiscard)col.setAttribute('inert','');
     app.append(col);
     // overlays: info sheet(s) from facade nav

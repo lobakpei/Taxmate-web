@@ -8,6 +8,7 @@ const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldVa
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const FounderPromotions=require('./founder-promotions');
 const CompaniesHouseLookup=require('./companies-house-lookup');
+const LtdSetup=require('./ltd-setup');
 const RetentionPolicy=require('./retention-policy');
 const RetentionWorker=require('./retention-worker');
 const ReceiptCleanup=require('./receipt-cleanup');
@@ -212,22 +213,9 @@ exports.joinPartnership=onCall(baseOpts,async req=>{
   await partnership.collection('members').doc(user.uid).set({uid:user.uid,role:'member',joinedAt:FieldValue.serverTimestamp()},{merge:true});
   const data=snap.data()||{};return{bizId:data.bizId,name:data.name||'Partnership'};
 });
-exports.claimActiveLtdCompany=onCall(baseOpts,async req=>{
-  const user=auth(req),companyId=String(req.data&&req.data.companyId||'').trim();
-  if(!/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(companyId))throw new HttpsError('invalid-argument','Invalid company identity',{reason:'company_id_invalid'});
-  await requireTier(user.uid,'pro');
-  const anchor=db.doc(`users/${user.uid}/ltdControl/activeCompany`);
-  return db.runTransaction(async tx=>{
-    const snap=await tx.get(anchor);
-    if(snap.exists){
-      const current=String((snap.data()||{}).activeCompanyId||'');
-      if(current===companyId)return{status:'existing',activeCompanyId:current,idempotent:true};
-      throw new HttpsError('already-exists','This TaxMate account already has its Limited Company',{reason:'one_active_ltd_limit',activeCompanyId:current});
-    }
-    tx.create(anchor,{schemaVersion:1,status:'active_slot_claimed',activeCompanyId:companyId,accountOwnerUid:user.uid,claimedAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),releasePolicy:'founder_approval_required'});
-    return{status:'claimed',activeCompanyId:companyId,idempotent:false};
-  });
-});
+const ltdSetup=LtdSetup.createHandlers({db,FieldValue,HttpsError,authenticate:auth,requireTier});
+exports.claimActiveLtdCompany=onCall(baseOpts,ltdSetup.claim);
+exports.manageLtdSetup=onCall(baseOpts,ltdSetup.manage);
 exports.lookupCompaniesHouse=onCall({...baseOpts,secrets:[COMPANIES_HOUSE_API_KEY]},CompaniesHouseLookup.createHandler({HttpsError,authenticate:auth,requireTier,apiKey:()=>COMPANIES_HOUSE_API_KEY.value()}));
 exports.leavePartnership=onCall(baseOpts,async req=>{
   const user=auth(req),code=String(req.data&&req.data.code||'').trim().toUpperCase();

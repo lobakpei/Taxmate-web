@@ -56,6 +56,9 @@
     return Object.freeze({
       key,
       get activeScreenId(){return envelope.activeScreenId;},
+      getSetup(){try{const value=JSON.parse(storage.getItem(key+':setup')||'null');return value&&value.schemaVersion===1&&cleanId(value.companyId)?clone(value):null;}catch(_){return null;}},
+      saveSetup(value){if(!value||value.schemaVersion!==1||!cleanId(value.companyId))throw new Error('Invalid setup draft');storage.setItem(key+':setup',JSON.stringify(value));return clone(value);},
+      clearSetup(){for(const id of Object.keys(envelope.drafts))if(/^ltd\.onboarding\./.test(id))delete envelope.drafts[id];if(/^ltd\.onboarding\./.test(envelope.activeScreenId||''))envelope.activeScreenId=null;storage.removeItem(key+':setup');persist();},
       get(screenId){const id=cleanId(screenId);return id&&envelope.drafts[id]?clone(envelope.drafts[id]):null;},
       save(screenId,input={}){
         const id=cleanId(screenId);if(!id)throw new Error('Draft screen id is required');
@@ -70,7 +73,7 @@
       },
       markClean(screenId){const previous=this.get(screenId);return previous?this.save(screenId,{...previous,dirty:false,validation:{}}):null;},
       clear(screenId){const id=cleanId(screenId);if(id)delete envelope.drafts[id];if(envelope.activeScreenId===id)envelope.activeScreenId=null;persist();},
-      clearAll(){envelope={version:VERSION,drafts:{},activeScreenId:null};persist();},
+      clearAll(){envelope={version:VERSION,drafts:{},activeScreenId:null};storage.removeItem(key+':setup');persist();},
       hasDirty(screenId){const draft=this.get(screenId);return!!(draft&&draft.dirty);},
       snapshot(){return clone(envelope);}
     });

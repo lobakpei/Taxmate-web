@@ -1,56 +1,54 @@
-# LTD status messages and draft-exit review
+# TaxMate 2.1.28: LTD status and unfinished setup
 
-This candidate changes presentation for the first two approved items. It does not change tax, dividend, eligibility, confirmation, entitlement, claim, release or deletion rules. It is based on released 2.1.27 and has not been published. The requested draft-exit replacement is not implemented in this candidate because the existing draft/slot lifecycle cannot safely provide its remove-and-start-again behavior.
+Local candidate only. Version `2.1.28`, build `2026-09-09.ltd-setup-exit.1`, cache `taxmate-v2-ltd-setup-exit-20260909-1`. Based on released 2.1.27 and the first two presentation changes in `adf68190a60e54cf70fdb94e1b3e085745033ad7`. The final commit and evidence hashes are recorded in the local release-readiness manifest. This document does not authorize publication, deployment or production account changes.
 
-## Implemented behavior
+## Resulting behavior
 
-- Pay yourself distinguishes a known non-positive distributable position from an unknown amount. A known non-positive retained position is a neutral explanation. A cash constraint or another zero amount is not relabelled as a lack of profit. Unknown values remain unknown.
-- Uncalculated, stale, incomplete and unavailable Corporation Tax states have different labels. Missing tax facts use the existing question labels and lead to the existing tax-review operation. An eligible dividend still uses the existing declaration and confirmation flow.
-- Today shows actual current tasks with direct actions instead of the bare yellow “Please check” strip. The first three tasks are visible, with an entry to the remaining actual tasks. Bank matching opens the matching operation; tax work opens the calculation; statutory items open their corresponding checklist item.
-- Tasks are derived from the current projection, current company-year reasons and current statutory blocking items. The renderer no longer manufactures director tasks from absent UI answers or reuses an earlier action result as current work. An empty current reason set has no warning strip.
+Pay yourself distinguishes known non-positive distributable profit from unknown, stale or missing information. An eligible dividend keeps the existing calculation and declaration flow. Today lists actual current tasks and their actions instead of the empty yellow warning; absent draft answers and old action results cannot manufacture tasks.
 
-## Local evidence
+Steps 1–5 no longer contain the shared Details → Remove company footer. Cancel, the first step's Back, and home exits offer Keep draft and exit, Remove this unfinished draft, and Keep editing. Back between numbered steps works after a reload as well as during the original visit. Keeping preserves current inputs and the resume step, including unfinished dates. The account home provides a resume entry even before a slot has been claimed.
 
-The isolated browser test builds the real application, uses synthetic local records, real company projections and the actual facade/renderer, blocks external requests, and checks that viewing and navigating do not change the records. It covers known zero profit, unknown amounts, stale calculations, a missing residence confirmation, the existing positive-dividend action, calculation and bank destinations, an empty current task set despite an old action result, and Traditional Chinese copy.
+A pre-claim draft is device-local in the account-scoped setup/answer store. Restoration merges only its profile and entity into the latest canonical account state; the stored draft contains no account snapshot. A draft that has never attempted a claim can be removed locally. Before sending a claim, its identity and attempted-claim state are persisted so a lost response cannot turn a server claim into an apparently local-only draft.
 
-- 11 mobile-sized UI scenarios: PASS.
-- 14 related localisation, UI contract and removed-slot/sync checks: PASS.
-- Production deployment: NOT RUN.
-- Real-phone or real-account acceptance: NOT RUN.
-- Requested draft keep/resume/remove/restart experience: NOT IMPLEMENTED; current-model diagnostic results are not acceptance of that experience.
+## Trusted setup lifecycle
 
-## Confirmed draft dependency
+New clients claim with `ltd-setup.1`. `claimActiveLtdCompany` creates a `setup_pending` slot together with two canonical seed documents in one transaction. The request remains owner/Pro gated. Seed identities, checksum, shape, draft status and absence of receipt references are checked. Reusing an existing or retired identity is rejected.
 
-`chooseBusinessCategory` creates an in-memory pending company. Until the Step 1 claim succeeds, `persist` intentionally skips the canonical repository. `saveCompanyDraft` currently returns success while that pending company remains absent from the durable repository. Individual UI answers can be stored, but the canonical company/resume entry is missing after reinitialisation.
+`manageLtdSetup` provides inspect, complete and discard actions. Inspection checks the owner, exact company, trusted stage, retention/reset state and all 17 LTD collections. It requires the canonical company/profile, rejects confirmed/deleted profiles and any bookkeeping, tax, payment-account, invoice, asset, bank or receipt-bearing records. Its version token covers the actual Firestore document update times and account-control versions. Mutations repeat the checks inside a transaction.
 
-After Step 1, the server slot is already claimed and the canonical draft is stored. The existing draft store can recover Step 2 answers, as verified with an isolated shared storage instance. However, `removeCompany` uses the general company deletion path and explicitly retains the slot. Removing an unfinished draft and choosing LTD again therefore returns `company_slot_retained_after_removal`.
+Step 5 marks the matching slot `setup_completed` before persisting the confirmed profile and payment accounts. This transition is idempotent and cannot be reversed by a client. Firestore Rules allow pending slots to write only setup metadata for the matching company; confirmed profiles and financial writes require completed stage. Rules retain the existing owner, Pro, active-slot, retention and receipt-admission checks.
 
-Simply relocating that removal button would repeat the previous blocker. Recreating its deleted identity would conflict with the deletion markers. Resetting the same company identity to different company facts would also risk associating surviving records with a different company. None of those shortcuts is implemented.
+A confirmed discard writes tombstones only to that unfinished company's profile and entity, releases only its matching slot and records an immutable outcome under `ltdSetupOutcomes`. Other companies, records, receipts and deletion markers remain unchanged. If a claim's response was lost before a slot existed, the transaction can retire that unused identity without deleting another slot; a later claim cannot revive it.
 
-## Proposed narrow design for review — not authority to implement or deploy
+The client clears the draft only after a confirmed result. Uncertain results retain answers and the original operation ID/version; reopening the exit choice retries that same authorized operation. A stale-version rejection requires a new review and choice. Recovery also works if cloud sync delivered the tombstone before the callable response. Server-owned discarded outcomes retire only matching setup metadata from this owner's upload queue; financial and other-account operations are retained. The next ordinary Pro setup gets a fresh identity.
 
-### User interaction
+## Compatibility and limits
 
-Cancel or leaving setup opens one choice sheet: “Keep draft and exit”, “Remove this draft”, and a close/keep-editing action. Moving Back between setup steps remains ordinary navigation. Back from the first setup step, a brand/home exit, and Cancel use the same exit choice. Remove the shared Details → Remove company entry from onboarding only; completed-company removal remains separate.
+- Existing slots without the protocol marker remain legacy. The exit sheet explains that removal is unavailable; keeping and continuing remain available. No legacy slot is classified, migrated or released automatically.
+- Existing completed-company removal keeps its general removal policy and retained slot. Tax/dividend calculations, eligibility decisions, older company data and receipt handling are unchanged.
+- Pre-claim drafts and unsaved per-step answers are local to that device. Cross-device draft recovery is not included.
+- Old clients can continue using legacy slots. An old client cannot persist confirmation or financial writes for a new pending slot; it needs the updated application to complete that setup. Keep the new Rules and Functions after any new-format slot exists; reverting those protections is not a safe rollback.
+- Local synthetic evidence is not signed-in production, provider or real-phone acceptance. No production data was used in these tests.
 
-Keeping stores the current form answers and resume position. Before Step 1 is claimed, it also needs a durable local pending-setup record with the same draft identity, rather than falsely reporting that the canonical company was saved. Restoring that pending setup must merge only its own setup fields into the latest account state, never replace the account with an old full-state snapshot. Whether pre-claim drafts also need cross-device recovery must be decided; current individual UI drafts are device-local.
+## Verification
 
-Removing explicitly states that the unfinished setup and its answers will be discarded, with no bookkeeping deletion. Before any server claim, it can remove only the local pending setup and its onboarding answer keys. A claimed draft needs the server operation below. The UI clears local answers only after the operation succeeds; failure keeps the draft available.
+- 62 focused unit, facade, integration, localisation and release-identity checks: PASS.
+- 8 Founder alias/version-gate checks: PASS. Only the supported version ceiling changes to 2.1.28; identity, provider, email and Pro guards remain.
+- 9 real Firestore emulator test groups: PASS. These exercise transactions, denied and admitted client writes, a complete five-step driver round trip, immutable completion, version conflicts, legacy policy, financial/receipt guards, lost-response retries, fresh identities and preservation of historical data/document versions. Callable authentication is synthetic; no live provider is involved.
+- 11 status-message mobile UI scenarios: PASS; viewing/navigation preserve the synthetic records.
+- 13 setup-exit mobile UI scenarios: PASS, using a fresh isolated Chrome profile and real production adapter, driver, facade and renderer with synthetic RPC responses. External requests are blocked. Covers local resume entry, same answers/identity, focused date saving, step Back, remove/new identity, uncertain retry, completion/general removal, legacy limitation, Chinese and Urdu layout.
+- Production push/PR/merge/deployment for 2.1.28: NOT RUN.
+- Real account or phone acceptance for this candidate: NOT RUN.
 
-### Server boundary needed for safe automatic release of an unfinished draft
+Reproducible sources are `tests/unit/ltd-setup-exit.test.js`, `tests/rules/ltd-setup.test.js`, `tests/browser/ltd-setup-exit.e2e.js` and `tests/browser/ltd-status-messages.e2e.js`. Local evidence is under `.hosting-build/ltd-status-evidence/`, including the test logs, UI result JSON and screenshots. The Firestore suite asserts the isolated demo project and `127.0.0.1:48388` emulator before running.
 
-The existing server-controlled slot records a claim and `founder_approval_required`, but does not record a trusted “never completed setup” state. A client-editable profile status alone cannot safely authorize an exception for unfinished drafts: it must not allow a previously completed company to become eligible for release by changing its profile status.
+## Exact future release scope and order
 
-Recommended extension for new slots:
+After review and direct approval of the final commit in this engineering task:
 
-1. The trusted claim operation marks a new slot as `setup_pending`. This does not create a second slot or weaken Pro/owner checks.
-2. Step 5 uses an idempotent trusted completion operation to mark that same slot `setup_completed` before the client can persist a confirmed company or bookkeeping entries. Rules enforce this boundary for the new slot format. A failed client save can retry confirmation on the same slot; completion cannot be downgraded by the client.
-3. A dedicated unfinished-draft discard operation requires authenticated owner/Pro access, the exact expected company and document versions, a server-controlled pending stage, an unconfirmed current profile, and absence of bookkeeping/tax/remuneration/invoice/asset/bank records for that company. A transaction rechecks these conditions, writes deletion markers for only that unfinished setup's company/profile records, and removes only its matching slot control document.
-4. The response lets the client apply those deletion markers, retire only the matching pending setup writes, refresh its trusted slot state, and clear only that setup's saved answers. Other records, historical company identities, receipts, personal records and deletion markers remain unchanged. The next normal Pro claim must use a new identity.
-5. Existing slots without a trusted lifecycle marker remain under the existing release policy. Do not automatically classify old slots as never completed from their current client-editable profile. Any legacy migration or individual exception needs an explicit, separately reviewed scope.
+1. Push that commit to the public `lobakpei/Taxmate-web` repository, create and merge its PR, then verify the merged tree matches the approved candidate.
+2. On `taxmate-uk-2`, deploy only `claimActiveLtdCompany`, the new `manageLtdSetup`, and `lookupCompaniesHouse`. The lookup change admits the new frontend version through the existing Founder gate. Use the established Functions discovery timeout of 60 seconds.
+3. Deploy `firestore:rules` for the pending/completed guard and immutable outcome access.
+4. Deploy Hosting last, from the locked merged artifact. Verify version/build/cache and deployed artifact hashes, then report production deployment separately from live account/phone acceptance.
 
-This extension requires claim/completion/discard integration and associated Firestore write guards, not merely a new UI callback. It has not been added to this candidate. The deployment sequence, older-client behavior for new-format slots, and legacy-draft handling must be reviewed before implementation. No production account reset is part of this design review.
-
-### Required acceptance after design approval
-
-Use isolated records to verify pre-claim keep/restart with the same answers and identity, claimed-draft keep/resume, close-to-continue, ordinary step Back, discard/restart with a new identity, stale-device and changed-version rejection, retry after an interrupted response, and preserved history. Completed slots, previously completed companies, mismatched owners, non-Pro access and any bookkeeping-bearing draft must be rejected by the narrow release operation. Real-account evidence remains separate from these local tests.
+No scheduled tasks, Storage Rules, billing Functions, account resets, legacy migrations or further one-time Founder slot removals are part of this release. The already-completed 2.1.27 publication and approved one-time slot removal are not repeated.

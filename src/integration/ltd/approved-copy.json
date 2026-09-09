@@ -987,7 +987,19 @@
       "todo.more": "See {count} more tasks",
       "year.reason.company_tax_estimate_refresh_required": "Records changed after the tax calculation — calculate it again",
       "todo.check_detail": "Needs review: {detail}",
-      "todo.tax_treatment": "Tax treatment has not been established for some company records"
+      "todo.tax_treatment": "Tax treatment has not been established for some company records",
+      "setup.exit_title": "Leave company setup?",
+      "setup.exit_body": "Keep your answers and return to this step later, or remove this unfinished draft.",
+      "setup.remove_consequence": "Removing this draft clears its setup answers. Existing companies and bookkeeping records are kept.",
+      "setup.keep_exit": "Keep draft and exit",
+      "setup.remove_draft": "Remove this unfinished draft",
+      "setup.legacy_slot": "This draft uses an older company slot. You can keep it or continue setup. Removing it here is unavailable.",
+      "setup.has_records": "This company already has bookkeeping or receipt records. Keep the draft and continue setup; it cannot be removed here.",
+      "setup.checking": "Checking this draft…",
+      "setup.changed": "The company changed since the check. Your answers are kept. Close this message and choose Cancel again to check its current state.",
+      "setup.uncertain": "The removal result is not confirmed. Your answers are kept while we check. Close this message and choose Cancel again to retry the same request.",
+      "setup.unavailable": "The draft could not be checked. You can keep it and exit, or close this message and try again.",
+      "setup.completed": "This company has already completed setup. It cannot be removed as an unfinished draft."
     },
     "zh-HK": {
       "review01.checks": "核對事項",
@@ -1940,7 +1952,19 @@
       "todo.more": "查看其餘 {count} 項待辦",
       "year.reason.company_tax_estimate_refresh_required": "稅額計算後記錄已更改，請重新計算",
       "todo.check_detail": "待核對：{detail}",
-      "todo.tax_treatment": "部分公司記錄的稅務分類尚未確定"
+      "todo.tax_treatment": "部分公司記錄的稅務分類尚未確定",
+      "setup.exit_title": "離開公司設定？",
+      "setup.exit_body": "你可以保留答案，稍後返回這一步；亦可以移除這份未完成草稿。",
+      "setup.remove_consequence": "移除草稿會清除這份草稿的設定答案。現有公司及帳目紀錄會保留。",
+      "setup.keep_exit": "保留草稿並離開",
+      "setup.remove_draft": "移除這份未完成草稿",
+      "setup.legacy_slot": "這份草稿使用舊有公司名額。你可以保留草稿或繼續設定，目前不能在這裡移除。",
+      "setup.has_records": "這家公司已有帳目或收據紀錄。請保留草稿並繼續設定，不能在這裡移除。",
+      "setup.checking": "正在核對草稿…",
+      "setup.changed": "公司資料在核對後有變更，答案已保留。請關閉此訊息，再按「取消」核對最新狀態。",
+      "setup.uncertain": "尚未確認移除結果，核對期間會保留答案。請關閉此訊息，再按「取消」重試同一項要求。",
+      "setup.unavailable": "暫時無法核對草稿。你可以保留草稿並離開，或關閉此訊息後再試。",
+      "setup.completed": "這家公司已完成設定，不能當作未完成草稿移除。"
     },
     "pl": {
       "review01.checks": "Sprawdź informacje",
@@ -2893,7 +2917,19 @@
       "todo.more": "Zobacz pozostałe zadania: {count}",
       "year.reason.company_tax_estimate_refresh_required": "Po obliczeniu podatku zmieniły się dane — oblicz go ponownie",
       "todo.check_detail": "Do sprawdzenia: {detail}",
-      "todo.tax_treatment": "Nie ustalono sposobu opodatkowania części zapisów firmy"
+      "todo.tax_treatment": "Nie ustalono sposobu opodatkowania części zapisów firmy",
+      "setup.exit_title": "Opuścić konfigurację firmy?",
+      "setup.exit_body": "Zachowaj odpowiedzi i wróć później do tego kroku albo usuń ten niedokończony szkic.",
+      "setup.remove_consequence": "Usunięcie szkicu wyczyści jego odpowiedzi. Istniejące firmy i zapisy księgowe zostaną zachowane.",
+      "setup.keep_exit": "Zachowaj szkic i wyjdź",
+      "setup.remove_draft": "Usuń ten niedokończony szkic",
+      "setup.legacy_slot": "Ten szkic korzysta ze starszego przydziału firmy. Możesz go zachować lub kontynuować konfigurację. Usunięcie tutaj jest niedostępne.",
+      "setup.has_records": "Ta firma ma już zapisy księgowe lub paragony. Zachowaj szkic i kontynuuj konfigurację; nie można go tutaj usunąć.",
+      "setup.checking": "Sprawdzanie szkicu…",
+      "setup.changed": "Dane firmy zmieniły się od sprawdzenia. Odpowiedzi zachowano. Zamknij tę wiadomość i ponownie wybierz Anuluj, aby sprawdzić aktualny stan.",
+      "setup.uncertain": "Wynik usunięcia nie został potwierdzony. Odpowiedzi są zachowane podczas sprawdzania. Zamknij tę wiadomość i ponownie wybierz Anuluj, aby ponowić to samo żądanie.",
+      "setup.unavailable": "Nie udało się sprawdzić szkicu. Możesz go zachować i wyjść lub zamknąć tę wiadomość i spróbować ponownie.",
+      "setup.completed": "Ta firma zakończyła już konfigurację. Nie można jej usunąć jako niedokończonego szkicu."
     },
     "ro": {
       "review01.checks": "Verificări",
@@ -3846,7 +3882,19 @@
       "todo.more": "Vezi încă {count} sarcini",
       "year.reason.company_tax_estimate_refresh_required": "Datele s-au schimbat după calculul impozitului — calculează din nou",
       "todo.check_detail": "De verificat: {detail}",
-      "todo.tax_treatment": "Tratamentul fiscal al unor înregistrări ale firmei nu a fost stabilit"
+      "todo.tax_treatment": "Tratamentul fiscal al unor înregistrări ale firmei nu a fost stabilit",
+      "setup.exit_title": "Părăsești configurarea firmei?",
+      "setup.exit_body": "Păstrează răspunsurile și revino mai târziu la acest pas sau elimină această schiță neterminată.",
+      "setup.remove_consequence": "Eliminarea schiței șterge răspunsurile ei de configurare. Firmele existente și înregistrările contabile sunt păstrate.",
+      "setup.keep_exit": "Păstrează schița și ieși",
+      "setup.remove_draft": "Elimină această schiță neterminată",
+      "setup.legacy_slot": "Această schiță folosește un loc de firmă din sistemul anterior. O poți păstra sau poți continua configurarea. Eliminarea de aici nu este disponibilă.",
+      "setup.has_records": "Această firmă are deja înregistrări contabile sau chitanțe. Păstrează schița și continuă configurarea; nu poate fi eliminată de aici.",
+      "setup.checking": "Se verifică schița…",
+      "setup.changed": "Firma s-a modificat după verificare. Răspunsurile sunt păstrate. Închide acest mesaj și alege din nou Anulează pentru a verifica starea actuală.",
+      "setup.uncertain": "Rezultatul eliminării nu este confirmat. Răspunsurile sunt păstrate în timpul verificării. Închide acest mesaj și alege din nou Anulează pentru a reîncerca aceeași cerere.",
+      "setup.unavailable": "Schița nu a putut fi verificată. O poți păstra și ieși sau poți închide acest mesaj și încerca din nou.",
+      "setup.completed": "Această firmă a finalizat deja configurarea. Nu poate fi eliminată ca schiță neterminată."
     },
     "es": {
       "review01.checks": "Comprobaciones",
@@ -4799,7 +4847,19 @@
       "todo.more": "Ver {count} tareas más",
       "year.reason.company_tax_estimate_refresh_required": "Los registros cambiaron después del cálculo: vuelve a calcularlo",
       "todo.check_detail": "Pendiente de revisión: {detail}",
-      "todo.tax_treatment": "No se ha determinado el tratamiento fiscal de algunos registros de la empresa"
+      "todo.tax_treatment": "No se ha determinado el tratamiento fiscal de algunos registros de la empresa",
+      "setup.exit_title": "¿Salir de la configuración de la empresa?",
+      "setup.exit_body": "Guarda tus respuestas y vuelve a este paso más tarde, o elimina este borrador sin terminar.",
+      "setup.remove_consequence": "Eliminar este borrador borra sus respuestas de configuración. Se conservan las empresas existentes y los registros contables.",
+      "setup.keep_exit": "Guardar borrador y salir",
+      "setup.remove_draft": "Eliminar este borrador sin terminar",
+      "setup.legacy_slot": "Este borrador utiliza una plaza de empresa del sistema anterior. Puedes guardarlo o continuar la configuración. No se puede eliminar desde aquí.",
+      "setup.has_records": "Esta empresa ya tiene registros contables o recibos. Guarda el borrador y continúa la configuración; no se puede eliminar desde aquí.",
+      "setup.checking": "Comprobando este borrador…",
+      "setup.changed": "La empresa ha cambiado desde la comprobación. Tus respuestas se conservan. Cierra este mensaje y vuelve a elegir Cancelar para comprobar el estado actual.",
+      "setup.uncertain": "El resultado de la eliminación no está confirmado. Tus respuestas se conservan durante la comprobación. Cierra este mensaje y vuelve a elegir Cancelar para reintentar la misma solicitud.",
+      "setup.unavailable": "No se ha podido comprobar el borrador. Puedes guardarlo y salir, o cerrar este mensaje e intentarlo de nuevo.",
+      "setup.completed": "Esta empresa ya ha completado la configuración. No se puede eliminar como borrador sin terminar."
     },
     "ur": {
       "review01.checks": "معلومات کا جائزہ",
@@ -5752,7 +5812,19 @@
       "todo.more": "مزید {count} کام دیکھیں",
       "year.reason.company_tax_estimate_refresh_required": "ٹیکس کے حساب کے بعد ریکارڈ بدل گئے — دوبارہ حساب کریں",
       "todo.check_detail": "جائزہ درکار ہے: {detail}",
-      "todo.tax_treatment": "کمپنی کے بعض ریکارڈ کا ٹیکس کے لحاظ سے طریقۂ کار ابھی طے نہیں ہوا"
+      "todo.tax_treatment": "کمپنی کے بعض ریکارڈ کا ٹیکس کے لحاظ سے طریقۂ کار ابھی طے نہیں ہوا",
+      "setup.exit_title": "کیا کمپنی کی ترتیب سے باہر نکلنا ہے؟",
+      "setup.exit_body": "اپنے جواب محفوظ کریں اور بعد میں اسی مرحلے پر واپس آئیں، یا اس نامکمل مسودے کو ہٹا دیں۔",
+      "setup.remove_consequence": "مسودہ ہٹانے سے اس کی ترتیب کے جواب مٹ جائیں گے۔ موجودہ کمپنیاں اور حساب کتاب کے ریکارڈ محفوظ رہیں گے۔",
+      "setup.keep_exit": "مسودہ محفوظ کریں اور باہر نکلیں",
+      "setup.remove_draft": "یہ نامکمل مسودہ ہٹائیں",
+      "setup.legacy_slot": "یہ مسودہ کمپنی کے پرانے مختص مقام کو استعمال کرتا ہے۔ آپ اسے محفوظ کر سکتے ہیں یا ترتیب جاری رکھ سکتے ہیں۔ اسے یہاں ہٹانا دستیاب نہیں ہے۔",
+      "setup.has_records": "اس کمپنی میں پہلے ہی حساب کتاب یا رسیدوں کے ریکارڈ موجود ہیں۔ مسودہ محفوظ کریں اور ترتیب جاری رکھیں؛ اسے یہاں ہٹایا نہیں جا سکتا۔",
+      "setup.checking": "مسودے کی جانچ ہو رہی ہے…",
+      "setup.changed": "جانچ کے بعد کمپنی میں تبدیلی ہوئی ہے۔ آپ کے جواب محفوظ ہیں۔ یہ پیغام بند کریں اور موجودہ حالت جانچنے کے لیے دوبارہ منسوخ کریں منتخب کریں۔",
+      "setup.uncertain": "ہٹانے کے نتیجے کی تصدیق نہیں ہوئی۔ جانچ کے دوران آپ کے جواب محفوظ ہیں۔ یہ پیغام بند کریں اور اسی درخواست کی دوبارہ کوشش کے لیے منسوخ کریں منتخب کریں۔",
+      "setup.unavailable": "مسودے کی جانچ نہیں ہو سکی۔ آپ اسے محفوظ کر کے باہر نکل سکتے ہیں، یا یہ پیغام بند کر کے دوبارہ کوشش کر سکتے ہیں۔",
+      "setup.completed": "اس کمپنی کی ترتیب پہلے ہی مکمل ہو چکی ہے۔ اسے نامکمل مسودے کے طور پر ہٹایا نہیں جا سکتا۔"
     }
   },
   "design_scaffolding": {

@@ -20,11 +20,12 @@
     node?require('./company-state'):root.TaxMateCompanyState,
     node?require('./company-transaction-adapter'):root.TaxMateCompanyTransactionAdapter,
     node?require('./company-state-repository'):root.TaxMateCompanyStateRepository,
-    node?require('./companies-house-provider'):root.TaxMateCompaniesHouseProvider
+    node?require('./companies-house-provider'):root.TaxMateCompaniesHouseProvider,
+    node?require('../../core/ltd-sync'):root.TaxMateLtdSync
   );
   if(node)module.exports=api;
   root.TaxMateCanonicalCompanyDriver=api;
-})(typeof globalThis!=='undefined'?globalThis:this,function(CompanyAccess,CompanyBooks,CompanyIdentity,CompanyLedger,CompanyProfile,CompanyProfileHistory,CompanyRemuneration,CompanyRemunerationRules,CompanyScenario,CompanyTax,CompanyTreatment,CompanyWorkspace,Domain,Entitlement,Money,Partnership,State,TransactionAdapter,Repository,CompaniesHouse){
+})(typeof globalThis!=='undefined'?globalThis:this,function(CompanyAccess,CompanyBooks,CompanyIdentity,CompanyLedger,CompanyProfile,CompanyProfileHistory,CompanyRemuneration,CompanyRemunerationRules,CompanyScenario,CompanyTax,CompanyTreatment,CompanyWorkspace,Domain,Entitlement,Money,Partnership,State,TransactionAdapter,Repository,CompaniesHouse,LtdSync){
 'use strict';
 
 const DEFAULT_DEVICE_ID='taxmate-ltd-local';
@@ -69,6 +70,8 @@ class CanonicalCompanyDriver{
     this.deviceId=cleanText(options.deviceId,128)||DEFAULT_DEVICE_ID;
     this.companiesHouseProvider=options.companiesHouseProvider||CompaniesHouse.unavailableProvider();
     this.activeCompanyClaim=typeof options.activeCompanyClaim==='function'?options.activeCompanyClaim:async({companyId})=>({status:'claimed',activeCompanyId:companyId,idempotent:false,localTestOnly:true});
+    this.manageCompanySetup=typeof options.manageCompanySetup==='function'?options.manageCompanySetup:null;
+    this.setupProtocol=null;
     this.trustedActiveCompanyId=cleanText(options.trustedActiveCompanyId,128)||null;
     this.runtime=clone(options.runtime||{providerMode:'localhost_only',firebase:false,sentry:false,googleSignIn:false,billing:false,promo:false,analytics:false,serviceWorker:false,externalNetwork:this.companiesHouseProvider.isNetworkProvider===true});
     this.enforceEntitlement=options.enforceEntitlement!==false;
@@ -258,7 +261,7 @@ class CanonicalCompanyDriver{
     // A retained server slot is not permission to recreate an identity whose
     // deletion marker must continue to win during sync.
     if(this.removedTrustedCompanySlot())return{status:'review_required',reviewReasons:['company_slot_retained_after_removal'],data:{noWrite:true,activeCompanySlotRetained:true},nextRoute:'ltd.one-company-limit'};
-    const now=this.now(),requestedId=cleanText(input.companyId,128)||null,entityId=this.trustedActiveCompanyId||requestedId||this.newId('company');
+    const now=this.now(),requestedId=cleanText(input.companyId,128)||null,entityId=this.trustedActiveCompanyId||requestedId||this.newId('company').slice(0,110)+':'+Math.random().toString(36).slice(2,10);
     if(this.trustedActiveCompanyId&&requestedId&&requestedId!==this.trustedActiveCompanyId)throw Object.assign(new Error('one_active_ltd_limit'),{code:'one_active_ltd_limit'});
     this.pendingCompanyCreation={entityId,claimed:false,baseState:clone(this.state)};
     profile=CompanyProfile.createDraft({entityId,now,deviceId:this.deviceId});this.saveProfile(profile);this.companyDraftState=this.companyDraftFromProfile(profile);
@@ -271,6 +274,30 @@ class CanonicalCompanyDriver{
   resumeRoute(profile){if(!profile)return'ltd.onboarding.step1';if(profile.companyNumberStatus==='not_available'&&!profile.incorporationDate)return'ltd.onboarding.registration-details';const next=CompanyProfile.missingQuestion(profile),step=next&&['legal_name','company_type','company_number','incorporation_date'].includes(next.id)?1:next&&['trading_status','accounting_period','corporation_tax_status'].includes(next.id)?2:next&&['account_holder_roles','share_structure'].includes(next.id)?3:next&&['activity_profile','unsupported_screen'].includes(next.id)?4:5;return`ltd.onboarding.step${step}`;}
   resumeDraft(){this.requireAccess('resume_company_draft');const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company','company_draft_not_found')]};return{status:'ok',data:{profile:clone(profile),draftState:clone(this.companyDraftState)},nextRoute:this.resumeRoute(profile)};}
   saveCompanyDraft(){this.requireAccess('resume_company_draft');const profile=this.activeProfile();if(!profile||profile.lifecycleStatus==='confirmed')return{status:'field_error',fieldErrors:[fieldError('company','company_draft_not_found')]};this.persist();return{status:'ok',data:{profile:clone(profile),draftState:clone(this.companyDraftState),persistedByCodexLayer:true},nextRoute:'home'};}
+  pendingSetup(){const pending=this.pendingCompanyCreation,profile=this.activeProfile();if(!pending||pending.claimed||!profile)return null;return{schemaVersion:1,entityId:pending.entityId,claimAttempted:pending.claimAttempted===true,profile:clone(profile),entity:clone(this.entityFor(profile)),lookup:clone(this.lookup)};}
+  restorePendingSetup(saved){
+    if(!saved||saved.schemaVersion!==1||!saved.profile||saved.profile.lifecycleStatus!=='draft'||saved.profile.deletedAt!=null||saved.entityId!==saved.profile.entityId||saved.profile.id!=='company-profile:'+saved.entityId||saved.entity?.id!==saved.entityId||saved.entity.type!=='limited_company'||saved.entity.deletedAt!=null)return false;
+    const latest=this.repository.load();if((latest.domain.companyProfiles||[]).some(p=>p.deletedAt==null||p.entityId===saved.entityId)||this.trustedActiveCompanyId&&this.trustedActiveCompanyId!==saved.entityId||(latest.domain.entities||[]).some(e=>e.id===saved.entityId))return false;
+    const candidate=clone(latest);candidate.domain.companyProfiles.push(clone(saved.profile));candidate.domain.entities.push(clone(saved.entity));State.validateState(candidate);
+    this.state=candidate;this.pendingCompanyCreation={entityId:saved.entityId,claimed:false,claimAttempted:saved.claimAttempted===true,baseState:clone(latest)};this.lookup=clone(saved.lookup||{status:'idle',reasons:[]});this.companyDraftState=this.companyDraftFromProfile(saved.profile);return true;
+  }
+  async inspectSetupExit(input={}){
+    this.requireAccess('resume_company_draft');
+    if(input.companyId&&this.manageCompanySetup)return this.manageCompanySetup({action:'inspect',companyId:input.companyId});
+    const profile=this.activeProfile();if(!profile||profile.lifecycleStatus==='confirmed')return{status:'completed',canDiscard:false,reason:'setup_already_completed'};
+    if(this.pendingSetup()&&!this.pendingCompanyCreation.claimAttempted&&!this.trustedActiveCompanyId)return{status:'local',canDiscard:true,companyId:profile.entityId};
+    if(!this.manageCompanySetup)return{status:'legacy',canDiscard:false,reason:'setup_legacy_slot',companyId:profile.entityId};
+    return this.manageCompanySetup({action:'inspect',companyId:profile.entityId});
+  }
+  async discardCompanySetup(input={}){
+    this.requireAccess('resume_company_draft');const profile=this.activeProfile(),companyId=input.companyId;if(!companyId||profile?.entityId===companyId&&profile.lifecycleStatus==='confirmed'||profile?.entityId!==companyId&&input.recovery!==true)throw Object.assign(new Error('setup_not_unfinished'),{code:'setup_not_unfinished'});
+    if(this.pendingSetup()&&!this.pendingCompanyCreation.claimAttempted&&!this.trustedActiveCompanyId){this.state=this.repository.load();this.pendingCompanyCreation=null;this.lookup={status:'idle',reasons:[]};this.companyDraftState=this.companyDraftFromProfile(null);return{status:'ok',data:{discardedEntityId:profile.entityId,localOnly:true},nextRoute:'home'};}
+    if(!this.manageCompanySetup)throw Object.assign(new Error('setup_legacy_slot'),{code:'setup_legacy_slot'});
+    const result=await this.manageCompanySetup({action:'discard',companyId,expectedVersion:input.expectedVersion,operationId:input.operationId});
+    if(result.status!=='discarded'||result.companyId!==companyId||!Array.isArray(result.records))throw Object.assign(new Error('setup_discard_not_confirmed'),{code:'setup_discard_not_confirmed'});
+    const latest=this.repository.load();this.state=LtdSync.applyDownloads(latest,result.records);this.pendingCompanyCreation=null;if(this.trustedActiveCompanyId===companyId)this.trustedActiveCompanyId=null;this.lookup={status:'idle',reasons:[]};this.companyDraftState=this.companyDraftFromProfile(this.activeProfile());this.persist();
+    return{status:'ok',data:{discardedEntityId:companyId,localOnly:false},nextRoute:'home'};
+  }
   fixCompanyFact(input={}){
     this.requireAccess('resume_company_draft');
     const reason=String(input.reasonCode||''),step=/(registration|legal_name|company_name|company_number|incorporation)/.test(reason)?1:/(trading|accounting|period|corporation_tax_status)/.test(reason)?2:/(director|shareholder|ownership|share_structure|account_holder)/.test(reason)?3:/(activity|group|associated|property|inventory|vat|unsupported)/.test(reason)?4:null;
@@ -392,10 +419,15 @@ class CanonicalCompanyDriver{
       }else return{status:'failure',error:{reasonCode:'unknown_onboarding_step',copyKey:'error.fix_issue'}};
       if(step===1&&this.pendingCompanyCreation&&!this.pendingCompanyCreation.claimed){
         const pending=this.pendingCompanyCreation;let claim;
-        try{claim=await this.activeCompanyClaim({companyId:pending.entityId});}catch(error){this.state=clone(pending.baseState);this.pendingCompanyCreation=null;throw error;}
-        if(!claim||claim.activeCompanyId!==pending.entityId||!['claimed','existing'].includes(claim.status)){this.state=clone(pending.baseState);this.pendingCompanyCreation=null;throw Object.assign(new Error('active_company_claim_failed'),{code:claim&&claim.reasonCode||'active_company_claim_failed'});}
-        pending.claimed=true;this.trustedActiveCompanyId=pending.entityId;
+        const latest=this.repository.load();if((latest.domain.companyProfiles||[]).some(p=>p.deletedAt==null&&p.entityId!==pending.entityId))throw Object.assign(new Error('one_active_ltd_limit'),{code:'one_active_ltd_limit'});
+        const entity={...this.entityFor(profile),name:next.legalName||'Limited company',updatedAt:now};
+        pending.claimAttempted=true;if(this.persistPendingSetup)this.persistPendingSetup(this.pendingSetup());
+        const seedProfile=clone(next);delete seedProfile.profileRevisionHistory;delete seedProfile.ownershipHistory;
+        claim=await this.activeCompanyClaim({companyId:pending.entityId,setupProtocol:'ltd-setup.1',setupRecords:[LtdSync.envelope('companyProfiles',seedProfile,pending.entityId),LtdSync.envelope('entities',entity,pending.entityId)]});
+        if(!claim||claim.activeCompanyId!==pending.entityId||!['claimed','existing'].includes(claim.status))throw Object.assign(new Error('active_company_claim_failed'),{code:claim&&claim.reasonCode||'active_company_claim_failed'});
+        this.state=latest;this.upsert('entities',entity);this.setupProtocol=claim.setupProtocol||null;pending.claimed=true;this.trustedActiveCompanyId=pending.entityId;
       }
+      if(step===5&&this.manageCompanySetup){const eligibility=CompanyProfile.bookkeepingEligibility(next);if(!eligibility.allowed)return{status:'field_error',fieldErrors:[fieldError(eligibility.nextQuestion||'companyFacts','company_facts_incomplete')],reviewReasons:eligibility.reasons};const current=await this.manageCompanySetup({action:'inspect',companyId:next.entityId});if(current.status==='pending'){const completed=await this.manageCompanySetup({action:'complete',companyId:next.entityId,expectedVersion:current.versionToken});if(completed.status!=='completed')throw Object.assign(new Error('setup_completion_not_confirmed'),{code:'setup_completion_not_confirmed'});}else if(!['completed','legacy'].includes(current.status))throw Object.assign(new Error('setup_completion_not_confirmed'),{code:'setup_completion_not_confirmed'});}
       this.saveProfile(next);
       if(step===2)this.pendingPeriodPlan=null;
       if(step===5){const eligibility=CompanyProfile.bookkeepingEligibility(next);if(!eligibility.allowed)return{status:'field_error',fieldErrors:[fieldError(eligibility.nextQuestion||'companyFacts','company_facts_incomplete')],reviewReasons:eligibility.reasons,data:{eligibility}};this.companyDraftState={...this.companyDraftState,status:'confirmed',updatedAt:now};this.ensurePaymentAccounts(next);return{status:next.assessmentStatus==='review_required'?'review_required':'ok',reviewReasons:next.assessmentReasons||[],data:{profile:clone(next),eligibility},nextRoute:'ltd.workspace.overview'};}
