@@ -194,7 +194,18 @@
   function setField(sid,fid,val){ UI.cache[fkey(sid,fid)]=val; }
   function flushActive(){
     var a=document.activeElement;
-    if(a && a.dataset && a.dataset.fkey!=null && typeof a.value==='string') UI.cache[a.dataset.fkey]=a.value;
+    if(a && a.dataset && a.dataset.fkey!=null && typeof a.value==='string'){
+      var value=a.value;
+      if(a.dataset.raw==='date')value=/^\d{4}-\d{2}-\d{2}$/.test(value)?value:displayToISO(value.trim())||value;
+      UI.cache[a.dataset.fkey]=value;
+      if(a.dataset.raw==='date'&&a.dataset.scope&&a.dataset.persist!=='false'&&draftFields(a.dataset.scope)[a.dataset.field]!==value)persistDraft(a.dataset.scope,a.dataset.field,'date',value);
+    }
+  }
+  function preserveStep2DateClick(event){
+    var active=document.activeElement;
+    // Keep the date field from repainting the pressed control before its click.
+    // The click flushes the ISO value and performs the normal semantic action.
+    if(routeId()==='ltd.onboarding.step2'&&event.button===0&&active&&active.dataset.raw==='date')event.preventDefault();
   }
   function choiceKey(scope,name){ return scope+'::choice::'+name; }
   function getChoice(scope,name,fallback){
@@ -269,7 +280,7 @@
   function btn(label, cls, onClick, opts){
     opts=opts||{};
     return h('button',{class:'tm-btn '+(cls||'p'), type:'button', disabled: opts.disabled||busy(),
-      dataset:opts.dataset||null, onClick:onClick},[label]);
+      dataset:opts.dataset||null, onPointerDown:preserveStep2DateClick, onClick:onClick},[label]);
   }
   function labelRow(text, infoId, hint){
     var kids=[text];
@@ -327,8 +338,8 @@
     var wrapCls='tm-inwrap'+(err?' err':'');
     var input=h('input',{class:'tm-input suf', type:'text', inputmode:'numeric',
       placeholder:t('design.date_hint'), value:disp, 'aria-label':stripTags(o.label), 'aria-invalid':err?'true':null,
-      dataset:{fkey:fkey(scope,fid), field:fid, raw:'date'},
-      onInput:function(e){ /* keep raw text; convert on blur */ UI.cache[fkey(scope,fid)+'#raw']=e.target.value; },
+      dataset:{fkey:fkey(scope,fid), field:fid, scope:scope, persist:o.persist===false?'false':'true', raw:'date'},
+      onInput:function(e){ var value=e.target.value;UI.cache[fkey(scope,fid)+'#raw']=value;setField(scope,fid,/^\d{4}-\d{2}-\d{2}$/.test(value)?value:displayToISO(value.trim())||value); },
       onBlur:function(e){
         var v=e.target.value.trim();
         var isoV = /^\d{4}-\d{2}-\d{2}$/.test(v)? v : displayToISO(v);
@@ -371,7 +382,8 @@
       if(op.body) inner.push(h('div',{class:'cb',text:op.body}));
       if(op.amount!=null) inner.push(h('div',{class:'tm-choice-amount'},[moneyRole(op.amount,op.role||'signed')]));
       return h('button',{class:'tm-choice'+(on?' on':''), type:'button', 'aria-pressed':on?'true':'false',
-        onClick:function(){ setChoice(o.scope,o.name,op.v); if(o.onPick)o.onPick(op.v); paint(); }
+        onPointerDown:preserveStep2DateClick,
+        onClick:function(){ if(o.scope==='ltd.onboarding.step2')flushActive();setChoice(o.scope,o.name,op.v); if(o.onPick)o.onPick(op.v); paint(); }
       }, inner);
     }));
   }
@@ -592,8 +604,8 @@
     // never invent figures or a name for it.
     var lim=s.companyLimit||{};
     if(lim.activeCompanyId&&!(s.businessList||[]).some(function(b){return b.businessType==='limited_company';})&&lim.reason&&lim.reason!=='one_active_ltd_limit'){
-      var why=lim.reason==='tax_year_retention_ended'?t('plan.ltd_retention_ended'):lim.reason==='tax_year_retention_date_required'?t('plan.ltd_retention_date_required'):t('plan.ltd_pro_only');
-      rows.append(h('div',{class:'tm-row tm-row-locked',dataset:{lockedCompany:lim.reason}},[h('div',{class:'av draft',text:'L'}),h('div',{},[h('div',{class:'nm',text:t('add.ltd_title')}),h('div',{class:'mt',text:why}),priceLine()]),h('div',{class:'rt'})]));
+      var why=lim.reason==='company_slot_retained_after_removal'?t('error.company_slot_retained'):lim.reason==='tax_year_retention_ended'?t('plan.ltd_retention_ended'):lim.reason==='tax_year_retention_date_required'?t('plan.ltd_retention_date_required'):t('plan.ltd_pro_only');
+      rows.append(h('div',{class:'tm-row tm-row-locked',dataset:{lockedCompany:lim.reason}},[h('div',{class:'av draft',text:'L'}),h('div',{},[h('div',{class:'nm',text:t('add.ltd_title')}),h('div',{class:'mt',text:why}),lim.reason==='company_slot_retained_after_removal'?null:priceLine()]),h('div',{class:'rt'})]));
     }
     wrap.append(rows);
     wrap.append(h('button',{class:'tm-add', type:'button',
@@ -671,9 +683,10 @@
     var existing=S().company&&S().company.profile||{};
     var wrap=frag();
     wrap.append(backBar(function(){ run('onBack',{},{}); }, t('add.ltd_title')));
-    wrap.append(notice('info', t('add.ltd_title'), t('add.one_ltd_limit')));
+    var removedSlot=S().companyLimit&&S().companyLimit.reason==='company_slot_retained_after_removal';
+    wrap.append(notice('info', t('add.ltd_title'), t(removedSlot?'error.company_slot_retained':'add.one_ltd_limit')));
     wrap.append(h('div',{style:'margin-top:14px'},[
-      btn(t('add.open_existing'),'p',function(){
+      removedSlot?null:btn(t('add.open_existing'),'p',function(){
         var act=(S().companyLimit&&S().companyLimit.existingAction)||{callback:'onOpenExistingCompany',input:{}};
         run(act.callback||'onOpenExistingCompany', act.input||{}, {}); }),
       h('div',{class:'tm-spacer'}),
@@ -778,7 +791,7 @@
     body.push(h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.ct_account_question'), infoTrigger('s2.ct_account')]));
     body.push(choiceGroup({scope:sid,name:'ct',row:true,current:ctStatus,options:[
       {v:'registered',title:t('common.yes')},{v:'not_registered',title:t('s2.not_yet')},{v:'unknown',title:t('common.not_sure')}
-    ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); }}));
+    ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); requestPeriodPlan(sid); }}));
     var foot=[ btn(t('common.continue'),'p',function(){
       var pp=companyPeriod(sid);
       submitStep(2,sid,{ tradingStatus:trading, tradingStartDate:fieldVal(sid,'tradingStartDate',profile.tradingStartDate||''),

@@ -42,7 +42,7 @@ const COPY_KEY_BY_REASON=Object.freeze({
   description_required:'error.required',amountMinor_invalid:'error.required',amount_must_be_positive:'error.required',date_invalid:'error.invalid_date',allocation_exact_sum_required:'error.allocation_total',
   correction_reason_required:'error.required',company_correction_reason_required:'error.required',company_correction_evidence_required:'error.required',correctable_company_field_required:'error.fix_issue',
   ownership_shareholders_required:'error.required',ownership_shareholder_invalid:'error.ownership_total',ownership_effective_date_invalid:'error.invalid_date',ownership_effective_date_not_after_current:'error.invalid_date',ownership_reason_required:'error.required',ownership_evidence_required:'error.required',
-  company_draft_not_found:'error.fix_issue',company_not_found:'error.fix_issue',record_not_found:'error.fix_issue',draft_record_not_found:'error.fix_issue',committed_record_required:'error.fix_issue',
+  company_draft_not_found:'error.company_draft_not_found',company_slot_retained_after_removal:'error.company_slot_retained',company_not_found:'error.fix_issue',record_not_found:'error.fix_issue',draft_record_not_found:'error.fix_issue',committed_record_required:'error.fix_issue',
   company_facts_incomplete:'error.fix_issue',scenario_required:'error.required',dividend_declaration_not_found:'error.fix_issue',remove_company_confirmation_required:'error.choose_answer'
 });
 const REASON_BY_ENGINE_MESSAGE=Object.freeze({
@@ -88,6 +88,7 @@ class CanonicalCompanyDriver{
   list(name){const values=this.domain()&&this.domain()[name];return Array.isArray(values)?values:[];}
   upsert(name,record){const values=this.list(name),index=values.findIndex(item=>item.id===record.id);if(index<0)values.push(record);else values[index]=record;return record;}
   activeProfile(){return this.list('companyProfiles').find(item=>item.deletedAt==null)||null;}
+  removedTrustedCompanySlot(){return !!(this.trustedActiveCompanyId&&(this.list('companyProfiles').some(item=>item.entityId===this.trustedActiveCompanyId&&item.deletedAt!=null)||this.list('entities').some(item=>item.id===this.trustedActiveCompanyId&&item.deletedAt!=null)));}
   entityFor(profile=this.activeProfile()){return profile?this.list('entities').find(item=>item.id===profile.entityId&&item.deletedAt==null)||null:null;}
   eventsFor(profile=this.activeProfile()){return profile?this.list('economicEvents').filter(item=>item.sourceTransaction&&item.sourceTransaction.beneficiaryEntityId===profile.entityId):[];}
   recordsFor(name,profile=this.activeProfile()){return profile?this.list(name).filter(item=>item.entityId===profile.entityId):[];}
@@ -233,7 +234,7 @@ class CanonicalCompanyDriver{
     return{
       contractVersion:'taxmate-ltd-ui-facade.3',packageStatus:'INTEGRATED_CANDIDATE',mode:this.mode,dataset:clone(this.meta),context:{taxYear:this.taxYearRange().taxYear,currentDate:this.currentDate()},
       businessList:this.businessList(),
-      companyLimit:{maximum:1,activeCount:activeCompanyCount,activeCompanyId:this.trustedActiveCompanyId||profile&&profile.entityId||null,canCreate:activeCompanyCount===0&&createAccess.allowed===true,canResumeTrustedClaim:!!(this.trustedActiveCompanyId&&!profile),additionalLtdSupported:false,requiredTier:'pro',reason:activeCompanyCount>0?'one_active_ltd_limit':createAccess.allowed?null:createAccess.reason,existingAction:profile?{callback:'onOpenExistingCompany',nextRoute:profile.lifecycleStatus==='confirmed'?'ltd.workspace.overview':this.resumeRoute(profile),enabled:readAccess.allowed===true,disabledReason:readAccess.allowed?null:readAccess.reason}:null},
+      companyLimit:{maximum:1,activeCount:activeCompanyCount,activeCompanyId:this.trustedActiveCompanyId||profile&&profile.entityId||null,canCreate:activeCompanyCount===0&&createAccess.allowed===true,canResumeTrustedClaim:!!(this.trustedActiveCompanyId&&!profile&&!this.removedTrustedCompanySlot()),additionalLtdSupported:false,requiredTier:'pro',reason:this.removedTrustedCompanySlot()?'company_slot_retained_after_removal':activeCompanyCount>0?'one_active_ltd_limit':createAccess.allowed?null:createAccess.reason,existingAction:profile?{callback:'onOpenExistingCompany',nextRoute:profile.lifecycleStatus==='confirmed'?'ltd.workspace.overview':this.resumeRoute(profile),enabled:readAccess.allowed===true,disabledReason:readAccess.allowed?null:readAccess.reason}:null},
       company:profile?{entity:clone(entity),profile:clone(profile),draftState:clone(this.companyDraftState),bookkeepingEligibility:clone(gate),taxEstimateEligibility:clone(taxGate),periodPlan:clone(this.pendingPeriodPlan||periodPlan)}:null,
       lookupStatus:clone(this.lookup),
       // Retained-access facts for the UI (same canonical decision as the blocked branch;
@@ -254,6 +255,9 @@ class CanonicalCompanyDriver{
     if(input.category!=='limited_company')return{status:'field_error',fieldErrors:[fieldError('category','answer_required')]};
     this.requireAccess('create_company');let profile=this.activeProfile();
     if(profile)return{status:'ok',data:{limitReached:true,noWrite:true,profile:clone(profile),action:{callback:'onOpenExistingCompany',nextRoute:profile.lifecycleStatus==='confirmed'?'ltd.workspace.overview':this.resumeRoute(profile)}},nextRoute:'ltd.one-company-limit'};
+    // A retained server slot is not permission to recreate an identity whose
+    // deletion marker must continue to win during sync.
+    if(this.removedTrustedCompanySlot())return{status:'review_required',reviewReasons:['company_slot_retained_after_removal'],data:{noWrite:true,activeCompanySlotRetained:true},nextRoute:'ltd.one-company-limit'};
     const now=this.now(),requestedId=cleanText(input.companyId,128)||null,entityId=this.trustedActiveCompanyId||requestedId||this.newId('company');
     if(this.trustedActiveCompanyId&&requestedId&&requestedId!==this.trustedActiveCompanyId)throw Object.assign(new Error('one_active_ltd_limit'),{code:'one_active_ltd_limit'});
     this.pendingCompanyCreation={entityId,claimed:false,baseState:clone(this.state)};
@@ -304,7 +308,7 @@ class CanonicalCompanyDriver{
 
   planCompanyPeriods(input={}){
     this.requireAccess('resume_company_draft');
-    const profile=this.activeProfile();if(!profile||!profile.incorporationDate)return{status:'field_error',fieldErrors:[fieldError('incorporationDate','incorporation_date_required')]};
+    const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company',this.removedTrustedCompanySlot()?'company_slot_retained_after_removal':'company_draft_not_found')]};if(!profile.incorporationDate)return{status:'field_error',fieldErrors:[fieldError('incorporationDate','incorporation_date_required')]};
     const tradingStatus=input.tradingStatus,tradingStartDate=input.tradingStartDate||null,override=input.override&&input.override.enabled===true?clone(input.override):undefined;
     if(!CompanyProfile.TRADING_STATUSES.includes(tradingStatus))return{status:'field_error',fieldErrors:[fieldError('tradingStatus','answer_required')]};
     if(tradingStatus==='trading'&&!Domain.isoDate(tradingStartDate))return{status:'field_error',fieldErrors:[fieldError('tradingStartDate','trading_start_date_required')]};
@@ -313,7 +317,7 @@ class CanonicalCompanyDriver{
 
   async continueStep(input={}){
     this.requireAccess('resume_company_draft');
-    const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company','company_draft_not_found')]};
+    const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company',this.removedTrustedCompanySlot()?'company_slot_retained_after_removal':'company_draft_not_found')]};
     const step=Number(input.step),values=input.values||{},now=this.now(),errors=[];let next=profile;
     try{
       if(step===1){
