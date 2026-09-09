@@ -98,6 +98,23 @@ service cloud.firestore {
         && get(activeLtdAnchorPath(uid)).data.status == 'active_slot_claimed'
         && get(activeLtdAnchorPath(uid)).data.activeCompanyId == request.resource.data.companyId;
     }
+    function ltdSetupWriteAllowed(uid, collection) {
+      let anchor = get(activeLtdAnchorPath(uid)).data;
+      let payload = request.resource.data.payload;
+      return !('setupProtocol' in anchor)
+        || (anchor.setupProtocol == 'ltd-setup.1' && (
+          (anchor.setupState == 'setup_completed'
+            && (collection != 'companyProfiles' || payload.lifecycleStatus == 'confirmed'))
+          || (anchor.setupState == 'setup_pending'
+            && collection in ['persons', 'entities', 'companyProfiles', 'companyProfileRevisions', 'companyOwnershipVersions']
+            && (collection != 'entities' || (payload.id == anchor.activeCompanyId && payload.type == 'limited_company'))
+            && (collection != 'companyProfiles' || (payload.id == 'company-profile:' + anchor.activeCompanyId && payload.entityId == anchor.activeCompanyId))
+            && (!(collection in ['companyProfileRevisions', 'companyOwnershipVersions']) || payload.entityId == anchor.activeCompanyId)
+            && (collection != 'persons' || payload.id == 'person:account-holder')
+            && request.resource.data.deletedAt == null
+            && payload.get('deletedAt', null) == null
+            && (collection != 'companyProfiles' || payload.lifecycleStatus != 'confirmed'))));
+    }
     function memberRecordVisible(partnershipId) {
       let memberData = get(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid)).data;
       return retentionReady(request.auth.uid)
@@ -154,9 +171,10 @@ service cloud.firestore {
       match /entitlements/{document=**} { allow read: if owner(uid); allow write: if false; }
       match /retention/{document=**} { allow read: if owner(uid); allow write: if false; }
       match /ltdControl/{document=**} { allow read: if owner(uid); allow write: if false; }
+      match /ltdSetupOutcomes/{document=**} { allow read: if owner(uid); allow write: if false; }
       match /ltd/v1/{collection}/{recordId} {
         allow read: if owner(uid) && readableAtRetentionEpoch(uid);
-        allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId) && ltdReceiptAdmitted(uid,collection,recordId);
+        allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId) && ltdSetupWriteAllowed(uid,collection) && ltdReceiptAdmitted(uid,collection,recordId);
         allow delete: if false;
       }
     }

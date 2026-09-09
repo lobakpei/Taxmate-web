@@ -18,13 +18,15 @@
   function decorateProductionFacade(value){
     const leaveIfHome=async promise=>{const result=await promise;if(result&&result.nextRoute==='home')bridge().exitToBusinesses();return result;};
     const originalOpenHome=value.onOpenHome.bind(value);
-    value.onOpenHome=async input=>{const result=await originalOpenHome(input);bridge().exitToBusinesses();return result;};
+    value.onOpenHome=input=>leaveIfHome(originalOpenHome(input));
     const originalBack=value.onBack.bind(value);
     value.onBack=input=>leaveIfHome(originalBack(input));
     const originalSave=value.onSaveCompanyDraft.bind(value);
     value.onSaveCompanyDraft=input=>leaveIfHome(originalSave(input));
     const originalRemove=value.onRemoveCompany.bind(value);
     value.onRemoveCompany=input=>leaveIfHome(originalRemove(input));
+    const originalDiscardSetup=value.onDiscardCompanySetup.bind(value);
+    value.onDiscardCompanySetup=input=>leaveIfHome(originalDiscardSetup(input));
     const originalStructure=value.onSelfEmployedStructureChosen.bind(value);
     value.onSelfEmployedStructureChosen=async input=>{const result=await originalStructure(input);if(result.status==='ok'){bridge().exitToLegacyBusiness(input&&input.structure==='partnership'?'partnership':'sole');}return result;};
     const originalOpenLegacy=value.onOpenLegacyBusiness.bind(value);
@@ -51,6 +53,7 @@
         mode:b.hasExistingCompany()?'existing':'fresh',repository:canonicalRepository,copy,deviceId:b.deviceId(),now:Date.now,
         entitlementSnapshot:b.entitlementSnapshot(),trustedActiveCompanyId:b.activeCompanyId(),personalTaxJurisdiction:b.personalTaxJurisdiction(),companiesHouseProvider:provider,
         activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),
+        manageCompanySetup:async data=>{try{return await b.callTrusted('manageLtdSetup',data);}catch(error){throw Object.assign(new Error(error.details?.reason||error.code||'setup_check_unavailable'),{code:error.details?.reason||error.code||'setup_check_unavailable'});}},
         runtime:{providerMode:provider.founderShortcutMode?'founder_shortcut_local_emulator':'actual_taxmate_app',founderShortcutMode:provider.founderShortcutMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
       facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),actionTimeoutMs:30000,trace:event=>console.info('Ltd action trace',event),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));

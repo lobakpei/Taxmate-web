@@ -29,6 +29,9 @@ function harness(overrides={}){
   });
   return{handler,calls};
 }
+test('the release client remains within the unchanged Founder identity gate and later clients are rejected',async()=>{
+ const version=require('../../src/core/versions').VERSIONS.APP_VERSION,{handler}=harness({requiredFounderClientVersion:Lookup.FOUNDER_CLIENT_VERSION});assert.equal(version,Lookup.FOUNDER_CLIENT_VERSION);assert.equal((await handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion:version}})).status,'found');await assert.rejects(handler({auth:ordinary,data:{companyNumber:'lobakpe1',clientVersion:version}}),error=>error.code==='invalid-argument');await assert.rejects(handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion:'2.1.999'}}),error=>error.code==='invalid-argument');
+});
 
 test('production Founder identity requires the exact signed UID, verified email and Google provider',()=>{
   assert.equal(Lookup.isFounderIdentity(founder,founderHashes),true);
@@ -70,7 +73,7 @@ test('the released frontend and supported intermediate versions can use the iden
     const result=await handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}});
     assert.equal(result.founderShortcut,true);assert.equal(result.verificationStatus,'manual_unverified');assert.equal(result.company.number,null);assert.equal(calls.fetch.length,0);assert.deepEqual(calls.tier,[{uid:founder.uid,tier:'pro'}]);
   }
-  for(const clientVersion of ['','2.1.14','2.1.28','2.2.0','2.1.27-preview']){
+  for(const clientVersion of ['','2.1.14','2.1.'+(Number(VERSIONS.APP_VERSION.split('.').at(-1))+1),'2.2.0',VERSIONS.APP_VERSION+'-preview']){
     const {handler,calls}=harness({requiredFounderClientVersion:undefined});
     await assert.rejects(()=>handler({auth:founder,data:{companyNumber:'lobakpe1',clientVersion}}),error=>error.code==='invalid-argument');assert.equal(calls.fetch.length,0);assert.equal(calls.tier.length,0);
   }

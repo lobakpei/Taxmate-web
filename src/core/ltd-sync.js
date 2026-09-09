@@ -5,6 +5,16 @@
   function docId(recordId){const source=new TextEncoder().encode(String(recordId)),raw=typeof Buffer!=='undefined'?Buffer.from(source).toString('base64'):btoa(String.fromCharCode(...source));return raw.replace(/\+/g,'-').replace(/\//g,'_').replace(/=+$/,'');}
   function documentPath(uid,collection,recordId){if(typeof uid!=='string'||!uid||!COLLECTIONS.includes(collection)||typeof recordId!=='string'||!recordId)throw new Error('Invalid Ltd sync identity');return`users/${uid}/ltd/v1/${collection}/${docId(recordId)}`;}
   function companyEntityIds(domain){return new Set((domain.entities||[]).filter(item=>item.type==='limited_company').map(item=>item.id));}
+  function validateAnchorState(anchor,state,envelopes){
+    const records=[...(state?.domain?.entities||[]),...(state?.domain?.companyProfiles||[]),...(envelopes||[]).filter(row=>['entities','companyProfiles'].includes(row.collection)).map(row=>row.payload)],retired=new Set(records.filter(row=>row.deletedAt!=null&&(row.type==='limited_company'||row.entityId)).map(row=>row.entityId||row.id));
+    const active=new Set(records.filter(row=>row.deletedAt==null&&(row.type==='limited_company'||row.entityId)).map(row=>row.entityId||row.id).filter(id=>!retired.has(id)));
+    if(active.size&&!anchor)throw Object.assign(new Error('ltd-anchor-missing'),{code:'ltd-anchor-missing'});
+    if([...active].some(id=>id!==anchor?.activeCompanyId)||(envelopes||[]).some(row=>row.companyId!==anchor?.activeCompanyId&&!retired.has(row.companyId)))throw Object.assign(new Error('ltd-anchor-mismatch'),{code:'ltd-anchor-mismatch'});return true;
+  }
+  function partitionDiscardedSetupOperations(operations,companyIds,uid){
+    const ids=new Set(companyIds||[]),setup=new Set(['persons','entities','companyProfiles','companyProfileRevisions','companyOwnershipVersions']),kept=[],retired=[];
+    for(const operation of operations||[]){const matches=operation.kind==='ltd-record'&&(operation.uid||operation.ownerUid)===uid&&(!operation.ownerUid||operation.ownerUid===uid)&&setup.has(operation.collection)&&ids.has(operation.companyId||operation.record?.companyId);(matches?retired:kept).push(operation);}return{kept,retired};
+  }
   function companyIdForRecord(collection,record,companyIds,activeCompanyIds){
     if(collection==='entities')return record.id;
     if(record&&typeof record.entityId==='string'&&record.entityId)return record.entityId;
@@ -31,7 +41,7 @@
     }
     return{kept,retired};
   }
-  function reconcile(state,remoteEnvelopes,uid){const local=recordsForSync(state),companyIds=companyEntityIds(state&&state.domain||{}),activeCompanyIds=new Set((state.domain.entities||[]).filter(item=>item.type==='limited_company'&&item.deletedAt==null).map(item=>item.id)),remote=new Map();for(const item of remoteEnvelopes||[]){validateEnvelope(item);remote.set(recordKey(item.collection,item.recordId),item);}const uploads=[],downloads=[],conflicts=[];for(const collection of COLLECTIONS){for(const record of local[collection]){const localEnvelope=envelope(collection,record,companyIdForRecord(collection,record,companyIds,activeCompanyIds)),key=recordKey(collection,record.id),remoteEnvelope=remote.get(key);if(!remoteEnvelope){uploads.push({kind:'ltd-record',uid,companyId:localEnvelope.companyId,collection,recordId:record.id,path:documentPath(uid,collection,record.id),record:localEnvelope,updatedAt:localEnvelope.updatedAt,deviceId:localEnvelope.deviceId});continue;}remote.delete(key);if(remoteEnvelope.companyId!==localEnvelope.companyId){
+  function reconcile(state,remoteEnvelopes,uid){const local=recordsForSync(state),companyIds=companyEntityIds(state&&state.domain||{}),activeCompanyIds=new Set((state.domain.entities||[]).filter(item=>item.type==='limited_company'&&item.deletedAt==null).map(item=>item.id)),remote=new Map();for(const item of remoteEnvelopes||[]){validateEnvelope(item);remote.set(recordKey(item.collection,item.recordId),item);}const uploads=[],downloads=[],conflicts=[];for(const collection of COLLECTIONS){for(const record of local[collection]){const key=recordKey(collection,record.id),remoteEnvelope=remote.get(key),unboundHolder=collection==='persons'&&record.id==='person:account-holder'&&activeCompanyIds.size===0;if(unboundHolder&&!remoteEnvelope)continue;const companyId=unboundHolder?remoteEnvelope.companyId:companyIdForRecord(collection,record,companyIds,activeCompanyIds),localEnvelope=envelope(collection,record,companyId);if(!remoteEnvelope){uploads.push({kind:'ltd-record',uid,companyId:localEnvelope.companyId,collection,recordId:record.id,path:documentPath(uid,collection,record.id),record:localEnvelope,updatedAt:localEnvelope.updatedAt,deviceId:localEnvelope.deviceId});continue;}remote.delete(key);if(remoteEnvelope.companyId!==localEnvelope.companyId){
       // The account-holder identity is shared by this account's company history.
       // Keep an identical existing record at its original binding; never move it
       // or treat a changed payload as permission to write across company anchors.
@@ -53,5 +63,5 @@
     return applyDownloads(next,chosen);
   }
   function assertNoMegaDocument(doc){if(bytes(doc)>MAX_DOCUMENT_BYTES)throw new Error('Ltd sync document exceeds size limit');return true;}
-  return{SYNC_SCHEMA_VERSION,MAX_DOCUMENT_BYTES,COLLECTIONS,docId,documentPath,recordsForSync,companyIdForRecord,envelope,validateEnvelope,compare,partitionDeletedOwnershipOperations,reconcile,applyDownloads,applyRetentionDownloads,assertNoMegaDocument};
+  return{SYNC_SCHEMA_VERSION,MAX_DOCUMENT_BYTES,COLLECTIONS,docId,documentPath,recordsForSync,companyIdForRecord,envelope,validateEnvelope,compare,partitionDeletedOwnershipOperations,partitionDiscardedSetupOperations,validateAnchorState,reconcile,applyDownloads,applyRetentionDownloads,assertNoMegaDocument};
 });

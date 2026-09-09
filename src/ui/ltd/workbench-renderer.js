@@ -217,6 +217,7 @@
 
   /* ---- action runner: every state change goes through the facade -------- */
   function run(cb, input, opts){
+    if(cb==='onSaveCompanyDraft')captureSetupInputs();
     opts = opts||{};
     var f=LAST.facade;
     if(busy()){
@@ -550,6 +551,13 @@
 
   /* ---- discard confirmation (from navigation.pendingDiscard) ------------ */
   function discardSheet(webHome){
+    if(!webHome&&S().setupExit){
+      var state=S().setupExit,reason=state.status==='completed'?'setup.completed':state.status==='legacy'?'setup.legacy_slot':state.status==='has_records'?'setup.has_records':state.status==='loading'?'setup.checking':state.reason==='setup_changed_review_again'?'setup.changed':state.reason==='setup_discard_uncertain'?'setup.uncertain':state.status==='unavailable'?'setup.unavailable':null;
+      return sheet({child:true,title:t('setup.exit_title'),body:[h('p',{class:'tm-muted',text:t('setup.exit_body')}),h('p',{class:'tm-muted',text:t('setup.remove_consequence')}),reason?notice('neutral',null,t(reason)):null],foot:[
+        btn(t('setup.keep_exit'),'p',function(){run('onSaveCompanyDraft',{},{onOk:function(){UI.sheet=null;paint();}});},{disabled:state.reason==='setup_discard_uncertain'}),
+        btn(t('setup.remove_draft'),'d',function(){run('onDiscardCompanySetup',{},{onOk:function(){UI.cache={};UI.choices={};UI.sheet=null;paint();}});},{disabled:!state.canDiscard}),
+        btn(t('design.keep_editing'),'g',function(){run('onDiscardCancelled',{},{});})],onClose:function(){run('onDiscardCancelled',{},{});}});
+    }
     var result=sheet({ child:true, title:t('design.discard_title'),
       body:[ h('p',{class:'tm-muted',text:t('design.discard_body')}) ],
       foot:[
@@ -580,6 +588,7 @@
     return h('button',{class:className+' web-brand-home',type:'button','aria-label':t('web.logo_home'),dataset:{webBrandHome:location||'home',webBrandRoute:routeId()},onClick:function(){
       if(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard||busy())return;
       flushActive();
+      if(/^ltd\.onboarding\./.test(routeId())){captureSetupInputs();run('onDismissRequested',{reason:'home'},{});return;}
       if(UI.webHomeBaseline!==null&&webFormSnapshot(LAST.mount)!==UI.webHomeBaseline){UI.webHomeDiscard=true;paint();return;}
       run('onOpenHome',{},{});
     }},children);
@@ -710,8 +719,8 @@
     var wrap=frag();
     var pr=h('div',{class:'tm-progress'},[]); var fill=h('i'); fill.style.width=Math.round(100*stepN/5)+'%'; pr.appendChild(fill);
     wrap.append(h('div',{class:'tm-top'},[
-      h('button',{class:'tm-wsback',type:'button',onClick:function(){ run('onBack',{},{}); }},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
-      h('button',{class:'tm-linkbtn',type:'button',onClick:function(){ run('onDismissRequested',{reason:'cancel'},{}); }}, t('common.cancel'))
+      h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onBack',{},{});}},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
+      h('button',{class:'tm-linkbtn',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onDismissRequested',{reason:'cancel'},{});}}, t('common.cancel'))
     ]));
     wrap.append(pr);
     wrap.append(h('div',{class:'tm-kick',text:t('setup.step_of',{step:stepN,total:5})}));
@@ -1019,6 +1028,40 @@
   function companyRow(){ return (S().businessList||[]).filter(function(b){return b.businessType==='limited_company';})[0]; }
   function founderPct(){ var sh=(S().company&&S().company.profile&&S().company.profile.shareholders)||[]; var me=sh.filter(function(x){return x.isAccountHolder;})[0]; return me?Math.round((me.ownershipBasisPoints||0)/100):100; }
   function metric(id){ var p=S().workspace&&S().workspace.projection; return (p&&p.metrics&&p.metrics[id])||{amountMinor:null,status:'none'}; }
+  function currentFigureReasons(){
+    var w=S().workspace||{},p=w.projection||{};
+    return [].concat(w.companyYearFigures&&w.companyYearFigures.reasonCodes||[],(p.reviewItems||[]).map(function(item){return item.reasonCode;}),(p.periods||[]).flatMap(function(period){return period.reasonCodes||[];}));
+  }
+  function captureSetupInputs(){
+    flushActive();var sid=routeId();if(!/^ltd\.onboarding\./.test(sid)||!LAST.mount)return;
+    var values=Array.from(LAST.mount.querySelectorAll('input[data-field],textarea[data-field],select[data-field]')).filter(function(input){return input.dataset.fkey&&input.dataset.fkey.indexOf(sid+'::')===0&&input.dataset.persist!=='false';}).map(function(input){var type=input.dataset.raw==='date'?'date':input.type==='checkbox'?'checkbox':'text',value=input.type==='checkbox'?input.checked:input.value;if(type==='date')value=/^\d{4}-\d{2}-\d{2}$/.test(value)?value:displayToISO(value.trim())||value;return{id:input.dataset.field,type:type,value:value};});
+    values.forEach(function(field){persistDraft(sid,field.id,field.type,field.value);});
+  }
+  function taxDisplayState(){
+    var p=S().workspace&&S().workspace.projection,ct=metric('corporationTax'),codes=currentFigureReasons();
+    if(codes.indexOf('retention_history_incomplete')>=0)return 'history_missing';
+    if(codes.indexOf('company_tax_estimate_refresh_required')>=0||codes.indexOf('corporation_tax_calculation_out_of_date')>=0)return 'out_of_date';
+    if(ct.status==='supported_estimate'&&Number.isSafeInteger(ct.amountMinor))return 'calculated';
+    if(p&&Array.isArray(p.periods)&&p.periods.length===0)return 'not_calculated';
+    return p?'needs_review':'unavailable';
+  }
+  function taxDisplayLabel(){return t('tax.state.'+taxDisplayState());}
+  function openTaxCalculation(){if(can('create_period'))openSheet('ct');else run('onOpenMetric',{metricId:'corporationTax'},{});}
+  function dividendNotice(){
+    if(dividendAvailable())return null;
+    var pd=metric('potentialDividend'),retained=metric('provisionalRetained'),cash=metric('companyCash'),known=Number.isSafeInteger(pd.amountMinor)&&String(pd.status).indexOf('review')<0,state;
+    if(known&&pd.amountMinor<=0){
+      state=Number.isSafeInteger(retained.amountMinor)&&retained.amountMinor<=0?'no_profit':Number.isSafeInteger(cash.amountMinor)&&cash.amountMinor<=0?'no_cash':'no_amount';
+      return h('div',{dataset:{dividendState:state}},[notice('neutral',null,t('pay.'+state))]);
+    }
+    state=taxDisplayState();
+    var p=S().workspace&&S().workspace.projection||{},codes=[].concat((p.periods||[]).flatMap(function(period){return period.reasonCodes||[];}),(p.reviewItems||[]).filter(function(item){return ['corporation_tax_period','company_transaction','company_profile','retention'].indexOf(item.kind)>=0;}).map(function(item){return item.reasonCode;}));
+    var nodes=[notice('neutral',t('pay.amount_unknown'),taxDisplayLabel())],items=todoItems({codes:codes}).filter(function(item){return item.id!=='ct';});
+    if(items.length)nodes.push(todoList(items));
+    if(state!=='history_missing'&&state!=='unavailable')nodes.push(btn(t(state==='not_calculated'?'tax.calculate':'tax.review_calculation'),'s',openTaxCalculation,{dataset:{action:'dividend-tax-next'}}));
+    else nodes.push(reviewLink(t('workspace.records'),function(){selectWorkspace('records');},null,{dataset:{action:'dividend-records-next'}}));
+    return h('div',{dataset:{dividendState:state}},nodes);
+  }
 
   /* ---- entitlement-aware visibility (handlers + backend checks unchanged) ---- */
   // A control is shown only when the facade snapshot says the semantic action is
@@ -1225,28 +1268,30 @@
   var DIRECTOR_CHECK_CODES={micro_entity_eligibility_confirmation_required:'microEntityEligibilityConfirmed',unsupported_balance_sheet_items_confirmation_required:'noUnsupportedBalancesConfirmed',comparative_accounts_figures_check_required:'comparativeFiguresChecked',director_accounts_approval_required:'directorApprovalConfirmed'};
   var BANK_UNMATCHED_CODES={bank_statement_lines_not_matched:1,company_bank_entries_not_matched:1,bank_match_needs_checking:1};
   var BANK_BALANCE_CODES={bank_statement_total_does_not_match:1,bank_closing_balance_does_not_match_books:1};
+  var TAX_REVIEW_LABELS={uk_company_residence_confirmation_required:'ct_review.uk_resident_q',ring_fence_profit_review_required:'ct_review.ring_fence_q',close_investment_holding_company_review_required:'ct_review.investment_holding_q',associated_company_review_required:'ct_review.associated_none_q',qualifying_distribution_review_required:'ct_review.qualifying_distributions_q',company_accounts_completeness_confirmation_required:'ct_review.records_q',company_trade_continuity_review_required:'ct_review.same_trade_q',corporation_tax_records_review_required:'ct_review.records_q',corporation_tax_periods_review_required:'ct_review.periods_q',corporation_tax_losses_review_required:'ct_review.losses_q'};
   function todoItems(opts){
     opts=opts||{};
     var codes=(opts.codes||[]).filter(function(c,i,a){ return a.indexOf(c)===i; });
     var items=[], other=[], fig=yearFigures();
-    var director=0, directorFacts=[], statutory=0, bankUnmatched=false, bankBalance=false;
+    var director=0, directorFacts=[], bankUnmatched=false, bankBalance=false;
     codes.forEach(function(c){
       if(DIRECTOR_CHECK_CODES[c]) { director++; directorFacts.push(DIRECTOR_CHECK_CODES[c]); }
-      else if(/^statutory_/.test(c)) statutory++;
+      else if(TAX_REVIEW_LABELS[c])items.push({id:'tax-fact:'+c,text:t('todo.check_detail',{detail:t(TAX_REVIEW_LABELS[c])}),action:'ct'});
+      else if(/^statutory_/.test(c)){var item=checklistItems().filter(function(it){return 'statutory_'+it.id===c;})[0];if(item)items.push({id:'statutory:'+item.id,text:itemTitle(item),action:'checklist',itemId:item.id});else other.push(c);}
       else if(c==='year_end_bank_statement_not_reconciled') items.push({id:'bank',text:t('todo.bank_not_reconciled'),action:'bank'});
       else if(c==='year_end_bank_statement_out_of_date') items.push({id:'bank_out',text:t('todo.bank_out_of_date'),action:'bank'});
       else if(BANK_UNMATCHED_CODES[c]) bankUnmatched=true;
       else if(BANK_BALANCE_CODES[c]) bankBalance=true;
       else if(c==='company_year_not_finished') { /* Date status, not actionable work. Shown beside the company year. */ }
       else if(c==='company_records_still_need_checking') items.push({id:'drafts',text:t('todo.drafts'),action:'money'});
-      else if(c==='corporation_tax_calculation_not_ready'||c==='corporation_tax_calculation_out_of_date') items.push({id:'ct',text:t('todo.ct_estimate'),action:'ct'});
+      else if(c==='company_event_tax_treatment_unassessed')items.push({id:'tax-treatment',text:t('todo.tax_treatment'),action:'money'});
+      else if(c==='corporation_tax_calculation_not_ready'||c==='corporation_tax_calculation_out_of_date'||c==='company_tax_estimate_refresh_required') items.push({id:'ct',text:taxDisplayState()==='not_calculated'?t('tax.calculate'):taxDisplayLabel(),action:'ct'});
       else if(c==='retention_history_incomplete') items.push({id:'history',text:t('todo.history_gap'),action:null});
       else other.push(c);
     });
     if(bankUnmatched||bankBalance){ var rec=opts.bank||latestReconciliation(); var n=rec?((rec.unmatchedStatementLineIds||[]).length+(rec.unmatchedBookEventIds||[]).length):0; items.push({id:'bank_match',text:bankUnmatched&&n?t('todo.bank_unmatched',{count:n}):bankUnmatched?t('todo.bank_not_reconciled'):t('todo.bank_balance'),action:'match'}); }
     if(director) items.push({id:'director',text:t('todo.director_checks',{count:director}),action:'checks',factKeys:directorFacts});
-    if(statutory) items.push({id:'statutory',text:t('todo.statutory_items',{count:statutory}),action:'checklist'});
-    if(other.length) items.push({id:'other',text:t('todo.other',{count:other.length}),action:'details',codes:other});
+    other.forEach(function(code){items.push({id:'reason:'+code,text:reasonText(code),action:'details',codes:[code]});});
     // Distinct engine reasons can describe the same user action (for example
     // an unavailable and an out-of-date CT estimate). Show that work once.
     return items.filter(function(item,index,all){var key=item.action==='bank'?'bank':item.id;return all.findIndex(function(other){return (other.action==='bank'?'bank':other.id)===key;})===index;});
@@ -1257,10 +1302,10 @@
       case 'bank': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ openSheet('bank'); }; } break;
       case 'match': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ var rec=latestReconciliation(); if(rec&&rec.status!=='voided') openSheet('bankMatch',{recordId:rec.id}); else openSheet('bank'); }; } break;
       case 'checks': if(can('edit_company')){ label=t('todo.record_checks'); fn=function(){ openSheet('statutory',{factKeys:item.factKeys}); }; } break;
-      case 'checklist': label=t('todo.view_checklist'); fn=function(){ UI.disc['tax.statutory']=true; if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack') paint(); else run('onSetWorkspaceArea',{area:'tax'},{}); }; break;
+      case 'checklist': label=t('todo.view_checklist'); fn=function(){ UI.disc['tax.statutory']=true;if(item.itemId)UI.disc['stat:'+item.itemId]=true; if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack') paint(); else run('onSetWorkspaceArea',{area:'tax'},{}); }; break;
       case 'money': label=t('todo.view'); fn=function(){ run('onSetWorkspaceArea',{area:'money'},{}); }; break;
-      case 'ct': if(can('create_period')){ label=t('todo.view'); fn=function(){ openSheet('ct'); }; } break;
-      case 'details': label=t('todo.details'); fn=function(){ UI.disc['todo.other']=!UI.disc['todo.other']; paint(); }; break;
+      case 'ct': label=t('tax.review_calculation'); fn=openTaxCalculation; break;
+      case 'details': label=t('todo.details'); fn=function(){run('onPrepareCompanyYear',{},{scope:'ltd.tax.company-year',onReview:paint,onOk:paint});}; break;
     }
     if(asRow)return fn?reviewLink(item.text,fn,null,{dataset:{todo:item.id,todoAction:item.id}}):h('div',{class:'tm-rec',dataset:{todo:item.id},text:item.text});
     return label?btn(label,'g sm',fn,{dataset:{todoAction:item.id}}):null;
@@ -1269,15 +1314,12 @@
     var list=h('div',{class:'tm-todo-list tm-review-links',dataset:{todoCount:String(items.length)}});
     items.forEach(function(it){
       list.append(todoAction(it,true));
-      if(it.action==='details'&&UI.disc['todo.other']) list.append(h('ul',{class:'tm-sources'}, it.codes.map(function(c){ return h('li',{dataset:{reason:c},text:reasonText(c)}); })));
     });
     return list;
   }
   // What the engine says about the company year right now: figure reasons + statutory blockers.
   function yearTodoCodes(){
-    var fig=yearFigures(); var codes=[].concat((fig&&fig.reasonCodes)||[]);
-    if(fig){var facts=currentFacts();Object.keys(DIRECTOR_CHECK_CODES).forEach(function(code){if(!facts[DIRECTOR_CHECK_CODES[code]]||facts[DIRECTOR_CHECK_CODES[code]].value!==true)codes.push(code);});}
-    var lr=lastPrepareReasons(); if(lr) codes=codes.concat(lr);
+    var codes=currentFigureReasons();
     var c=checklist(); if(c) codes=codes.concat((c.blockingItemIds||[]).map(function(id){ return 'statutory_'+id; }));
     return codes;
   }
@@ -1306,9 +1348,9 @@
     var ap=metric('accountingProfit'),ct=metric('corporationTax'),rev=metric('revenue'),cost=metric('allowableRunningExpenses');
     var ready=ct.status==='supported_estimate';
     var summary=h('div',{class:'tm-review-summary'},[
-      h('button',{class:'tm-metric tm-review-tax',type:'button',dataset:{metric:'corporationTax',role:'out'},onClick:function(){run('onOpenMetric',{metricId:'corporationTax'},{});}},[
+      h('button',{class:'tm-metric tm-review-tax',type:'button',dataset:{metric:'corporationTax',role:'out',taxState:taxDisplayState()},onClick:function(){if(ready)run('onOpenMetric',{metricId:'corporationTax'},{});else openTaxCalculation();}},[
         h('div',{class:'l',text:t('tax.ct_estimate')}),
-        h('div',{class:'v'},[ready?moneyRole(ct.amountMinor,'out'):h('span',{text:t('statutory.needs_checking')})])]),
+        h('div',{class:'v'},[ready?moneyRole(ct.amountMinor,'out'):h('span',{text:taxDisplayLabel()})]),!ready?h('div',{class:'st',text:t(taxDisplayState()==='not_calculated'?'tax.calculate':'tax.review_calculation')}):null]),
       metricCell('accountingProfit',t('tax.accounting_profit_loss'),ap.amountMinor,'signed'),
       metricCell('revenue',t('overview.money_in'),rev.amountMinor,'in'),
       metricCell('allowableRunningExpenses',t('overview.company_costs'),cost.amountMinor,'out')
@@ -1318,7 +1360,7 @@
       btn(t('money.add_income'),'p',function(){openSheet('income');}),
       btn(t('money.add_expense'),'s',function(){openSheet('expense');})]));
     var items=todoItems({codes:yearTodoCodes()});
-    if(items.length)nodes.push(notice('warn',null,t('statutory.needs_checking')));
+    if(items.length){nodes.push(h('div',{class:'tm-h sm',text:t('todo.title')}));nodes.push(todoList(items.slice(0,3)));if(items.length>3)nodes.push(reviewLink(t('todo.more',{count:items.length-3}),function(){selectWorkspace('tax');},null,{dataset:{action:'open-remaining-todo'}}));}
     nodes.push(h('div',{class:'tm-review-links'},[
       reviewLink(t('review01.year'),function(){selectWorkspace('tax');},null,{dataset:{action:'open-todo'}}),
       reviewLink(t('bank.title'),bankEntry,null,{dataset:{action:'open-bank'}}),
@@ -1331,12 +1373,12 @@
     return workspaceShell('overview',nodes);
   }
   function metricCell(id,label,amt,role){
-    var m=metric(id);
+    var m=metric(id),taxUnavailable=id==='corporationTax'&&taxDisplayState()!=='calculated';
     var statusTxt='';
-    if(id==='corporationTax'){ statusTxt = m.status==='supported_estimate'?t('tax.status_ready'):''; }
-    return h('button',{class:'tm-metric',type:'button',dataset:{metric:id,role:role},onClick:function(){ run('onOpenMetric',{metricId:id},{}); }},[
+    if(id==='corporationTax'){ statusTxt = m.status==='supported_estimate'?t('tax.state.calculated'):taxDisplayLabel(); }
+    return h('button',{class:'tm-metric',type:'button',dataset:{metric:id,role:role},onClick:function(){if(taxUnavailable)openTaxCalculation();else run('onOpenMetric',{metricId:id},{});}},[
       h('div',{class:'l',text:label}),
-      h('div',{class:'v '+moneyClass(amt,role)},[money(amt, moneyClass(amt,role))]),
+      h('div',{class:'v '+moneyClass(amt,role)},[taxUnavailable?h('span',{text:taxDisplayLabel()}):money(amt, moneyClass(amt,role))]),
       statusTxt? h('div',{class:'st',text:statusTxt}):null
     ]);
   }
@@ -1399,7 +1441,7 @@
     if(can('confirm_salary'))actions.push(btn(t('tax.record_salary'),'s',function(){openSheet('salary');}));
     if(dividendAvailable()&&can('declare_dividend'))actions.push(btn(t('tax.record_declaration'),'s',function(){openSheet('dividend');}));
     if(actions.length)nodes.push(h('div',{class:'tm-record-actions col'},actions));
-    if(!dividendAvailable())nodes.push(notice('warn',null,t('tax.dividends_unavailable')));
+    var dividendStateNotice=dividendNotice();if(dividendStateNotice)nodes.push(dividendStateNotice);
     nodes.push(disclosure('tax.records',t('records.salary_dividend'),salaryDividendRecordsBody(),{action:'open-salary-dividends'}));
     nodes.push(h('div',{class:'tm-review-links'},[
       reviewLink(t('term.company_owes_you'),function(){run('onOpenMetric',{metricId:'directorLoan'},{});})
@@ -2938,10 +2980,6 @@
     // footer button, a cancel control or the next sheet (UI-09).
     if(UI.toast) col.append(h('div',{class:'tm-toast',role:'status','aria-live':'polite'},[h('div',{class:'b',text:UI.toast})]));
     col.append(screen);
-    // Draft removal remains in the setup task, behind the existing confirmation.
-    if(/^ltd\.onboarding\./.test(routeId())&&S().company&&S().company.profile&&can('remove_company'))col.append(disclosure('setup.options',t('todo.details'),[
-      btn(t('design.remove_action'),'g sm',function(){openSheet('remove');},{dataset:{action:'setup-remove-draft'}})
-    ]));
     if(UI.sheet||overlays().length||UI.webHomeDiscard)col.setAttribute('inert','');
     app.append(col);
     // overlays: info sheet(s) from facade nav
