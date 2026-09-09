@@ -3229,6 +3229,12 @@ Object.assign(I18N.pl,{"review01.permanentPro":"Masz już bezterminowy dostęp P
 Object.assign(I18N.ro,{"review01.permanentPro":"Ai deja acces Pro permanent.","review01.legalUnavailable":"Aceste informații sunt temporar indisponibile. Deschide Ajutor, Confidențialitate sau Termeni.","review01.receiptCleanupRetry":"Ștergerea din cloud s-a încheiat, dar curățarea bonurilor locale trebuie reîncercată.","review01.restoreStopped":"Restaurarea s-a oprit în siguranță. Datele existente nu au fost modificate.","review01.reportsLoading":"Rapoartele se încarcă. Încearcă din nou în scurt timp."});
 Object.assign(I18N.es,{"review01.permanentPro":"Ya tienes acceso Pro permanente.","review01.legalUnavailable":"Esta información no está disponible temporalmente. Abre Ayuda, Privacidad o Condiciones.","review01.receiptCleanupRetry":"La eliminación en la nube terminó, pero hay que reintentar la limpieza de recibos locales.","review01.restoreStopped":"La restauración se detuvo de forma segura. Tus datos existentes no cambiaron.","review01.reportsLoading":"Los informes se están cargando. Inténtalo de nuevo en un momento."});
 Object.assign(I18N.ur,{"review01.permanentPro":"آپ کے پاس پہلے ہی مستقل Pro رسائی ہے۔","review01.legalUnavailable":"یہ معلومات عارضی طور پر دستیاب نہیں۔ مدد، رازداری یا شرائط کھولیں۔","review01.receiptCleanupRetry":"کلاؤڈ سے حذف کرنا مکمل ہوا، مگر مقامی رسیدوں کی صفائی دوبارہ کرنی ہوگی۔","review01.restoreStopped":"بحالی محفوظ طور پر رک گئی۔ آپ کے موجودہ ڈیٹا میں تبدیلی نہیں ہوئی۔","review01.reportsLoading":"رپورٹس لوڈ ہو رہی ہیں۔ کچھ دیر بعد دوبارہ کوشش کریں۔"});
+Object.assign(I18N.en,{'income.fullTotal':'Full business income (100%).','income.combinedTotal':'Combined full income from all businesses.','income.beforeShare':'Before your share is applied.','income.fullReminder':'Enter the full amount received by this business. TaxMate applies your share automatically.','income.configuredShare':'Your configured partnership share is {n}%.','income.alreadyShare':'This business records amounts already allocated to you. Enter your share; TaxMate will not apply the share again.','income.reviewBasis':'Check this business’s amount basis and share before entering income. Its personal figures are awaiting confirmation.','income.recordedTotal':'Recorded business income. Some businesses use amounts already allocated to you or an unconfirmed basis.','cc.emojiMobileHint':'Tap below and pick any emoji from your keyboard to use as the icon.'});
+Object.assign(I18N.zh,{'income.fullTotal':'生意完整收入（100%）。','income.combinedTotal':'所有生意嘅完整收入合計。','income.beforeShare':'未套用你嘅分帳比例。','income.fullReminder':'請輸入這盤生意實際收到嘅完整金額。TaxMate 會自動計算你應佔嘅份額。','income.configuredShare':'你設定嘅合夥份額係 {n}%。','income.alreadyShare':'這盤生意記錄嘅金額已分配畀你。請輸入你應佔嘅金額；TaxMate 唔會再套用分帳比例。','income.reviewBasis':'輸入收入前，請先核對這盤生意嘅記帳基準及份額；個人數字仍待確認。','income.recordedTotal':'已記錄嘅生意收入。部分生意記錄嘅係已分配畀你嘅金額，或記帳基準仍待確認。','cc.emojiMobileHint':'點下方輸入框，用鍵盤揀一個 emoji 做圖示。'});
+Object.assign(I18N.pl,{'income.fullTotal':'Pełny przychód firmy (100%).','income.combinedTotal':'Łączny pełny przychód wszystkich firm.','income.beforeShare':'Przed uwzględnieniem Twojego udziału.','income.fullReminder':'Wpisz pełną kwotę otrzymaną przez tę firmę. TaxMate automatycznie obliczy Twój udział.','income.configuredShare':'Twój ustawiony udział w spółce wynosi {n}%.','income.alreadyShare':'Ta firma zapisuje kwoty już przypisane Tobie. Wpisz swój udział; TaxMate nie zastosuje udziału ponownie.','income.reviewBasis':'Przed wpisaniem przychodu sprawdź podstawę kwot i udział w tej firmie. Kwoty osobiste wymagają potwierdzenia.','income.recordedTotal':'Zapisane przychody firm. Niektóre firmy zapisują kwoty już przypisane Tobie lub mają niepotwierdzoną podstawę.','cc.emojiMobileHint':'Dotknij poniżej i użyj klawiatury, aby wybrać emoji.'});
+Object.assign(I18N.ro,{'income.fullTotal':'Venitul integral al afacerii (100%).','income.combinedTotal':'Venitul integral cumulat al tuturor afacerilor.','income.beforeShare':'Înainte de aplicarea cotei tale.','income.fullReminder':'Introdu suma integrală primită de această afacere. TaxMate aplică automat cota ta.','income.configuredShare':'Cota ta configurată în parteneriat este {n}%.','income.alreadyShare':'Această afacere înregistrează sume deja alocate ție. Introdu partea ta; TaxMate nu va aplica din nou cota.','income.reviewBasis':'Verifică baza sumelor și cota acestei afaceri înainte de a introduce venituri. Cifrele personale așteaptă confirmarea.','income.recordedTotal':'Venituri înregistrate ale afacerilor. Unele afaceri folosesc sume deja alocate ție sau o bază neconfirmată.','cc.emojiMobileHint':'Atinge mai jos și folosește tastatura pentru a alege un emoji.'});
+Object.assign(I18N.es,{'income.fullTotal':'Ingresos completos del negocio (100%).','income.combinedTotal':'Ingresos completos combinados de todos los negocios.','income.beforeShare':'Antes de aplicar tu participación.','income.fullReminder':'Introduce el importe completo recibido por este negocio. TaxMate aplica tu participación automáticamente.','income.configuredShare':'Tu participación configurada en la sociedad es del {n}%.','income.alreadyShare':'Este negocio registra importes ya asignados a ti. Introduce tu parte; TaxMate no volverá a aplicar la participación.','income.reviewBasis':'Comprueba la base de los importes y tu participación antes de introducir ingresos. Las cifras personales están pendientes de confirmación.','income.recordedTotal':'Ingresos registrados de los negocios. Algunos negocios usan importes ya asignados a ti o una base sin confirmar.','cc.emojiMobileHint':'Toca abajo y usa tu teclado para elegir un emoji.'});
+Object.assign(I18N.ur,{'income.fullTotal':'کاروبار کی مکمل آمدنی (100٪)۔','income.combinedTotal':'تمام کاروباروں کی مجموعی مکمل آمدنی۔','income.beforeShare':'آپ کا حصہ لگانے سے پہلے۔','income.fullReminder':'اس کاروبار کو موصول ہونے والی پوری رقم درج کریں۔ TaxMate آپ کا حصہ خود لگاتا ہے۔','income.configuredShare':'شراکت میں آپ کا مقرر کردہ حصہ {n}٪ ہے۔','income.alreadyShare':'یہ کاروبار پہلے سے آپ کو مختص رقم درج کرتا ہے۔ اپنا حصہ درج کریں؛ TaxMate دوبارہ حصہ لاگو نہیں کرے گا۔','income.reviewBasis':'آمدنی درج کرنے سے پہلے اس کاروبار کی رقم کی بنیاد اور اپنا حصہ جانچیں۔ ذاتی اعداد کی تصدیق باقی ہے۔','income.recordedTotal':'کاروباروں کی درج شدہ آمدنی۔ بعض کاروبار پہلے سے آپ کو مختص رقم یا غیر مصدقہ بنیاد استعمال کرتے ہیں۔','cc.emojiMobileHint':'نیچے ٹیپ کریں اور اپنے کی بورڈ سے ایموجی منتخب کریں۔'});
 function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
   // Remove decorative emoji from product copy before interpolation, never from
@@ -3693,6 +3699,8 @@ function proPlansCard(){
   </div>`;
 }
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
+function catEmoji(c){ return (!c.custom && S.settings.categoryEmojis?.[c.id]) || c.e || ''; }
+function catLabel(c){ return `${catEmoji(c)?`<span class="category-emoji" aria-hidden="true">${esc(catEmoji(c))}</span> `:''}${esc(catName(c.id))}`; }
 function folderById(id){ return S.folders.find(f=>f.id===id); }
 
 const TAXCFG = TaxMateCore.buildLegacyTaxConfig();
@@ -3793,12 +3801,17 @@ function load(){
     return migrated;
   }catch(e){STATE_LOAD_ERROR=e;console.error('TaxMate state load blocked',e&&e.code||e);return TaxMateState.migrate(JSON.parse(JSON.stringify(DEFAULT_STATE)),Date.now(),DEVICE_ID);}
 }
+function accountSyncSettings(state){
+  const settings=state&&state.settings||{},value={lang:settings.lang||'en',theme:settings.theme||'auto'};
+  if(settings.categoryEmojis)value.categoryEmojis=JSON.parse(JSON.stringify(settings.categoryEmojis));
+  return value;
+}
 function metaSyncSnapshot(state){
   return {
     customCats:JSON.parse(JSON.stringify(state&&state.customCats||{})),
     activeCats:JSON.parse(JSON.stringify(state&&state.activeCats||{})),
     yearData:JSON.parse(JSON.stringify(state&&state.yearData||{})),
-    settings:{lang:state&&state.settings&&state.settings.lang||'en',theme:state&&state.settings&&state.settings.theme||'auto'}
+    settings:accountSyncSettings(state)
   };
 }
 function stampVersionedMetaChanges(now){
@@ -4405,14 +4418,26 @@ function entryRow(e){
   const d = e.dateTBC ? t('f.tbc') : new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
   return `<button class="entry" data-entry-kind="${e.kind==='income'?'income':'expense'}" data-tm-click="openEntry('${e.kind}','${e.id}')">
     <div class="grow">
-      <div class="t">${esc(e.desc)||esc(catName(c.id))}</div>
-      <div class="s">${d}${e.desc?' · '+esc(catName(c.id)):''}${b?' · '+esc(b.name):''}${pctNote}</div>
+      <div class="t">${esc(e.desc)||catLabel(c)}</div>
+      <div class="s">${d}${e.desc?' · '+catLabel(c):''}${b?' · '+esc(b.name):''}${pctNote}</div>
     </div>
     ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
     <div class="v num ${e.kind==='income'?'pos':'neg'}" style="margin-inline-start:${e.receiptUrl?4:0}px">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
   </button>`;
 }
 
+function incomeAmountHint(business){
+  const profile=TaxMatePartnership.profile(business);
+  if(!profile.supported)return t('income.reviewBasis');
+  if(profile.basis===TaxMatePartnership.USER_SHARE)return t('income.alreadyShare');
+  return t('income.fullReminder')+(profile.shareApplied?' '+t('income.configuredShare',{n:profile.sharePercent}):'');
+}
+function incomeListHint(filter){
+  const businesses=filter==='all'?S.businesses:S.businesses.filter(b=>b.id===filter);
+  const profiles=businesses.map(b=>TaxMatePartnership.profile(b));
+  if(profiles.some(p=>!p.supported||p.basis===TaxMatePartnership.USER_SHARE))return t('income.recordedTotal');
+  return t(filter==='all'&&businesses.length>1?'income.combinedTotal':'income.fullTotal')+' '+t('income.beforeShare');
+}
 function pageList(kind){
   const isInc = kind==='income';
   const fKey = isInc?'incFilter':'expFilter';
@@ -4441,7 +4466,7 @@ function pageList(kind){
   const cchips = usedCats.length>1 ?
     `<div class="chips">
       <button class="chip ${selCat==='all'?'on':''}" data-tm-click="setFilter('${cKey}','all')">${t('flt.all')}</button>
-      ${usedCats.map(c=>`<button class="chip ${selCat===c.id?'on':''}" data-tm-click="setFilter('${cKey}','${c.id}')"> ${esc(catName(c.id))}</button>`).join('')}
+      ${usedCats.map(c=>`<button class="chip ${selCat===c.id?'on':''}" data-tm-click="setFilter('${cKey}','${c.id}')">${catLabel(c)}</button>`).join('')}
     </div>` : '';
 
   let list = baseList.sort((a,b)=>b.date.localeCompare(a.date));
@@ -4477,6 +4502,7 @@ function pageList(kind){
     <span>${t(isInc?'inc.title':'exp.title')}</span>
     <span class="num ${isInc?'pos':'neg'}" style="font-size:18px">${isInc?'+':'−'}${fmt(total).replace('−','')}</span>
   </div>
+  ${isInc?`<div class="fhint income-total-hint" data-income-total-hint>${esc(incomeListHint(filt))}</div>`:''}
   ${chips}
   ${cchips}
   ${fchips}
@@ -4965,11 +4991,14 @@ function openEntry(kind, id){
 function paintEntry(){
   refreshReceiptMutationControls();
   const bizId = (document.getElementById('en-biz')||{}).value || (S.businesses[0]&&S.businesses[0].id);
+  const amountHint=document.getElementById('en-amount-hint');
+  amountHint.hidden=EN.kind!=='income';
+  amountHint.textContent=EN.kind==='income'?incomeAmountHint(bizById(bizId)):'';
   const cats = allCats(EN.kind, bizId);
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
   document.getElementById('en-cats').innerHTML = cats.map(c=>
-    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" data-tm-click="setCat('${c.id}')" data-tm-contextmenu="event.preventDefault();renameCat('${c.id}')">${esc(catName(c.id))}</button>`).join('')
+    `<button type="button" class="catbtn ${EN.cat===c.id?'on':''}" data-tm-click="setCat('${c.id}')" data-tm-contextmenu="event.preventDefault();renameCat('${c.id}')">${catLabel(c)}</button>`).join('')
     + `<button type="button" class="catbtn" style="border-style:dashed;color:var(--muted)" data-tm-click="openCatSheet()">＋ ${t('cc.add')}</button>`;
   document.getElementById('en-pcts').innerHTML = PCT_OPTIONS.map(p=>
     `<button type="button" class="chip ${EN.pct===p?'on':''}" data-tm-click="setPct(${p})">${p}%</button>`).join('');
@@ -5030,15 +5059,18 @@ function lastGrapheme(v){
   }
 }
 function onEmojiInput(v){
-  CC_EMOJI = isEmojiIcon(lastGrapheme(v))?lastGrapheme(v):'📁';
+  CC_EMOJI = lastGrapheme(v);
   const ei=document.getElementById('cc-emoji-input');
-  if(ei){ ei.textContent = CC_EMOJI; ei.classList.remove('err'); }
+  if(ei){ ei.value = CC_EMOJI; ei.classList.remove('err'); }
   document.querySelectorAll('#cc-emojis button').forEach(button=>{const selected=button.textContent===CC_EMOJI;button.classList.toggle('on',selected);button.setAttribute('aria-pressed',String(selected));});
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
 }
 function openCatSheet(){
   document.getElementById('cc-name').value='';
-  CC_EMOJI = '📁';
+  const desktop=window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+  CC_EMOJI = desktop?'📁':'';
+  document.getElementById('cc-emoji-input').readOnly=desktop;
+  document.getElementById('cc-emoji-hint').textContent=t(desktop?'cc.emojiHint':'cc.emojiMobileHint');
   document.getElementById('cc-emojis').innerHTML=['📁',...CAT_EMOJIS].map(e=>`<button type="button" class="emojibtn" aria-label="${e}" data-tm-click="onEmojiInput('${e}')">${e}</button>`).join('');
   onEmojiInput(CC_EMOJI);
   const ee=document.getElementById('cc-emoji-err'); if(ee) ee.classList.remove('show');
@@ -5068,7 +5100,7 @@ function catStartRename(){
   const id = CAT_ACTION_ID;
   const c = catById(id);
   const cur = catName(id);
-  CAT_RENAME_EMOJI = (c && c.e) || '';
+  CAT_RENAME_EMOJI = c?catEmoji(c):'';
   document.getElementById('cat-rename-row').style.display='block';
   document.getElementById('cat-action-btns').style.display='none';
   const inp = document.getElementById('cat-rename-input');
@@ -5089,11 +5121,17 @@ function catConfirmRename(){
   const c = catById(id);
   if(c && c.custom){
     c.name = trimmed;
-    if(CAT_RENAME_EMOJI) c.e = CAT_RENAME_EMOJI;
+    if(isEmojiIcon(CAT_RENAME_EMOJI)) c.e = CAT_RENAME_EMOJI;
   } else {
     if(!S.catRenames) S.catRenames = {};
     if(trimmed===t('cat.'+id)) delete S.catRenames[id];
     else S.catRenames[id] = trimmed;
+    // Built-in records and entry IDs stay intact; only the chosen display icon
+    // joins the existing versioned account settings transport.
+    if(c && isEmojiIcon(CAT_RENAME_EMOJI) && CAT_RENAME_EMOJI!==catEmoji(c)){
+      if(!S.settings.categoryEmojis)S.settings.categoryEmojis={};
+      S.settings.categoryEmojis[id]=CAT_RENAME_EMOJI;
+    }
   }
   save();
   closeSheet('catact');
@@ -6420,7 +6458,7 @@ function cloudMetaFromState(){
   const value={
     businesses:S.businesses||[],businessTombstones:S.businessTombstones||[],folders:S.folders||[],folderTombstones:S.folderTombstones||[],
     customCats:S.customCats||{},activeCats:S.activeCats||{},yearData:S.yearData||{},
-    settings:{lang:S.settings.lang,theme:S.settings.theme},metaVersions:S.metaVersions||{},
+    settings:accountSyncSettings(S),metaVersions:S.metaVersions||{},
     updatedAt:Number(S.metaUpdatedAt)||0,deviceId:DEVICE_ID,retention:S.retention||null,retentionEpoch:currentRetentionEpoch()
   };
   const uid=activeAccountUid();if(uid)value.accountOwnerUid=uid;return value;

@@ -1,5 +1,5 @@
 /* TaxMate UK — service worker (version-coherent, offline-safe shell) */
-const CACHE = 'taxmate-v2-startup-sync-20260909-1';
+const CACHE = 'taxmate-v2-income-amount-emoji-20260909-1';
 const SHELL = ['/', '/index.html', '/help.html', '/privacy.html', '/terms.html', '/manifest.json?v=20260905-1', '/favicon.ico', '/favicon-16x16.png?v=20260903-8', '/favicon-32x32.png?v=20260903-8', '/favicon-48x48.png?v=20260903-8', '/apple-touch-icon.png?v=20260903-8', '/icon-192.png?v=20260903-10', '/icon-512.png?v=20260903-10', '/icon-512-maskable.png?v=20260903-10', '/taxmate-share-20260831-v2.png', '/assets/brand/derived/taxmate-brand-logo-light.svg', '/assets/brand/derived/taxmate-brand-logo-dark.svg', '/assets/brand/derived/taxmate-icon-light.svg', '/assets/brand/derived/taxmate-icon-dark.svg',
   '/src/app/billing-copy.js','/src/app/billing-ui.js',
   '/src/core/company-statutory.js',
