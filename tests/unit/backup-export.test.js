@@ -11,6 +11,15 @@ const entry=(id,receiptPath,receiptUrl)=>({id,bizId:'b1',kind:'expense',date:'20
 const download=async url=>({bytes:bytes(url.length%251),mimeType:'image/jpeg'});
 const owned={activeUid:'u',stateOwnerUid:'u'};
 
+test('App Check and account authorization errors have distinct safe classifications',()=>{
+  for(const code of ['unauthorized-app','unauthorized','unauthenticated']){
+    const diagnostic=Backup.diagnostic(Object.assign(new Error('private response must not be logged'),{code:'storage/'+code}));
+    assert.equal(diagnostic.errorClass,'storage_'+code.replaceAll('-','_'));
+    assert.equal(diagnostic.category,Backup.CATEGORIES.AUTH_CONNECTIVITY);
+    assert.doesNotMatch(JSON.stringify(diagnostic),/private response/);
+  }
+});
+
 test('no-receipt and multiple linked-receipt collection is read-only',async()=>{
   assert.deepEqual(await Backup.collectReceipts({state:baseState(),download}),[]);
   const state=baseState([entry('e1',null,'https://example.test/one.jpg'),entry('e2',null,'https://example.test/two.jpg')]),before=JSON.stringify(state);
