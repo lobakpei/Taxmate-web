@@ -6,7 +6,8 @@ service firebase.storage {
     function hasEntitlement(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/entitlements/current); }
     function hasRetention(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/retention/current); }
     function retention(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/retention/current).data; }
-    function retentionReady(uid) { return (!hasRetention(uid) || retention(uid).status in ['complete', 'complete_with_warnings']) && !retentionDue(uid); }
+    function retentionReadyWithExistence(uid, retentionExists) { return (!retentionExists || retention(uid).status in ['complete', 'complete_with_warnings']) && !retentionDue(uid); }
+    function retentionReady(uid) { return retentionReadyWithExistence(uid, hasRetention(uid)); }
     function retentionDue(uid) {
       let ent = hasEntitlement(uid) ? entitlement(uid) : {};
       let r = 'accountRetention' in ent ? ent.accountRetention : {};
@@ -19,7 +20,13 @@ service firebase.storage {
       let ent = hasEntitlement(uid) ? entitlement(uid) : {};
       return 'lastPaidTier' in ent && ent.lastPaidTier in ['plus','pro'] && 'graceUntil' in ent && ent.graceUntil > request.time.toMillis();
     }
-    function receiptEpochReadable(uid) { return retentionReady(uid) && (!hasRetention(uid) || resource.metadata.retentionEpoch == retention(uid).epochString); }
+    function receiptEpochReadable(uid) {
+      // Reuse the existence result so a receipt read does not repeat a missing
+      // retention-document lookup within Storage's Firestore access-call budget.
+      let retentionExists = hasRetention(uid);
+      return retentionReadyWithExistence(uid, retentionExists)
+        && (!retentionExists || resource.metadata.retentionEpoch == retention(uid).epochString);
+    }
     function receiptEpochWritable(uid) { return retentionReady(uid) && (!hasRetention(uid) || request.resource.metadata.retentionEpoch == retention(uid).epochString); }
     function paidReceiptAccess(uid) {
       let ent = hasEntitlement(uid) ? entitlement(uid) : {};
