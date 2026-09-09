@@ -419,12 +419,19 @@ class CanonicalCompanyDriver{
       }else return{status:'failure',error:{reasonCode:'unknown_onboarding_step',copyKey:'error.fix_issue'}};
       if(step===1&&this.pendingCompanyCreation&&!this.pendingCompanyCreation.claimed){
         const pending=this.pendingCompanyCreation;let claim;
-        const latest=this.repository.load();if((latest.domain.companyProfiles||[]).some(p=>p.deletedAt==null&&p.entityId!==pending.entityId))throw Object.assign(new Error('one_active_ltd_limit'),{code:'one_active_ltd_limit'});
+        const beforeClaim=this.repository.load();if((beforeClaim.domain.companyProfiles||[]).some(p=>p.deletedAt==null&&p.entityId!==pending.entityId))throw Object.assign(new Error('one_active_ltd_limit'),{code:'one_active_ltd_limit'});
         const entity={...this.entityFor(profile),name:next.legalName||'Limited company',updatedAt:now};
         pending.claimAttempted=true;if(this.persistPendingSetup)this.persistPendingSetup(this.pendingSetup());
         const seedProfile=clone(next);delete seedProfile.profileRevisionHistory;delete seedProfile.ownershipHistory;
         claim=await this.activeCompanyClaim({companyId:pending.entityId,setupProtocol:'ltd-setup.1',setupRecords:[LtdSync.envelope('companyProfiles',seedProfile,pending.entityId),LtdSync.envelope('entities',entity,pending.entityId)]});
         if(!claim||claim.activeCompanyId!==pending.entityId||!['claimed','existing'].includes(claim.status))throw Object.assign(new Error('active_company_claim_failed'),{code:claim&&claim.reasonCode||'active_company_claim_failed'});
+        // Cloud sync may have replaced the account while the claim was pending.
+        // Recheck that fresh state, then merge only this entity/profile without
+        // another asynchronous gap before the synchronous repository save.
+        const latest=this.repository.load(),profiles=latest.domain.companyProfiles||[],entities=latest.domain.entities||[];
+        if(profiles.some(p=>p.deletedAt==null&&p.entityId!==pending.entityId)||entities.some(e=>e.type==='limited_company'&&e.deletedAt==null&&e.id!==pending.entityId))throw Object.assign(new Error('one_active_ltd_limit'),{reasonCode:'one_active_ltd_limit'});
+        if(profiles.some(p=>p.entityId===pending.entityId&&p.deletedAt!=null)||entities.some(e=>e.id===pending.entityId&&e.deletedAt!=null))throw Object.assign(new Error('company_slot_retained_after_removal'),{reasonCode:'company_slot_retained_after_removal'});
+        if(claim.setupState==='setup_completed'||profiles.some(p=>p.entityId===pending.entityId&&p.lifecycleStatus==='confirmed'))throw Object.assign(new Error('setup_already_completed'),{reasonCode:'setup_already_completed'});
         this.state=latest;this.upsert('entities',entity);this.setupProtocol=claim.setupProtocol||null;pending.claimed=true;this.trustedActiveCompanyId=pending.entityId;
       }
       if(step===5&&this.manageCompanySetup){const eligibility=CompanyProfile.bookkeepingEligibility(next);if(!eligibility.allowed)return{status:'field_error',fieldErrors:[fieldError(eligibility.nextQuestion||'companyFacts','company_facts_incomplete')],reviewReasons:eligibility.reasons};const current=await this.manageCompanySetup({action:'inspect',companyId:next.entityId});if(current.status==='pending'){const completed=await this.manageCompanySetup({action:'complete',companyId:next.entityId,expectedVersion:current.versionToken});if(completed.status!=='completed')throw Object.assign(new Error('setup_completion_not_confirmed'),{code:'setup_completion_not_confirmed'});}else if(!['completed','legacy'].includes(current.status))throw Object.assign(new Error('setup_completion_not_confirmed'),{code:'setup_completion_not_confirmed'});}

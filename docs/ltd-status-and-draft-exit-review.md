@@ -1,6 +1,6 @@
 # TaxMate 2.1.28: LTD status and unfinished setup
 
-Local candidate only. Version `2.1.28`, build `2026-09-09.ltd-setup-exit.1`, cache `taxmate-v2-ltd-setup-exit-20260909-1`. Based on released 2.1.27 and the first two presentation changes in `adf68190a60e54cf70fdb94e1b3e085745033ad7`. The final commit and evidence hashes are recorded in the local release-readiness manifest. This document does not authorize publication, deployment or production account changes.
+Local candidate only. Version `2.1.28`, build `2026-09-09.ltd-setup-exit.2`, cache `taxmate-v2-ltd-setup-exit-20260909-2`. Based on released 2.1.27 and the first two presentation changes in `adf68190a60e54cf70fdb94e1b3e085745033ad7`. The final commit and evidence hashes are recorded in the local release-readiness manifest. This document does not authorize publication, deployment or production account changes.
 
 ## Resulting behavior
 
@@ -9,6 +9,12 @@ Pay yourself distinguishes known non-positive distributable profit from unknown,
 Steps 1–5 no longer contain the shared Details → Remove company footer. Cancel, the first step's Back, and home exits offer Keep draft and exit, Remove this unfinished draft, and Keep editing. Back between numbered steps works after a reload as well as during the original visit. Keeping preserves current inputs and the resume step, including unfinished dates. The account home provides a resume entry even before a slot has been claimed.
 
 A pre-claim draft is device-local in the account-scoped setup/answer store. Restoration merges only its profile and entity into the latest canonical account state; the stored draft contains no account snapshot. A draft that has never attempted a claim can be removed locally. Before sending a claim, its identity and attempted-claim state are persisted so a lost response cannot turn a server claim into an apparently local-only draft.
+
+## Claim-response review correction
+
+The review of `d53522bfd9a3f386844e7e22b8b8d4e666fc6961` identified that Step 1 read its account snapshot before awaiting the claim response. This revision reloads the repository after that response, rejects a conflicting active company, a tombstone for either setup identity, or a completed slot, and then synchronously merges only this entity/profile into the current account state. There is no further asynchronous gap before saving.
+
+A controlled claim Promise reproduced the stale-snapshot overwrite. The regression updates settings, another business, an entry and historical tombstones between request and response, then compares the entire non-draft account snapshot after saving. Separate cases prove the conflict paths make zero canonical writes. No production data loss is claimed or inferred from this local reproduction.
 
 ## Trusted setup lifecycle
 
@@ -31,6 +37,8 @@ The client clears the draft only after a confirmed result. Uncertain results ret
 - Local synthetic evidence is not signed-in production, provider or real-phone acceptance. No production data was used in these tests.
 
 ## Verification
+
+For this review correction, the five controlled-claim cases plus 19 existing setup/recovery cases pass (24 total), and the build/cache identity check passes separately. The Hosting artifact is rebuilt with the new build identity. The following broader evidence was recorded for `d53522bfd9a3f386844e7e22b8b8d4e666fc6961` and is retained with that provenance; unrelated UI and emulator checks were not rerun for this narrow correction.
 
 - 62 focused unit, facade, integration, localisation and release-identity checks: PASS.
 - 8 Founder alias/version-gate checks: PASS. Only the supported version ceiling changes to 2.1.28; identity, provider, email and Pro guards remain.
