@@ -72,7 +72,7 @@ async function main(){
   await page.evaluate(()=>document.querySelector('.entry-amount').style.fontSize='');
   await page.evaluate(()=>{closeSheet('entry');go('expenses');});
   check(await page.locator('#page .chips .category-emoji').allTextContents().then(a=>a.includes('🦔')&&a.includes('⛽')),mode+' expense filter emoji preserved');
-  await page.evaluate(()=>openEntry('expense','hedgehog-zero'));check(await page.locator('#en-amount-hint').isHidden(),mode+' expense form does not get income-only copy');await page.locator('#en-amount').fill('1234567.89');await amountBox(mode+' shared expense amount');
+  await page.evaluate(()=>openEntry('expense','hedgehog-zero'));check((await page.locator('#en-amount-hint').textContent()).includes('full expense amount'),mode+' expense form gets its own amount-basis reminder');await page.locator('#en-amount').fill('1234567.89');await amountBox(mode+' shared expense amount');
   check(await page.locator('#en-cats .category-emoji').allTextContents().then(a=>a.includes('🦔')&&a.includes('⛽')),mode+' expense category picker restores saved and original emoji');
   await image(mode+'-expense-emoji');await page.evaluate(()=>closeSheet('entry'));
   check(await financial()===before,mode+' copy, layout and view/cancel preserve financial records, allocations, names and deletion markers');

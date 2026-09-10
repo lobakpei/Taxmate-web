@@ -3235,6 +3235,12 @@ Object.assign(I18N.pl,{'income.fullTotal':'Pełny przychód firmy (100%).','inco
 Object.assign(I18N.ro,{'income.fullTotal':'Venitul integral al afacerii (100%).','income.combinedTotal':'Venitul integral cumulat al tuturor afacerilor.','income.beforeShare':'Înainte de aplicarea cotei tale.','income.fullReminder':'Introdu suma integrală primită de această afacere. TaxMate aplică automat cota ta.','income.configuredShare':'Cota ta configurată în parteneriat este {n}%.','income.alreadyShare':'Această afacere înregistrează sume deja alocate ție. Introdu partea ta; TaxMate nu va aplica din nou cota.','income.reviewBasis':'Verifică baza sumelor și cota acestei afaceri înainte de a introduce venituri. Cifrele personale așteaptă confirmarea.','income.recordedTotal':'Venituri înregistrate ale afacerilor. Unele afaceri folosesc sume deja alocate ție sau o bază neconfirmată.','cc.emojiMobileHint':'Atinge mai jos și folosește tastatura pentru a alege un emoji.'});
 Object.assign(I18N.es,{'income.fullTotal':'Ingresos completos del negocio (100%).','income.combinedTotal':'Ingresos completos combinados de todos los negocios.','income.beforeShare':'Antes de aplicar tu participación.','income.fullReminder':'Introduce el importe completo recibido por este negocio. TaxMate aplica tu participación automáticamente.','income.configuredShare':'Tu participación configurada en la sociedad es del {n}%.','income.alreadyShare':'Este negocio registra importes ya asignados a ti. Introduce tu parte; TaxMate no volverá a aplicar la participación.','income.reviewBasis':'Comprueba la base de los importes y tu participación antes de introducir ingresos. Las cifras personales están pendientes de confirmación.','income.recordedTotal':'Ingresos registrados de los negocios. Algunos negocios usan importes ya asignados a ti o una base sin confirmar.','cc.emojiMobileHint':'Toca abajo y usa tu teclado para elegir un emoji.'});
 Object.assign(I18N.ur,{'income.fullTotal':'کاروبار کی مکمل آمدنی (100٪)۔','income.combinedTotal':'تمام کاروباروں کی مجموعی مکمل آمدنی۔','income.beforeShare':'آپ کا حصہ لگانے سے پہلے۔','income.fullReminder':'اس کاروبار کو موصول ہونے والی پوری رقم درج کریں۔ TaxMate آپ کا حصہ خود لگاتا ہے۔','income.configuredShare':'شراکت میں آپ کا مقرر کردہ حصہ {n}٪ ہے۔','income.alreadyShare':'یہ کاروبار پہلے سے آپ کو مختص رقم درج کرتا ہے۔ اپنا حصہ درج کریں؛ TaxMate دوبارہ حصہ لاگو نہیں کرے گا۔','income.reviewBasis':'آمدنی درج کرنے سے پہلے اس کاروبار کی رقم کی بنیاد اور اپنا حصہ جانچیں۔ ذاتی اعداد کی تصدیق باقی ہے۔','income.recordedTotal':'کاروباروں کی درج شدہ آمدنی۔ بعض کاروبار پہلے سے آپ کو مختص رقم یا غیر مصدقہ بنیاد استعمال کرتے ہیں۔','cc.emojiMobileHint':'نیچے ٹیپ کریں اور اپنے کی بورڈ سے ایموجی منتخب کریں۔'});
+Object.assign(I18N.en,{'expense.fullTotal':'Whole-business expenses before ownership share.','expense.combinedTotal':'Combined whole-business expenses before ownership shares.','expense.businessUseApplied':'Business-use percentages are already applied.','expense.personalTotal':'Expenses already recorded as your share.','expense.reviewTotal':'Recorded expenses; the ownership basis needs confirmation.','expense.mixedTotal':'Recorded expenses; some businesses record your share or need confirmation.','expense.fullReminder':'Enter the full expense amount before either percentage. TaxMate applies business use and your ownership share automatically.','expense.personalReminder':'Enter the expense amount already allocated to you, before business use. TaxMate applies business use only, without applying your ownership share again.','expense.reviewReminder':'Confirm this business’s amount basis and ownership share before entering expenses.','expense.ownershipShare':'Ownership share: {n}%.','expense.businessUse':'Business use for this entry: {n}%.'});
+Object.assign(I18N.zh,{'expense.fullTotal':'整盤生意嘅支出，未按持有份額分配。','expense.combinedTotal':'所有生意嘅完整支出合計，未按各自持有份額分配。','expense.businessUseApplied':'已套用各筆支出嘅商業用途比例。','expense.personalTotal':'已按你持有份額記錄嘅支出。','expense.reviewTotal':'已記錄嘅支出；持有份額記帳基準仍待確認。','expense.mixedTotal':'已記錄嘅支出；部分生意已按你嘅份額記帳，或仍待確認。','expense.fullReminder':'請輸入未套用任何比例嘅完整支出金額。TaxMate 會自動套用商業用途比例及你嘅持有份額。','expense.personalReminder':'請輸入已分配畀你、但未扣除私人用途嘅支出金額。TaxMate 只會套用商業用途比例，唔會再次套用持有份額。','expense.reviewReminder':'輸入支出前，請先確認這盤生意嘅記帳基準及持有份額。','expense.ownershipShare':'持有份額：{n}%。','expense.businessUse':'這筆支出嘅商業用途：{n}%。'});
+Object.assign(I18N.pl,{'expense.fullTotal':'Wydatki całej firmy przed uwzględnieniem udziału właścicielskiego.','expense.combinedTotal':'Łączne wydatki całych firm przed uwzględnieniem udziałów właścicielskich.','expense.businessUseApplied':'Procenty wykorzystania biznesowego są już uwzględnione.','expense.personalTotal':'Wydatki już zapisane jako Twój udział.','expense.reviewTotal':'Zapisane wydatki; podstawa udziału wymaga potwierdzenia.','expense.mixedTotal':'Zapisane wydatki; niektóre firmy zapisują Twój udział lub wymagają potwierdzenia.','expense.fullReminder':'Wpisz pełną kwotę wydatku przed zastosowaniem obu procentów. TaxMate automatycznie uwzględni wykorzystanie biznesowe i Twój udział właścicielski.','expense.personalReminder':'Wpisz kwotę wydatku już przypisaną Tobie, przed uwzględnieniem wykorzystania biznesowego. TaxMate uwzględni tylko wykorzystanie biznesowe, bez ponownego stosowania Twojego udziału.','expense.reviewReminder':'Przed wpisaniem wydatków potwierdź podstawę kwot i udział właścicielski w tej firmie.','expense.ownershipShare':'Udział właścicielski: {n}%.','expense.businessUse':'Wykorzystanie biznesowe tego wpisu: {n}%.'});
+Object.assign(I18N.ro,{'expense.fullTotal':'Cheltuielile întregii afaceri înainte de cota de proprietate.','expense.combinedTotal':'Cheltuielile cumulate ale afacerilor înainte de cotele de proprietate.','expense.businessUseApplied':'Procentele de utilizare în afacere sunt deja aplicate.','expense.personalTotal':'Cheltuieli deja înregistrate ca partea ta.','expense.reviewTotal':'Cheltuieli înregistrate; baza cotei necesită confirmare.','expense.mixedTotal':'Cheltuieli înregistrate; unele afaceri înregistrează partea ta sau necesită confirmare.','expense.fullReminder':'Introdu suma integrală a cheltuielii înainte de ambele procente. TaxMate aplică automat utilizarea în afacere și cota ta de proprietate.','expense.personalReminder':'Introdu cheltuiala deja alocată ție, înainte de utilizarea în afacere. TaxMate aplică doar utilizarea în afacere, fără a aplica din nou cota ta.','expense.reviewReminder':'Confirmă baza sumelor și cota de proprietate a acestei afaceri înainte de a introduce cheltuieli.','expense.ownershipShare':'Cota de proprietate: {n}%.','expense.businessUse':'Utilizare în afacere pentru această înregistrare: {n}%.'});
+Object.assign(I18N.es,{'expense.fullTotal':'Gastos de todo el negocio antes de la participación en la propiedad.','expense.combinedTotal':'Gastos combinados de los negocios antes de las participaciones en la propiedad.','expense.businessUseApplied':'Los porcentajes de uso profesional ya están aplicados.','expense.personalTotal':'Gastos ya registrados como tu parte.','expense.reviewTotal':'Gastos registrados; la base de participación necesita confirmación.','expense.mixedTotal':'Gastos registrados; algunos negocios registran tu parte o necesitan confirmación.','expense.fullReminder':'Introduce el importe completo del gasto antes de ambos porcentajes. TaxMate aplica automáticamente el uso profesional y tu participación en la propiedad.','expense.personalReminder':'Introduce el gasto ya asignado a ti, antes del uso profesional. TaxMate aplica solo el uso profesional, sin volver a aplicar tu participación.','expense.reviewReminder':'Confirma la base de los importes y la participación en este negocio antes de introducir gastos.','expense.ownershipShare':'Participación en la propiedad: {n}%.','expense.businessUse':'Uso profesional de este registro: {n}%.'});
+Object.assign(I18N.ur,{'expense.fullTotal':'ملکیت کا حصہ لگانے سے پہلے پورے کاروبار کے اخراجات۔','expense.combinedTotal':'ملکیت کے حصے لگانے سے پہلے تمام کاروباروں کے مجموعی اخراجات۔','expense.businessUseApplied':'کاروباری استعمال کے فیصد پہلے ہی لاگو ہیں۔','expense.personalTotal':'اخراجات جو پہلے ہی آپ کے حصے کے طور پر درج ہیں۔','expense.reviewTotal':'درج شدہ اخراجات؛ ملکیت کی بنیاد کی تصدیق درکار ہے۔','expense.mixedTotal':'درج شدہ اخراجات؛ بعض کاروبار آپ کا حصہ درج کرتے ہیں یا تصدیق چاہتے ہیں۔','expense.fullReminder':'دونوں فیصد لگانے سے پہلے خرچ کی پوری رقم درج کریں۔ TaxMate کاروباری استعمال اور ملکیت میں آپ کا حصہ خود لگاتا ہے۔','expense.personalReminder':'کاروباری استعمال سے پہلے وہ خرچ درج کریں جو پہلے ہی آپ کو مختص ہے۔ TaxMate صرف کاروباری استعمال لگاتا ہے، ملکیت کا حصہ دوبارہ نہیں۔','expense.reviewReminder':'اخراجات درج کرنے سے پہلے اس کاروبار کی رقم کی بنیاد اور ملکیت کا حصہ تصدیق کریں۔','expense.ownershipShare':'ملکیت کا حصہ: {n}٪۔','expense.businessUse':'اس اندراج کا کاروباری استعمال: {n}٪۔'});
 function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
   // Remove decorative emoji from product copy before interpolation, never from
@@ -3700,7 +3706,7 @@ function proPlansCard(){
 }
 function catName(id){ const c = catById(id); if(c.custom) return c.name; const rn=(S.catRenames||{})[c.id]; return rn||t('cat.'+c.id); }
 function catEmoji(c){ return (!c.custom && S.settings.categoryEmojis?.[c.id]) || c.e || ''; }
-function catLabel(c){ return `${catEmoji(c)?`<span class="category-emoji" aria-hidden="true">${esc(catEmoji(c))}</span> `:''}${esc(catName(c.id))}`; }
+function catLabel(c,label=catName(c.id)){ return `${catEmoji(c)?`<span class="category-emoji" aria-hidden="true">${esc(catEmoji(c))}</span> `:''}${esc(label)}`; }
 function folderById(id){ return S.folders.find(f=>f.id===id); }
 
 const TAXCFG = TaxMateCore.buildLegacyTaxConfig();
@@ -4418,8 +4424,8 @@ function entryRow(e){
   const d = e.dateTBC ? t('f.tbc') : new Date(e.date+'T12:00:00').toLocaleDateString(locale(),{day:'numeric',month:'short'});
   return `<button class="entry" data-entry-kind="${e.kind==='income'?'income':'expense'}" data-tm-click="openEntry('${e.kind}','${e.id}')">
     <div class="grow">
-      <div class="t">${esc(e.desc)||catLabel(c)}</div>
-      <div class="s">${d}${e.desc?' · '+catLabel(c):''}${b?' · '+esc(b.name):''}${pctNote}</div>
+      <div class="t">${catLabel(c,e.desc||catName(c.id))}</div>
+      <div class="s">${d}${e.desc?' · '+esc(catName(c.id)):''}${b?' · '+esc(b.name):''}${pctNote}</div>
     </div>
     ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
     <div class="v num ${e.kind==='income'?'pos':'neg'}" style="margin-inline-start:${e.receiptUrl?4:0}px">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
@@ -4437,6 +4443,17 @@ function incomeListHint(filter){
   const profiles=businesses.map(b=>TaxMatePartnership.profile(b));
   if(profiles.some(p=>!p.supported||p.basis===TaxMatePartnership.USER_SHARE))return t('income.recordedTotal');
   return t(filter==='all'&&businesses.length>1?'income.combinedTotal':'income.fullTotal')+' '+t('income.beforeShare');
+}
+function expenseAmountHint(business,businessUse){
+  const profile=TaxMatePartnership.profile(business);
+  const key=!profile.supported?'expense.reviewReminder':profile.basis===TaxMatePartnership.USER_SHARE?'expense.personalReminder':'expense.fullReminder';
+  return t(key)+(profile.supported&&profile.shareApplied?' '+t('expense.ownershipShare',{n:profile.sharePercent}):'')+' '+t('expense.businessUse',{n:businessUse==null?100:businessUse});
+}
+function expenseListHint(filter){
+  const businesses=filter==='all'?S.businesses:S.businesses.filter(b=>b.id===filter);
+  const bases=new Set(businesses.map(b=>{const p=TaxMatePartnership.profile(b);return !p.supported?'unconfirmed':p.basis===TaxMatePartnership.USER_SHARE?'personal':'whole';}));
+  const key=bases.size>1?'expense.mixedTotal':bases.has('unconfirmed')?'expense.reviewTotal':bases.has('personal')?'expense.personalTotal':businesses.length>1?'expense.combinedTotal':'expense.fullTotal';
+  return t(key)+' '+t('expense.businessUseApplied');
 }
 function pageList(kind){
   const isInc = kind==='income';
@@ -4502,7 +4519,7 @@ function pageList(kind){
     <span>${t(isInc?'inc.title':'exp.title')}</span>
     <span class="num ${isInc?'pos':'neg'}" style="font-size:18px">${isInc?'+':'−'}${fmt(total).replace('−','')}</span>
   </div>
-  ${isInc?`<div class="fhint income-total-hint" data-income-total-hint>${esc(incomeListHint(filt))}</div>`:''}
+  ${isInc?`<div class="fhint income-total-hint" data-income-total-hint>${esc(incomeListHint(filt))}</div>`:`<div class="fhint expense-total-hint" data-expense-total-hint>${esc(expenseListHint(filt))}</div>`}
   ${chips}
   ${cchips}
   ${fchips}
@@ -4992,8 +5009,8 @@ function paintEntry(){
   refreshReceiptMutationControls();
   const bizId = (document.getElementById('en-biz')||{}).value || (S.businesses[0]&&S.businesses[0].id);
   const amountHint=document.getElementById('en-amount-hint');
-  amountHint.hidden=EN.kind!=='income';
-  amountHint.textContent=EN.kind==='income'?incomeAmountHint(bizById(bizId)):'';
+  amountHint.hidden=false;
+  amountHint.textContent=EN.kind==='income'?incomeAmountHint(bizById(bizId)):expenseAmountHint(bizById(bizId),EN.pct);
   const cats = allCats(EN.kind, bizId);
   if(!EN.cat || !cats.find(c=>c.id===EN.cat)) EN.cat = cats[0].id;
   document.getElementById('en-pct-group').style.display = EN.kind==='expense'?'block':'none';
