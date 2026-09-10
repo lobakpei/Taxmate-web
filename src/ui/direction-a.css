@@ -377,7 +377,7 @@ html[data-direction-a="true"] .entry-amount{display:grid;grid-template-columns:a
 html[data-direction-a="true"] .entry-amount .cur{position:static;transform:none;font-size:1.5em}
 html[data-direction-a="true"] .entry-amount input[type=number]{min-width:0;font-size:1.5em;padding:12px 14px}
 html[data-direction-a="true"] .category-emoji{display:inline;font-size:1em;line-height:1}
-html[data-direction-a="true"] .income-total-hint{margin:-4px 0 14px}
+html[data-direction-a="true"] :is(.income-total-hint,.expense-total-hint){margin:-4px 0 14px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice.on{border-color:var(--navy)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-field{margin-top:14px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-inwrap{border-radius:var(--r-s)}
