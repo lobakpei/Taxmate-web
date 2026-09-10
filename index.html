@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-10.expense-basis-row-emoji.1 -->
+<!-- build: 2026-09-10.repeat-expense-checkbox.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -285,8 +285,12 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .seg button{flex:1;min-width:0;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
 .rmgrid{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-top:6px}
-.rmgrid button{border:1.5px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 4px;font-family:inherit;font-size:12px;font-weight:700;color:var(--muted);cursor:pointer;transition:all .12s}
-.rmgrid button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
+#en-repeat-months label{display:flex;align-items:center;gap:6px;min-height:48px;margin:0;border:1.5px solid var(--line);border-radius:10px;padding:8px 6px;font-size:12px;cursor:pointer}
+#en-repeat-months input{width:18px;height:18px;flex:0 0 18px;margin:0;padding:0;accent-color:var(--brand)}
+#en-repeat-months label:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}
+#en-repeat-months label:has(input:disabled){opacity:.5;cursor:not-allowed}
+#en-repeat-months label:focus-within{outline:2px solid var(--brand);outline-offset:2px}
+#en-repeat-months small{display:block;font-size:11px;font-weight:400}
 .pctrow{display:flex;gap:8px;flex-wrap:wrap}
 .catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
 .catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
@@ -572,8 +576,11 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     </div>
     <div class="fhint" id="en-repeat-hint" style="display:none;margin-top:8px" data-i18n="f.repeatHint"></div>
     <div id="en-repeat-from" style="display:none;margin-top:10px">
-      <label style="font-size:13px" data-i18n="f.repeatPick"></label>
-      <div id="en-repeat-months" class="rmgrid"></div>
+      <div id="en-repeat-question" style="font-size:13px;font-weight:700" data-i18n="f.repeatPick"></div>
+      <div id="en-repeat-months" class="rmgrid" role="group" aria-labelledby="en-repeat-question" aria-describedby="en-repeat-hint en-repeat-policy en-repeat-summary en-repeat-error"></div>
+      <div id="en-repeat-policy" class="fhint" style="margin-top:8px" data-i18n="f.repeatDatePolicy"></div>
+      <div id="en-repeat-summary" class="fhint" style="margin-top:8px;font-weight:700" role="status" aria-live="polite"></div>
+      <div id="en-repeat-error" class="fhint" style="color:var(--coral);margin-top:8px" role="alert" hidden></div>
     </div>
   </div>
   <div class="sact">

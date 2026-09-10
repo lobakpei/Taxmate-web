@@ -336,7 +336,7 @@ en:{
  'sug.skip':'Skip',
  'sug.added':'{n} categories added',
  'f.repeat':'Repeat monthly',
- 'f.repeatHint':'Fixed monthly cost? Add it for all 12 months of the tax year in one tap.',
+ 'f.repeatHint':"Only checked months are added. Check the original date’s month too if you want to include it; it counts once.",
  'f.dateLocked':'Pick a date within tax year {y}.',
  'f.repeatFrom':'Repeat from',
  'f.recQ':'This is a monthly repeating expense.',
@@ -345,7 +345,11 @@ en:{
  'f.repeatAdded':'Added for {n} months',
  'f.repeatOff':'One-off',
  'f.repeatOn':'Every month',
- 'f.repeatPick':'Which months? Tap to include.',
+ 'f.repeatPick':"Which months should this expense repeat in?",
+ 'f.repeatSummary':"Records to add: {n}. Months: {months}.",
+ 'f.repeatNone':"none selected",
+ 'f.repeatEmpty':"Select at least one month, or choose One-off.",
+ 'f.repeatDatePolicy':"Use the same day, or the last day in a shorter month. Months outside this tax year cannot be selected.",
  'f.tbc':'TBC',
  'f.tbc2':'To be confirmed',
  'ob.h1':'Self-employed bookkeeping and tax, made simple.',
@@ -825,7 +829,7 @@ zh:{
  'sug.skip':'略過',
  'sug.added':'已新增 {n} 個分類',
  'f.repeat':'每月重複',
- 'f.repeatHint':'固定每月開支？一按即可為整個稅務年度的12個月一次過新增。',
+ 'f.repeatHint':"只新增已勾選月份。如要包含原始日期嘅月份，亦要勾選；該月份只計一筆。",
  'f.dateLocked':'請選擇 {y} 稅務年度內的日期。',
  'f.repeatFrom':'從哪個月開始',
  'f.recQ':'這是一筆每月重複的開支。',
@@ -834,7 +838,11 @@ zh:{
  'f.repeatAdded':'已新增 {n} 個月',
  'f.repeatOff':'單次',
  'f.repeatOn':'每月',
- 'f.repeatPick':'邊幾個月？撳一下加入。',
+ 'f.repeatPick':"要重複到哪些月份？",
+ 'f.repeatSummary':"本次新增 {n} 筆支出：{months}。",
+ 'f.repeatNone':"未選月份",
+ 'f.repeatEmpty':"請至少勾選一個月份，或改選「單次」。",
+ 'f.repeatDatePolicy':"沿用原始日期嘅日數；短月用月底。超出目前稅務年度嘅月份不可選。",
  'f.tbc':'待定',
  'f.tbc2':'待定',
  'ob.h1':'幾秒之內<br>知道要交幾多稅',
@@ -1314,7 +1322,7 @@ pl:{
  'sug.skip':'Pomiń',
  'sug.added':'Dodano {n} kategorii',
  'f.repeat':'Powtarzaj miesięcznie',
- 'f.repeatHint':'Stały koszt miesięczny? Dodaj go dla wszystkich 12 miesięcy jednym dotknięciem.',
+ 'f.repeatHint':"Dodane zostaną tylko zaznaczone miesiące. Zaznacz także miesiąc pierwotnej daty, jeśli chcesz go uwzględnić; liczy się raz.",
  'f.dateLocked':'Wybierz datę w roku podatkowym {y}.',
  'f.repeatFrom':'Powtarzaj od',
  'f.recQ':'To jest miesięczny powtarzający się wydatek.',
@@ -1323,7 +1331,11 @@ pl:{
  'f.repeatAdded':'Dodano na {n} miesięcy',
  'f.repeatOff':'Jednorazowo',
  'f.repeatOn':'Co miesiąc',
- 'f.repeatPick':'Które miesiące? Dotknij, aby dodać.',
+ 'f.repeatPick':"W których miesiącach powtórzyć ten wydatek?",
+ 'f.repeatSummary':"Liczba wpisów do dodania: {n}. Miesiące: {months}.",
+ 'f.repeatNone':"nie wybrano",
+ 'f.repeatEmpty':"Wybierz co najmniej jeden miesiąc lub opcję Jednorazowo.",
+ 'f.repeatDatePolicy':"Ten sam dzień miesiąca lub ostatni dzień krótszego miesiąca. Miesiące poza tym rokiem podatkowym są niedostępne.",
  'f.tbc':'Do ustalenia',
  'f.tbc2':'Do ustalenia',
  'ob.h1':'Poznaj swój podatek<br>w kilka sekund',
@@ -1803,7 +1815,7 @@ ro:{
  'sug.skip':'Sari peste',
  'sug.added':'{n} categorii adăugate',
  'f.repeat':'Repetă lunar',
- 'f.repeatHint':'Cost lunar fix? Adaugă-l pentru toate cele 12 luni dintr-o atingere.',
+ 'f.repeatHint':"Se adaugă doar lunile bifate. Bifează și luna datei inițiale dacă vrei să o incluzi; se numără o singură dată.",
  'f.dateLocked':'Alege o dată din anul fiscal {y}.',
  'f.repeatFrom':'Repetă din',
  'f.recQ':'Aceasta este o cheltuială lunară recurentă.',
@@ -1812,7 +1824,11 @@ ro:{
  'f.repeatAdded':'Adăugat pentru {n} luni',
  'f.repeatOff':'O singură dată',
  'f.repeatOn':'Lunar',
- 'f.repeatPick':'Ce luni? Atinge pentru a include.',
+ 'f.repeatPick':"În ce luni se repetă această cheltuială?",
+ 'f.repeatSummary':"Înregistrări de adăugat: {n}. Luni: {months}.",
+ 'f.repeatNone':"nicio lună selectată",
+ 'f.repeatEmpty':"Selectează cel puțin o lună sau alege O singură dată.",
+ 'f.repeatDatePolicy':"Aceeași zi sau ultima zi într-o lună mai scurtă. Lunile din afara acestui an fiscal nu pot fi selectate.",
  'f.tbc':'De stabilit',
  'f.tbc2':'De stabilit',
  'ob.h1':'Află-ți taxele<br>în câteva secunde',
@@ -2292,7 +2308,7 @@ es:{
  'sug.skip':'Omitir',
  'sug.added':'{n} categorías añadidas',
  'f.repeat':'Repetir mensualmente',
- 'f.repeatHint':'¿Coste mensual fijo? Añádelo para los 12 meses con un toque.',
+ 'f.repeatHint':"Solo se añaden los meses marcados. Marca también el mes de la fecha original si quieres incluirlo; cuenta una sola vez.",
  'f.dateLocked':'Elige una fecha dentro del año fiscal {y}.',
  'f.repeatFrom':'Repetir desde',
  'f.recQ':'Este es un gasto mensual recurrente.',
@@ -2301,7 +2317,11 @@ es:{
  'f.repeatAdded':'Añadido para {n} meses',
  'f.repeatOff':'Una vez',
  'f.repeatOn':'Cada mes',
- 'f.repeatPick':'¿Qué meses? Toca para incluir.',
+ 'f.repeatPick':"¿En qué meses se repite este gasto?",
+ 'f.repeatSummary':"Registros que se añadirán: {n}. Meses: {months}.",
+ 'f.repeatNone':"ninguno seleccionado",
+ 'f.repeatEmpty':"Selecciona al menos un mes o elige Una vez.",
+ 'f.repeatDatePolicy':"El mismo día o el último día de un mes más corto. No se pueden seleccionar meses fuera de este año fiscal.",
  'f.tbc':'Por confirmar',
  'f.tbc2':'Por confirmar',
  'ob.h1':'Conoce tu impuesto<br>en segundos',
@@ -2779,7 +2799,7 @@ ur:{
  'sug.skip':'Omitir',
  'sug.added':'{n} categorías añadidas',
  'f.repeat':'Repetir mensualmente',
- 'f.repeatHint':'ہر ماہ کا مقررہ خرچ؟ ایک ٹیپ سے پورے ٹیکس سال کے 12 مہینوں کے لیے شامل کریں۔',
+ 'f.repeatHint':"صرف نشان زدہ مہینے شامل ہوں گے۔ اصل تاریخ کا مہینہ شامل کرنا ہو تو اسے بھی منتخب کریں؛ وہ صرف ایک بار شمار ہوگا۔",
  'f.dateLocked':'ٹیکس سال {y} کے اندر کی تاریخ منتخب کریں۔',
  'f.repeatFrom':'اس مہینے سے شروع کریں',
  'f.recQ':'یہ ہر ماہ دہرایا جانے والا خرچ ہے۔',
@@ -2788,7 +2808,11 @@ ur:{
  'f.repeatAdded':'{n} مہینوں کے لیے شامل کر دیا گیا',
  'f.repeatOff':'Una vez',
  'f.repeatOn':'ہر ماہ',
- 'f.repeatPick':'کون سے مہینے؟ شامل کرنے کے لیے ٹیپ کریں۔',
+ 'f.repeatPick':"یہ خرچ کن مہینوں میں دہرایا جائے؟",
+ 'f.repeatSummary':"نئے اندراجات: {n}۔ مہینے: {months}۔",
+ 'f.repeatNone':"کوئی مہینہ منتخب نہیں",
+ 'f.repeatEmpty':"کم از کم ایک مہینہ منتخب کریں یا ایک بار کا انتخاب کریں۔",
+ 'f.repeatDatePolicy':"وہی دن، یا چھوٹے مہینے کا آخری دن استعمال ہوگا۔ اس ٹیکس سال سے باہر کے مہینے منتخب نہیں کیے جا سکتے۔",
  'f.tbc':'زیر التوا',
  'f.tbc2':'زیر التوا',
  'ob.h1':'اپنا ٹیکس جانیں<br>چند سیکنڈ میں',
@@ -4995,7 +5019,7 @@ function openEntry(kind, id){
   else { const _td = todayISO(); _dEl.value = _td<_tr.min?_tr.min:(_td>_tr.max?_tr.max:_td); }
   const _dh = document.getElementById('en-date-hint');
   if(_dh){ _dh.style.display='none'; _dh.style.color='var(--amber)'; }
-  EN.repeatMonths = null;
+  EN.repeatMonths = new Set();
   document.getElementById('en-desc').value = e?(e.desc||''):'';
   document.getElementById('en-delete').style.display = e?'inline':'none';
   const sel = document.getElementById('en-biz');
@@ -5053,8 +5077,9 @@ function paintEntry(){
   fg.style.display = EN.kind==='expense' ? 'block' : 'none';
   const rpg = document.getElementById('en-repeat-group');
   if(rpg){
-    rpg.style.display = (EN.kind==='expense' && !EN.id) ? 'block' : 'none';
-    setRepeat(false);
+    const creating = !S.entries.some(entry=>entry.id===EN.id);
+    rpg.style.display = (EN.kind==='expense' && creating) ? 'block' : 'none';
+    setRepeat(creating && EN.repeat===true);
   }
   const fsel = document.getElementById('en-folder');
   fsel.innerHTML = `<option value="">${t('fd.none')}</option>` +
@@ -5264,6 +5289,7 @@ function dateToTaxYear(dateStr){
 }
 function taxYearRange(y){ const a=parseInt(String(y).slice(0,4)); return {min:a+'-04-06', max:(a+1)+'-04-05'}; }
 function checkEntryDate(dateStr){
+  if(EN.repeat) paintRepeatMonths();
   const hint = document.getElementById('en-date-hint');
   if(!hint || !dateStr) return;
   const entryYr = dateToTaxYear(dateStr);
@@ -5276,35 +5302,44 @@ function checkEntryDate(dateStr){
 }
 
 function setRepeat(on){
+  on = on===true && EN.kind==='expense' && !S.entries.some(entry=>entry.id===EN.id);
   EN.repeat = on;
   document.getElementById('en-repeat-off').classList.toggle('on', !on);
   document.getElementById('en-repeat-on').classList.toggle('on', on);
+  document.getElementById('en-repeat-off').setAttribute('aria-pressed',String(!on));
+  document.getElementById('en-repeat-on').setAttribute('aria-pressed',String(on));
+  document.getElementById('en-repeat-error').hidden=true;
   document.getElementById('en-repeat-hint').style.display = on ? 'block' : 'none';
   const fr = document.getElementById('en-repeat-from');
   if(fr){ fr.style.display = on ? 'block' : 'none'; if(on) paintRepeatMonths(); }
 }
-function paintRepeatMonths(){
-  const wrap = document.getElementById('en-repeat-months'); if(!wrap) return;
-  const yrS = parseInt(S.year.slice(0,4));
-  if(!EN.repeatMonths){
-    // default: from the entry's month through end of the tax year
-    let start = 0;
-    const dv = document.getElementById('en-date').value;
-    const src = (dv && dateToTaxYear(dv)===S.year) ? dv : (dateToTaxYear(todayISO())===S.year ? todayISO() : null);
-    if(src){ start = (parseInt(src.slice(5,7)) - 4 + 12) % 12; }
-    EN.repeatMonths = new Set(); for(let m=start;m<12;m++) EN.repeatMonths.add(m);
-  }
-  let html='';
-  for(let m=0;m<12;m++){
-    const mi = (3+m)%12 + 1;
-    html += `<button type="button" class="${EN.repeatMonths.has(m)?'on':''}" data-tm-click="toggleRepeatMonth(${m})">${obMonShort(mi)}</button>`;
-  }
-  wrap.innerHTML = html;
+function repeatMonthOptions(dateStr){
+  const yearStart=parseInt(S.year.slice(0,4)),range=taxYearRange(S.year),day=Number(String(dateStr||'').slice(8,10)),pad=n=>String(n).padStart(2,'0');
+  return Array.from({length:12},(_,offset)=>{
+    const month=(3+offset)%12,year=yearStart+(3+offset>11||(month===3&&day>=1&&day<6)?1:0),lastDay=new Date(year,month+1,0).getDate();
+    const date=day>=1&&day<=31?year+'-'+pad(month+1)+'-'+pad(Math.min(day,lastDay)):null;
+    return{offset,year,month:month+1,date,valid:!!date&&date>=range.min&&date<=range.max,label:obMonShort(month+1)+' '+year};
+  }).sort((a,b)=>String(a.date||'').localeCompare(String(b.date||'')));
 }
-function toggleRepeatMonth(m){
-  if(!EN.repeatMonths) EN.repeatMonths=new Set();
-  if(EN.repeatMonths.has(m)) EN.repeatMonths.delete(m); else EN.repeatMonths.add(m);
-  paintRepeatMonths();
+function paintRepeatSummary(){
+  const months=repeatMonthOptions(document.getElementById('en-date').value).filter(month=>month.valid&&EN.repeatMonths?.has(month.offset));
+  document.getElementById('en-repeat-summary').textContent=t('f.repeatSummary',{n:months.length,months:months.map(month=>month.label).join(', ')||t('f.repeatNone')});
+  document.getElementById('en-repeat-error').hidden=true;
+}
+function paintRepeatMonths(){
+  const wrap=document.getElementById('en-repeat-months');if(!wrap)return;
+  if(!EN.repeatMonths)EN.repeatMonths=new Set();
+  const months=repeatMonthOptions(document.getElementById('en-date').value);
+  for(const month of months)if(!month.valid)EN.repeatMonths.delete(month.offset);
+  wrap.innerHTML=months.map(month=>`<label><input type="checkbox" data-repeat-month="${month.offset}" aria-label="${esc(month.label)}" ${EN.repeatMonths.has(month.offset)?'checked':''} ${month.valid?'':'disabled'} data-tm-change="toggleRepeatMonth(${month.offset},this.checked)"><span>${esc(obMonShort(month.month))}<small>${month.year}</small></span></label>`).join('');
+  paintRepeatSummary();
+}
+function toggleRepeatMonth(m,checked){
+  if(!EN.repeatMonths)EN.repeatMonths=new Set();
+  const month=repeatMonthOptions(document.getElementById('en-date').value).find(month=>month.offset===m);
+  if(!month?.valid)return;
+  if(checked===true)EN.repeatMonths.add(m);else EN.repeatMonths.delete(m);
+  paintRepeatSummary();
 }
 function recAsk(fn){
   const ov = document.createElement('div');
@@ -5321,6 +5356,7 @@ function recAsk(fn){
   ov.querySelector('#rec-cxl').onclick = ()=>done(null);
 }
 function saveEntry(){
+  if(EN.repeatCommitted)return;
   // 收據仲上載緊 → 唔好即刻儲存，等上載完會自動幫你 save
   if(EN.uploading){
     EN._pendingSave = true;
@@ -5373,7 +5409,7 @@ function saveEntry(){
   const selectedBusiness=bizById(rec.bizId);
   if(!entryMutationAllowed(rec)){showNotice(t('sy.title'),t('sy.readOnly'));return;}
   Object.assign(rec,TaxMateSync.touch(Object.assign({},rec,{taxYear:dateToTaxYear(_dv),businessId:rec.bizId,source:'user',recordType:'entry'}),DEVICE_ID,Date.now()));
-  if(EN.id){
+  if(existingEntryIndex>=0){
     const i=S.entries.findIndex(x=>x.id===EN.id);
     if(i>-1){
       const orig = S.entries[i];
@@ -5393,33 +5429,20 @@ function saveEntry(){
         save(); closeSheet('entry'); render(); toast(t('toast.saved'));
       };
       if(orig.rgid){ recAsk(commit); } else { commit('one'); }
-    } else {
-      // EN.id 係由 onReceiptFile 生成嘅，唔係 existing entry → 當新 entry 處理
-      S.entries.push(rec);
-      save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
     }
   } else if(EN.repeat && EN.kind==='expense'){
-    // Add for all 12 months of the current tax year
-    const baseDay = new Date(rec.date+'T12:00:00').getDate();
-    const yrStart = parseInt(S.year.slice(0,4));
-    const pad = n => String(n).padStart(2,'0');
-    let count=0;
-    const _range = taxYearRange(S.year);
-    const _rgid = uid();
-    const months = (EN.repeatMonths && EN.repeatMonths.size) ? [...EN.repeatMonths].sort((a,b)=>a-b) : [];
-    // each selected offset maps to a real calendar month within the tax year
-    months.forEach(m=>{
-      const monthIdx = (3+m) % 12;
-      const realYear = (3+m) > 11 ? yrStart+1 : yrStart;
-      const daysInMonth = new Date(realYear, monthIdx+1, 0).getDate();
-      const day = Math.min(baseDay, daysInMonth);
-      const dateStr = realYear+'-'+pad(monthIdx+1)+'-'+pad(day);
-      if(dateStr < _range.min || dateStr > _range.max) return;
-      const r = Object.assign({}, rec, {id:uid(), date:dateStr, rgid:_rgid});
-      S.entries.push(r); pushEntryRemote(r); count++;
-    });
-    if(!count){ S.entries.push(rec); pushEntryRemote(rec); count=1; } // safety: nothing picked => single entry
-    save(); closeSheet('entry'); render(); toast(t('f.repeatAdded',{n:count}));
+    const months=repeatMonthOptions(rec.date).filter(month=>month.valid&&EN.repeatMonths?.has(month.offset));
+    if(!months.length){
+      const error=document.getElementById('en-repeat-error');error.textContent=t('f.repeatEmpty');error.hidden=false;
+      document.querySelector('#en-repeat-months input:not(:disabled)')?.focus();return;
+    }
+    // Checked months are the complete batch; the original month is never added separately.
+    const groupId=uid(),originalIndex=months.findIndex(month=>month.date===rec.date),identityIndex=originalIndex<0?0:originalIndex;
+    const records=months.map((month,index)=>({...rec,id:index===identityIndex?rec.id:uid(),date:month.date,rgid:groupId}));
+    const previous=S.entries;S.entries=previous.concat(records);
+    if(!save()){S.entries=previous;return;}
+    EN.repeatCommitted=true;records.forEach(pushEntryRemote);
+    closeSheet('entry');render();toast(t('f.repeatAdded',{n:records.length}));
   } else {
     S.entries.push(rec);
     save(); pushEntryRemote(rec); closeSheet('entry'); render(); toast(t('toast.saved'));
