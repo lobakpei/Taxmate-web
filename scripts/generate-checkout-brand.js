@@ -1,0 +1,5 @@
+'use strict';
+// Export the approved vector logo for payment providers that require raster images.
+const fs=require('node:fs'),path=require('node:path'),{chromium}=require('playwright');
+process.env.TAXMATE_CHROME_PATH=process.env.TAXMATE_CHROME_PATH||['C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find(file=>fs.existsSync(file));
+(async()=>{const root=path.resolve(__dirname,'..'),svg=fs.readFileSync(path.join(root,'assets/brand/derived/taxmate-brand-logo-light.svg'),'utf8');const browser=await chromium.launch({headless:true,executablePath:process.env.TAXMATE_CHROME_PATH||'C:/Program Files/Google/Chrome/Application/chrome.exe'});try{const page=await browser.newPage({viewport:{width:640,height:160}});await page.setContent('<style>html,body{margin:0;background:transparent}svg{width:600px;height:120px;margin:20px}</style>'+svg);await page.screenshot({path:path.join(root,'taxmate-checkout-logo.png'),omitBackground:true});}finally{await browser.close();}})().catch(error=>{console.error(error);process.exitCode=1;});
