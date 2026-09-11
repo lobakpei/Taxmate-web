@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-10.repeat-expense-checkbox.1 -->
+<!-- build: 2026-09-11.onboarding-build9.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -86,6 +86,7 @@ body{font-family:'Plus Jakarta Sans','Noto Sans Arabic',system-ui,sans-serif;bac
 [dir=rtl] body{font-family:'Noto Sans Arabic','Plus Jakarta Sans',system-ui,sans-serif}
 button{font-family:inherit;-webkit-tap-highlight-color:transparent}
 .num{font-variant-numeric:tabular-nums;letter-spacing:-0.01em;direction:ltr;unicode-bidi:isolate}
+html{touch-action:manipulation}
 button:focus-visible,input:focus-visible,select:focus-visible{outline:3px solid rgba(10,169,104,.45);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 
@@ -934,6 +935,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <style>
   #ob-root{display:none}
   #ob-root.active{display:block;position:fixed;inset:0;z-index:9999;background:var(--bg);overflow-y:auto;-webkit-overflow-scrolling:touch}
+  .ob-tour-exit{position:fixed;top:calc(env(safe-area-inset-top,0px) + 10px);right:12px;z-index:10002;min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font:700 13px/1.2 inherit;box-shadow:var(--shadow-sm);cursor:pointer}
+  [dir="rtl"] .ob-tour-exit{right:auto;left:12px}
+  .ob-replay-note{padding:12px 14px;border:1px solid var(--line);border-radius:14px;background:var(--card)}
   #ob-root .ob-wrap{max-width:480px;margin:0 auto;width:100%;padding:0 18px}
   .ob-progtop{background:var(--bg);padding:16px 18px 12px}
   .ob-progtop .ob-wrap{padding:0}

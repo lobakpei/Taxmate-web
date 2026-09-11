@@ -13,7 +13,7 @@ const functions=fs.readFileSync('functions/index.js','utf8');
 test('entry uses the existing TaxMate onboarding hierarchy with three connected choices and a low-weight dashboard link',()=>{
   assert.match(html,/#ob-root h1\{font-size:25px;font-weight:800;letter-spacing:-\.6px;[^}]*color:var\(--ink\)/);
   assert.match(app,/data-tm-click="obGo\('biz'\)"[\s\S]*ob\.together/);
-  assert.match(app,/data-tm-click="obGo\('ltd-choice'\)"[\s\S]*ob\.ltdEntry/);
+  assert.match(app,/data-tm-click="obStartLtd\(\)"[\s\S]*ob\.ltdEntry/);
   assert.match(app,/data-tm-click="obStartPartnerSync\(\)"[\s\S]*ob\.partnerEntry/);
   assert.match(app,/class="ob-link muted" data-tm-click="obExplore\(\)"/);
   assert.doesNotMatch(app,/Prototype only|The real app would/i);
@@ -61,7 +61,7 @@ test('Partner invite sharing preserves the existing manual-code Connected Onboar
   assert.match(invite,/PRODUCTION_ORIGIN = 'https:\/\/www\.taxmate\.uk\/'/);
   assert.doesNotMatch(invite,/FRAGMENT_KEY|codeFromHash|URLSearchParams|location\.hash/);
   assert.doesNotMatch(app,/PARTNER_INVITE_DRAFT_KEY|PARTNER_INVITE_BOOT_CODE|startPartnerInviteOnboarding|capturePartnerInviteLaunch|storePartnerInviteCode|clearPartnerInviteCode/);
-  assert.match(app,/function obStartPartnerSync\(\)\{if\(!OB\)return;OB\._intentError='';OB\.pendingIntent=null;obGo\('partner-code'\);\}/);
+  assert.match(app,/function obStartPartnerSync\(\)[^\n]+obSetPendingIntent\('partner_sync'/);
   assert.match(app,/function obSetConnectCode\(value\)/);
   assert.match(app,/function obPartnerContinue\(\)[\s\S]*obSetPendingIntent\('partner_sync',\{partnerCode:code/);
   assert.match(app,/const nativePayload=\{title:payload\.title,text:payload\.text,url:payload\.url\}/);
@@ -78,8 +78,8 @@ test('shared Pro gate uses the canonical promotion backend and approved pricing 
   assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
   assert.match(app,/£99\.99\/year/);
   assert.equal((app.match(/await redeemPromotionThroughCanonicalBackend\(code\)/g)||[]).length,2);
-  assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized\}\);\s*await loadEntitlementFromCloud\(user\.uid\)/);
-  assert.match(app,/if\(currentTier\(\)!=='pro'\)\{OB\._promoError=t\('ob\.promoNoPro'\)/);
+  assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized\}\);[\s\S]{0,180}await loadEntitlementFromCloud\(user\.uid\)/);
+  assert.match(app,/if\(currentTier\(\)!=='pro'\)\{OB\._intentMessage=[^\n]+OB\._promoError=t\('ob\.promoNoPro'\)/);
   assert.match(app,/function obProUpgrade\(\)\{if\(!OB\)return;startProPurchase\('onboarding'\);\}/);
   assert.match(app,/function proBillingAvailability\(\)/);
   assert.match(app,/provider&&provider\.enabled===true&&typeof provider\.purchasePro==='function'/);

@@ -3132,6 +3132,12 @@ Object.assign(I18N.pl,{"set.analyticsShare":"Udostępniaj anonimowe dane o użyc
 Object.assign(I18N.ro,{"set.analyticsShare":"Partajează analize anonime de utilizare"});
 Object.assign(I18N.es,{"set.analyticsShare":"Compartir analítica de uso anónima"});
 Object.assign(I18N.ur,{"set.analyticsShare":"گمنام استعمال کے اعداد و شمار شیئر کریں"});
+Object.assign(I18N.en,{'set.gettingStarted':'Getting started','set.gettingStartedBody':'Start the full guide again from the beginning. Your existing businesses and records stay in place.','ob.exitTour':'Exit to dashboard','ob.replayNote':'This is a fresh guide. Existing businesses and records will not be removed or replaced.'});
+Object.assign(I18N.zh,{'set.gettingStarted':'重新開始新手導覽','set.gettingStartedBody':'由開頭再行一次完整導覽。你現有嘅公司同記錄會原封不動保留。','ob.exitTour':'返回主頁','ob.replayNote':'呢次係全新導覽；現有公司同記錄唔會被刪除或者取代。'});
+Object.assign(I18N.pl,{'set.gettingStarted':'Pierwsze kroki','set.gettingStartedBody':'Uruchom ponownie pełny przewodnik od początku. Istniejące firmy i zapisy pozostaną bez zmian.','ob.exitTour':'Wyjdź do pulpitu','ob.replayNote':'To nowy przewodnik. Istniejące firmy i zapisy nie zostaną usunięte ani zastąpione.'});
+Object.assign(I18N.ro,{'set.gettingStarted':'Primii pași','set.gettingStartedBody':'Pornește din nou ghidul complet de la început. Firmele și înregistrările existente rămân neschimbate.','ob.exitTour':'Ieși la panou','ob.replayNote':'Acesta este un ghid nou. Firmele și înregistrările existente nu vor fi șterse sau înlocuite.'});
+Object.assign(I18N.es,{'set.gettingStarted':'Primeros pasos','set.gettingStartedBody':'Inicia de nuevo la guía completa desde el principio. Tus negocios y registros existentes se conservarán.','ob.exitTour':'Salir al panel','ob.replayNote':'Esta es una guía nueva. Los negocios y registros existentes no se eliminarán ni sustituirán.'});
+Object.assign(I18N.ur,{'set.gettingStarted':'ابتدائی رہنمائی','set.gettingStartedBody':'مکمل رہنمائی شروع سے دوبارہ چلائیں۔ آپ کے موجودہ کاروبار اور ریکارڈ برقرار رہیں گے۔','ob.exitTour':'ڈیش بورڈ پر واپس جائیں','ob.replayNote':'یہ ایک نئی رہنمائی ہے۔ موجودہ کاروبار اور ریکارڈ حذف یا تبدیل نہیں ہوں گے۔'});
 Object.assign(I18N.en,{
   'pwa.homeTitle':'Install TaxMate',
   'pwa.homeBody':'Keep TaxMate on your Home Screen for faster access and core bookkeeping offline.',
@@ -3290,6 +3296,17 @@ function applyStaticI18n(){
   document.documentElement.lang = S.settings.lang;
   document.documentElement.dir = S.settings.lang==='ur' ? 'rtl' : 'ltr';
 }
+function storedLanguagePreference(){
+  if(!ACTIVE_ACCOUNT_SCOPE)return null;
+  try{const value=localStorage.getItem(accountSlotKey('language-preference'));return Object.prototype.hasOwnProperty.call(LANG_NAMES,value)?value:null;}catch(_){return null;}
+}
+function applyStoredLanguagePreference(){const value=storedLanguagePreference();if(value&&S.settings.lang!==value)S.settings.lang=value;return value;}
+function setLanguagePreference(value){
+  if(!Object.prototype.hasOwnProperty.call(LANG_NAMES,value))return false;
+  S.settings.lang=value;
+  try{localStorage.setItem(accountSlotKey('language-preference'),value);}catch(_){}
+  applyStaticI18n();return true;
+}
 function locale(){ return LOCALES[S.settings.lang] || 'en-GB'; }
 
 /* ═══════════ constants ═══════════ */
@@ -3368,7 +3385,7 @@ function tierPriceMarkup(tier,cadence=BILLING_CADENCE){return tier==='pro'?proPr
 function updatePlanPriceNode(node){node.innerHTML=tierPriceMarkup(node.dataset.planPrice,BILLING_CADENCE);}
 function setBillingCadence(cadence){
   if(!['monthly','yearly'].includes(cadence)||cadence===BILLING_CADENCE)return;
-  BILLING_CADENCE=cadence;
+  BILLING_CADENCE=cadence;if(OB){OB.billingCadence=cadence;obPersistDraft();}
   document.querySelectorAll('[data-billing-cadence]').forEach(button=>{const on=button.dataset.billingCadence===cadence;button.classList.toggle('on',on);button.setAttribute('aria-pressed',String(on));});
   document.querySelectorAll('[data-plan-price]').forEach(updatePlanPriceNode);
   const note=document.querySelector('[data-billing-yearly]');if(note){note.textContent=cadence==='yearly'?t('billing.billedYearly'):'';note.style.visibility=cadence==='yearly'?'visible':'hidden';note.setAttribute('aria-hidden',String(cadence!=='yearly'));}
@@ -3431,7 +3448,7 @@ function tierFeatureList(tier){
   if(tier==='plus') return plus;
   return pro;
 }
-function planBlock(tier){
+function planBlock(tier,context='settings'){
   const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine);
   const cur=access.tier,isCurrent=cur===tier,snapshot=ENTITLEMENT.snapshot||{};
   const name = t('tier.'+tier);
@@ -3460,6 +3477,7 @@ function planBlock(tier){
       : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   }
   else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+  if(context==='onboarding')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<section class="card plan-card" data-plan-card="${tier}" aria-labelledby="plan-${tier}-title" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3533,6 +3551,7 @@ async function startProPurchase(source='settings'){
   if(availability.mode==='production'||availability.mode==='emulator'){
     if(!requireLoginForTier())return{status:'auth-required'};
     if(OB&&source==='onboarding'){OB._intentError='';OB._intentMessage='';obPersistDraft();}
+    if(currentTier()==='plus'&&TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),false).source==='stripe')return billingUpgradeToPro();
     return startBillingAction('createCheckoutSession',{tier:'pro',cadence:BILLING_CADENCE});
   }
   if(BILLING_ACTION_PENDING)return{status:'busy'};
@@ -3550,8 +3569,8 @@ async function startProPurchase(source='settings'){
   finally{BILLING_ACTION_PENDING=false;}
 }
 function openPromotionSheet(){
-  const input=document.getElementById('promo-code'),error=document.getElementById('promo-error');
-  input.value='';error.textContent='';error.classList.remove('show');openSheet('promo');
+  if(!OB||!firstSyncSurfaceOpen()){OB=obDefaultState(!!cloudUser());OB.screen='redeem';OB._returnAppTab=S.tab;TaxMateOnboardingRoot.open(document);}
+  obOpenRedeem();
 }
 const SAFE_BILLING_FAILURES=new Set(['app-check-unavailable','app-check-rejected','auth-required','billing-config','stripe-customer','stripe-checkout','network']);
 function secureFunctionError(category,code='UNKNOWN',reason=null){const error=new Error('Service unavailable');error.code=code;error.reason=reason;error.billingCategory=category;return error;}
@@ -3629,6 +3648,7 @@ async function redeemPromotionThroughCanonicalBackend(code){
   if(!TaxMateEntitlement.validatePromotionCode(normalized))throw Object.assign(new Error('promotion-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'});
   const user=cloudUser();if(!user)throw Object.assign(new Error('promotion-sign-in-required'),{code:'UNAUTHENTICATED',reason:'sign-in'});
   const result=await callSecureFunction('redeemPromotion',{code:normalized});
+  if(cloudUser()?.uid!==user.uid)throw new Error('promotion-account-changed');
   await loadEntitlementFromCloud(user.uid);
   return result;
 }
@@ -4104,6 +4124,19 @@ function renderYearSel(background=false){
 }
 
 function reloadTaxMate(){location.reload();}
+let FIRST_OPERABLE_FRAME_QUEUED=false;
+function signalFirstOperableFrame(){
+  if(FIRST_OPERABLE_FRAME_QUEUED||document.documentElement.dataset.taxmateFirstFrame==='ready')return;
+  const onboarding=document.getElementById('ob-root'),page=document.getElementById('page');
+  const onboardingReady=!!onboarding&&onboarding.classList.contains('active')&&!!onboarding.querySelector('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])');
+  const pageReady=!!page&&!page.querySelector('[data-auth-initialising],[data-retention-paused],[data-state-load-error]')&&!!page.querySelector('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])');
+  if(!onboardingReady&&!pageReady)return;
+  FIRST_OPERABLE_FRAME_QUEUED=true;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.documentElement.dataset.taxmateFirstFrame='ready';
+    window.dispatchEvent(new CustomEvent('taxmate:first-frame-ready'));
+  }));
+}
 function pageStateRecovery(){
   const user=cloudUser();
   return '<section class="card" data-state-load-error><div class="notice amber"><strong>'+esc(t('shell.dataCheckTitle'))+'</strong><p>'+esc(t('recovery.body'))+'</p></div>'+
@@ -4117,6 +4150,7 @@ function pageStateRecovery(){
 
 function render(options={}){
   const background=options.background===true;
+  applyStoredLanguagePreference();
   applyStaticI18n(); renderYearSel(background); renderNav(background);
   document.body.dataset.directionPage=S.tab||'home';
   const page = document.getElementById('page');
@@ -4136,6 +4170,7 @@ function render(options={}){
   if(background)TaxMateForegroundUI.html(page,markup);else page.innerHTML=markup;
   if(S.tab==='more')page.querySelectorAll('details[data-settings-section]').forEach(node=>{node.open=openSettings.includes(node.dataset.settingsSection);});
   renderSyncStatus();
+  signalFirstOperableFrame();
 }
 function renderBackgroundAccount(){render({background:true});}
 
@@ -4271,6 +4306,7 @@ function obReopenCatchup(){
     OB.screen = 'start';
   }
   const r = TaxMateOnboardingRoot.open(document);
+  r.dataset.onboardingMode='catch-up';
   obRender();
 }
 
@@ -4882,6 +4918,11 @@ function pageMore(){
         <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" data-tm-click="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
         ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px"> ${t('lang.pdfHint')}</div>`:''}
       </div>
+      <div class="card" data-getting-started="full-tour">
+        <div class="t" style="margin-bottom:4px">${t('set.gettingStarted')}</div>
+        <div class="s" style="margin-bottom:12px">${t('set.gettingStartedBody')}</div>
+        <button class="btn soft" data-tm-click="obRestartFullTour()">${t('set.gettingStarted')}</button>
+      </div>
       <div class="card">
         <div class="t" style="margin-bottom:4px">${t('set.analyticsTitle')}</div>
         <div class="s" style="margin-bottom:12px">${t('set.analyticsBody')}</div>
@@ -4993,8 +5034,8 @@ function setAnalyticsConsent(enabled){
   if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(enabled===true);
   render();
 }
-function setLang(l){ S.settings.lang=l; save(); render(); if(typeof refreshPartnerInvitation==='function')refreshPartnerInvitation(); }
-function obSetLang(l){ S.settings.lang=l; save(); applyStaticI18n(); OB._langOpen=false; obRender(); }
+function setLang(l){ if(!setLanguagePreference(l))return;render();if(typeof refreshPartnerInvitation==='function')refreshPartnerInvitation(); }
+function obSetLang(l){ if(!OB||!setLanguagePreference(l))return;OB._langOpen=false;obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
 let EN = {id:null, kind:'expense', cat:null, pct:100};
@@ -5916,7 +5957,7 @@ function subscribeSync(code, bizId){
       }
       subscription.businessReady=true;finish();
     }, fail));
-    const membership=await db.collection('partnerships').doc(code).collection('members').doc(u.uid).get({source:'server'}),memberCutoff=membership.exists&&membership.data().retentionCutoffDate||'',cutoff=[memberCutoff,CLOUD.retentionControl&&CLOUD.retentionControl.cutoffDate||''].sort().at(-1),entryRef=db.collection('partnerships').doc(code).collection('entries');
+    const membership=await db.collection('partnerships').doc(code).collection('members').doc(u.uid).get({source:'server'}),memberCutoff=membership.exists&&membership.data().retentionCutoffDate||'',cutoffs=[memberCutoff,CLOUD.retentionControl&&CLOUD.retentionControl.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1],entryRef=db.collection('partnerships').doc(code).collection('entries');
     subscription.memberUid=u.uid;subscription.membership=membership.exists?membership.data():null;
     subscription.unsubs.push(db.collection('partnerships').doc(code).collection('members').doc(u.uid).onSnapshot(doc=>{subscription.membership=doc.exists?doc.data():null;refreshReceiptMutationControls();},()=>{subscription.membership=null;refreshReceiptMutationControls();}));
     subscription.unsubs.push((cutoff?entryRef.where('date','>=',cutoff):entryRef).onSnapshot(snap=>{
@@ -6060,7 +6101,7 @@ function loadSyncOutbox(){
 let SYNC_OUTBOX=loadSyncOutbox();
 let ACCOUNT_TRANSITION_PENDING=false;
 let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, retentionControl:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, ltdRefreshTimer:null, flushPromise:null, controlsRefreshPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, hydrationFailureKey:null, hydrationFailureCount:0, reportedSyncErrors:{}, generation:0, deletionBlocked:false, retentionBlocked:false, controlsCached:false, firstSyncBlocked:false };
-let FIRST_SYNC_CONFIRMATION=null,FIRST_SYNC_ACTION_PROMISE=null,AUTH_PENDING_INTENT=null,AUTH_PENDING_INTENT_INTERACTION=null;
+let FIRST_SYNC_CONFIRMATION=null,FIRST_SYNC_ACTION_PROMISE=null,AUTH_PENDING_INTENT=null,AUTH_PENDING_INTENT_INTERACTION=null,AUTH_PENDING_FORM=null;
 let ACCOUNT_UI_READY={state:'idle',correlation:null,expectedRows:0,renderedRows:0,onboardingOpen:false};
 function explicitOwner(value){return value&&String(value.accountOwnerUid||value.ownerUid||value.uid||'')||'';}
 function cloudMetaForAccount(meta,uid,{forWrite=false}={}){
@@ -6150,7 +6191,7 @@ function closeOnboardingSurface(options={}){
 }
 function localOnboardingDraft(){try{return JSON.parse(TaxMateAccountStorage.read(localStorage,TaxMateAccountStorage.localScope(),'onboarding-draft')||'null');}catch(_){return null;}}
 function captureLocalPendingIntent(){
-  if(OB&&OB.pendingIntent&&firstSyncSurfaceOpen()){AUTH_PENDING_INTENT=obIntentCopy(OB.pendingIntent);AUTH_PENDING_INTENT_INTERACTION=TaxMateForegroundUI.interactionVersion();}
+  if(OB&&OB.pendingIntent&&firstSyncSurfaceOpen()){AUTH_PENDING_INTENT=obIntentCopy(OB.pendingIntent);AUTH_PENDING_FORM=obIntentCopy(OB);AUTH_PENDING_INTENT_INTERACTION=TaxMateForegroundUI.interactionVersion();}
 }
 function localDeviceHasBookkeeping(){try{const raw=TaxMateAccountStorage.read(localStorage,TaxMateAccountStorage.localScope(),'canonical');return!!raw&&TaxMateAccountStorage.stateHasAccountData(JSON.parse(raw));}catch(_){return false;}}
 function applyLocalConfirmationLanguage(){try{const raw=TaxMateAccountStorage.read(localStorage,TaxMateAccountStorage.localScope(),'canonical'),value=raw&&JSON.parse(raw),language=value&&value.settings&&value.settings.lang;if(['en','zh','pl','ro','es','ur'].includes(language)){S.settings.lang=language;document.documentElement.lang=language;document.documentElement.dir=language==='ur'?'rtl':'ltr';applyTheme();}}catch(_){}}
@@ -6168,7 +6209,7 @@ function accountHomeUiFacts(){
   return{expectedRows:expected,renderedRows:rows,onboardingOpen,shellVisible,operable,tab,ready:!onboardingOpen&&shellVisible&&tab===S.tab&&operable&&(tab!=='home'||rows===expected)};
 }
 function accountLtdUiFacts(){
-  const root=document.getElementById('taxmate-ltd-ui-root'),onboarding=document.getElementById('ob-root'),onboardingOpen=!!onboarding&&(onboarding.classList.contains('active')||onboarding.getAttribute('aria-hidden')==='false'),shellVisible=!!root&&!root.hidden&&document.body.classList.contains('ltd-active')&&root.getClientRects().length>0,route=window.TaxMateLtdUIFacade&&TaxMateLtdUIFacade.getSnapshot?TaxMateLtdUIFacade.getSnapshot().navigation.routes.at(-1):null,operable=shellVisible&&Array.from(root.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])')).some(node=>node.getClientRects().length>0);
+  const root=document.getElementById('taxmate-ltd-ui-root'),onboarding=document.getElementById('ob-root'),onboardingOpen=!!onboarding&&(onboarding.classList.contains('active')||onboarding.getAttribute('aria-hidden')==='false'),shellVisible=!!root&&!root.hidden&&document.body.classList.contains('ltd-active')&&root.getClientRects().length>0,routes=window.TaxMateLtdUIFacade&&TaxMateLtdUIFacade.getSnapshot?TaxMateLtdUIFacade.getSnapshot().navigation.routes:[],route=routes[routes.length-1]||null,operable=shellVisible&&Array.from(root.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])')).some(node=>node.getClientRects().length>0);
   return{expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen,shellVisible,operable,tab:'ltd',route:route&&route.screenId||null,ready:!onboardingOpen&&shellVisible&&operable&&!!route&&route.screenId!=='home'};
 }
 function afterBrowserPaint(){return new Promise(resolve=>{if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>resolve());else queueMicrotask(resolve);});}
@@ -6185,9 +6226,9 @@ async function presentAccountHome(correlation){
   window.dispatchEvent(new CustomEvent('taxmate:account-ui-ready',{detail:{state:ACCOUNT_UI_READY.state,expectedRows:facts.expectedRows,renderedRows:facts.renderedRows,tab:facts.tab}}));return facts;
 }
 function pendingIntentForHydration(){
-  if(AUTH_PENDING_INTENT_INTERACTION!==TaxMateForegroundUI.interactionVersion())AUTH_PENDING_INTENT=null;
-  const activeIntent=OB&&OB.pendingIntent&&firstSyncSurfaceOpen()&&(OB.screen==='intent-loading'||window.TAXMATE_BILLING_RETURN?.intent);
-  const existing=activeIntent?obIntentCopy(OB.pendingIntent):AUTH_PENDING_INTENT?obIntentCopy(AUTH_PENDING_INTENT):null;if(!existing)return null;AUTH_PENDING_INTENT=null;if(!OB)OB=obDefaultState(true);OB.pendingIntent=existing;if(existing.source==='partner_sync')OB.connectCode=normalisePartnerCode(existing.formState&&existing.formState.partnerCode||existing.partnerCode||'').slice(0,8);OB.loggedIn=true;OB.screen='intent-loading';return existing;
+  if(AUTH_PENDING_INTENT_INTERACTION!==TaxMateForegroundUI.interactionVersion()){AUTH_PENDING_INTENT=null;AUTH_PENDING_FORM=null;}
+  const activeIntent=OB&&OB.pendingIntent&&firstSyncSurfaceOpen()&&(OB.screen==='intent-loading'||window.TAXMATE_BILLING_RETURN?.status==='success'&&window.TAXMATE_BILLING_RETURN?.intent);
+  const existing=activeIntent?obIntentCopy(OB.pendingIntent):AUTH_PENDING_INTENT?obIntentCopy(AUTH_PENDING_INTENT):null;if(!existing)return null;AUTH_PENDING_INTENT=null;if(!OB)OB=Object.assign(obDefaultState(true),AUTH_PENDING_FORM||{});AUTH_PENDING_FORM=null;OB.pendingIntent=existing;if(OB.billingCadence)BILLING_CADENCE=OB.billingCadence;if(existing.source==='partner_sync')OB.connectCode=normalisePartnerCode(existing.formState&&existing.formState.partnerCode||existing.partnerCode||'').slice(0,8);OB.loggedIn=true;OB.screen='intent-loading';return existing;
 }
 function beginAccountTransition(correlation,options={}){
   captureLocalPendingIntent();closeOnboardingSurface({clearState:true});ACCOUNT_TRANSITION_PENDING=true;stopUserSync();ACCOUNT_TRANSITION_PENDING=true;CLOUD.controlsCached=false;CLOUD.firstSyncBlocked=false;STATE_LOAD_ERROR=null;ENTITLEMENT={snapshot:null,loaded:false};if(options.targetScope)activateAccountScope(options.targetScope,{force:true,navigation:options.navigation});else closePersonalSurfacesForLtd();const ltdRoot=document.getElementById('taxmate-ltd-ui-root');if(ltdRoot)ltdRoot.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const node=document.querySelector(selector);if(node)node.hidden=false;}ACCOUNT_UI_READY={state:'transitioning',correlation,expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen:false};render();
@@ -6302,9 +6343,10 @@ function consumeBillingReturn(){
     const marker=raw?JSON.parse(raw):null,age=Date.now()-Number(marker?.startedAt);
     if(!marker||marker.uid!==uid||!Number.isFinite(age)||age<0||age>86400000)return null;
     window.TAXMATE_BILLING_RETURN={status,uid,intent:!!marker.pendingIntent,interaction:TaxMateForegroundUI.interactionVersion()};
+    if(['monthly','yearly'].includes(marker.cadence))BILLING_CADENCE=marker.cadence;
     const draft=obRestoreDraft();
     if(marker.pendingIntent&&draft?.pendingIntent&&JSON.stringify(marker.pendingIntent)===JSON.stringify(draft.pendingIntent)){
-      OB=draft;OB._intentError='';OB._intentMessage=status==='success'?t('ob.entitlementPending'):'';OB.screen=status==='success'?'intent-loading':'pro-gate';TaxMateOnboardingRoot.open(document);obRender();
+      OB=draft;OB.billingCadence=BILLING_CADENCE;OB._intentError='';OB._intentMessage=status==='success'?t('ob.entitlementPending'):flowText('paymentCancelled');OB.screen=status==='success'?'intent-loading':'pro-gate';TaxMateOnboardingRoot.open(document);obRender();
     }
     return status;
   }catch(_){return null;}
@@ -6353,8 +6395,9 @@ function watchAuth(){
   });
 }
 async function signIn(options={}){
+  const reportError=message=>typeof options.onError==='function'?options.onError(message):showNotice(t('ac.title'),message);
   const db = await ensureFB();
-  if(!db){ showNotice(t('ac.title'),t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
+  if(!db){ reportError(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
   captureLocalPendingIntent();let associationPrepared=false;
   if(localDeviceHasBookkeeping()){
     try{TaxMateAccountStorage.prepareLocalAssociation(localStorage,{now:Date.now(),resetTarget:options.resetAssociationTarget===true});associationPrepared=true;}catch(_){}
@@ -6373,7 +6416,7 @@ async function signIn(options={}){
   }catch(e){
     if(associationPrepared&&!options.preserveAssociationOnCancel)try{TaxMateAccountStorage.clearLocalAssociation(localStorage);}catch(_){}
     if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')){restoreLocalViewAfterSignInCancel();return;}
-    console.warn(e);showNotice(t('ac.title'),t('ac.err'));
+    console.warn(e);reportError(t('ac.err'));
     restoreLocalViewAfterSignInCancel();
     return null;
   }
@@ -7514,7 +7557,7 @@ function entryMutationAllowed(entry){
   const business=bizById(entry.bizId);if(!business)return false;
   if(!business.syncCode)return true; // Free ordinary/self-employed books remain editable.
   const user=cloudUser(),sub=FB.subs[business.syncCode],member=sub&&sub.memberUid===user?.uid&&sub.membership;
-  const cutoff=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort().at(-1);
+  const cutoffs=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1];
   return !!(user&&member&&hasFeature('partnerSync')&&(!cutoff||entry.date>=cutoff));
 }
 async function entryMutationPreflight(entry){
@@ -7772,7 +7815,7 @@ function obStartMonthList(){
 function obDefaultState(loggedIn){
   return {
     screen:'login', loggedIn:!!loggedIn,
-    bizName:'', structure:'sole', share:50, partnerCode:'', connectCode:'', promoCode:'', pendingIntent:null,
+    bizName:'', structure:'sole', share:50, partnerCode:'', connectCode:'', promoCode:'', pendingIntent:null,billingCadence:BILLING_CADENCE,
     cats:[],                 // (no longer chosen in onboarding; kept for compat)
     monthsAll: obStartMonthList(),
     startIdx:0,
@@ -7781,14 +7824,14 @@ function obDefaultState(loggedIn){
   };
 }
 function obPersistDraft(){
-  if(!OB||!OB_DRAFT_KEY)return;
-  try{const safe=JSON.parse(JSON.stringify(OB));delete safe._partnerBusy;delete safe._promoBusy;delete safe._signingInFlow;delete safe._intentLaunching;localStorage.setItem(OB_DRAFT_KEY,JSON.stringify(safe));}catch(_){}
+  if(!OB||!OB_DRAFT_KEY||OB._replay)return;
+  try{const safe=JSON.parse(JSON.stringify(OB));delete safe._partnerBusy;delete safe._promoBusy;delete safe._signingInFlow;delete safe._intentLaunching;delete safe._billingRefresh;localStorage.setItem(OB_DRAFT_KEY,JSON.stringify(safe));}catch(_){}
 }
 function obRestoreDraft(){
   try{
-    const raw=JSON.parse(localStorage.getItem(OB_DRAFT_KEY)||'null'),allowed=new Set(['login','entry','ltd-choice','ltd-registration','partner-code','partner-confirm','partner-success','pro-gate','biz','pickbiz','start','month','done']);
+    const raw=JSON.parse(localStorage.getItem(OB_DRAFT_KEY)||'null'),allowed=new Set(['login','entry','ltd-choice','ltd-registration','partner-code','partner-confirm','partner-success','pro-gate','redeem','intent-loading','biz','pickbiz','start','month','done']);
     if(!raw||!allowed.has(raw.screen)||!Array.isArray(raw.monthsAll)||!raw.data||typeof raw.data!=='object')return null;
-    return Object.assign(obDefaultState(false),raw,{_partnerBusy:false,_promoBusy:false,_signingInFlow:false,_intentLaunching:false});
+    return Object.assign(obDefaultState(false),raw,{_partnerBusy:false,_promoBusy:false,_signingInFlow:false,_intentLaunching:false,_billingRefresh:false});
   }catch(_){return null;}
 }
 function obKey(mObj){ return mObj.year+'-'+mObj.m; }
@@ -7815,36 +7858,48 @@ function obGrandMiles(){ return obActiveMonths().reduce((s,m)=>s+(parseFloat(obM
 function obEnsureRoot(){
   return TaxMateOnboardingRoot.ensure(document);
 }
-function startOnboarding(){
-  OB = obRestoreDraft()||obDefaultState(false);
-  TaxMateOnboardingRoot.open(document);
+function startOnboarding(options={}){
+  const replay=options&&options.mode==='replay';
+  OB = replay?obDefaultState(!!cloudUser()):(obRestoreDraft()||obDefaultState(false));
+  if(replay){OB.screen='entry';OB._replay=true;OB._lastView=null;}
+  const root=TaxMateOnboardingRoot.open(document);
+  root.dataset.onboardingMode=replay?'full-tour':'first-run';
   obRender();
 }
+function obRestartFullTour(){startOnboarding({mode:'replay'});}
+function obExitReplay(){if(!OB||!OB._replay)return;obClose();S.tab='home';render();window.scrollTo(0,0);}
 function obClose(){
   closeOnboardingSurface({clearDraft:true,clearState:true});
 }
 function obRender(){
-  const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
+  applyStoredLanguagePreference();
+  if(OB.billingCadence)BILLING_CADENCE=OB.billingCadence;
+  if(!cloudUser()&&['partner-code','partner-confirm','pro-gate','intent-loading'].includes(OB.screen)){
+    OB._authReturnScreen=OB.pendingIntent?.returnScreen||'entry';OB.screen='login';
+  }
+  const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,redeem:obScrRedeem,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
   const keep = (OB._lastView===view) ? r.scrollTop : 0;
   r.innerHTML = fns[OB.screen]();
+  if(OB._replay)r.insertAdjacentHTML('afterbegin',`<button class="ob-tour-exit" data-tm-click="obExitReplay()">${t('ob.exitTour')}</button>`);
   OB._lastView = view;
   r.scrollTop = keep;
   obPersistDraft();
+  signalFirstOperableFrame();
 }
-function obGo(s){ TaxMateOnboardingRoot.progress(OB,s,obRender); }
+function obGo(s){ if(OB)OB._intentRequest=(OB._intentRequest||0)+1;TaxMateOnboardingRoot.progress(OB,s,obRender); }
 function obProgress(pct,label,back){
   return `<div class="ob-progtop"><div class="ob-wrap">
-    <div class="ob-prow">${back?`<button class="ob-back" data-tm-click="${back}">‹</button>`:''}<div class="ob-plabel">${label}</div></div>
+    <div class="ob-prow">${back?`<button class="ob-back" aria-label="${t('ob.back')}" data-tm-click="${back}">‹ ${t('ob.back')}</button>`:''}<div class="ob-plabel">${label}</div></div>
     <div class="ob-ptrack"><div class="ob-pfill" style="width:${pct}%"></div></div>
   </div></div>`;
 }
 // wrap scrollable body + sticky-in-flow footer for the flex app-shell layout
 function obShell(progHTML, bodyHTML, footHTML){
   return progHTML
-    + `<div class="ob-scroll"><div class="ob-wrap ob-step">${bodyHTML}</div></div>`
+    + `<div class="ob-scroll"><div class="ob-wrap ob-step">${taxmateFlowBrand()}${bodyHTML}</div></div>`
     + (footHTML ? `<div class="ob-foot"><div class="ob-wrap">${footHTML}</div></div>` : '');
 }
 
@@ -7857,7 +7912,8 @@ function obScrLogin(){
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
     <p class="ob-lede">${context}</p>
-    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled aria-busy="true"':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t(OB&&OB._signingInFlow?'ob.connecting':'ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    ${OB._signInError?`<div class="ob-error show" role="alert">${esc(OB._signInError)}</div>`:''}
     ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
@@ -7876,11 +7932,12 @@ function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Keep onboarding pending until cloud account detection has finished. A successful Google
   // popup alone does not mean this is a new user.
-  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signingInFlow=true;obRender();
+  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signInError='';OB._signingInFlow=true;obRender();
   if(typeof signIn==='function' && fbConfigured()){
     try{
-      const signedIn=await signIn();
-      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
+      let signInError='';
+      const signedIn=await signIn({onError:message=>{signInError=message;}});
+      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=signInError||flowText('signInCancelled');OB.screen=returnScreen||'login';OB._intentError=OB._signInError;if(returnScreen==='redeem')OB._promoError=OB._signInError;obRender();}return;}
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
       if(u)await waitForAuthenticatedAccountScope(u.uid);
       const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
@@ -7888,9 +7945,11 @@ async function obSignIn(){
       if(!OB)return;
       if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
       OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return; }
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=t('ac.err');OB.screen='login';obRender();}return; }
   } else {
-    if(OB) OB.loggedIn = true;
+    // Missing SDK/configuration is not a successful login (including offline startup).
+    if(OB){OB.loggedIn=false;OB._signingInFlow=false;OB._signInError=t('ac.needNet');obRender();}
+    return;
   }
   if(OB){ TaxMateOnboardingRoot.open(document); OB._signingInFlow = false; if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry'); }
 }
@@ -7899,14 +7958,23 @@ function obCancelRequiredSignIn(){if(!OB)return;const screen=OB._authReturnScree
 
 /* ENTRY */
 function obScrEntry(){
-  return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
-    <h1>${t('ob.howStart')}</h1>
+  return obShell(obProgress(0,'',"obGo('login')"),`<h1>${t('ob.howStart')}</h1>
+    ${OB&&OB._replay?`<p class="ob-lede ob-replay-note">${t('ob.replayNote')}</p>`:''}
+    ${OB._intentError?`<p class="ob-error show" role="status">${esc(OB._intentError)}</p>`:''}
     <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
-    <div class="ob-skiprow"><button class="ob-link muted" data-tm-click="obExplore()">${t('ob.dash')}</button></div>
-  </div></div>`;
+    <button class="ob-tile" data-tm-click="obStartLtd()"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
+    <div class="ob-skiprow"><button class="ob-link muted" data-tm-click="obExplore()">${t('ob.dash')}</button></div>`,'');
 }
+function obStartLtd(){if(!OB)return;OB._intentError='';obSetPendingIntent('ltd',{returnScreen:'entry'});obContinuePendingIntent();}
+
+function taxmateFlowBrand(){return '<div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>';}
+function flowText(key){const copy={en:{redeem:'Redeem Code',signInCancelled:'Sign-in was cancelled. You can try again or go back.',paymentCancelled:'Payment was cancelled. Your choices are saved. Choose a plan to try again.'},zh:{redeem:'兌換優惠碼',signInCancelled:'已取消登入。你可以重試或返回上一步。',paymentCancelled:'已取消付款，已保留你的選擇。你可以重新選擇計劃。'},pl:{redeem:'Wykorzystaj kod',signInCancelled:'Logowanie anulowane. Spróbuj ponownie lub wróć.',paymentCancelled:'Płatność anulowana. Zachowano Twój wybór. Wybierz plan, aby spróbować ponownie.'},ro:{redeem:'Folosește un cod',signInCancelled:'Autentificarea a fost anulată. Reîncearcă sau revino.',paymentCancelled:'Plata a fost anulată. Opțiunile sunt salvate. Alege un plan pentru a reîncerca.'},es:{redeem:'Canjear código',signInCancelled:'Inicio de sesión cancelado. Reintenta o vuelve atrás.',paymentCancelled:'Pago cancelado. Tus opciones están guardadas. Elige un plan para reintentar.'},ur:{redeem:'کوڈ استعمال کریں',signInCancelled:'سائن ان منسوخ ہو گیا۔ دوبارہ کوشش کریں یا واپس جائیں۔',paymentCancelled:'ادائیگی منسوخ ہو گئی۔ آپ کا انتخاب محفوظ ہے۔ دوبارہ کوشش کے لیے پلان منتخب کریں۔'}};return (copy[S.settings.lang]||copy.en)[key];}
+function obChoosePlan(tier){if(!OB)return;OB.selectedTier=tier;obPersistDraft();if(tier==='free'){obReturnFromProGate();return;}if(tier==='pro'){obProUpgrade();return;}if(!proBillingAvailability().purchaseEnabled)return;startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});}
+function obOpenRedeem(){if(!OB)return;OB._redeemReturn=OB.screen==='redeem'?OB._redeemReturn||'app':OB.screen;OB._promoError='';obGo('redeem');}
+function obBackFromRedeem(){if(!OB)return;if(OB._redeemReturn==='app'){const tab=OB._returnAppTab;obClose();if(['home','income','expenses','tax','more'].includes(tab))S.tab=tab;render();return;}obGo(OB._redeemReturn||'pro-gate');}
+function obScrRedeem(){return obShell(obProgress(20,flowText('redeem'),"obBackFromRedeem()"),`<h1>${flowText('redeem')}</h1><p class="ob-lede">${t('promo.body')}</p><div class="ob-card"><label for="ob-promo-code">${t('promo.placeholder')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)"><div class="ob-error ${OB._promoError?'show':''}" role="alert">${esc(OB._promoError||'')}</div>${OB._intentMessage?`<p role="status">${esc(OB._intentMessage)}</p>`:''}</div>`,`<button class="ob-btn" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button><button class="ob-btn ghost" data-tm-click="obBackFromRedeem()">${t('ob.back')}</button>`);}
+
 function obIntentCopy(value){return value==null?value:JSON.parse(JSON.stringify(value));}
 function obSetPendingIntent(source,details={}){
   if(!OB)return null;
@@ -7935,7 +8003,7 @@ function obChooseLtdRegistration(companyNumberStatus){
   obSetPendingIntent('ltd',{ltdChoice:'forming',companyNumberStatus,returnScreen:'ltd-registration',formState:{companyNumberStatus}});
   obContinuePendingIntent();
 }
-function obStartPartnerSync(){if(!OB)return;OB._intentError='';OB.pendingIntent=null;obGo('partner-code');}
+function obStartPartnerSync(){if(!OB)return;OB._intentError='';obSetPendingIntent('partner_sync',{returnScreen:'entry',formState:{partnerCode:OB.connectCode||''}});obContinuePendingIntent();}
 function obSetConnectCode(value){if(!OB)return;OB.connectCode=normalisePartnerCode(value).slice(0,8);OB._intentError='';obPersistDraft();}
 function obSetPromoCode(value){if(!OB)return;OB.promoCode=String(value||'').toUpperCase();OB._promoError='';obPersistDraft();}
 function obScrPartnerCode(){
@@ -7948,29 +8016,30 @@ function obPartnerContinue(){
   if(!partnerCodeValid(code)){OB._intentError=t('sy.enterCode');obRender();return;}
   OB.connectCode=code;obSetPendingIntent('partner_sync',{partnerCode:code,returnScreen:'partner-code',formState:{partnerCode:code}});obContinuePendingIntent();
 }
-function obScrIntentLoading(){return obShell('',`<h1>${t('ob.entitlementPending')}</h1><div class="ob-card flat"><div data-cloud-sync-status>${esc(syncStatusMessage())}</div></div>${OB._intentError?`<div class="ob-error show">${esc(OB._intentError)}</div>`:''}`,'');}
+function obScrIntentLoading(){return obShell(obProgress(20,'',"obReturnFromProGate()"),`<h1>${t('ob.entitlementPending')}</h1><div class="ob-card flat"><div data-cloud-sync-status>${esc(syncStatusMessage())}</div></div>${OB._intentError?`<div class="ob-error show">${esc(OB._intentError)}</div>`:''}`,'');}
 async function obContinuePendingIntent(){
   if(!OB||!OB.pendingIntent)return;
   const user=cloudUser();
   if(!user){OB._authReturnScreen=OB.pendingIntent.returnScreen||OB.screen;obGo('login');return;}
-  const returnScreen=OB.screen;OB._intentError='';OB.screen='intent-loading';obRender();
+  const returnScreen=OB.screen,original=OB,request=(OB._intentRequest||0)+1;OB._intentRequest=request;OB._intentError='';OB.screen='intent-loading';obRender();
   try{
     const result=CLOUD.hydrationState==='converged'&&ENTITLEMENT.loaded?{state:'converged',existingCloudAccount:true}:await startUserSync(user);
-    if(!OB)return;
+    if(OB!==original||OB._intentRequest!==request||OB.screen!=='intent-loading')return;
     if(!result||result.state!=='converged'){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();return;}
     obResumePendingIntentAfterHydration(result);
-  }catch(_){if(OB){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();}}
+  }catch(_){if(OB===original&&OB._intentRequest===request&&OB.screen==='intent-loading'){OB.screen=returnScreen;OB._intentError=t('sy.needNet');obRender();}}
 }
 function obResumePendingIntentAfterHydration(result){
   if(!OB||!OB.pendingIntent||!result||result.state!=='converged'||OB._intentLaunching)return false;
   OB.loggedIn=true;OB._authReturnScreen=null;OB._signingInFlow=false;
+  if(OB.pendingIntent.source==='redeem'){OB.screen='redeem';obRender();return true;}
   if(currentTier()!=='pro'){OB.screen='pro-gate';obRender();return true;}
   obExecutePendingIntent();return true;
 }
 async function obExecutePendingIntent(){
   if(!OB||!OB.pendingIntent||OB._intentLaunching)return;
   const intent=obIntentCopy(OB.pendingIntent);
-  if(intent.source==='partner_sync'){OB.screen='partner-confirm';OB._intentError='';obRender();return;}
+  if(intent.source==='partner_sync'){OB.screen=partnerCodeValid(intent.partnerCode||'')?'partner-confirm':'partner-code';OB._intentError='';obRender();return;}
   if(intent.source!=='ltd')return;
   OB._intentLaunching=true;const preserved=OB;obClose();
   try{
@@ -7993,34 +8062,37 @@ async function obConfirmPartnerConnection(){
     OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;OB.screen='partner-success';obRender();
   }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
 }
-function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell('',`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
-function obFinishPartnerConnection(){try{localStorage.setItem(accountSlotKey('onboarding-done'),'partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
+function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell(obProgress(100,'',"obFinishPartnerConnection()"),`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
+function obFinishPartnerConnection(){if(OB&&!OB._replay)try{localStorage.setItem(accountSlotKey('onboarding-done'),'partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
 function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
-  const purchaseLabel=availability.mode==='local_review'?t('billing.reviewPurchase'):availability.purchaseEnabled?t('tier.choose',{p:t('tier.pro')}):t('plan.proBillingPending');
   const purchaseNote=availability.mode==='local_review'?t('billing.reviewNote'):availability.purchaseEnabled?'':t('billing.purchaseUnavailable');
   return obShell(obProgress(20,t('ob.proRequired'),"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
     <div class="ob-seg" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
-    <div class="ob-gate-price"><div data-plan-price="pro">${tierPriceMarkup('pro')}</div></div>
-    <button class="ob-btn" ${availability.purchaseEnabled?'':'disabled aria-disabled="true"'} data-tm-click="obProUpgrade()">${purchaseLabel}</button>${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy">${esc(message)}</div>`:''}<button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${esc(bt('refresh'))}</button>
-    <div class="ob-card" style="margin-top:18px"><label for="ob-promo-code">${t('ob.havePromo')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="${t('promo.placeholder')}" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)" data-tm-keydown="if(event.key==='Enter')obRedeemPromotionCode()"><div class="ob-error ${error?'show':''}">${esc(error)}</div><button class="ob-btn soft" style="margin-top:12px" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button></div>`,
+    ${['free','plus','pro'].map(tier=>planBlock(tier,'onboarding')).join('')}
+    ${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy" role="status">${esc(message)}</div>`:''}${error?`<div class="ob-error show" role="alert">${esc(error)}</div>`:''}
+    <button class="ob-btn ghost" data-tm-click="obOpenRedeem()">${flowText('redeem')}</button><button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${esc(bt('refresh'))}</button>`,
+
     `<button class="ob-btn ghost" ${OB._promoBusy?'disabled':''} data-tm-click="obReturnFromProGate()">${t('ob.back')}</button>`);
 }
-function obReturnFromProGate(){if(!OB||!OB.pendingIntent)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent.returnScreen||'entry');}
+function obReturnFromProGate(){if(!OB)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent?.returnScreen||'entry');}
 function obProUpgrade(){if(!OB)return;startProPurchase('onboarding');}
 async function obRefreshPaidAccess(){if(!OB||!cloudUser()||OB._billingRefresh)return;const original=OB;OB._billingRefresh=true;try{if(BILLING_UI.uid!==cloudUser().uid){billingResetState();BILLING_UI.uid=cloudUser().uid;}await billingFetch('getSubscriptionStatus');await loadEntitlementFromCloud(cloudUser().uid);if(OB!==original)return;OB._intentMessage=currentTier()==='pro'?'':t('ob.entitlementPending');obResumePendingIntentAfterHydration({state:CLOUD.hydrationState,existingCloudAccount:true});}catch(error){if(OB===original){OB._intentError=billingError(error);obRender();}}finally{if(OB===original)OB._billingRefresh=false;}}
 async function obRedeemPromotionCode(){
-  if(!OB||OB._promoBusy)return;const code=normalisePartnerCode(OB.promoCode||'');OB.promoCode=code;OB._promoError='';OB._intentMessage='';
+  if(!OB||OB._promoBusy)return;const original=OB,uid=cloudUser()?.uid,code=String(OB.promoCode||'').trim().toUpperCase();OB.promoCode=code;OB._promoError='';OB._intentMessage='';
   if(!TaxMateEntitlement.validatePromotionCode(code)){OB._promoError=t('promo.invalid');obRender();return;}
+  if(!uid){if(!OB.pendingIntent)obSetPendingIntent('redeem',{returnScreen:'redeem'});OB._authReturnScreen='redeem';obGo('login');return;}
   OB._promoBusy=true;obRender();
   try{
-    await redeemPromotionThroughCanonicalBackend(code);if(!OB)return;OB._promoBusy=false;
-    if(currentTier()!=='pro'){OB._promoError=t('ob.promoNoPro');obRender();return;}
+    await redeemPromotionThroughCanonicalBackend(code);if(OB!==original||cloudUser()?.uid!==uid)return;OB._promoBusy=false;
+    if(!OB.pendingIntent||OB.pendingIntent.source==='redeem'){OB.pendingIntent=null;OB._intentMessage=t('promo.success')+' · '+t('tier.'+currentTier());obRender();return;}
+    if(currentTier()!=='pro'){OB._intentMessage=t('promo.success')+' · '+t('tier.'+currentTier());OB._promoError=t('ob.promoNoPro');obRender();return;}
     obResumePendingIntentAfterHydration({state:'converged',existingCloudAccount:true});
-  }catch(error){if(OB){OB._promoBusy=false;OB._promoError=promotionFailureMessage(error);obRender();}}
+  }catch(error){if(OB===original&&cloudUser()?.uid===uid){OB._promoBusy=false;OB._promoError=promotionFailureMessage(error);obRender();}}
 }
 function obExplore(){
+  if(OB&&OB._replay){obExitReplay();return;}
   // mark onboarding as skipped (explore), close, land on app welcome/home
   try{ localStorage.setItem(accountSlotKey('onboarding-done'),'explore'); }catch(e){}
   obClose();
@@ -8457,8 +8529,8 @@ function obFinish(){
   // 4) set current year to the most recent touched (so dashboard shows data)
   if(yearsTouched.size){ const arr=[...yearsTouched].sort(); S.year=arr[arr.length-1]; }
   // 5) store review list for the dashboard reminder
-  S.obReview = needsRev;
-  try{ localStorage.setItem(accountSlotKey('onboarding-done'),'1'); }catch(e){}
+  S.obReview = OB&&OB._replay?Array.from(new Set([...(Array.isArray(S.obReview)?S.obReview:[]),...needsRev])):needsRev;
+  if(!OB||!OB._replay)try{ localStorage.setItem(accountSlotKey('onboarding-done'),'1'); }catch(e){}
   save();
 
   // 6) push to cloud if signed in
@@ -8565,16 +8637,8 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('gesturechange', e=>e.preventDefault());
 document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
-// Block double-tap zoom (only when the two taps are at nearly the same spot,
-// so genuine quick taps on different buttons still work)
-let lastTap=0, lastX=0, lastY=0;
-document.addEventListener('touchend', e=>{
-  if(e.changedTouches.length!==1) return;
-  const t=e.changedTouches[0], now=Date.now();
-  const near = Math.abs(t.clientX-lastX)<30 && Math.abs(t.clientY-lastY)<30;
-  if(now-lastTap<=300 && near){ e.preventDefault(); }
-  lastTap=now; lastX=t.clientX; lastY=t.clientY;
-}, {passive:false});
+// CSS touch-action handles double-tap zoom without cancelling activation.
+// A second control can occupy the same coordinates immediately after navigation.
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){

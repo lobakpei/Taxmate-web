@@ -9,6 +9,7 @@
   const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
   const plain=value=>value!==null&&typeof value==='object'&&!Array.isArray(value);
   const cleanId=value=>typeof value==='string'&&/^[a-z0-9][a-z0-9._:-]{0,127}$/i.test(value)?value:null;
+  const last=values=>values.length?values[values.length-1]:undefined;
 
   function memoryStorage(){
     const values=new Map();
@@ -98,27 +99,27 @@
     };
     const api={
       snapshot:()=>clone(state),
-      currentRoute:()=>state.routes.at(-1)||null,
-      topOverlay:()=>state.overlays.at(-1)||null,
+      currentRoute:()=>last(state.routes)||null,
+      topOverlay:()=>last(state.overlays)||null,
       enter(screenId,params={},options={}){
-        const next=route(screenId,params),current=state.routes.at(-1);
+        const next=route(screenId,params),current=last(state.routes);
         if(options.replace&&current)state.routes[state.routes.length-1]=next;
         else if(!current||current.screenId!==next.screenId||JSON.stringify(current.params)!==JSON.stringify(next.params))state.routes.push(next);
         state.overlays=[];state.pendingDiscard=null;return api.snapshot();
       },
       openOverlay(id,type,options={}){
-        const current=state.routes.at(-1);if(!current)throw new Error('A parent screen is required before opening an overlay');
+        const current=last(state.routes);if(!current)throw new Error('A parent screen is required before opening an overlay');
         state.overlays.push(overlay(id,type,current.screenId,options));state.pendingDiscard=null;return api.snapshot();
       },
       closeOverlay(){const closed=state.overlays.pop()||null;state.pendingDiscard=null;return clone(closed);},
       back(){
         if(state.overlays.length)return{kind:'overlay',closed:api.closeOverlay(),state:api.snapshot()};
-        if(state.routes.length>1){const closed=state.routes.pop();state.pendingDiscard=null;return{kind:'route',closed:clone(closed),current:clone(state.routes.at(-1)),state:api.snapshot()};}
+        if(state.routes.length>1){const closed=state.routes.pop();state.pendingDiscard=null;return{kind:'route',closed:clone(closed),current:clone(last(state.routes)),state:api.snapshot()};}
         return{kind:'exit',state:api.snapshot()};
       },
       requestDismiss(reason,isDirty){
         if(state.overlays.length)return{kind:'overlay',closed:api.closeOverlay(),state:api.snapshot()};
-        if(isDirty){state.pendingDiscard={reason:String(reason||'dismiss'),screenId:state.routes.at(-1)?.screenId||null};return{kind:'confirm_discard',pending:clone(state.pendingDiscard),state:api.snapshot()};}
+        if(isDirty){state.pendingDiscard={reason:String(reason||'dismiss'),screenId:last(state.routes)?.screenId||null};return{kind:'confirm_discard',pending:clone(state.pendingDiscard),state:api.snapshot()};}
         state.pendingDiscard=null;return{kind:'dismiss',state:api.snapshot()};
       },
       confirmDiscard(){const pending=clone(state.pendingDiscard);state.pendingDiscard=null;return{kind:'dismiss',pending,state:api.snapshot()};},

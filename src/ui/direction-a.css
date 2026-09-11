@@ -324,6 +324,7 @@ html[data-direction-a="true"] #ob-root .ob-confetti{display:none}
 html[data-direction-a="true"] #ob-root .ob-btn{background:var(--y);color:var(--y-ink);border-radius:var(--r-m);box-shadow:none;min-height:50px}
 html[data-direction-a="true"] #ob-root .ob-btn.ghost,
 html[data-direction-a="true"] #ob-root .ob-btn.soft{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
+html[data-direction-a="true"] #ob-root .ob-seg button.on{background:var(--navy);color:var(--navy-ink);box-shadow:none}
 html[data-direction-a="true"] .ob-pfill{background:var(--y)}
 
 /* LTD real renderer --------------------------------------------------------- */
@@ -626,3 +627,6 @@ html[data-direction-a="true"] .btn:active,html[data-direction-a="true"] #ob-root
   html[data-direction-a="true"] body:not(.ltd-active)>main{margin-inline-start:calc(50% - 256px);margin-inline-end:32px}
   html[data-direction-a="true"] .review01-page-title{margin:0 0 14px;padding:14px 20px;border-radius:22px}
 }
+
+/* Checkout and redemption remain operable above the onboarding shell. */
+body:has(#ob-root.active) #sb-billing.open,body:has(#ob-root.active) #sb-promo.open{z-index:10001}
