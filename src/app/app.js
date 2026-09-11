@@ -3132,6 +3132,12 @@ Object.assign(I18N.pl,{"set.analyticsShare":"Udostępniaj anonimowe dane o użyc
 Object.assign(I18N.ro,{"set.analyticsShare":"Partajează analize anonime de utilizare"});
 Object.assign(I18N.es,{"set.analyticsShare":"Compartir analítica de uso anónima"});
 Object.assign(I18N.ur,{"set.analyticsShare":"گمنام استعمال کے اعداد و شمار شیئر کریں"});
+Object.assign(I18N.en,{'set.gettingStarted':'Getting started','set.gettingStartedBody':'Start the full guide again from the beginning. Your existing businesses and records stay in place.','ob.exitTour':'Exit to dashboard','ob.replayNote':'This is a fresh guide. Existing businesses and records will not be removed or replaced.'});
+Object.assign(I18N.zh,{'set.gettingStarted':'重新開始新手導覽','set.gettingStartedBody':'由開頭再行一次完整導覽。你現有嘅公司同記錄會原封不動保留。','ob.exitTour':'返回主頁','ob.replayNote':'呢次係全新導覽；現有公司同記錄唔會被刪除或者取代。'});
+Object.assign(I18N.pl,{'set.gettingStarted':'Pierwsze kroki','set.gettingStartedBody':'Uruchom ponownie pełny przewodnik od początku. Istniejące firmy i zapisy pozostaną bez zmian.','ob.exitTour':'Wyjdź do pulpitu','ob.replayNote':'To nowy przewodnik. Istniejące firmy i zapisy nie zostaną usunięte ani zastąpione.'});
+Object.assign(I18N.ro,{'set.gettingStarted':'Primii pași','set.gettingStartedBody':'Pornește din nou ghidul complet de la început. Firmele și înregistrările existente rămân neschimbate.','ob.exitTour':'Ieși la panou','ob.replayNote':'Acesta este un ghid nou. Firmele și înregistrările existente nu vor fi șterse sau înlocuite.'});
+Object.assign(I18N.es,{'set.gettingStarted':'Primeros pasos','set.gettingStartedBody':'Inicia de nuevo la guía completa desde el principio. Tus negocios y registros existentes se conservarán.','ob.exitTour':'Salir al panel','ob.replayNote':'Esta es una guía nueva. Los negocios y registros existentes no se eliminarán ni sustituirán.'});
+Object.assign(I18N.ur,{'set.gettingStarted':'ابتدائی رہنمائی','set.gettingStartedBody':'مکمل رہنمائی شروع سے دوبارہ چلائیں۔ آپ کے موجودہ کاروبار اور ریکارڈ برقرار رہیں گے۔','ob.exitTour':'ڈیش بورڈ پر واپس جائیں','ob.replayNote':'یہ ایک نئی رہنمائی ہے۔ موجودہ کاروبار اور ریکارڈ حذف یا تبدیل نہیں ہوں گے۔'});
 Object.assign(I18N.en,{
   'pwa.homeTitle':'Install TaxMate',
   'pwa.homeBody':'Keep TaxMate on your Home Screen for faster access and core bookkeeping offline.',
@@ -3289,6 +3295,17 @@ function applyStaticI18n(){
   document.querySelectorAll('[data-i18n-aria]').forEach(el=>{ el.setAttribute('aria-label',t(el.getAttribute('data-i18n-aria'))); });
   document.documentElement.lang = S.settings.lang;
   document.documentElement.dir = S.settings.lang==='ur' ? 'rtl' : 'ltr';
+}
+function storedLanguagePreference(){
+  if(!ACTIVE_ACCOUNT_SCOPE)return null;
+  try{const value=localStorage.getItem(accountSlotKey('language-preference'));return Object.prototype.hasOwnProperty.call(LANG_NAMES,value)?value:null;}catch(_){return null;}
+}
+function applyStoredLanguagePreference(){const value=storedLanguagePreference();if(value&&S.settings.lang!==value)S.settings.lang=value;return value;}
+function setLanguagePreference(value){
+  if(!Object.prototype.hasOwnProperty.call(LANG_NAMES,value))return false;
+  S.settings.lang=value;
+  try{localStorage.setItem(accountSlotKey('language-preference'),value);}catch(_){}
+  applyStaticI18n();return true;
 }
 function locale(){ return LOCALES[S.settings.lang] || 'en-GB'; }
 
@@ -4104,6 +4121,19 @@ function renderYearSel(background=false){
 }
 
 function reloadTaxMate(){location.reload();}
+let FIRST_OPERABLE_FRAME_QUEUED=false;
+function signalFirstOperableFrame(){
+  if(FIRST_OPERABLE_FRAME_QUEUED||document.documentElement.dataset.taxmateFirstFrame==='ready')return;
+  const onboarding=document.getElementById('ob-root'),page=document.getElementById('page');
+  const onboardingReady=!!onboarding&&onboarding.classList.contains('active')&&!!onboarding.querySelector('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])');
+  const pageReady=!!page&&!page.querySelector('[data-auth-initialising],[data-retention-paused],[data-state-load-error]')&&!!page.querySelector('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])');
+  if(!onboardingReady&&!pageReady)return;
+  FIRST_OPERABLE_FRAME_QUEUED=true;
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{
+    document.documentElement.dataset.taxmateFirstFrame='ready';
+    window.dispatchEvent(new CustomEvent('taxmate:first-frame-ready'));
+  }));
+}
 function pageStateRecovery(){
   const user=cloudUser();
   return '<section class="card" data-state-load-error><div class="notice amber"><strong>'+esc(t('shell.dataCheckTitle'))+'</strong><p>'+esc(t('recovery.body'))+'</p></div>'+
@@ -4117,6 +4147,7 @@ function pageStateRecovery(){
 
 function render(options={}){
   const background=options.background===true;
+  applyStoredLanguagePreference();
   applyStaticI18n(); renderYearSel(background); renderNav(background);
   document.body.dataset.directionPage=S.tab||'home';
   const page = document.getElementById('page');
@@ -4136,6 +4167,7 @@ function render(options={}){
   if(background)TaxMateForegroundUI.html(page,markup);else page.innerHTML=markup;
   if(S.tab==='more')page.querySelectorAll('details[data-settings-section]').forEach(node=>{node.open=openSettings.includes(node.dataset.settingsSection);});
   renderSyncStatus();
+  signalFirstOperableFrame();
 }
 function renderBackgroundAccount(){render({background:true});}
 
@@ -4271,6 +4303,7 @@ function obReopenCatchup(){
     OB.screen = 'start';
   }
   const r = TaxMateOnboardingRoot.open(document);
+  r.dataset.onboardingMode='catch-up';
   obRender();
 }
 
@@ -4882,6 +4915,11 @@ function pageMore(){
         <div class="catgrid">${Object.keys(LANG_NAMES).map(l=>`<button class="catbtn ${S.settings.lang===l?'on':''}" data-tm-click="setLang('${l}')">${LANG_NAMES[l]}</button>`).join('')}</div>
         ${S.settings.lang!=='en'?`<div class="fhint" style="margin-top:10px"> ${t('lang.pdfHint')}</div>`:''}
       </div>
+      <div class="card" data-getting-started="full-tour">
+        <div class="t" style="margin-bottom:4px">${t('set.gettingStarted')}</div>
+        <div class="s" style="margin-bottom:12px">${t('set.gettingStartedBody')}</div>
+        <button class="btn soft" data-tm-click="obRestartFullTour()">${t('set.gettingStarted')}</button>
+      </div>
       <div class="card">
         <div class="t" style="margin-bottom:4px">${t('set.analyticsTitle')}</div>
         <div class="s" style="margin-bottom:12px">${t('set.analyticsBody')}</div>
@@ -4993,8 +5031,8 @@ function setAnalyticsConsent(enabled){
   if(window.TaxMateAnalytics)TaxMateAnalytics.setConsent(enabled===true);
   render();
 }
-function setLang(l){ S.settings.lang=l; save(); render(); if(typeof refreshPartnerInvitation==='function')refreshPartnerInvitation(); }
-function obSetLang(l){ S.settings.lang=l; save(); applyStaticI18n(); OB._langOpen=false; obRender(); }
+function setLang(l){ if(!setLanguagePreference(l))return;render();if(typeof refreshPartnerInvitation==='function')refreshPartnerInvitation(); }
+function obSetLang(l){ if(!OB||!setLanguagePreference(l))return;OB._langOpen=false;obRender(); }
 
 /* ═══════════ entry sheet ═══════════ */
 let EN = {id:null, kind:'expense', cat:null, pct:100};
@@ -7781,7 +7819,7 @@ function obDefaultState(loggedIn){
   };
 }
 function obPersistDraft(){
-  if(!OB||!OB_DRAFT_KEY)return;
+  if(!OB||!OB_DRAFT_KEY||OB._replay)return;
   try{const safe=JSON.parse(JSON.stringify(OB));delete safe._partnerBusy;delete safe._promoBusy;delete safe._signingInFlow;delete safe._intentLaunching;localStorage.setItem(OB_DRAFT_KEY,JSON.stringify(safe));}catch(_){}
 }
 function obRestoreDraft(){
@@ -7815,24 +7853,32 @@ function obGrandMiles(){ return obActiveMonths().reduce((s,m)=>s+(parseFloat(obM
 function obEnsureRoot(){
   return TaxMateOnboardingRoot.ensure(document);
 }
-function startOnboarding(){
-  OB = obRestoreDraft()||obDefaultState(false);
-  TaxMateOnboardingRoot.open(document);
+function startOnboarding(options={}){
+  const replay=options&&options.mode==='replay';
+  OB = replay?obDefaultState(!!cloudUser()):(obRestoreDraft()||obDefaultState(false));
+  if(replay){OB.screen='entry';OB._replay=true;OB._lastView=null;}
+  const root=TaxMateOnboardingRoot.open(document);
+  root.dataset.onboardingMode=replay?'full-tour':'first-run';
   obRender();
 }
+function obRestartFullTour(){startOnboarding({mode:'replay'});}
+function obExitReplay(){if(!OB||!OB._replay)return;obClose();S.tab='home';render();window.scrollTo(0,0);}
 function obClose(){
   closeOnboardingSurface({clearDraft:true,clearState:true});
 }
 function obRender(){
+  applyStoredLanguagePreference();
   const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
   const keep = (OB._lastView===view) ? r.scrollTop : 0;
   r.innerHTML = fns[OB.screen]();
+  if(OB._replay)r.insertAdjacentHTML('afterbegin',`<button class="ob-tour-exit" data-tm-click="obExitReplay()">${t('ob.exitTour')}</button>`);
   OB._lastView = view;
   r.scrollTop = keep;
   obPersistDraft();
+  signalFirstOperableFrame();
 }
 function obGo(s){ TaxMateOnboardingRoot.progress(OB,s,obRender); }
 function obProgress(pct,label,back){
@@ -7901,6 +7947,7 @@ function obCancelRequiredSignIn(){if(!OB)return;const screen=OB._authReturnScree
 function obScrEntry(){
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <h1>${t('ob.howStart')}</h1>
+    ${OB&&OB._replay?`<p class="ob-lede ob-replay-note">${t('ob.replayNote')}</p>`:''}
     <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
     <button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
     <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
@@ -7994,7 +8041,7 @@ async function obConfirmPartnerConnection(){
   }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
 }
 function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell('',`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
-function obFinishPartnerConnection(){try{localStorage.setItem(accountSlotKey('onboarding-done'),'partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
+function obFinishPartnerConnection(){if(OB&&!OB._replay)try{localStorage.setItem(accountSlotKey('onboarding-done'),'partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
 function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
@@ -8021,6 +8068,7 @@ async function obRedeemPromotionCode(){
   }catch(error){if(OB){OB._promoBusy=false;OB._promoError=promotionFailureMessage(error);obRender();}}
 }
 function obExplore(){
+  if(OB&&OB._replay){obExitReplay();return;}
   // mark onboarding as skipped (explore), close, land on app welcome/home
   try{ localStorage.setItem(accountSlotKey('onboarding-done'),'explore'); }catch(e){}
   obClose();
@@ -8457,8 +8505,8 @@ function obFinish(){
   // 4) set current year to the most recent touched (so dashboard shows data)
   if(yearsTouched.size){ const arr=[...yearsTouched].sort(); S.year=arr[arr.length-1]; }
   // 5) store review list for the dashboard reminder
-  S.obReview = needsRev;
-  try{ localStorage.setItem(accountSlotKey('onboarding-done'),'1'); }catch(e){}
+  S.obReview = OB&&OB._replay?Array.from(new Set([...(Array.isArray(S.obReview)?S.obReview:[]),...needsRev])):needsRev;
+  if(!OB||!OB._replay)try{ localStorage.setItem(accountSlotKey('onboarding-done'),'1'); }catch(e){}
   save();
 
   // 6) push to cloud if signed in

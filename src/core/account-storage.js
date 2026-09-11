@@ -6,7 +6,7 @@
     'taxmateuk_preimport_backup','taxmateuk_pre_ltd_v15_migration','taxmateuk_onboarding_draft_v1',
     'taxmateuk_ltd_ui_drafts_v1','tmOnboardDone'
   ]);
-  const ASSOCIATION_SLOTS=Object.freeze(['canonical','onboarding-draft','onboarding-done','preimport-backup','pre-ltd-rollback','ltd-drafts']);
+  const ASSOCIATION_SLOTS=Object.freeze(['canonical','onboarding-draft','onboarding-done','language-preference','preimport-backup','pre-ltd-rollback','ltd-drafts']);
   const clone=value=>value==null?value:JSON.parse(JSON.stringify(value));
   function localScope(){return Object.freeze({kind:'local'});}
   function firebaseScope(uid){const value=String(uid||'');if(!value||value.length>128)throw new Error('A valid Firebase UID is required');return Object.freeze({kind:'firebase',uid:value});}
