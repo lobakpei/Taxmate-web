@@ -7933,7 +7933,7 @@ async function obSignIn(){
     try{
       let signInError='';
       const signedIn=await signIn({onError:message=>{signInError=message;}});
-      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=signInError;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
+      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=signInError;OB.screen=signInError?'login':returnScreen||'login';obRender();}return;}
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
       if(u)await waitForAuthenticatedAccountScope(u.uid);
       const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
@@ -7941,7 +7941,7 @@ async function obSignIn(){
       if(!OB)return;
       if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
       OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=t('ac.err');if(returnScreen)OB.screen=returnScreen;obRender();}return; }
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=t('ac.err');OB.screen='login';obRender();}return; }
   } else {
     // Missing SDK/configuration is not a successful login (including offline startup).
     if(OB){OB.loggedIn=false;OB._signingInFlow=false;OB._signInError=t('ac.needNet');obRender();}
