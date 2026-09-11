@@ -64,7 +64,7 @@
     const accountsStart=period.accountsStartDate,accountsEnd=period.accountsEndDate;
     const validAccounts=Domain.isoDate(accountsStart)&&Domain.isoDate(accountsEnd)&&accountsStart<=period.startDate&&accountsEnd>=period.endDate&&accountsEnd<addCalendarMonths(accountsStart,18);
     const invalidNotice=noticeServedDate!=null&&!Domain.isoDate(noticeServedDate);
-    const baseDate=validAccounts?[addCalendarMonths(period.endDate,12),addCalendarMonths(accountsEnd,12),...(Domain.isoDate(noticeServedDate)?[addCalendarMonths(noticeServedDate,3)]:[])].sort().at(-1):null;
+    const baseDates=validAccounts?[addCalendarMonths(period.endDate,12),addCalendarMonths(accountsEnd,12),...(Domain.isoDate(noticeServedDate)?[addCalendarMonths(noticeServedDate,3)]:[])].sort():[],baseDate=validAccounts?baseDates[baseDates.length-1]:null;
     const taxReturn=validAccounts&&!invalidNotice?deadline('company_tax_return',baseDate,asOfDate,['GOVUK-CTM93030'],Object.assign({basis:'later_of_return_period_plus_12_months_accounts_period_plus_12_months_and_notice_plus_3_months',noticeServedDate,noticeDateStatus:noticeServedDate?'recorded':'check_hmrc_notice_for_later_deadline',accountsStartDate:accountsStart,accountsEndDate:accountsEnd},common)):reviewDeadline('company_tax_return',['company_tax_return_period_of_account_or_notice_needs_checking'],['GOVUK-CTM93030'],common);
     return[payment,taxReturn];
   }

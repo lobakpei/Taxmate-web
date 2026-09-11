@@ -5,12 +5,12 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function versionsFactory() {
   const VERSIONS = Object.freeze({
     APP_VERSION: '2.1.32',
-    BUILD_ID: '2026-09-11.native-four-blockers.1',
+    BUILD_ID: '2026-09-11.android-webview-compat.1',
     STATE_SCHEMA_VERSION: 5,
     TAX_RULESET_VERSION: '2026-27.2026-08-17.1',
     FORM_MAPPING_VERSION: '2025-26.2026-04-06.1',
     SYNC_SCHEMA_VERSION: 5,
-    PWA_CACHE_VERSION: 'taxmate-v2-native-four-blockers-20260911-1'
+    PWA_CACHE_VERSION: 'taxmate-v2-android-webview-compat-20260911-1'
   });
   return { VERSIONS };
 });

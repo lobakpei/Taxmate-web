@@ -42,7 +42,7 @@
       let shareholders;try{shareholders=validateShareholders(revision.after).map(({totalShares,...holder})=>holder);}catch(_){continue;}
       const linked=ordered.find(item=>item.sourceRevisionId===revision.id||item.effectiveFrom===revision.effectiveDate&&same(item.shareholders,shareholders));
       if(linked)continue;
-      const prior=ordered.filter(item=>item.effectiveFrom<revision.effectiveDate).at(-1);
+      const earlier=ordered.filter(item=>item.effectiveFrom<revision.effectiveDate),prior=earlier.length?earlier[earlier.length-1]:undefined;
       if(!prior||ordered.some(item=>item.effectiveFrom>revision.effectiveDate))continue;
       const now=Number(revision.updatedAt)||Number(source.updatedAt)||Date.now();
       prior.effectiveTo=revision.effectiveDate;prior.updatedAt=now;prior.deviceId=revision.deviceId||source.deviceId;
@@ -52,7 +52,7 @@
     if(ordered.length>1)for(let index=0;index<ordered.length-1;index++){
       if(ordered[index].effectiveTo==null&&ordered[index+1].effectiveFrom>ordered[index].effectiveFrom){ordered[index].effectiveTo=ordered[index+1].effectiveFrom;ordered[index].updatedAt=Math.max(Number(ordered[index].updatedAt)||0,Number(ordered[index+1].updatedAt)||0);}
     }
-    const open=ordered.at(-1);
+    const open=ordered.length?ordered[ordered.length-1]:undefined;
     const applied=open&&revisions.find(item=>{if(item.id!==open.sourceRevisionId||item.effectiveDate!==open.effectiveFrom)return false;try{return same(validateShareholders(item.after).map(({totalShares,...holder})=>holder),open.shareholders);}catch(_){return false;}});
     if(open&&open.effectiveTo==null&&(same(open.shareholders,normalizedProfile)||applied)){
       source.ownershipHistory=ordered;source.shareholders=clone(open.shareholders);
@@ -98,7 +98,7 @@
   }
   function recordOwnershipChange(input){
     const source=ensureHistory(input&&input.profile),effectiveDate=input&&input.effectiveDate;if(!Domain.isoDate(effectiveDate)||effectiveDate<source.incorporationDate)throw new Error('Ownership effective date is invalid');
-    if(!text(input.reason,1000))throw new Error('Ownership change reason is required');const evidenceRefs=assertEvidence(input.evidenceRefs),history=orderedHistory(source),current=history.at(-1);
+    if(!text(input.reason,1000))throw new Error('Ownership change reason is required');const evidenceRefs=assertEvidence(input.evidenceRefs),history=orderedHistory(source),current=history[history.length-1];
     if(effectiveDate<=current.effectiveFrom)throw new Error('Ownership change must start after the current ownership version');
     const shareholders=validateShareholders(input.shareholders).map(({totalShares,...holder})=>holder),affected=(input.dividendDeclarations||[]).filter(record=>record&&record.declarationDate>=effectiveDate).map(record=>record.id);
     const impact={status:affected.length?'declared_dividend_review_required':'safe_to_apply',affectedRecordIds:affected};

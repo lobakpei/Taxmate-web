@@ -5954,7 +5954,7 @@ function subscribeSync(code, bizId){
       }
       subscription.businessReady=true;finish();
     }, fail));
-    const membership=await db.collection('partnerships').doc(code).collection('members').doc(u.uid).get({source:'server'}),memberCutoff=membership.exists&&membership.data().retentionCutoffDate||'',cutoff=[memberCutoff,CLOUD.retentionControl&&CLOUD.retentionControl.cutoffDate||''].sort().at(-1),entryRef=db.collection('partnerships').doc(code).collection('entries');
+    const membership=await db.collection('partnerships').doc(code).collection('members').doc(u.uid).get({source:'server'}),memberCutoff=membership.exists&&membership.data().retentionCutoffDate||'',cutoffs=[memberCutoff,CLOUD.retentionControl&&CLOUD.retentionControl.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1],entryRef=db.collection('partnerships').doc(code).collection('entries');
     subscription.memberUid=u.uid;subscription.membership=membership.exists?membership.data():null;
     subscription.unsubs.push(db.collection('partnerships').doc(code).collection('members').doc(u.uid).onSnapshot(doc=>{subscription.membership=doc.exists?doc.data():null;refreshReceiptMutationControls();},()=>{subscription.membership=null;refreshReceiptMutationControls();}));
     subscription.unsubs.push((cutoff?entryRef.where('date','>=',cutoff):entryRef).onSnapshot(snap=>{
@@ -6206,7 +6206,7 @@ function accountHomeUiFacts(){
   return{expectedRows:expected,renderedRows:rows,onboardingOpen,shellVisible,operable,tab,ready:!onboardingOpen&&shellVisible&&tab===S.tab&&operable&&(tab!=='home'||rows===expected)};
 }
 function accountLtdUiFacts(){
-  const root=document.getElementById('taxmate-ltd-ui-root'),onboarding=document.getElementById('ob-root'),onboardingOpen=!!onboarding&&(onboarding.classList.contains('active')||onboarding.getAttribute('aria-hidden')==='false'),shellVisible=!!root&&!root.hidden&&document.body.classList.contains('ltd-active')&&root.getClientRects().length>0,route=window.TaxMateLtdUIFacade&&TaxMateLtdUIFacade.getSnapshot?TaxMateLtdUIFacade.getSnapshot().navigation.routes.at(-1):null,operable=shellVisible&&Array.from(root.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])')).some(node=>node.getClientRects().length>0);
+  const root=document.getElementById('taxmate-ltd-ui-root'),onboarding=document.getElementById('ob-root'),onboardingOpen=!!onboarding&&(onboarding.classList.contains('active')||onboarding.getAttribute('aria-hidden')==='false'),shellVisible=!!root&&!root.hidden&&document.body.classList.contains('ltd-active')&&root.getClientRects().length>0,routes=window.TaxMateLtdUIFacade&&TaxMateLtdUIFacade.getSnapshot?TaxMateLtdUIFacade.getSnapshot().navigation.routes:[],route=routes[routes.length-1]||null,operable=shellVisible&&Array.from(root.querySelectorAll('button:not([disabled]),a[href],input:not([disabled]),select:not([disabled])')).some(node=>node.getClientRects().length>0);
   return{expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:0,onboardingOpen,shellVisible,operable,tab:'ltd',route:route&&route.screenId||null,ready:!onboardingOpen&&shellVisible&&operable&&!!route&&route.screenId!=='home'};
 }
 function afterBrowserPaint(){return new Promise(resolve=>{if(typeof requestAnimationFrame==='function')requestAnimationFrame(()=>resolve());else queueMicrotask(resolve);});}
@@ -7552,7 +7552,7 @@ function entryMutationAllowed(entry){
   const business=bizById(entry.bizId);if(!business)return false;
   if(!business.syncCode)return true; // Free ordinary/self-employed books remain editable.
   const user=cloudUser(),sub=FB.subs[business.syncCode],member=sub&&sub.memberUid===user?.uid&&sub.membership;
-  const cutoff=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort().at(-1);
+  const cutoffs=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1];
   return !!(user&&member&&hasFeature('partnerSync')&&(!cutoff||entry.date>=cutoff));
 }
 async function entryMutationPreflight(entry){
