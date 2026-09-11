@@ -26,7 +26,7 @@ test('onboarding language changes persist in a lightweight account slot without 
   assert.doesNotMatch(setter,/save\(|scheduleCloudPush|showNotice|openSheet/);
   assert.doesNotMatch(onboardingSetter,/save\(|scheduleCloudPush/);
   assert.match(onboardingSetter,/OB\._langOpen=false;obRender\(\)/);
-  assert.match(app,/applyStoredLanguagePreference\(\);\s*const fns=/);
+  assert.match(app.slice(app.indexOf('function obRender()'),app.indexOf('function obGo(')),/applyStoredLanguagePreference\(\);[\s\S]*const fns=/);
 });
 
 test('a pre-sign-in language choice follows the explicitly associated account',()=>{

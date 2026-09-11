@@ -6391,8 +6391,9 @@ function watchAuth(){
   });
 }
 async function signIn(options={}){
+  const reportError=message=>typeof options.onError==='function'?options.onError(message):showNotice(t('ac.title'),message);
   const db = await ensureFB();
-  if(!db){ showNotice(t('ac.title'),t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
+  if(!db){ reportError(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
   captureLocalPendingIntent();let associationPrepared=false;
   if(localDeviceHasBookkeeping()){
     try{TaxMateAccountStorage.prepareLocalAssociation(localStorage,{now:Date.now(),resetTarget:options.resetAssociationTarget===true});associationPrepared=true;}catch(_){}
@@ -6411,7 +6412,7 @@ async function signIn(options={}){
   }catch(e){
     if(associationPrepared&&!options.preserveAssociationOnCancel)try{TaxMateAccountStorage.clearLocalAssociation(localStorage);}catch(_){}
     if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')){restoreLocalViewAfterSignInCancel();return;}
-    console.warn(e);showNotice(t('ac.title'),t('ac.err'));
+    console.warn(e);reportError(t('ac.err'));
     restoreLocalViewAfterSignInCancel();
     return null;
   }
@@ -7868,6 +7869,10 @@ function obClose(){
 }
 function obRender(){
   applyStoredLanguagePreference();
+  // Restored drafts must respect the same signed-out entry boundary as a new tour.
+  if(!cloudUser()&&['ltd-choice','ltd-registration','partner-code','partner-confirm','pro-gate'].includes(OB.screen)){
+    OB._authReturnScreen='entry';OB.screen='login';
+  }
   const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
@@ -7903,7 +7908,8 @@ function obScrLogin(){
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
     <p class="ob-lede">${context}</p>
-    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled aria-busy="true"':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t(OB&&OB._signingInFlow?'ob.connecting':'ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    ${OB._signInError?`<div class="ob-error show" role="alert">${esc(OB._signInError)}</div>`:''}
     ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
@@ -7922,11 +7928,12 @@ function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
 async function obSignIn(){
   // Keep onboarding pending until cloud account detection has finished. A successful Google
   // popup alone does not mean this is a new user.
-  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signingInFlow=true;obRender();
+  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signInError='';OB._signingInFlow=true;obRender();
   if(typeof signIn==='function' && fbConfigured()){
     try{
-      const signedIn=await signIn();
-      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
+      let signInError='';
+      const signedIn=await signIn({onError:message=>{signInError=message;}});
+      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=signInError;if(returnScreen)OB.screen=returnScreen;obRender();}return;}
       const u = (typeof cloudUser==='function') ? cloudUser() : null;
       if(u)await waitForAuthenticatedAccountScope(u.uid);
       const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
@@ -7934,9 +7941,11 @@ async function obSignIn(){
       if(!OB)return;
       if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
       OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;obRender();}return; }
+    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=t('ac.err');if(returnScreen)OB.screen=returnScreen;obRender();}return; }
   } else {
-    if(OB) OB.loggedIn = true;
+    // Missing SDK/configuration is not a successful login (including offline startup).
+    if(OB){OB.loggedIn=false;OB._signingInFlow=false;OB._signInError=t('ac.needNet');obRender();}
+    return;
   }
   if(OB){ TaxMateOnboardingRoot.open(document); OB._signingInFlow = false; if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry'); }
 }
@@ -7949,8 +7958,9 @@ function obScrEntry(){
     <h1>${t('ob.howStart')}</h1>
     ${OB&&OB._replay?`<p class="ob-lede ob-replay-note">${t('ob.replayNote')}</p>`:''}
     <button class="ob-tile" data-tm-click="obGo('biz')"><span><span class="ob-tt">${t('ob.together')}</span><span class="ob-ts">${t('ob.togetherS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
-    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>
+    ${cloudUser()?`<button class="ob-tile" data-tm-click="obGo('ltd-choice')"><span><span class="ob-tt">${t('ob.ltdEntry')}<span class="ob-entry-pro">Pro</span></span><span class="ob-ts">${t('ob.ltdEntryS')}</span></span></button>
+    <button class="ob-tile" data-tm-click="obStartPartnerSync()"><span><span class="ob-tt">${t('ob.partnerEntry')}</span><span class="ob-ts">${t('ob.partnerEntryS')}</span></span></button>`:
+    `<button class="ob-tile" data-tm-click="obGo('login')"><span><span class="ob-tt">${t('ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>`}
     <div class="ob-skiprow"><button class="ob-link muted" data-tm-click="obExplore()">${t('ob.dash')}</button></div>
   </div></div>`;
 }
@@ -8613,16 +8623,8 @@ document.addEventListener('keydown',e=>{
 });
 document.addEventListener('gesturechange', e=>e.preventDefault());
 document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefault(); }, {passive:false});
-// Block double-tap zoom (only when the two taps are at nearly the same spot,
-// so genuine quick taps on different buttons still work)
-let lastTap=0, lastX=0, lastY=0;
-document.addEventListener('touchend', e=>{
-  if(e.changedTouches.length!==1) return;
-  const t=e.changedTouches[0], now=Date.now();
-  const near = Math.abs(t.clientX-lastX)<30 && Math.abs(t.clientY-lastY)<30;
-  if(now-lastTap<=300 && near){ e.preventDefault(); }
-  lastTap=now; lastX=t.clientX; lastY=t.clientY;
-}, {passive:false});
+// CSS touch-action handles double-tap zoom without cancelling activation.
+// A second control can occupy the same coordinates immediately after navigation.
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
