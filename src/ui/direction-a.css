@@ -630,3 +630,9 @@ html[data-direction-a="true"] .btn:active,html[data-direction-a="true"] #ob-root
 
 /* Checkout and redemption remain operable above the onboarding shell. */
 body:has(#ob-root.active) #sb-billing.open,body:has(#ob-root.active) #sb-promo.open{z-index:10001}
+
+/* Welcome and chooser share one header; Back never consumes a full content row. */
+html[data-direction-a="true"] #ob-root .ob-entry-shell{position:relative;padding-top:52px}
+html[data-direction-a="true"] #ob-root .ob-entry-header{position:absolute;inset:0 16px auto;height:48px}
+html[data-direction-a="true"] #ob-root .ob-entry-back{width:auto;min-width:64px;min-height:44px;display:inline-flex;gap:6px;align-items:center;padding:0 8px;background:transparent;border:0;box-shadow:none;border-radius:8px;font-size:14px;color:var(--muted)}
+html[data-direction-a="true"] #ob-root .ob-entry-back span{font-size:24px}
