@@ -6394,32 +6394,32 @@ function watchAuth(){
     renderBackgroundAccount();
   });
 }
+let ACTIVE_SIGN_IN_OPERATION=null;
 async function signIn(options={}){
+  if(ACTIVE_SIGN_IN_OPERATION)return null;
   const reportError=message=>typeof options.onError==='function'?options.onError(message):showNotice(t('ac.title'),message);
-  const db = await ensureFB();
-  if(!db){ reportError(t(fbConfigured()?'ac.needNet':'sy.setup')); return; }
-  captureLocalPendingIntent();let associationPrepared=false;
-  if(localDeviceHasBookkeeping()){
-    try{TaxMateAccountStorage.prepareLocalAssociation(localStorage,{now:Date.now(),resetTarget:options.resetAssociationTarget===true});associationPrepared=true;}catch(_){}
-  }
-  const provider = new firebase.auth.GoogleAuthProvider();
-  // 每次登入都畀用戶揀 Google 戶口（唔會自動入返上次嗰個）
-  provider.setCustomParameters({ prompt: 'select_account' });
+  const attempt=TaxMateAuthFlow.create({signal:options.signal,onStage:(stage,result)=>safeActionTrace('sign_in',stage+'_'+result,'auth-flow','auth')});
+  ACTIVE_SIGN_IN_OPERATION=attempt;options={...options,signal:attempt.signal};let associationPrepared=false;
   try{
-    const cur = firebase.auth().currentUser;
-    // 如果係匿名 session，先記低佢嘅本機資料，登入後合併（唔再用 linkWithPopup —— 嗰個會喺 OAuth handler 爆白畫面）
-    if(cur && cur.isAnonymous){
-      try{ await firebase.auth().signOut(); }catch(_){}
+    const db=await attempt.wait(()=>ensureFB(),'initialization',8000);
+    if(!db)throw Object.assign(new Error('Firebase unavailable'),{code:'auth/network-request-failed'});
+    attempt.check();captureLocalPendingIntent();
+    if(localDeviceHasBookkeeping()){
+      try{TaxMateAccountStorage.prepareLocalAssociation(localStorage,{now:Date.now(),resetTarget:options.resetAssociationTarget===true});associationPrepared=true;}catch(_){}
     }
-    const credential=await firebase.auth().signInWithPopup(provider);
-    return credential&&credential.user||firebase.auth().currentUser;
+    const provider=new firebase.auth.GoogleAuthProvider();provider.setCustomParameters({prompt:'select_account'});
+    const cur=firebase.auth().currentUser;
+    if(cur&&cur.isAnonymous)await attempt.wait(()=>firebase.auth().signOut(),'anonymous-signout',5000);
+    const credential=await attempt.wait(async()=>await firebase.auth().signInWithPopup(provider),'google',30000);
+    attempt.check();return credential&&credential.user||firebase.auth().currentUser;
   }catch(e){
+    safeActionTrace('sign_in',e?.code==='auth/flow-timeout'?'timeout_'+e.stage:e?.code||'failed','auth-flow','auth');
     if(associationPrepared&&!options.preserveAssociationOnCancel)try{TaxMateAccountStorage.clearLocalAssociation(localStorage);}catch(_){}
-    if(e && (e.code==='auth/popup-closed-by-user' || e.code==='auth/cancelled-popup-request')){restoreLocalViewAfterSignInCancel();return;}
-    console.warn(e);reportError(t('ac.err'));
-    restoreLocalViewAfterSignInCancel();
-    return null;
-  }
+    if(e&&e.code==='auth/cancelled-popup-request')return null;
+    if(e&&e.code==='auth/popup-closed-by-user'){restoreLocalViewAfterSignInCancel();return null;}
+    reportError(flowText(e?.code==='auth/flow-timeout'?'signInTimeout':'signInFailed'));
+    restoreLocalViewAfterSignInCancel();return null;
+  }finally{attempt.close();if(ACTIVE_SIGN_IN_OPERATION===attempt)ACTIVE_SIGN_IN_OPERATION=null;}
 }
 function restoreLocalViewAfterSignInCancel(){
   if(!ACTIVE_ACCOUNT_SCOPE||ACTIVE_ACCOUNT_SCOPE.kind!=='local')activateAccountScope(TaxMateAccountStorage.localScope(),{force:true,navigation:'home'});const restored=obRestoreDraft();if(restored){OB=restored;TaxMateOnboardingRoot.open(document);obRender();ACCOUNT_UI_READY={state:'onboarding',correlation:'sign-in-cancelled',expectedRows:0,renderedRows:0,onboardingOpen:true};return;}closeOnboardingSurface({clearState:true});render();ACCOUNT_UI_READY={state:'local',correlation:'sign-in-cancelled',expectedRows:S.businesses.length+(activeLtdProfile()?1:0),renderedRows:document.querySelectorAll('[data-home-business-list] > .row').length,onboardingOpen:false};
@@ -7907,14 +7907,14 @@ function obShell(progHTML, bodyHTML, footHTML){
 function obScrLogin(){
   const required=!!(OB&&OB._authReturnScreen);
   const source=OB&&OB.pendingIntent&&OB.pendingIntent.source;
-  const context=source==='ltd'?t('ob.signInLtdContext'):source==='partner_sync'?t('ob.signInPartnerContext'):t('ob.lede');
+  const context=source==='ltd'?flowText('signInLtdPro'):source==='partner_sync'?flowText('signInPartnerPro'):t('ob.lede');
   return `<div class="ob-scroll"><div class="ob-wrap ob-step" style="padding-top:52px">
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
     <p class="ob-lede">${context}</p>
-    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled aria-busy="true"':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${t(OB&&OB._signingInFlow?'ob.connecting':'ob.signIn')}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
+    <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled aria-busy="true"':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${(OB&&OB._signingInFlow?t('ob.connecting'):OB._signInError?flowText('retry'):t('ob.signIn'))}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
     ${OB._signInError?`<div class="ob-error show" role="alert">${esc(OB._signInError)}</div>`:''}
-    ${required?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
+    ${required||OB._signingInFlow||OB._signInError?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
   </div></div>${obLangSheet()}`;
@@ -7929,32 +7929,39 @@ function obLangSheet(){
     </div>`;
 }
 function obToggleLang(){ OB._langOpen=!OB._langOpen; obRender(); }
+let OB_AUTH_GENERATION=0,OB_AUTH_OPERATION=null;
 async function obSignIn(){
-  // Keep onboarding pending until cloud account detection has finished. A successful Google
-  // popup alone does not mean this is a new user.
-  if(!OB||OB._signingInFlow)return;const returnScreen=OB._authReturnScreen;OB._signInError='';OB._signingInFlow=true;obRender();
-  if(typeof signIn==='function' && fbConfigured()){
-    try{
-      let signInError='';
-      const signedIn=await signIn({onError:message=>{signInError=message;}});
-      if(!signedIn){if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=signInError||flowText('signInCancelled');OB.screen=returnScreen||'login';OB._intentError=OB._signInError;if(returnScreen==='redeem')OB._promoError=OB._signInError;obRender();}return;}
-      const u = (typeof cloudUser==='function') ? cloudUser() : null;
-      if(u)await waitForAuthenticatedAccountScope(u.uid);
-      const result=u?await startUserSync(u):{state:'failed',existingCloudAccount:false};
-      if(result.state==='confirmation_required'||ACCOUNT_UI_READY.state==='pending-intent'||result.existingCloudAccount)return;
-      if(!OB)return;
-      if(result.state!=='converged'){OB._signingInFlow=false;OB.loggedIn=false;if(returnScreen)OB.screen=returnScreen;renderSyncStatus();obRender();return;}
-      OB.loggedIn=true;
-    }catch(e){ if(OB){OB._signingInFlow=false;OB.loggedIn=false;OB._signInError=t('ac.err');OB.screen='login';obRender();}return; }
-  } else {
-    // Missing SDK/configuration is not a successful login (including offline startup).
-    if(OB){OB.loggedIn=false;OB._signingInFlow=false;OB._signInError=t('ac.needNet');obRender();}
-    return;
-  }
-  if(OB){ TaxMateOnboardingRoot.open(document); OB._signingInFlow = false; if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry'); }
+  if(!OB||OB._signingInFlow)return;
+  const request=++OB_AUTH_GENERATION,returnScreen=OB._authReturnScreen;
+  const recovery=obIntentCopy(OB),operation=TaxMateAuthFlow.create({timeoutMs:75000});OB_AUTH_OPERATION=operation;
+  OB._signInError='';OB._signingInFlow=true;obPersistDraft();obRender();
+  const current=()=>request===OB_AUTH_GENERATION;
+  const recover=message=>{if(!current())return;if(!OB)OB=recovery;OB._signingInFlow=false;OB.loggedIn=!!cloudUser();OB._signInError=message;OB._intentError=message;OB.screen=returnScreen==='redeem'?'redeem':'login';if(returnScreen==='redeem')OB._promoError=message;TaxMateOnboardingRoot.open(document);obPersistDraft();obRender();};
+  try{
+    if(typeof signIn!=='function'||!fbConfigured()){recover(t('ac.needNet'));return;}
+    let signInError='';
+    const signedIn=await operation.wait(()=>signIn({signal:operation.signal,onError:message=>{signInError=message;}}),'sign-in',45000);
+    if(!current())return;
+    if(!signedIn){recover(signInError||flowText('signInCancelled'));return;}
+    const u=cloudUser();
+    if(u)await operation.wait(()=>waitForAuthenticatedAccountScope(u.uid),'account-scope',15000);
+    if(!current())return;
+    const result=u?await operation.wait(()=>startUserSync(u),'account-sync',30000):{state:'failed',existingCloudAccount:false};
+    if(!current())return;
+    if(result.state==='confirmation_required'||ACCOUNT_UI_READY.state==='pending-intent'||result.existingCloudAccount)return;
+    if(!OB)return;
+    if(result.state!=='converged'){recover(flowText('signInFailed'));return;}
+    OB.loggedIn=true;OB._signingInFlow=false;
+    if(OB.pendingIntent)obContinuePendingIntent();else obGo('entry');
+  }catch(e){recover(flowText(e?.code==='auth/flow-timeout'?'signInTimeout':'signInFailed'));}
+  finally{operation.close();if(OB_AUTH_OPERATION===operation)OB_AUTH_OPERATION=null;if(current()&&OB&&OB._signingInFlow){OB._signingInFlow=false;obRender();}}
 }
-function obNoLogin(){ OB.loggedIn=false; obGo('entry'); }
-function obCancelRequiredSignIn(){if(!OB)return;const screen=OB._authReturnScreen||'entry';OB._authReturnScreen=null;OB._signingInFlow=false;obGo(screen);}
+function obNoLogin(){obCancelRequiredSignIn();}
+function obCancelRequiredSignIn(){
+  ++OB_AUTH_GENERATION;if(OB_AUTH_OPERATION)OB_AUTH_OPERATION.cancel();if(ACTIVE_SIGN_IN_OPERATION)ACTIVE_SIGN_IN_OPERATION.cancel();
+  AUTH_PENDING_INTENT=null;AUTH_PENDING_FORM=null;AUTH_PENDING_INTENT_INTERACTION=null;
+  if(!OB)return;const screen=OB._authReturnScreen||'entry';OB._authReturnScreen=null;OB._signingInFlow=false;obGo(screen);obPersistDraft();
+}
 
 /* ENTRY */
 function obScrEntry(){
@@ -7969,7 +7976,7 @@ function obScrEntry(){
 function obStartLtd(){if(!OB)return;OB._intentError='';obSetPendingIntent('ltd',{returnScreen:'entry'});obContinuePendingIntent();}
 
 function taxmateFlowBrand(){return '<div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>';}
-function flowText(key){const copy={en:{redeem:'Redeem Code',signInCancelled:'Sign-in was cancelled. You can try again or go back.',paymentCancelled:'Payment was cancelled. Your choices are saved. Choose a plan to try again.'},zh:{redeem:'兌換優惠碼',signInCancelled:'已取消登入。你可以重試或返回上一步。',paymentCancelled:'已取消付款，已保留你的選擇。你可以重新選擇計劃。'},pl:{redeem:'Wykorzystaj kod',signInCancelled:'Logowanie anulowane. Spróbuj ponownie lub wróć.',paymentCancelled:'Płatność anulowana. Zachowano Twój wybór. Wybierz plan, aby spróbować ponownie.'},ro:{redeem:'Folosește un cod',signInCancelled:'Autentificarea a fost anulată. Reîncearcă sau revino.',paymentCancelled:'Plata a fost anulată. Opțiunile sunt salvate. Alege un plan pentru a reîncerca.'},es:{redeem:'Canjear código',signInCancelled:'Inicio de sesión cancelado. Reintenta o vuelve atrás.',paymentCancelled:'Pago cancelado. Tus opciones están guardadas. Elige un plan para reintentar.'},ur:{redeem:'کوڈ استعمال کریں',signInCancelled:'سائن ان منسوخ ہو گیا۔ دوبارہ کوشش کریں یا واپس جائیں۔',paymentCancelled:'ادائیگی منسوخ ہو گئی۔ آپ کا انتخاب محفوظ ہے۔ دوبارہ کوشش کے لیے پلان منتخب کریں۔'}};return (copy[S.settings.lang]||copy.en)[key];}
+function flowText(key){const authCopy={"en":{"retry":"Retry","signInTimeout":"Sign-in took too long. Check your connection, then retry or go back. Your choices are saved.","signInFailed":"Google sign-in could not finish. Check your connection and try again, or go back.","signInLtdPro":"Limited Company is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in.","signInPartnerPro":"Partner Sync is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in."},"zh":{"retry":"重試","signInTimeout":"登入等候時間過長。請檢查連線後重試，或返回上一步；你的選擇已保存。","signInFailed":"未能完成 Google 登入。請檢查連線後重試，或返回上一步。","signInLtdPro":"有限公司是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。","signInPartnerPro":"夥伴同步是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。"},"pl":{"retry":"Spróbuj ponownie","signInTimeout":"Logowanie trwało zbyt długo. Sprawdź połączenie i spróbuj ponownie lub wróć. Twój wybór został zapisany.","signInFailed":"Nie udało się zakończyć logowania Google. Sprawdź połączenie i spróbuj ponownie lub wróć.","signInLtdPro":"Limited Company to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan.","signInPartnerPro":"Partner Sync to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan."},"ro":{"retry":"Reîncearcă","signInTimeout":"Autentificarea a durat prea mult. Verifică conexiunea, apoi reîncearcă sau revino. Opțiunile sunt salvate.","signInFailed":"Autentificarea Google nu s-a încheiat. Verifică conexiunea și reîncearcă sau revino.","signInLtdPro":"Limited Company este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare.","signInPartnerPro":"Partner Sync este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare."},"es":{"retry":"Reintentar","signInTimeout":"El inicio de sesión tardó demasiado. Comprueba la conexión y reintenta o vuelve atrás. Tus opciones están guardadas.","signInFailed":"No se pudo completar el inicio de sesión con Google. Comprueba la conexión y reintenta o vuelve atrás.","signInLtdPro":"Limited Company es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después.","signInPartnerPro":"Partner Sync es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después."},"ur":{"retry":"دوبارہ کوشش کریں","signInTimeout":"سائن ان میں بہت وقت لگا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔ آپ کا انتخاب محفوظ ہے۔","signInFailed":"Google سائن ان مکمل نہیں ہوا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔","signInLtdPro":"Limited Company ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔","signInPartnerPro":"Partner Sync ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔"}};if(authCopy.en[key])return (authCopy[S.settings.lang]||authCopy.en)[key];const copy={en:{redeem:'Redeem Code',signInCancelled:'Sign-in was cancelled. You can try again or go back.',paymentCancelled:'Payment was cancelled. Your choices are saved. Choose a plan to try again.'},zh:{redeem:'兌換優惠碼',signInCancelled:'已取消登入。你可以重試或返回上一步。',paymentCancelled:'已取消付款，已保留你的選擇。你可以重新選擇計劃。'},pl:{redeem:'Wykorzystaj kod',signInCancelled:'Logowanie anulowane. Spróbuj ponownie lub wróć.',paymentCancelled:'Płatność anulowana. Zachowano Twój wybór. Wybierz plan, aby spróbować ponownie.'},ro:{redeem:'Folosește un cod',signInCancelled:'Autentificarea a fost anulată. Reîncearcă sau revino.',paymentCancelled:'Plata a fost anulată. Opțiunile sunt salvate. Alege un plan pentru a reîncerca.'},es:{redeem:'Canjear código',signInCancelled:'Inicio de sesión cancelado. Reintenta o vuelve atrás.',paymentCancelled:'Pago cancelado. Tus opciones están guardadas. Elige un plan para reintentar.'},ur:{redeem:'کوڈ استعمال کریں',signInCancelled:'سائن ان منسوخ ہو گیا۔ دوبارہ کوشش کریں یا واپس جائیں۔',paymentCancelled:'ادائیگی منسوخ ہو گئی۔ آپ کا انتخاب محفوظ ہے۔ دوبارہ کوشش کے لیے پلان منتخب کریں۔'}};return (copy[S.settings.lang]||copy.en)[key];}
 function obChoosePlan(tier){if(!OB)return;OB.selectedTier=tier;obPersistDraft();if(tier==='free'){obReturnFromProGate();return;}if(tier==='pro'){obProUpgrade();return;}if(!proBillingAvailability().purchaseEnabled)return;startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});}
 function obOpenRedeem(){if(!OB)return;OB._redeemReturn=OB.screen==='redeem'?OB._redeemReturn||'app':OB.screen;OB._promoError='';obGo('redeem');}
 function obBackFromRedeem(){if(!OB)return;if(OB._redeemReturn==='app'){const tab=OB._returnAppTab;obClose();if(['home','income','expenses','tax','more'].includes(tab))S.tab=tab;render();return;}obGo(OB._redeemReturn||'pro-gate');}
@@ -8646,3 +8653,5 @@ if('serviceWorker' in navigator){
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
   else registerTaxMateServiceWorker();
 }
+
+
