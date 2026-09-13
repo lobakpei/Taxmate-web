@@ -39,7 +39,7 @@ const COPY_KEY_BY_REASON=Object.freeze({
   incorporation_date_required:'error.required',incorporation_date_invalid:'error.invalid_date',future_incorporation:'error.future_incorporation',incorporation_after_trading_start:'error.trading_before_incorporation',incorporation_after_accounts_start:'error.invalid_date',
   trading_start_date_required:'error.required',trading_start_date_invalid:'error.invalid_date',future_trading:'error.future_trading',trading_before_incorporation:'error.trading_before_incorporation',trading_after_accounts_period:'error.invalid_date',
   accounting_period_required:'error.required',accounting_period_invalid:'error.invalid_date',accounting_period_start_after_end:'error.invalid_date',accounting_period_before_incorporation:'error.invalid_date',accounts_period_over_18_months:'error.invalid_date',
-  founder_name_required:'error.required',founder_shares_invalid:'error.ownership_total',other_shares_invalid:'error.ownership_total',other_shareholder_name_required:'error.other_name',ownership_total_invalid:'error.ownership_total',
+  founder_name_required:'error.required',founder_shares_invalid:'error.ownership_total',other_shares_invalid:'error.ownership_total',share_ownership_total_required:'error.ownership_total',other_shareholder_name_required:'error.other_name',ownership_total_invalid:'error.ownership_total',
   description_required:'error.required',amountMinor_invalid:'error.required',amount_must_be_positive:'error.required',date_invalid:'error.invalid_date',allocation_exact_sum_required:'error.allocation_total',
   correction_reason_required:'error.required',company_correction_reason_required:'error.required',company_correction_evidence_required:'error.required',correctable_company_field_required:'error.fix_issue',
   ownership_shareholders_required:'error.required',ownership_shareholder_invalid:'error.ownership_total',ownership_effective_date_invalid:'error.invalid_date',ownership_effective_date_not_after_current:'error.invalid_date',ownership_reason_required:'error.required',ownership_evidence_required:'error.required',
@@ -137,10 +137,10 @@ class CanonicalCompanyDriver{
 
   companyDraftFromProfile(profile){
     if(!profile)return{status:'not_started',registrationStatus:null,directorAnswer:null,ownershipDraft:null,updatedAt:null};
-    const directorAnswer=profile.accountHolder&&profile.accountHolder.isDirector===true?'yes':profile.accountHolder&&profile.accountHolder.isDirector===false?'no':'not_sure';
+    profile=CompanyProfile.normalize(profile);const setup=CompanyProfile.setupAnswersFor(profile),directorAnswer=setup.directorAnswer||'not_sure';
     return{
-      status:profile.lifecycleStatus==='confirmed'?'confirmed':profile.companyNumberStatus==='not_available'&&!profile.incorporationDate?'registration_pending':'in_progress',
-      registrationStatus:profile.companyNumberStatus==='provided'||profile.companyNumberStatus==='not_available'&&profile.incorporationDate?'registered':'not_available',directorAnswer,
+      status:profile.lifecycleStatus==='confirmed'?'confirmed':setup.registrationAnswer!=='yes'?'registration_pending':setup.tradingAnswer==='not_sure'?'trading_review_required':setup.soleShareholderAnswer==='not_sure'?'ownership_review_required':'in_progress',
+      registrationStatus:setup.registrationAnswer==='yes'?'registered':setup.registrationAnswer==='not_sure'?'needs_checking':'not_available',directorAnswer,soleShareholderAnswer:setup.soleShareholderAnswer||null,
       ownershipDraft:Array.isArray(profile.shareholders)&&profile.shareholders.length?clone(profile.shareholders):null,updatedAt:profile.updatedAt||null
     };
   }
@@ -238,7 +238,7 @@ class CanonicalCompanyDriver{
       contractVersion:'taxmate-ltd-ui-facade.3',packageStatus:'INTEGRATED_CANDIDATE',mode:this.mode,dataset:clone(this.meta),context:{taxYear:this.taxYearRange().taxYear,currentDate:this.currentDate()},
       businessList:this.businessList(),
       companyLimit:{maximum:1,activeCount:activeCompanyCount,activeCompanyId:this.trustedActiveCompanyId||profile&&profile.entityId||null,canCreate:activeCompanyCount===0&&createAccess.allowed===true,canResumeTrustedClaim:!!(this.trustedActiveCompanyId&&!profile&&!this.removedTrustedCompanySlot()),additionalLtdSupported:false,requiredTier:'pro',reason:this.removedTrustedCompanySlot()?'company_slot_retained_after_removal':activeCompanyCount>0?'one_active_ltd_limit':createAccess.allowed?null:createAccess.reason,existingAction:profile?{callback:'onOpenExistingCompany',nextRoute:profile.lifecycleStatus==='confirmed'?'ltd.workspace.overview':this.resumeRoute(profile),enabled:readAccess.allowed===true,disabledReason:readAccess.allowed?null:readAccess.reason}:null},
-      company:profile?{entity:clone(entity),profile:clone(profile),draftState:clone(this.companyDraftState),bookkeepingEligibility:clone(gate),taxEstimateEligibility:clone(taxGate),periodPlan:clone(this.pendingPeriodPlan||periodPlan)}:null,
+      company:profile?{entity:clone(entity),profile:clone(profile),setupAnswers:clone(CompanyProfile.setupAnswersFor(profile)),draftState:clone(this.companyDraftState),bookkeepingEligibility:clone(gate),taxEstimateEligibility:clone(taxGate),periodPlan:clone(this.pendingPeriodPlan||periodPlan)}:null,
       lookupStatus:clone(this.lookup),
       // Retained-access facts for the UI (same canonical decision as the blocked branch;
       // null for active Pro). Presentation only — the guard remains requireAccess().
@@ -271,9 +271,30 @@ class CanonicalCompanyDriver{
   openLegacyBusiness(input={}){const business=this.state.businesses.find(item=>item.id===input.businessId);return business?{status:'ok',data:{businessId:business.id,noWrite:true,delegatedToExistingBusinessFlow:true},nextRoute:'business.existing'}:{status:'field_error',fieldErrors:[fieldError('businessId','company_not_found')]};}
   editLegacyBusiness(input={}){const business=this.state.businesses.find(item=>item.id===input.businessId);return business?{status:'ok',data:{businessId:business.id,noWrite:true,delegatedToExistingBusinessFlow:true},nextRoute:'business.existing.edit'}:{status:'field_error',fieldErrors:[fieldError('businessId','company_not_found')]};}
   openExistingCompany(){this.requireAccess('read');const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company','company_not_found')]};return{status:'ok',data:{entityId:profile.entityId,noWrite:true},nextRoute:profile.lifecycleStatus==='confirmed'?'ltd.workspace.overview':this.resumeRoute(profile)};}
-  resumeRoute(profile){if(!profile)return'ltd.onboarding.step1';if(profile.companyNumberStatus==='not_available'&&!profile.incorporationDate)return'ltd.onboarding.registration-details';const next=CompanyProfile.missingQuestion(profile),step=next&&['legal_name','company_type','company_number','incorporation_date'].includes(next.id)?1:next&&['trading_status','accounting_period','corporation_tax_status'].includes(next.id)?2:next&&['account_holder_roles','share_structure'].includes(next.id)?3:next&&['activity_profile','unsupported_screen'].includes(next.id)?4:5;return`ltd.onboarding.step${step}`;}
+  resumeRoute(profile){if(!profile)return'ltd.onboarding.step1';profile=CompanyProfile.normalize(profile);const setup=CompanyProfile.setupAnswersFor(profile);if(setup.registrationAnswer!=='yes'||setup.identityDetailsConfirmed!==true)return'ltd.onboarding.registration-details';if(setup.tradingAnswer==='not_sure')return'ltd.onboarding.step2';if(setup.soleShareholderAnswer==='not_sure')return'ltd.onboarding.step3';const next=CompanyProfile.missingQuestion(profile),step=next&&['legal_name','company_type','company_number','incorporation_date','registration_resolution','identity_confirmation'].includes(next.id)?1:next&&['trading_status','trading_resolution','accounting_period','corporation_tax_status'].includes(next.id)?2:next&&['account_holder_roles','share_structure','ownership_resolution'].includes(next.id)?3:next&&['activity_profile','unsupported_screen'].includes(next.id)?4:5;return`ltd.onboarding.step${step}`;}
   resumeDraft(){this.requireAccess('resume_company_draft');const profile=this.activeProfile();if(!profile)return{status:'field_error',fieldErrors:[fieldError('company','company_draft_not_found')]};return{status:'ok',data:{profile:clone(profile),draftState:clone(this.companyDraftState)},nextRoute:this.resumeRoute(profile)};}
   saveCompanyDraft(){this.requireAccess('resume_company_draft');const profile=this.activeProfile();if(!profile||profile.lifecycleStatus==='confirmed')return{status:'field_error',fieldErrors:[fieldError('company','company_draft_not_found')]};this.persist();return{status:'ok',data:{profile:clone(profile),draftState:clone(this.companyDraftState),persistedByCodexLayer:true},nextRoute:'home'};}
+  clearSetupIdentityConfirmation(options={}){
+    const profile=this.activeProfile();
+    if(!profile||profile.lifecycleStatus==='confirmed')return false;
+    const setup=CompanyProfile.setupAnswersFor(profile);
+    const resetDownstream=options.resetDownstream===true;
+    if(!resetDownstream&&setup.identityDetailsConfirmed===false&&profile.setupAnswers&&profile.setupAnswers.identityDetailsConfirmed===false)return false;
+    let next=clone(profile);
+    if(resetDownstream){for(const field of ['tradingStatus','tradingStartDate','accountingReferenceDate','accountingPeriod','corporationTaxStatus','accountHolder','activityType','confirmedAt'])delete next[field];next.directors=[];next.shareholders=[];next.shareClasses=[];next.riskAnswers={};this.pendingPeriodPlan=null;}
+    next=CompanyProfile.setSetupAnswers(next,{identityDetailsConfirmed:false,...(resetDownstream?{tradingAnswer:null,directorAnswer:null,soleShareholderAnswer:null}:{})},{now:this.now(),deviceId:this.deviceId});
+    this.saveProfile(next);this.companyDraftState=this.companyDraftFromProfile(next);return true;
+  }
+  lookupTargetsDifferentCompany(companyNumber){
+    const profile=this.activeProfile();
+    if(!profile)return false;
+    const number=CompanyIdentity.normalizeCompanyNumber(companyNumber||''),shortcut=typeof this.companiesHouseProvider.acceptsAlias==='function'&&this.companiesHouseProvider.acceptsAlias(number),validation=shortcut?{valid:true,normalized:number.toLowerCase()}:CompanyIdentity.validateCompanyNumber(number);
+    if(!validation.valid)return false;
+    const previousShortcut=profile.companyNumberStatus==='not_available'&&Domain.isoDate(profile.incorporationDate)&&profile.registryVerification&&profile.registryVerification.provider==='user_fact';
+    const previous=previousShortcut?'lobakpe1':CompanyIdentity.normalizeCompanyNumber(profile.companyNumber||'');
+    return (validation.normalized||number)!==previous;
+  }
+  lookupChangesSetupIdentity(companyNumber){const profile=this.activeProfile();return !!(profile&&profile.lifecycleStatus!=='confirmed'&&CompanyProfile.setupAnswersFor(profile).identityDetailsConfirmed===true&&this.lookupTargetsDifferentCompany(companyNumber));}
   pendingSetup(){const pending=this.pendingCompanyCreation,profile=this.activeProfile();if(!pending||pending.claimed||!profile)return null;return{schemaVersion:1,entityId:pending.entityId,claimAttempted:pending.claimAttempted===true,profile:clone(profile),entity:clone(this.entityFor(profile)),lookup:clone(this.lookup)};}
   restorePendingSetup(saved){
     if(!saved||saved.schemaVersion!==1||!saved.profile||saved.profile.lifecycleStatus!=='draft'||saved.profile.deletedAt!=null||saved.entityId!==saved.profile.entityId||saved.profile.id!=='company-profile:'+saved.entityId||saved.entity?.id!==saved.entityId||saved.entity.type!=='limited_company'||saved.entity.deletedAt!=null)return false;
@@ -300,7 +321,7 @@ class CanonicalCompanyDriver{
   }
   fixCompanyFact(input={}){
     this.requireAccess('resume_company_draft');
-    const reason=String(input.reasonCode||''),step=/(registration|legal_name|company_name|company_number|incorporation)/.test(reason)?1:/(trading|accounting|period|corporation_tax_status)/.test(reason)?2:/(director|shareholder|ownership|share_structure|account_holder)/.test(reason)?3:/(activity|group|associated|property|inventory|vat|unsupported)/.test(reason)?4:null;
+    const reason=String(input.reasonCode||''),step=/(registration|legal_name|company_name|company_number|incorporation)/.test(reason)?1:/(trading|accounting|period|corporation_tax_status)/.test(reason)?2:/(director|shareholder|ownership|share_structure|account_holder)/.test(reason)?3:/(activity|ordinary|service|digital|group|associated|property|inventory|vat|unsupported)/.test(reason)?4:null;
     if(!step)return{status:'field_error',fieldErrors:[fieldError('reasonCode','company_facts_incomplete')]};
     return{status:'ok',data:{reasonCode:reason,fieldId:input.fieldId||null,noWrite:true},nextRoute:`ltd.onboarding.step${step}`};
   }
@@ -310,6 +331,9 @@ class CanonicalCompanyDriver{
     const number=CompanyIdentity.normalizeCompanyNumber(input.companyNumber||'');
     const shortcutAlias=typeof this.companiesHouseProvider.acceptsAlias==='function'&&this.companiesHouseProvider.acceptsAlias(number),validation=shortcutAlias?{valid:true,normalized:number.toLowerCase()}:CompanyIdentity.validateCompanyNumber(number);
     if(!validation.valid){this.lookup={status:'field_error',number,reasons:[validation.reason],company:null};return{status:'field_error',fieldErrors:[fieldError('companyNumber',validation.reason)],data:clone(this.lookup)};}
+    const profileBeforeLookup=this.activeProfile();
+    if(profileBeforeLookup&&profileBeforeLookup.lifecycleStatus==='confirmed'&&this.lookupTargetsDifferentCompany(validation.normalized||number))return{status:'review_required',reviewReasons:['identity_change_requires_company_edit'],data:{companyNumber:validation.normalized||number,noWrite:true},nextRoute:'ltd.records.company-edit'};
+    if(this.lookupChangesSetupIdentity(validation.normalized||number))this.clearSetupIdentityConfirmation({resetDownstream:true});
     this.lookup={status:'loading',number:validation.normalized||number,company:null,reasons:[]};
     const result=await this.companiesHouseProvider.lookup(validation.normalized||number);
     if(result&&result.status==='field_error'){this.lookup={status:'field_error',number:validation.normalized||number,reasons:[result.reasonCode||'company_number_invalid'],company:null,retryable:false};return{status:'field_error',fieldErrors:[fieldError('companyNumber',result.reasonCode||'company_number_invalid')],data:clone(this.lookup)};}
@@ -348,40 +372,57 @@ class CanonicalCompanyDriver{
     const step=Number(input.step),values=input.values||{},now=this.now(),errors=[];let next=profile;
     try{
       if(step===1){
+        const previousSetup=CompanyProfile.setupAnswersFor(profile);
         const shortcutInput=String(values.companyNumber||'').trim().toLowerCase();
         if(shortcutInput==='lobakpe1'&&(!this.lookup||this.lookup.founderShortcut!==true)){
           const restoredLookup=await this.lookupCompany({companyNumber:shortcutInput});
           if(restoredLookup.status!=='ok')return restoredLookup;
         }
-        const numberStatus=values.companyNumberStatus,shortcutFromLookup=this.lookup&&this.lookup.founderShortcut===true&&String(values.companyNumber||'').trim().toLowerCase()==='lobakpe1',shortcutFromSaved=numberStatus==='provided'&&!String(values.companyNumber||'').trim()&&profile.companyNumberStatus==='not_available'&&Domain.isoDate(profile.incorporationDate)&&profile.registryVerification&&profile.registryVerification.provider==='user_fact',founderShortcut=shortcutFromLookup||shortcutFromSaved,storedNumberStatus=founderShortcut?'not_available':numberStatus;let number=null;if(!['provided','not_available'].includes(numberStatus))errors.push(fieldError('companyNumberStatus','answer_required'));
-        const name=CompanyIdentity.validateCompanyName(values.legalName||'',{requirePrivateEnding:numberStatus==='provided'});if(!name.valid)errors.push(fieldError('legalName',name.reason,{invalidCharacters:name.invalidCharacters||[]}));
+        const registrationAnswer=CompanyProfile.SETUP_ANSWER_VALUES.includes(values.registrationAnswer)?values.registrationAnswer:values.companyNumberStatus==='provided'?'yes':values.companyNumberStatus==='not_available'?'no':null;
+        const numberStatus=registrationAnswer==='yes'?'provided':registrationAnswer==='no'?'not_available':undefined,shortcutFromLookup=this.lookup&&this.lookup.founderShortcut===true&&String(values.companyNumber||'').trim().toLowerCase()==='lobakpe1',shortcutFromSaved=registrationAnswer==='yes'&&!String(values.companyNumber||'').trim()&&profile.companyNumberStatus==='not_available'&&Domain.isoDate(profile.incorporationDate)&&profile.registryVerification&&profile.registryVerification.provider==='user_fact',founderShortcut=shortcutFromLookup||shortcutFromSaved,storedNumberStatus=founderShortcut?'not_available':numberStatus;let number=null;if(!CompanyProfile.SETUP_ANSWER_VALUES.includes(registrationAnswer))errors.push(fieldError('companyNumberStatus','answer_required'));
+        const name=CompanyIdentity.validateCompanyName(values.legalName||'',{requirePrivateEnding:registrationAnswer==='yes'});if(!name.valid)errors.push(fieldError('legalName',name.reason,{invalidCharacters:name.invalidCharacters||[]}));
         const date=values.incorporationDate;
-        if(numberStatus==='provided'){
+        if(registrationAnswer==='yes'){
           if(!founderShortcut){const valid=CompanyIdentity.validateCompanyNumber(values.companyNumber||'');if(!valid.valid)errors.push(fieldError('companyNumber',valid.reason));else number=valid.normalized;}
           if(!date)errors.push(fieldError('incorporationDate','incorporation_date_required'));else if(!Domain.isoDate(date))errors.push(fieldError('incorporationDate','incorporation_date_invalid'));else if(date>new Date(this.now()).toISOString().slice(0,10))errors.push(fieldError('incorporationDate','future_incorporation'));
+          if(values.identityDetailsConfirmed!==true&&values.identityConfirmed!==true)errors.push(fieldError('identityDetailsConfirmed','confirmation_required'));
         }
         if(errors.length)return{status:'field_error',fieldErrors:errors};
+        const previousShortcut=profile.companyNumberStatus==='not_available'&&Domain.isoDate(profile.incorporationDate)&&profile.registryVerification&&profile.registryVerification.provider==='user_fact';
+        const previousIdentity=[previousSetup.registrationAnswer||'',previousShortcut?'founder-shortcut':profile.companyNumber||'',profile.legalName||'',profile.incorporationDate||''].join('|');
+        const nextIdentity=[registrationAnswer,founderShortcut?'founder-shortcut':number||'',name.name||'',registrationAnswer==='yes'?date||'':''].join('|');
+        const resetDownstream=registrationAnswer!=='yes'||previousIdentity!==nextIdentity;
         next=CompanyProfile.answer(next,'legal_name',name.name,{now,deviceId:this.deviceId});
         next=CompanyProfile.answer(next,'company_type',{jurisdiction:'UK',companyType:'private_limited_by_shares',currency:'GBP'},{now,deviceId:this.deviceId});
         next=CompanyProfile.answer(next,'company_number',{status:storedNumberStatus,number},{now,deviceId:this.deviceId});
-        if(numberStatus==='provided')next=CompanyProfile.answer(next,'incorporation_date',date,{now,deviceId:this.deviceId});
+        if(registrationAnswer==='yes')next=CompanyProfile.answer(next,'incorporation_date',date,{now,deviceId:this.deviceId});
+        else {next=clone(next);delete next.incorporationDate;}
+        if(resetDownstream){next=clone(next);for(const field of ['tradingStatus','tradingStartDate','accountingReferenceDate','accountingPeriod','corporationTaxStatus','accountHolder','activityType','confirmedAt'])delete next[field];next.directors=[];next.shareholders=[];next.shareClasses=[];next.riskAnswers={};this.pendingPeriodPlan=null;}
         if(founderShortcut){
           next.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:now,verifiedAt:null,verificationSource:'user_fact',provider:'user_fact',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:{legalName:name.name,incorporationDate:date,companyStatus:null,companyType:null,registryUrl:null},userFacts:{legalName:name.name,incorporationDate:date}};
-        }else if(numberStatus==='provided'){
+        }else if(registrationAnswer==='yes'){
           const matching=this.lookup&&this.lookup.number===number&&this.activeProfile().registryVerification&&this.activeProfile().registryVerification.companyNumber===number?clone(this.activeProfile().registryVerification):null;
           if(matching){const official=matching.registryFacts||{},same=matching.status==='verified'&&official.legalName===name.name&&official.incorporationDate===date;next.registryVerification={...matching,status:same?'verified':'needs_checking',verifiedAt:same?(matching.verifiedAt||matching.checkedAt||now):matching.verifiedAt||null,verificationSource:'companies_house_api',reasonCodes:same?[]:Array.from(new Set([...(matching.reasonCodes||[]),'verified_facts_edited'])),userFacts:{legalName:name.name,incorporationDate:date}};}
           else next.registryVerification={schemaVersion:1,status:'manual_unverified',companyNumber:number,checkedAt:now,verifiedAt:null,verificationSource:'manual_entry',provider:'manual_entry',retryable:false,reasonCodes:['companies_house_verification_not_completed'],registryFacts:{legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null},userFacts:{legalName:name.name,incorporationDate:date}};
           if(next.registryVerification.status!=='verified'){next.assessmentStatus='review_required';next.assessmentReasons=Array.from(new Set([...(next.assessmentReasons||[]),...next.registryVerification.reasonCodes]));}
-        }else next.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:now,provider:'user_fact',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:{legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null}};
-        this.companyDraftState={...this.companyDraftState,status:numberStatus==='provided'?'in_progress':'registration_pending',registrationStatus:numberStatus==='provided'?'registered':'not_available',updatedAt:now};
+        }else if(registrationAnswer==='no')next.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:now,provider:'user_fact',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:{legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null}};
+        else next.registryVerification={schemaVersion:1,status:'not_checked',companyNumber:null,checkedAt:null,provider:'user_fact',retryable:false,reasonCodes:['company_registration_needs_checking'],registryFacts:{legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null}};
+        next=CompanyProfile.setSetupAnswers(next,{registrationAnswer,identityDetailsConfirmed:registrationAnswer==='yes'?true:null,...(resetDownstream?{tradingAnswer:null,directorAnswer:null,soleShareholderAnswer:null}:{})}, {now,deviceId:this.deviceId});
+        this.companyDraftState={...this.companyDraftState,status:registrationAnswer==='yes'?'in_progress':'registration_pending',registrationStatus:registrationAnswer==='yes'?'registered':registrationAnswer==='not_sure'?'needs_checking':'not_available',...(resetDownstream?{directorAnswer:null,soleShareholderAnswer:null,ownershipDraft:null}:{}),updatedAt:now};
       }else if(step===2){
-        if(profile.companyNumberStatus==='not_available'&&!profile.incorporationDate){
-          if(values.registrationDeferredAcknowledged!==true)return{status:'field_error',fieldErrors:[fieldError('registrationDeferredAcknowledged','confirmation_required')]};
-          return{status:'ok',data:{profile:clone(profile),draftState:clone(this.companyDraftState),officialFactsDeferred:true},nextRoute:'ltd.onboarding.step3'};
+        const savedSetupAnswers=CompanyProfile.setupAnswersFor(profile);
+        if(savedSetupAnswers.registrationAnswer!=='yes'||savedSetupAnswers.identityDetailsConfirmed!==true){
+          return{status:'review_required',reviewReasons:['company_registration_required_before_bookkeeping'],data:{profile:clone(profile),draftState:clone(this.companyDraftState),officialFactsDeferred:true},nextRoute:'ltd.onboarding.registration-pending'};
         }
-        const tradingStatus=values.tradingStatus,startDate=values.tradingStartDate;
-        if(!CompanyProfile.TRADING_STATUSES.includes(tradingStatus))errors.push(fieldError('tradingStatus','answer_required'));
+        const tradingAnswer=CompanyProfile.SETUP_ANSWER_VALUES.includes(values.tradingAnswer)?values.tradingAnswer:values.tradingStatus==='trading'?'yes':values.tradingStatus==='not_started'?'no':values.tradingStatus==='not_sure'?'not_sure':null;
+        const tradingStatus=tradingAnswer==='yes'?'trading':tradingAnswer==='no'?'not_started':undefined,startDate=values.tradingStartDate;
+        if(!CompanyProfile.SETUP_ANSWER_VALUES.includes(tradingAnswer))errors.push(fieldError('tradingStatus','answer_required'));
         if(!Domain.isoDate(profile.incorporationDate))errors.push(fieldError('incorporationDate','incorporation_date_required'));
+        if(tradingAnswer==='not_sure'){
+          if(errors.length)return{status:'field_error',fieldErrors:errors};
+          next=clone(next);for(const field of ['tradingStatus','tradingStartDate','accountingReferenceDate','accountingPeriod','corporationTaxStatus','confirmedAt'])delete next[field];
+          next=CompanyProfile.setSetupAnswers(next,{tradingAnswer:'not_sure'},{now,deviceId:this.deviceId});this.pendingPeriodPlan=null;
+        }else{
         if(tradingStatus==='trading'&&!startDate)errors.push(fieldError('tradingStartDate','trading_start_date_required'));else if(tradingStatus==='trading'&&!Domain.isoDate(startDate))errors.push(fieldError('tradingStartDate','trading_start_date_invalid'));
         let planned=this.pendingPeriodPlan&&this.pendingPeriodPlan.accounts||null;
         if(!planned&&CompanyProfile.TRADING_STATUSES.includes(tradingStatus)&&Domain.isoDate(profile.incorporationDate)&&(tradingStatus!=='trading'||Domain.isoDate(startDate))){
@@ -398,20 +439,28 @@ class CanonicalCompanyDriver{
         next=CompanyProfile.answer(next,'trading_status',{status:tradingStatus,startDate},{now,deviceId:this.deviceId});
         next=CompanyProfile.answer(next,'accounting_period',{startDate:period.startDate,endDate:period.endDate,referenceDate:period.referenceDate||period.endDate,status:'confirmed'},{now,deviceId:this.deviceId});
         next=CompanyProfile.answer(next,'corporation_tax_status',values.corporationTaxStatus,{now,deviceId:this.deviceId});
+        next=CompanyProfile.setSetupAnswers(next,{tradingAnswer},{now,deviceId:this.deviceId});
+        }
       }else if(step===3){
-        const founderName=cleanText(values.founderName,300),otherName=cleanText(values.otherShareholderName,300),founderShares=Number(values.founderShares),otherShares=values.otherShares==null?0:Number(values.otherShares),directorAnswer=values.directorAnswer;
-        if(!founderName)errors.push(fieldError('founderName','founder_name_required'));if(!Number.isSafeInteger(founderShares)||founderShares<=0)errors.push(fieldError('founderShares','founder_shares_invalid'));if(!Number.isSafeInteger(otherShares)||otherShares<0)errors.push(fieldError('otherShares','other_shares_invalid'));if(otherShares>0&&!otherName)errors.push(fieldError('otherShareholderName','other_shareholder_name_required'));if(!['yes','no','not_sure'].includes(directorAnswer))errors.push(fieldError('directorAnswer','director_answer_required'));
+        const founderName=cleanText(values.founderName,300),otherName=cleanText(values.otherShareholderName,300),founderShares=Number(values.founderShares),otherShares=values.otherShares==null?0:Number(values.otherShares),directorAnswer=values.directorAnswer,soleAnswer=CompanyProfile.SETUP_ANSWER_VALUES.includes(values.soleShareholderAnswer)?values.soleShareholderAnswer:CompanyProfile.SETUP_ANSWER_VALUES.includes(values.onlyShareholder)?values.onlyShareholder:(Number.isSafeInteger(otherShares)&&otherShares>0?'no':Number.isSafeInteger(founderShares)&&founderShares>0?'yes':null);
+        if(!founderName)errors.push(fieldError('founderName','founder_name_required'));if(!CompanyProfile.SETUP_ANSWER_VALUES.includes(soleAnswer))errors.push(fieldError('onlyShareholder','answer_required'));if(soleAnswer!=='not_sure'&&(!Number.isSafeInteger(founderShares)||founderShares<=0))errors.push(fieldError('founderShares','founder_shares_invalid'));if(soleAnswer==='yes'&&(founderShares!==100||otherShares!==0))errors.push(fieldError('founderShares','share_ownership_total_required',{total:Number.isFinite(founderShares+otherShares)?founderShares+otherShares:0}));if(soleAnswer==='no'&&(!Number.isSafeInteger(otherShares)||otherShares<=0||founderShares+otherShares!==100))errors.push(fieldError('otherShares','share_ownership_total_required',{total:Number.isFinite(founderShares+otherShares)?founderShares+otherShares:0}));if(soleAnswer==='no'&&!otherName)errors.push(fieldError('otherShareholderName','other_shareholder_name_required'));if(!['yes','no','not_sure'].includes(directorAnswer))errors.push(fieldError('directorAnswer','director_answer_required'));
         if(errors.length)return{status:'field_error',fieldErrors:errors};
-        if(directorAnswer==='not_sure'){next=clone(next);delete next.accountHolder;}else next=CompanyProfile.answer(next,'account_holder_roles',{isDirector:directorAnswer==='yes',isShareholder:true},{now,deviceId:this.deviceId});
-        const shareholders=[{id:'shareholder:account-holder',name:founderName,isAccountHolder:true,shareClassId:'ordinary',shares:founderShares}];if(otherShares>0)shareholders.push({id:'shareholder:other',name:otherName,isAccountHolder:false,shareClassId:'ordinary',shares:otherShares});
-        next=CompanyProfile.answer(next,'share_structure',{directors:directorAnswer==='yes'?[{id:'director:account-holder',name:founderName,isAccountHolder:true}]:[],shareholders,shareClasses:[{id:'ordinary',name:'ordinary',dividendRights:'equal'}]},{now,deviceId:this.deviceId});
-        this.companyDraftState={...this.companyDraftState,status:profile.companyNumberStatus==='not_available'&&!profile.incorporationDate?'registration_pending':directorAnswer==='yes'?'in_progress':'director_review_required',directorAnswer,ownershipDraft:clone(next.shareholders),updatedAt:now};
+        next=CompanyProfile.setSetupAnswers(next,{directorAnswer,soleShareholderAnswer:soleAnswer},{now,deviceId:this.deviceId});
+        if(soleAnswer==='not_sure'){
+          next=clone(next);delete next.accountHolder;next.directors=[];next.shareholders=[];next.shareClasses=[];
+          next=CompanyProfile.setSetupAnswers(next,{directorAnswer,soleShareholderAnswer:soleAnswer},{now,deviceId:this.deviceId});
+        }else{
+          if(directorAnswer==='not_sure'){next=clone(next);delete next.accountHolder;}else next=CompanyProfile.answer(next,'account_holder_roles',{isDirector:directorAnswer==='yes',isShareholder:true},{now,deviceId:this.deviceId});
+          const shareholders=[{id:'shareholder:account-holder',name:founderName,isAccountHolder:true,shareClassId:'ordinary',shares:founderShares}];if(otherShares>0)shareholders.push({id:'shareholder:other',name:otherName,isAccountHolder:false,shareClassId:'ordinary',shares:otherShares});
+          next=CompanyProfile.answer(next,'share_structure',{directors:directorAnswer==='yes'?[{id:'director:account-holder',name:founderName,isAccountHolder:true}]:[],shareholders,shareClasses:[{id:'ordinary',name:'ordinary',dividendRights:'equal'}]},{now,deviceId:this.deviceId});
+        }
+        this.companyDraftState={...this.companyDraftState,status:soleAnswer==='not_sure'?'ownership_review_required':directorAnswer==='yes'?'in_progress':'director_review_required',directorAnswer,soleShareholderAnswer:soleAnswer,ownershipDraft:clone(next.shareholders),updatedAt:now};
       }else if(step===4){
         const riskAnswers=CompanyProfile.onboardingRiskAnswers(values.riskAnswers||{},{activeLtdCount:this.list('companyProfiles').filter(item=>item.deletedAt==null).length});
         const missing=CompanyProfile.SETUP_RISK_FIELDS.filter(field=>![true,false,'not_sure'].includes(riskAnswers[field]));if(missing.length)return{status:'field_error',fieldErrors:missing.map(field=>fieldError(field,'answer_required'))};
         if(![true,false,'not_sure'].includes(values.ordinaryServiceDigital))return{status:'field_error',fieldErrors:[fieldError('ordinaryServiceDigital','answer_required')]};
-        if(values.ordinaryServiceDigital===true)next=CompanyProfile.answer(next,'activity_profile','service_digital',{now,deviceId:this.deviceId});
-        else next=CompanyProfile.answer(next,'activity_profile','review_required',{now,deviceId:this.deviceId});
+        const activityType=values.ordinaryServiceDigital===true?'service_digital':values.ordinaryServiceDigital===false?'not_service_digital':'not_sure';
+        next=CompanyProfile.answer(next,'activity_profile',activityType,{now,deviceId:this.deviceId});
         next=CompanyProfile.answer(next,'unsupported_screen',riskAnswers,{now,deviceId:this.deviceId});
       }else if(step===5){
         if(values.confirmed!==true)return{status:'field_error',fieldErrors:[fieldError('confirmed','confirmation_required')]};
@@ -438,8 +487,11 @@ class CanonicalCompanyDriver{
       this.saveProfile(next);
       if(step===2)this.pendingPeriodPlan=null;
       if(step===5){const eligibility=CompanyProfile.bookkeepingEligibility(next);if(!eligibility.allowed)return{status:'field_error',fieldErrors:[fieldError(eligibility.nextQuestion||'companyFacts','company_facts_incomplete')],reviewReasons:eligibility.reasons,data:{eligibility}};this.companyDraftState={...this.companyDraftState,status:'confirmed',updatedAt:now};this.ensurePaymentAccounts(next);return{status:next.assessmentStatus==='review_required'?'review_required':'ok',reviewReasons:next.assessmentReasons||[],data:{profile:clone(next),eligibility},nextRoute:'ltd.workspace.overview'};}
-      if(step===1&&next.companyNumberStatus==='not_available'&&!next.incorporationDate)return{status:'ok',data:{profile:clone(next),draftState:clone(this.companyDraftState),officialFactsDeferred:true},nextRoute:'ltd.onboarding.step2'};
-      if(step===3&&next.companyNumberStatus==='not_available'&&!next.incorporationDate)return{status:'review_required',reviewReasons:['company_registration_required_before_bookkeeping',...(this.companyDraftState.directorAnswer!=='yes'?['director_confirmation_required']:[])],data:{profile:clone(next),draftState:clone(this.companyDraftState),bookkeepingAllowed:false},nextRoute:'ltd.onboarding.registration-pending'};
+      const savedAnswers=CompanyProfile.setupAnswersFor(next);
+      if(step===1&&savedAnswers.registrationAnswer!=='yes')return{status:'review_required',reviewReasons:[savedAnswers.registrationAnswer==='not_sure'?'company_registration_review_required':'company_registration_required_before_bookkeeping'],data:{profile:clone(next),draftState:clone(this.companyDraftState),officialFactsDeferred:true},nextRoute:'ltd.onboarding.registration-pending'};
+      if(step===2&&savedAnswers.tradingAnswer==='not_sure')return{status:'review_required',reviewReasons:['trading_status_review_required'],data:{profile:clone(next),draftState:clone(this.companyDraftState),bookkeepingAllowed:false},nextRoute:'ltd.onboarding.trading-review'};
+      if(step===3&&savedAnswers.soleShareholderAnswer==='not_sure')return{status:'review_required',reviewReasons:['sole_shareholder_review_required'],data:{profile:clone(next),draftState:clone(this.companyDraftState),bookkeepingAllowed:false},nextRoute:'ltd.onboarding.ownership-review'};
+      if(step===3&&savedAnswers.registrationAnswer!=='yes')return{status:'review_required',reviewReasons:['company_registration_required_before_bookkeeping',...(this.companyDraftState.directorAnswer!=='yes'?['director_confirmation_required']:[])],data:{profile:clone(next),draftState:clone(this.companyDraftState),bookkeepingAllowed:false},nextRoute:'ltd.onboarding.registration-pending'};
       if(step===3&&this.companyDraftState.directorAnswer!=='yes')return{status:'review_required',reviewReasons:['account_holder_director_confirmation_required'],data:{profile:clone(next),draftState:clone(this.companyDraftState),bookkeepingAllowed:false},nextRoute:'ltd.onboarding.director-review'};
       return{status:'ok',data:{profile:clone(next)},nextRoute:`ltd.onboarding.step${step+1}`};
     }catch(error){return{status:'field_error',fieldErrors:[fieldError(error.field||'companyFacts',stableReason(error,'company_facts_incomplete'))]};}

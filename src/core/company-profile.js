@@ -19,6 +19,7 @@
   const DEFERRED_RISK_FIELDS=Object.freeze(['chargeableGains','researchAndDevelopmentClaims','complexForeignCurrency','benefitsInKind','complexPensionsOrShareSchemes']);
   const DERIVED_RISK_FIELDS=Object.freeze(['multipleCompanies','companyCollaboration']);
   const RISK_ANSWER_VALUES=Object.freeze([true,false,'not_sure','not_assessed']);
+  const SETUP_ANSWER_VALUES=Object.freeze(['yes','no','not_sure']);
   const UNSUPPORTED_REGISTRY=Object.freeze({
     multipleCompanies:'multiple_company_ui_not_supported',
     groupStructure:'group_structure_not_supported',
@@ -45,7 +46,11 @@
     Object.freeze({id:'share_structure',fact:'directors, shareholders and ordinary shares'}),
     Object.freeze({id:'activity_profile',fact:'company activity profile'}),
     Object.freeze({id:'unsupported_screen',fact:'unsupported company complexity screen'}),
-    Object.freeze({id:'confirmation',fact:'identity fact confirmation'})
+    Object.freeze({id:'confirmation',fact:'identity fact confirmation'}),
+    Object.freeze({id:'registration_resolution',fact:'company registration answer resolution'}),
+    Object.freeze({id:'identity_confirmation',fact:'company identity details confirmation'}),
+    Object.freeze({id:'trading_resolution',fact:'company trading answer resolution'}),
+    Object.freeze({id:'ownership_resolution',fact:'sole shareholder answer resolution'})
   ]);
 
   const plain=value=>value!==null&&typeof value==='object'&&!Array.isArray(value)&&Object.getPrototypeOf(value)===Object.prototype;
@@ -61,6 +66,7 @@
   };
   const reason=(code,kind='review_required')=>({code,kind});
   const emptyRegistryFacts=()=>({legalName:null,incorporationDate:null,companyStatus:null,companyType:null,registryUrl:null});
+  const question=id=>QUESTIONS.find(item=>item.id===id);
 
   function createDraft(input={}){
     if(!text(input.entityId,128))throw new Error('Company entity identity is required');
@@ -73,6 +79,7 @@
       lifecycleStatus:'draft',
       assessmentStatus:'review_required',
       assessmentReasons:['company_legal_name_required'],
+      setupAnswers:{},
       registryVerification:{schemaVersion:1,status:'not_checked',companyNumber:null,checkedAt:null,provider:'taxmate_draft',retryable:false,reasonCodes:['companies_house_verification_not_started'],registryFacts:emptyRegistryFacts()},
       createdAt:now,updatedAt:now,deletedAt:null,deviceId:input.deviceId||'company-profile'
     };
@@ -106,17 +113,40 @@
     return profile;
   }
 
+  // Legacy profiles predate the explicit setup answer object. Derive their
+  // settled answers for reads without mutating current-schema state or causing
+  // a migration/outbox write. New answers are persisted only by setSetupAnswers.
+  function setupAnswersFor(input){
+    const profile=input||{},supplied=plain(profile.setupAnswers)?profile.setupAnswers:{},setup={};
+    for(const key of ['registrationAnswer','tradingAnswer','directorAnswer','soleShareholderAnswer'])if(SETUP_ANSWER_VALUES.includes(supplied[key]))setup[key]=supplied[key];
+    if(typeof supplied.identityDetailsConfirmed==='boolean')setup.identityDetailsConfirmed=supplied.identityDetailsConfirmed;
+    const founderShortcut=profile.companyNumberStatus==='not_available'&&Domain.isoDate(profile.incorporationDate)&&profile.registryVerification&&profile.registryVerification.provider==='user_fact';
+    if(!setup.registrationAnswer){if(profile.lifecycleStatus==='confirmed'||profile.companyNumberStatus==='provided'||founderShortcut)setup.registrationAnswer='yes';else if(profile.companyNumberStatus==='not_available')setup.registrationAnswer='no';}
+    if(setup.identityDetailsConfirmed==null&&profile.lifecycleStatus==='confirmed')setup.identityDetailsConfirmed=true;
+    if(!setup.tradingAnswer){if(profile.tradingStatus==='trading')setup.tradingAnswer='yes';else if(profile.tradingStatus==='not_started')setup.tradingAnswer='no';}
+    if(!setup.directorAnswer&&plain(profile.accountHolder)&&typeof profile.accountHolder.isDirector==='boolean')setup.directorAnswer=profile.accountHolder.isDirector?'yes':'no';
+    if(!setup.soleShareholderAnswer&&Array.isArray(profile.shareholders)&&profile.shareholders.length)setup.soleShareholderAnswer=profile.shareholders.length===1?'yes':'no';
+    return setup;
+  }
+
   function missingQuestion(profile){
     const p=normalize(profile);
+    const setup=setupAnswersFor(p);
     if(!text(p.legalName))return QUESTIONS[0];
     if(p.jurisdiction!=='UK'||p.companyType!=='private_limited_by_shares'||p.currency!=='GBP')return QUESTIONS[1];
-    if(!COMPANY_NUMBER_STATUSES.includes(p.companyNumberStatus)||(p.companyNumberStatus==='provided'&&!companyNumber(p.companyNumber)))return QUESTIONS[2];
+    if(!SETUP_ANSWER_VALUES.includes(setup.registrationAnswer))return QUESTIONS[2];
+    if(setup.registrationAnswer!=='yes')return question('registration_resolution');
+    const founderShortcut=p.companyNumberStatus==='not_available'&&Domain.isoDate(p.incorporationDate)&&p.registryVerification&&p.registryVerification.provider==='user_fact';
+    if(!founderShortcut&&(!COMPANY_NUMBER_STATUSES.includes(p.companyNumberStatus)||p.companyNumberStatus!=='provided'||!companyNumber(p.companyNumber)))return QUESTIONS[2];
     if(!Domain.isoDate(p.incorporationDate))return QUESTIONS[3];
-    if(!TRADING_STATUSES.includes(p.tradingStatus)||(p.tradingStatus==='trading'&&!Domain.isoDate(p.tradingStartDate)))return QUESTIONS[4];
+    if(setup.identityDetailsConfirmed!==true)return question('identity_confirmation');
+    if(!SETUP_ANSWER_VALUES.includes(setup.tradingAnswer)||setup.tradingAnswer==='not_sure')return question('trading_resolution');
+    if(!TRADING_STATUSES.includes(p.tradingStatus)||(setup.tradingAnswer==='yes'&&p.tradingStatus!=='trading')||(setup.tradingAnswer==='no'&&p.tradingStatus!=='not_started')||(p.tradingStatus==='trading'&&!Domain.isoDate(p.tradingStartDate)))return QUESTIONS[4];
     if(!Domain.isoDate(p.accountingReferenceDate)||!plain(p.accountingPeriod)||!Domain.isoDate(p.accountingPeriod.startDate)||!Domain.isoDate(p.accountingPeriod.endDate)||p.accountingPeriod.status!=='confirmed')return QUESTIONS[5];
     if(!CT_STATUSES.includes(p.corporationTaxStatus))return QUESTIONS[6];
     if(!plain(p.accountHolder)||typeof p.accountHolder.isDirector!=='boolean'||typeof p.accountHolder.isShareholder!=='boolean')return QUESTIONS[7];
-    if(!p.directors.length||!p.shareholders.length||!p.shareClasses.length)return QUESTIONS[8];
+    if(!SETUP_ANSWER_VALUES.includes(setup.soleShareholderAnswer)||setup.soleShareholderAnswer==='not_sure')return question('ownership_resolution');
+    if(!p.directors.length||!p.shareholders.length||!p.shareClasses.length||(setup.soleShareholderAnswer==='yes'&&p.shareholders.length!==1)||(setup.soleShareholderAnswer==='no'&&p.shareholders.length<2))return QUESTIONS[8];
     if(!text(p.activityType,128))return QUESTIONS[9];
     if(SETUP_RISK_FIELDS.some(field=>![true,false,'not_sure'].includes(p.riskAnswers[field]))||DERIVED_RISK_FIELDS.some(field=>typeof p.riskAnswers[field]!=='boolean')||DEFERRED_RISK_FIELDS.some(field=>p.riskAnswers[field]!=null&&!RISK_ANSWER_VALUES.includes(p.riskAnswers[field])))return QUESTIONS[10];
     if(!Number.isFinite(Number(p.confirmedAt))||Number(p.confirmedAt)<=0)return QUESTIONS[11];
@@ -132,6 +162,12 @@
     if(p.companyType!=null&&p.companyType!=='private_limited_by_shares')add('private_company_limited_by_shares_required','unsupported_profile');
     if(p.currency!=null&&p.currency!=='GBP')add('gbp_company_required','unsupported_profile');
     if(p.companyNumberStatus==='provided'&&!companyNumber(p.companyNumber))add('company_number_review_required','review_required');
+    const setup=setupAnswersFor(p);
+    if(setup.registrationAnswer==='no')add('company_registration_required_before_bookkeeping','review_required');
+    if(setup.registrationAnswer==='not_sure')add('company_registration_review_required','review_required');
+    if(setup.registrationAnswer==='yes'&&setup.identityDetailsConfirmed!==true)add('company_identity_confirmation_required','review_required');
+    if(setup.tradingAnswer==='not_sure')add('trading_status_review_required','review_required');
+    if(setup.soleShareholderAnswer==='not_sure')add('sole_shareholder_review_required','review_required');
     if(p.companyNumberStatus==='provided'){
       const registry=p.registryVerification;
       if(!plain(registry)||registry.companyNumber!==p.companyNumber)add('companies_house_verification_not_completed','review_required');
@@ -179,7 +215,8 @@
     const result=assess(profile),blocking=result.reasons.filter(code=>code.startsWith('question_')||[
       'uk_company_required','private_company_limited_by_shares_required','gbp_company_required','dormant_or_ceased_company_not_supported',
       'account_holder_must_be_director','account_holder_must_be_shareholder','one_equal_rights_ordinary_share_class_required',
-      'ordinary_service_or_digital_company_required'
+      'ordinary_service_or_digital_company_required','company_registration_required_before_bookkeeping','company_registration_review_required',
+      'company_identity_confirmation_required','trading_status_review_required','sole_shareholder_review_required'
     ].includes(code));
     return{allowed:result.canRecordTransactions&&blocking.length===0,status:result.status,reasons:blocking,nextQuestion:result.nextQuestion&&result.nextQuestion.id||null};
   }
@@ -223,8 +260,21 @@
     return normalize(p);
   }
 
+  function setSetupAnswers(input,patch={},options={}){
+    const p=normalize(input),now=Number(options.now)||Date.now(),next=setupAnswersFor(p);
+    for(const key of ['registrationAnswer','tradingAnswer','directorAnswer','soleShareholderAnswer'])if(Object.prototype.hasOwnProperty.call(patch,key)){
+      if(SETUP_ANSWER_VALUES.includes(patch[key]))next[key]=patch[key];else delete next[key];
+    }
+    if(Object.prototype.hasOwnProperty.call(patch,'identityDetailsConfirmed')){
+      if(typeof patch.identityDetailsConfirmed==='boolean')next.identityDetailsConfirmed=patch.identityDetailsConfirmed;else delete next.identityDetailsConfirmed;
+    }
+    p.setupAnswers=next;p.updatedAt=now;p.deviceId=options.deviceId||p.deviceId||'company-profile';
+    const result=assess(p);p.assessmentStatus=result.status;p.assessmentReasons=result.reasons;p.lifecycleStatus=result.canRecordTransactions?'confirmed':'draft';
+    return normalize(p);
+  }
+
   return{
-    PROFILE_SCHEMA_VERSION,PROFILE_RULESET_VERSION,COMPANY_NUMBER_STATUSES,TRADING_STATUSES,CT_STATUSES,RISK_FIELDS,SETUP_RISK_FIELDS,DEFERRED_RISK_FIELDS,DERIVED_RISK_FIELDS,RISK_ANSWER_VALUES,UNSUPPORTED_REGISTRY,QUESTIONS,
-    createDraft,ownershipBasisPoints,normalize,missingQuestion,assess,transactionGate,bookkeepingEligibility,taxEstimateEligibility,onboardingRiskAnswers,answer
+    PROFILE_SCHEMA_VERSION,PROFILE_RULESET_VERSION,COMPANY_NUMBER_STATUSES,TRADING_STATUSES,CT_STATUSES,RISK_FIELDS,SETUP_RISK_FIELDS,DEFERRED_RISK_FIELDS,DERIVED_RISK_FIELDS,RISK_ANSWER_VALUES,SETUP_ANSWER_VALUES,UNSUPPORTED_REGISTRY,QUESTIONS,
+    createDraft,ownershipBasisPoints,normalize,setupAnswersFor,missingQuestion,assess,transactionGate,bookkeepingEligibility,taxEstimateEligibility,onboardingRiskAnswers,answer,setSetupAnswers
   };
 });

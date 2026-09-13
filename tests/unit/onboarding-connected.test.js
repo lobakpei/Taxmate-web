@@ -96,13 +96,16 @@ test('dark and light record rows use theme-safe ink while negative values remain
   assert.doesNotMatch(css,/\.tm-rec(?: \.rv)?\{[^}]*color:(?:#000|black)/i);
 });
 
-test('focused CTA and Ltd Step 5 fixes keep green action text white and separate confirmation',()=>{
+test('focused CTA and Ltd Step 5 review keep green action text white and use semantic tables',()=>{
   assert.match(html,/\.welcome-add-business\{color:#fff\}/);
   assert.match(app,/class="btn welcome-add-business"/);
   assert.match(css,/\.tm-btn\.p\{background:var\(--brand\); color:#fff\}/);
   assert.match(css,/\[data-theme="dark"\] \.tm-btn\.p\{color:#fff\}/);
-  assert.match(css,/\.tm-step5-confirm\{margin-top:18px\}/);
-  assert.match(fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8'),/class:'tm-step5-confirm'/);
+  assert.match(css,/\.tm-setup-review-table\.company \.tm-setup-review-label-col\{width:36%\}/);
+  assert.match(css,/\.tm-setup-review-table\.circumstances \.tm-setup-review-label-col\{width:78%\}/);
+  const renderer=fs.readFileSync('src/ui/ltd/workbench-renderer.js','utf8');
+  assert.match(renderer,/submitStep\(5,sid,\{confirmed:true\}\)/);
+  assert.doesNotMatch(renderer,/class:'tm-step5-confirm'/);
 });
 
 test('review identity is coherent and production schemas/providers stay outside the change contract',()=>{

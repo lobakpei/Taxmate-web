@@ -28,11 +28,31 @@ test('a timed-out action restores interactivity, ignores the late result and emi
 
 test('Fresh Step 1 to 5 creates a real company and Step 4 review does not falsely block bookkeeping',async()=>{
   const {facade}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});
-  assert.equal((await facade.onContinueStep({step:1,values:{legalName:'ToodaLoop Ltd',companyNumberStatus:'provided',companyNumber:'00000000',incorporationDate:'2025-12-15'}})).status,'ok');
+  assert.equal((await facade.onContinueStep({step:1,values:{legalName:'ToodaLoop Ltd',companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'00000000',incorporationDate:'2025-12-15'}})).status,'ok');
   const beforePlan=JSON.stringify(facade.driver.state),planned=await facade.onPlanCompanyPeriods({tradingStatus:'trading',tradingStartDate:'2025-12-15',override:{enabled:true,startDate:'2025-12-15',endDate:'2027-01-31'}});
   assert.equal(planned.status,'ok');assert.equal(planned.data.noCompanyWrite,true);assert.equal(planned.data.periodPlan.accounts.endDate,'2027-01-31');assert.equal(JSON.stringify(facade.driver.state),beforePlan);
   assert.equal((await facade.onContinueStep({step:2,values:{tradingStatus:'trading',tradingStartDate:'2025-12-15',corporationTaxStatus:'registered'}})).status,'ok');
   assert.equal((await facade.onContinueStep({step:3,values:{founderName:'Founder',founderShares:51,otherShareholderName:'Other shareholder',otherShares:49,directorAnswer:'yes'}})).status,'ok');
   assert.equal((await facade.onContinueStep({step:4,values:{ordinaryServiceDigital:true,riskAnswers:{groupStructure:true,associatedCompanies:false,propertyOrInvestment:false,inventoryOrStock:false,fullVat:false}}})).status,'ok');
   const started=await facade.onContinueStep({step:5,values:{confirmed:true}});assert.equal(started.status,'review_required');assert.equal(started.nextRoute,'ltd.workspace.overview');assert.equal(started.data.eligibility.allowed,true);const snapshot=facade.getSnapshot();assert.equal(snapshot.businessList.length,5);assert.equal(snapshot.company.profile.lifecycleStatus,'confirmed');assert.ok(snapshot.company.profile.assessmentReasons.includes('group_structure_not_supported'));
+});
+
+test('Step 4 preserves the exact ordinary-services answer in the canonical company profile',async()=>{
+  async function answer(value,suffix){
+    const {facade}=make('fresh');await facade.onAddBusinessCategoryChosen({category:'limited_company'});
+    await facade.onContinueStep({step:1,values:{legalName:`Activity ${suffix} Ltd`,companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'00000000',incorporationDate:'2025-12-15'}});
+    await facade.onContinueStep({step:2,values:{tradingStatus:'trading',tradingStartDate:'2025-12-15',corporationTaxStatus:'registered'}});
+    await facade.onContinueStep({step:3,values:{founderName:'Founder',founderShares:100,otherShares:0,directorAnswer:'yes'}});
+    const result=await facade.onContinueStep({step:4,values:{ordinaryServiceDigital:value,riskAnswers:{groupStructure:false,associatedCompanies:false,propertyOrInvestment:false,inventoryOrStock:false,fullVat:false}}});
+    assert.equal(result.status,'ok');return facade.getSnapshot().company;
+  }
+  const yes=await answer(true,'Yes'),no=await answer(false,'No'),unsure=await answer('not_sure','Unsure');
+  assert.equal(yes.profile.activityType,'service_digital');
+  assert.equal(no.profile.activityType,'not_service_digital');
+  assert.equal(unsure.profile.activityType,'not_sure');
+  assert.equal(yes.bookkeepingEligibility.reasons.includes('ordinary_service_or_digital_company_required'),false);
+  assert.equal(no.bookkeepingEligibility.allowed,false);
+  assert.equal(unsure.bookkeepingEligibility.allowed,false);
+  assert.ok(no.bookkeepingEligibility.reasons.includes('ordinary_service_or_digital_company_required'));
+  assert.ok(unsure.bookkeepingEligibility.reasons.includes('ordinary_service_or_digital_company_required'));
 });
