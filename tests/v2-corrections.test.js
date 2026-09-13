@@ -14,10 +14,10 @@ async function startLtdDraft(facade){
 async function saveUnregisteredStep1(facade){
   await startLtdDraft(facade);
   const result=await facade.onContinueStep({step:1,values:{legalName:'ToodaLoop',companyNumberStatus:'not_available'}});
-  assert.equal(result.status,'ok');
-  assert.equal(result.nextRoute,'ltd.onboarding.step2');
+  assert.equal(result.status,'review_required');
+  assert.equal(result.nextRoute,'ltd.onboarding.registration-pending');
   const acknowledged=await facade.onContinueStep({step:2,values:{registrationDeferredAcknowledged:true}});
-  assert.equal(acknowledged.nextRoute,'ltd.onboarding.step3');
+  assert.equal(acknowledged.nextRoute,'ltd.onboarding.registration-pending');
   return result;
 }
 
@@ -39,12 +39,12 @@ test('B2 one-Ltd limit exposes a real no-write Open existing company action',asy
 test('B3 unregistered company keeps official facts absent and resumes the same ownership draft after registration',async()=>{
   const {facade}=make('fresh');await saveUnregisteredStep1(facade);let snapshot=facade.getSnapshot();assert.equal(snapshot.company.profile.companyNumberStatus,'not_available');assert.equal(snapshot.company.profile.incorporationDate,undefined);assert.equal(snapshot.company.profile.tradingStatus,undefined);assert.equal(snapshot.company.profile.accountingPeriod,undefined);assert.equal(snapshot.company.periodPlan,null);
   const ownership=await facade.onContinueStep({step:3,values:{founderName:'Founder',founderShares:100,otherShares:0,directorAnswer:'yes'}});assert.equal(ownership.status,'review_required');assert.equal(ownership.nextRoute,'ltd.onboarding.registration-pending');snapshot=facade.getSnapshot();assert.equal(snapshot.company.profile.shareholders.length,1);assert.equal(snapshot.company.profile.shareholders[0].ownershipBasisPoints,10000);
-  const saved=await facade.onSaveCompanyDraft({});assert.equal(saved.data.persistedByCodexLayer,true);const resumed=await facade.onResumeCompanyDraft({});assert.equal(resumed.nextRoute,'ltd.onboarding.registration-details');
-  const registered=await facade.onContinueStep({step:1,values:{legalName:'ToodaLoop Ltd',companyNumberStatus:'provided',companyNumber:'00000000',incorporationDate:'2025-12-15'}});assert.equal(registered.nextRoute,'ltd.onboarding.step2');snapshot=facade.getSnapshot();assert.equal(snapshot.company.profile.incorporationDate,'2025-12-15');assert.equal(snapshot.company.profile.shareholders.length,1);assert.equal(snapshot.company.profile.shareholders[0].ownershipBasisPoints,10000);assert.equal(snapshot.company.draftState.registrationStatus,'registered');
+  const saved=await facade.onSaveCompanyDraft({});assert.equal(saved.data.persistedByCodexLayer,true);assert.equal(facade.drafts.getSetup().resumeScreen,'ltd.onboarding.registration-pending','terminal review screen is recorded only as history');const resumed=await facade.onResumeCompanyDraft({});assert.equal(resumed.nextRoute,'ltd.onboarding.registration-details','resume uses the driver actionable registration route');
+  const registered=await facade.onContinueStep({step:1,values:{legalName:'ToodaLoop Ltd',companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'00000000',incorporationDate:'2025-12-15'}});assert.equal(registered.nextRoute,'ltd.onboarding.step2');snapshot=facade.getSnapshot();assert.equal(snapshot.company.profile.incorporationDate,'2025-12-15');assert.equal(snapshot.company.profile.shareholders.length,0,'a newly confirmed company identity cannot inherit the unregistered ownership draft');assert.equal(snapshot.company.setupAnswers.directorAnswer,undefined);assert.equal(snapshot.company.draftState.registrationStatus,'registered');
 });
 
 test('B4 sole founder 100 percent and director No or Not sure remain factual draft states',async()=>{
-  const no=make('fresh').facade;await saveUnregisteredStep1(no);const noResult=await no.onContinueStep({step:3,values:{founderName:'Founder',founderShares:1,otherShares:0,directorAnswer:'no'}});assert.equal(noResult.status,'review_required');let snapshot=no.getSnapshot();assert.equal(snapshot.company.profile.shareholders.length,1);assert.equal(snapshot.company.profile.shareholders[0].ownershipBasisPoints,10000);assert.equal(snapshot.company.profile.accountHolder.isDirector,false);assert.equal(snapshot.company.draftState.directorAnswer,'no');
+  const no=make('fresh').facade;await saveUnregisteredStep1(no);const noResult=await no.onContinueStep({step:3,values:{founderName:'Founder',founderShares:100,otherShares:0,directorAnswer:'no'}});assert.equal(noResult.status,'review_required');let snapshot=no.getSnapshot();assert.equal(snapshot.company.profile.shareholders.length,1);assert.equal(snapshot.company.profile.shareholders[0].ownershipBasisPoints,10000);assert.equal(snapshot.company.profile.accountHolder.isDirector,false);assert.equal(snapshot.company.draftState.directorAnswer,'no');
   const unsure=make('fresh').facade;await saveUnregisteredStep1(unsure);const unsureResult=await unsure.onContinueStep({step:3,values:{founderName:'Founder',founderShares:100,otherShares:0,directorAnswer:'not_sure'}});assert.equal(unsureResult.status,'review_required');snapshot=unsure.getSnapshot();assert.equal(snapshot.company.profile.shareholders.length,1);assert.equal(snapshot.company.profile.accountHolder,undefined);assert.equal(snapshot.company.draftState.directorAnswer,'not_sure');assert.ok(unsureResult.reviewReasons.includes('director_confirmation_required'));
 });
 
@@ -73,7 +73,7 @@ test('B7 company corrections validate chronology and dependent records fail clos
 });
 
 test('B8 facade returns granular stable reason and approved copy keys, never raw validator messages',async()=>{
-  const {facade}=make('fresh');await startLtdDraft(facade);const result=await facade.onContinueStep({step:1,values:{legalName:'A'.repeat(161),companyNumberStatus:'provided',companyNumber:'ABC',incorporationDate:'not-a-date'}});assert.equal(result.status,'field_error');assert.deepEqual(result.fieldErrors.map(item=>[item.field,item.reasonCode,item.copyKey]),[
+  const {facade}=make('fresh');await startLtdDraft(facade);const result=await facade.onContinueStep({step:1,values:{legalName:'A'.repeat(161),companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'ABC',incorporationDate:'not-a-date'}});assert.equal(result.status,'field_error');assert.deepEqual(result.fieldErrors.map(item=>[item.field,item.reasonCode,item.copyKey]),[
     ['legalName','company_name_too_long','error.company_name'],['companyNumber','company_number_format','error.company_number'],['incorporationDate','incorporation_date_invalid','error.invalid_date']
   ]);assert.ok(result.fieldErrors.every(item=>!('code'in item)&&!('message'in item)&&typeof item.params==='object'));
   const ownership=make('existing').facade,ownershipError=await ownership.onChangeOwnership({effectiveDate:'bad',shareholders:[],reason:'Correction',evidenceRefs:['preview:evidence']});assert.equal(ownershipError.status,'field_error');assert.deepEqual(ownershipError.fieldErrors[0],{field:'effectiveDate',reasonCode:'ownership_effective_date_invalid',copyKey:'error.invalid_date',params:{}});

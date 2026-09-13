@@ -39,9 +39,12 @@ function buildProfile(entityId){
     ['corporation_tax_status','registered'],
     ['account_holder_roles',{isDirector:true,isShareholder:true}],
     ['share_structure',{directors:[{id:'director:preview-founder',name:'Founder',isAccountHolder:true}],shareholders:[{id:'shareholder:preview-founder',name:'Founder',isAccountHolder:true,shareClassId:'ordinary',shares:51},{id:'shareholder:preview-other',name:'Other shareholder',isAccountHolder:false,shareClassId:'ordinary',shares:49}],shareClasses:[{id:'ordinary',name:'ordinary',dividendRights:'equal'}]}],
-    ['activity_profile','service_digital'],['unsupported_screen',noRisks],['confirmation',true]
+    ['activity_profile','service_digital'],['unsupported_screen',noRisks]
   ];
   for(const [question,value] of answers)profile=CompanyProfile.answer(profile,question,value,{now:FIXED_NOW,deviceId:DEVICE_ID});
+  profile.registryVerification={schemaVersion:1,status:'not_registered',companyNumber:null,checkedAt:FIXED_NOW,provider:'user_fact',retryable:false,reasonCodes:['company_not_yet_registered'],registryFacts:{legalName:'ToodaLoop Ltd',incorporationDate:'2025-12-15',companyStatus:null,companyType:null,registryUrl:null}};
+  profile=CompanyProfile.setSetupAnswers(profile,{registrationAnswer:'yes',identityDetailsConfirmed:true,tradingAnswer:'yes',directorAnswer:'yes',soleShareholderAnswer:'no'},{now:FIXED_NOW,deviceId:DEVICE_ID});
+  profile=CompanyProfile.answer(profile,'confirmation',true,{now:FIXED_NOW,deviceId:DEVICE_ID});
   profile.previewIdentityStatus='preview_only_no_company_number';
   profile.scenarioFactProvenance={schemaVersion:1,status:'confirmed',directorClass1CategoryA:true,directorForFullTaxYear:true,standardTaxCode1257L:true,noOtherEmploymentOrPayeAdjustments:true,employmentAllowanceUnavailableConfirmed:true,useMaximumEligibleCarriedLoss:true,confirmedOpeningDistributableReserveMinor:0,sourceRefs:['preview-only:founder-scenario-facts'],confirmedAt:FIXED_NOW};
   if(profile.lifecycleStatus!=='confirmed'||profile.assessmentStatus!=='supported_profile')throw new Error('Preview-only Ltd profile did not pass the canonical company-profile gate');

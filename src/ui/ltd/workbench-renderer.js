@@ -28,6 +28,7 @@
     review:{},       // scopeId -> [reasonCode]
     toast:null,      // transient toast string
     focusError:false,
+    infoReturnFocusId:null,
     // onDraftChanged emits synchronously in the production facade. Suppress
     // exactly that one subscription callback so a blur cannot replace the
     // button which is about to receive the same pointer click. No other emit
@@ -501,12 +502,12 @@
       h('button',{class:'tm-dialog-close',type:'button','aria-label':t('common.close'),onClick:function(){if(o.onClose)o.onClose();}},'×')
     ]),sBody];
     if(o.foot&&o.foot.length) parts.push(h('div',{class:'tm-sfoot'}, o.foot.filter(Boolean)));
-    var card=h('div',{class:'tm-sheet'+(o.child?' child':''), role:'dialog','aria-modal':'true',
+    var card=h('div',{class:'tm-sheet'+(o.child?' child':'')+(o.dialogClass?' '+o.dialogClass:''), role:'dialog','aria-modal':'true',
       'aria-label':o.title||o.kick||'',tabindex:'-1',onKeydown:function(e){
         if(e.key==='Escape'){e.preventDefault();if(o.onClose)o.onClose();}
         if(e.key==='Tab'){var fields=Array.from(card.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href]')).filter(function(n){return n.getClientRects().length;});var first=fields[0],last=fields[fields.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
       },onClick:function(e){ e.stopPropagation(); }}, parts);
-    return h('div',{class:'tm-scrim', onClick:function(){ if(o.onClose)o.onClose(); }},[card]);
+    return h('div',{class:'tm-scrim'+(o.scrimClass?' '+o.scrimClass:''), onClick:function(){ if(o.onClose)o.onClose(); }},[card]);
   }
 
   /* ====================================================================== */
@@ -520,6 +521,7 @@
   };
   var INFO_BRIEF = {
     's1.company_number':['s1.company_number','s1.company_number_info'],
+    's1.identity':['s1.identity_question','s1.identity_info'],
     's3.legal_name':['s3.legal_name','s3.legal_name_info'],
     'money.lend':['money.lend','money.lend_info'],
     'money.repay':['money.repay','money.repay_info'],
@@ -530,6 +532,7 @@
   };
   function infoSheet(ov){
     var id=ov.payload&&ov.payload.infoId || ov.id;
+    UI.infoReturnFocusId=ov.returnFocusId||id;
     var body=[];
     if(INFO_3[id]){
       var base=INFO_3[id][0];
@@ -544,8 +547,8 @@
       var title=t('common.learn_more');
       body.push(h('div',{class:'tm-infosec'},[h('p',{text:id})]));
     }
-    return sheet({ child:true, kick:t('info.what'), title:title, body:body,
-      foot:[ btn(t('common.got_it'),'p',function(){ run('onCloseInfo',{},{}); }) ],
+    return sheet({ child:true, dialogClass:'tm-info-dialog', scrimClass:'tm-info-dialog-scrim', kick:t('info.what'), title:title, body:body,
+      foot:[ btn(t('info.back_to_question'),'p',function(){ run('onCloseInfo',{},{}); }) ],
       onClose:function(){ run('onCloseInfo',{},{}); } });
   }
 
@@ -555,8 +558,8 @@
       var state=S().setupExit,reason=state.status==='completed'?'setup.completed':state.status==='legacy'?'setup.legacy_slot':state.status==='has_records'?'setup.has_records':state.status==='loading'?'setup.checking':state.reason==='setup_changed_review_again'?'setup.changed':state.reason==='setup_discard_uncertain'?'setup.uncertain':state.status==='unavailable'?'setup.unavailable':null;
       return sheet({child:true,title:t('setup.exit_title'),body:[h('p',{class:'tm-muted',text:t('setup.exit_body')}),h('p',{class:'tm-muted',text:t('setup.remove_consequence')}),reason?notice('neutral',null,t(reason)):null],foot:[
         btn(t('setup.keep_exit'),'p',function(){run('onSaveCompanyDraft',{},{onOk:function(){UI.sheet=null;paint();}});},{disabled:state.reason==='setup_discard_uncertain'}),
-        btn(t('setup.remove_draft'),'d',function(){run('onDiscardCompanySetup',{},{onOk:function(){UI.cache={};UI.choices={};UI.sheet=null;paint();}});},{disabled:!state.canDiscard}),
-        btn(t('design.keep_editing'),'g',function(){run('onDiscardCancelled',{},{});})],onClose:function(){run('onDiscardCancelled',{},{});}});
+        btn(t('setup.continue_setup'),'g',function(){run('onDiscardCancelled',{},{});}),
+        btn(t('setup.remove_draft'),'d',function(){run('onDiscardCompanySetup',{},{onOk:function(){UI.cache={};UI.choices={};UI.sheet=null;paint();}});},{disabled:!state.canDiscard})],onClose:function(){run('onDiscardCancelled',{},{});}});
     }
     var result=sheet({ child:true, title:t('design.discard_title'),
       body:[ h('p',{class:'tm-muted',text:t('design.discard_body')}) ],
@@ -715,13 +718,24 @@
     flushActive();
     run('onContinueStep',{step:step,screenId:screenId,values:values},{scope:screenId,onReview:function(r){if(!r.nextRoute)toast(t('common.review_required'));}});
   }
-  function stepShell(stepN, title, bodyNodes, footNodes){
+  function stepShell(stepN, title, bodyNodes, footNodes, options){
+    options=options||{};
     var wrap=frag();
     var pr=h('div',{class:'tm-progress'},[]); var fill=h('i'); fill.style.width=Math.round(100*stepN/5)+'%'; pr.appendChild(fill);
-    wrap.append(h('div',{class:'tm-top'},[
-      h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onBack',{},{});}},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
-      h('button',{class:'tm-linkbtn',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){captureSetupInputs();run('onDismissRequested',{reason:'cancel'},{});}}, t('common.cancel'))
+    var setupYear=taxYearLabel();
+    wrap.append(h('div',{class:'tm-setup-brand-header'},[
+      webLogo('setup'),
+      setupYear?h('div',{class:'tm-year',text:setupYear}):null
     ]));
+    var setupBack=h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){
+      captureSetupInputs();
+      if(options.onBack)return options.onBack();
+      run('onBack',{},{});
+    }},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]);
+    var setupExit=h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){
+      UI.setupExitReturnFocus=true;captureSetupInputs();run('onDismissRequested',{reason:'cancel'},{});
+    },dataset:{setupExit:''}},t('setup.save_leave'));
+    wrap.append(h('div',{class:'tm-top tm-setup-top'},stepN===1?[h('span',{'aria-hidden':'true'}),setupExit]:[setupBack]));
     wrap.append(pr);
     wrap.append(h('div',{class:'tm-kick',text:t('setup.step_of',{step:stepN,total:5})}));
     wrap.append(h('div',{class:'tm-wstitle',text:title}));
@@ -733,34 +747,46 @@
   function step1(){
     var sid='ltd.onboarding.step1';
     var profile=S().company&&S().company.profile||{};
-    var savedShortcut=profile.companyNumberStatus==='not_available'&&!!profile.incorporationDate;
-    var reg=fieldVal(sid,'companyNumberStatus', getChoice(sid,'reg')||(savedShortcut?'provided':profile.companyNumberStatus)||'');
+    var setup=(S().company&&S().company.setupAnswers)||profile.setupAnswers||{},savedShortcut=profile.companyNumberStatus==='not_available'&&!!profile.incorporationDate;
+    var savedRegistration=setup.registrationAnswer||(savedShortcut||profile.companyNumberStatus==='provided'?'yes':profile.companyNumberStatus==='not_available'?'no':'');
+    var reg=fieldVal(sid,'registrationAnswer', getChoice(sid,'reg')||savedRegistration||'');
+    var identity=fieldVal(sid,'identityDetailsConfirmed',getChoice(sid,'identity')||(setup.identityDetailsConfirmed===true?'yes':setup.identityDetailsConfirmed===false?'not_sure':''));
+    function clearIdentity(){
+      setField(sid,'identityDetailsConfirmed','');setChoice(sid,'identity','');
+      // Company identity confirmation belongs to the exact facts the user saw.
+      // Clear both the resumable form field and the canonical answer whenever
+      // any identity fact changes, so a reload cannot revive stale consent.
+      persistDraft(sid,'identityDetailsConfirmed','select-one','');
+    }
     var body=[
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s1.registered_question'), infoTrigger('s1.ch')]),
       choiceGroup({scope:sid,name:'reg',row:true,current:reg,options:[
-        {v:'provided',title:t('common.yes')},{v:'not_available',title:t('s2.not_yet')}
-      ],onPick:function(v){ setField(sid,'companyNumberStatus',v); persistDraft(sid,'companyNumberStatus','select-one',v); }})
+        {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
+      ],onPick:function(v){ setField(sid,'registrationAnswer',v);persistDraft(sid,'registrationAnswer','select-one',v);clearIdentity(); }})
     ];
-    if(reg==='provided'){
+    if(reg==='yes'){
       body.push(h('div',{class:'tm-company-identity-stack'},[
-        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text',default:profile.companyNumber||(S().lookupStatus&&S().lookupStatus.inputAlias)||''}),
+        textField({scope:sid,fid:'companyNumber',label:t('s1.company_number'),infoId:'s1.company_number',placeholder:'12345678',type:'text',inputmode:'text',default:profile.companyNumber||(S().lookupStatus&&S().lookupStatus.inputAlias)||'',onInput:clearIdentity}),
         h('div',{},[btn(t('s1.check_ch'),'s',function(){
-          run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.number){setField(sid,'companyNumber',co.number);persistDraft(sid,'companyNumber','text',co.number);}if(co.name){setField(sid,'legalName',co.name);persistDraft(sid,'legalName','text',co.name);}if(co.incorporationDate){setField(sid,'incorporationDate',co.incorporationDate);persistDraft(sid,'incorporationDate','date',co.incorporationDate);}paint();}});
+          clearIdentity();run('onLookupCompaniesHouse',{companyNumber:fieldVal(sid,'companyNumber','')},{scope:sid,onReview:function(){paint();},onOk:function(r){var co=r.data&&r.data.company||{};if(co.number){setField(sid,'companyNumber',co.number);persistDraft(sid,'companyNumber','text',co.number);}if(co.name){setField(sid,'legalName',co.name);persistDraft(sid,'legalName','text',co.name);}if(co.incorporationDate){setField(sid,'incorporationDate',co.incorporationDate);persistDraft(sid,'incorporationDate','date',co.incorporationDate);}clearIdentity();paint();}});
         })]),
         lookupState(),
-        textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text',default:profile.legalName||''}),
-        dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date'),default:profile.incorporationDate||''})
+        textField({scope:sid,fid:'legalName',label:t('s1.registered_name'),placeholder:t('s1.registered_name'),type:'text',default:profile.legalName||'',onInput:clearIdentity}),
+        dateField({scope:sid,fid:'incorporationDate',label:t('s1.incorporation_date'),default:profile.incorporationDate||'',onChange:clearIdentity}),
+        h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s1.identity_question'),infoTrigger('s1.identity')]),
+        choiceGroup({scope:sid,name:'identity',row:true,current:identity,options:[
+          {v:'yes',title:t('common.yes')},{v:'not_sure',title:t('s1.identity_needs_checking')}
+        ],onPick:function(v){setField(sid,'identityDetailsConfirmed',v);persistDraft(sid,'identityDetailsConfirmed','select-one',v);}})
       ]));
-    } else if(reg==='not_available'){
+    } else if(reg==='no'||reg==='not_sure'){
       body.push(textField({scope:sid,fid:'legalName',label:t('s1.proposed_name'),placeholder:t('s1.proposed_name'),type:'text',default:profile.legalName||''}));
-      body.push(notice('info',null,t('s1.draft_notice')));
+      body.push(notice('info',null,t(reg==='not_sure'?'s1.registration_unknown_notice':'s1.draft_notice')));
     }
     var lookupCompany=S().lookupStatus&&S().lookupStatus.company||{};
     var foot=[ btn(t('common.continue'),'p',function(){ submitStep(1,sid,{
-        legalName:fieldVal(sid,'legalName',profile.legalName||lookupCompany.name||''), companyNumberStatus:reg,
-        companyNumber:fieldVal(sid,'companyNumber',profile.companyNumber||lookupCompany.number||''), incorporationDate:fieldVal(sid,'incorporationDate',profile.incorporationDate||lookupCompany.incorporationDate||'')
-      }); }) ];
-    if(reg==='not_available') foot.push(btn(t('s3.save_draft'),'g',function(){ run('onSaveCompanyDraft',{},{}); }));
+        legalName:fieldVal(sid,'legalName',profile.legalName||lookupCompany.name||''),registrationAnswer:reg,companyNumberStatus:reg==='yes'?'provided':reg==='no'?'not_available':null,
+        identityDetailsConfirmed:identity==='yes',companyNumber:fieldVal(sid,'companyNumber',profile.companyNumber||lookupCompany.number||''),incorporationDate:fieldVal(sid,'incorporationDate',profile.incorporationDate||lookupCompany.incorporationDate||'')
+      }); },{disabled:!reg||(reg==='yes'&&identity!=='yes')}) ];
     return stepShell(1, t('setup.title'), body, foot);
   }
   function lookupState(){
@@ -780,33 +806,37 @@
   function step2(){
     var sid='ltd.onboarding.step2';
     var profile=S().company&&S().company.profile||{};
-    if(profile.companyNumberStatus==='not_available'&&!profile.incorporationDate){
+    var setup=(S().company&&S().company.setupAnswers)||profile.setupAnswers||{},registrationAnswer=setup.registrationAnswer||(profile.companyNumberStatus==='provided'?'yes':profile.companyNumberStatus==='not_available'?'no':'');
+    if(registrationAnswer!=='yes'||setup.identityDetailsConfirmed!==true){
       return stepShell(2,t('setup.title'),[notice('info',t('s2.unregistered_title'),t('s2.unregistered_body'))],[
-        btn(t('common.continue'),'p',function(){submitStep(2,sid,{registrationDeferredAcknowledged:true});}),
         btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
       ]);
     }
-    var trading=fieldVal(sid,'tradingStatus', getChoice(sid,'trading')||profile.tradingStatus||'');
+    var savedTrading=setup.tradingAnswer||(profile.tradingStatus==='trading'?'yes':profile.tradingStatus==='not_started'?'no':'');
+    var trading=fieldVal(sid,'tradingAnswer', getChoice(sid,'trading')||savedTrading||'');
     var body=[
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.started_question'), infoTrigger('s2.trading')]),
       choiceGroup({scope:sid,name:'trading',row:true,current:trading,options:[
-        {v:'trading',title:t('common.yes')},{v:'not_started',title:t('s2.not_yet')}
-      ],onPick:function(v){ setField(sid,'tradingStatus',v); persistDraft(sid,'tradingStatus','select-one',v); requestPeriodPlan(sid,v); }})
+        {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
+      ],onPick:function(v){ setField(sid,'tradingAnswer',v);persistDraft(sid,'tradingAnswer','select-one',v);if(v!=='not_sure')requestPeriodPlan(sid,v==='yes'?'trading':'not_started'); }})
     ];
-    if(trading==='trading') body.push(dateField({scope:sid,fid:'tradingStartDate',label:t('s2.start_date'),default:profile.tradingStartDate||'',onChange:function(){requestPeriodPlan(sid,'trading');}}));
-    body.push(periodPlanCard());
-    body.push(periodOverrideEntry(sid));
     var ctStatus=fieldVal(sid,'corporationTaxStatus', getChoice(sid,'ct')||profile.corporationTaxStatus||'');
-    body.push(h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.ct_account_question'), infoTrigger('s2.ct_account')]));
-    body.push(choiceGroup({scope:sid,name:'ct',row:true,current:ctStatus,options:[
-      {v:'registered',title:t('common.yes')},{v:'not_registered',title:t('s2.not_yet')},{v:'unknown',title:t('common.not_sure')}
-    ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); requestPeriodPlan(sid); }}));
+    if(trading==='not_sure')body.push(notice('warn',null,t('s2.trading_unknown_notice')));
+    else if(trading){
+      if(trading==='yes')body.push(dateField({scope:sid,fid:'tradingStartDate',label:t('s2.start_date'),default:profile.tradingStartDate||'',onChange:function(){requestPeriodPlan(sid,'trading');}}));
+      body.push(periodPlanCard());
+      body.push(periodOverrideEntry(sid));
+      body.push(h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s2.ct_account_question'), infoTrigger('s2.ct_account')]));
+      body.push(choiceGroup({scope:sid,name:'ct',row:true,current:ctStatus,options:[
+        {v:'registered',title:t('common.yes')},{v:'not_registered',title:t('common.no')},{v:'unknown',title:t('common.not_sure')}
+      ],onPick:function(v){ setField(sid,'corporationTaxStatus',v); persistDraft(sid,'corporationTaxStatus','select-one',v); requestPeriodPlan(sid); }}));
+    }
     var foot=[ btn(t('common.continue'),'p',function(){
       var pp=companyPeriod(sid);
-      submitStep(2,sid,{ tradingStatus:trading, tradingStartDate:fieldVal(sid,'tradingStartDate',profile.tradingStartDate||''),
+      submitStep(2,sid,{tradingAnswer:trading,tradingStatus:trading==='yes'?'trading':trading==='no'?'not_started':'not_sure',tradingStartDate:fieldVal(sid,'tradingStartDate',profile.tradingStartDate||''),
         accountingPeriod:{startDate:pp.start,endDate:pp.end,referenceDate:pp.ref},
         corporationTaxStatus:ctStatus });
-    }, {disabled: !trading || !ctStatus}) ];
+    }, {disabled:!trading||(trading!=='not_sure'&&!ctStatus)}) ];
     return stepShell(2, t('setup.title'), body, foot);
   }
   function companyPeriod(sid){
@@ -816,7 +846,8 @@
     return {start:pp.startDate||'', end:pp.endDate||'', ref:pp.referenceDate||pp.endDate||''};
   }
   function requestPeriodPlan(sid,tradingOverride){
-    var trading=tradingOverride||fieldVal(sid,'tradingStatus',getChoice(sid,'trading')||'');
+    var trading=tradingOverride||fieldVal(sid,'tradingAnswer',getChoice(sid,'trading')||'');
+    if(trading==='yes')trading='trading';else if(trading==='no')trading='not_started';
     var start=fieldVal(sid,'tradingStartDate','');
     var os=fieldVal(sid,'ovStart',''), oe=fieldVal(sid,'ovEnd','');
     if(!trading || (trading==='trading'&&!start) || ((os||oe)&&!(os&&oe))) return;
@@ -849,9 +880,9 @@
   }
   function step3(){
     var sid='ltd.onboarding.step3';
-    var profile=S().company&&S().company.profile||{},founderShortcutProfile=profile.legalName==='LOBAKPE FOUNDER PREVIEW LTD'&&profile.companyNumberStatus==='not_available'&&profile.incorporationDate==='2025-12-15',holders=profile.shareholders||[],accountHolder=holders.filter(function(item){return item.isAccountHolder;})[0]||{},otherHolder=holders.filter(function(item){return !item.isAccountHolder;})[0]||{};
-    var onlyShareholder=fieldVal(sid,'onlyShareholder',getChoice(sid,'sole')||(holders.length?holders.length===1?'yes':'no':founderShortcutProfile?'yes':''));
-    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||(profile.accountHolder?profile.accountHolder.isDirector===true?'yes':profile.accountHolder.isDirector===false?'no':'not_sure':founderShortcutProfile?'yes':''));
+    var profile=S().company&&S().company.profile||{},setup=(S().company&&S().company.setupAnswers)||profile.setupAnswers||{},founderShortcutProfile=profile.legalName==='LOBAKPE FOUNDER PREVIEW LTD'&&profile.companyNumberStatus==='not_available'&&profile.incorporationDate==='2025-12-15',holders=profile.shareholders||[],accountHolder=holders.filter(function(item){return item.isAccountHolder;})[0]||{},otherHolder=holders.filter(function(item){return !item.isAccountHolder;})[0]||{};
+    var onlyShareholder=fieldVal(sid,'onlyShareholder',getChoice(sid,'sole')||setup.soleShareholderAnswer||(holders.length?holders.length===1?'yes':'no':founderShortcutProfile?'yes':''));
+    var director=fieldVal(sid,'directorAnswer', getChoice(sid,'director')||setup.directorAnswer||(profile.accountHolder?profile.accountHolder.isDirector===true?'yes':profile.accountHolder.isDirector===false?'no':'not_sure':founderShortcutProfile?'yes':''));
     var body=[
       textField({scope:sid,fid:'founderName',label:t('s3.legal_name'),infoId:'s3.legal_name',placeholder:t('s3.legal_name'),type:'text',default:accountHolder.name||(founderShortcutProfile?t('preview.founder_name'):'')}),
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s3.director_question'), infoTrigger('s3.director')]),
@@ -860,7 +891,7 @@
       ],onPick:function(v){ setField(sid,'directorAnswer',v); persistDraft(sid,'directorAnswer','select-one',v); }}),
       h('div',{class:'tm-question',style:'display:flex;align-items:center'},[t('s3.only_shareholder_question'), infoTrigger('s3.shareholder')]),
       choiceGroup({scope:sid,name:'sole',row:true,current:onlyShareholder,options:[
-        {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')}
+        {v:'yes',title:t('common.yes')},{v:'no',title:t('common.no')},{v:'not_sure',title:t('common.not_sure')}
       ],onPick:function(v){setField(sid,'onlyShareholder',v);persistDraft(sid,'onlyShareholder','select-one',v);}})
     ];
     if(onlyShareholder==='yes'){
@@ -872,28 +903,26 @@
       var a=parseInt(fieldVal(sid,'founderShares','')||'0',10)||0, b=parseInt(fieldVal(sid,'otherShares','')||'0',10)||0;
       body.push(totalBar(t('s3.your_ownership'), h('span',{class:'tm-num',text:(a+b)+'%'}), (a+b)===100));
     }
-    if(director==='no'||director==='not_sure') body.push(notice('warn',null,t('s3.director_draft_notice')));
-    var directorBlocks = (director==='no'||director==='not_sure');
-    var foot=[];
-    if(!directorBlocks){
-      foot.push(btn(t('common.continue'),'p',function(){
+    if(onlyShareholder==='not_sure')body.push(notice('warn',null,t('s3.ownership_unknown_notice')));
+    if(director==='no'||director==='not_sure')body.push(notice('warn',null,t('s3.director_draft_notice')));
+    var directorBlocks=(director==='no'||director==='not_sure'),shareTotal=onlyShareholder==='yes'?100:(parseInt(fieldVal(sid,'founderShares','')||'0',10)||0)+(parseInt(fieldVal(sid,'otherShares','')||'0',10)||0),sharesValid=onlyShareholder==='not_sure'||onlyShareholder==='yes'&&shareTotal===100||onlyShareholder==='no'&&shareTotal===100;
+    var submitOwnership=function(){
         var sole=onlyShareholder==='yes';
         submitStep(3,sid,{ founderName:fieldVal(sid,'founderName',accountHolder.name||(founderShortcutProfile?t('preview.founder_name'):'')),
-          onlyShareholder:onlyShareholder,
+          onlyShareholder:onlyShareholder,soleShareholderAnswer:onlyShareholder,
           founderShares: sole?100:(parseInt(fieldVal(sid,'founderShares',accountHolder.shares||'')||'0',10)||0),
           otherShareholderName: sole?'':fieldVal(sid,'otherShareholderName',otherHolder.name||''),
           otherShares: sole?0:(parseInt(fieldVal(sid,'otherShares',otherHolder.shares||'')||'0',10)||0),
           directorAnswer:director });
-      }, {disabled: !onlyShareholder || !director}));
-    }
-    if(directorBlocks) foot.push(btn(t('s3.save_draft'),'p',function(){ run('onSaveCompanyDraft',{},{}); }));
+      };
+    var foot=[btn(directorBlocks||onlyShareholder==='not_sure'?t('s3.save_draft'):t('common.continue'),'p',submitOwnership,{disabled:!onlyShareholder||!director||!sharesValid})];
     return stepShell(3, t('setup.title'), body, foot);
   }
   function step4(){
     var sid='ltd.onboarding.step4';
     var profile=S().company&&S().company.profile||{};
     var qs=[['groupStructure','s4.q1'],['associatedCompanies','s4.q2'],['propertyOrInvestment','s4.q3'],['inventoryOrStock','s4.q4'],['fullVat','s4.q5'],['ordinaryServiceDigital','s4.q6']];
-    function savedAnswer(name){var drafts=draftFields(sid);if(name in drafts)return drafts[name];var picked=getChoice(sid,name);if(picked!=null)return picked;if(name==='ordinaryServiceDigital')return profile.activityType==='service_digital'?'true':profile.activityType?'false':'';var value=profile.riskAnswers&&profile.riskAnswers[name];return value===true?'true':value===false?'false':value==='not_sure'?'not_sure':'';}
+    function savedAnswer(name){var drafts=draftFields(sid);if(name in drafts)return drafts[name];var picked=getChoice(sid,name);if(picked!=null)return picked;if(name==='ordinaryServiceDigital')return profile.activityType==='service_digital'?'true':profile.activityType==='not_service_digital'?'false':profile.activityType==='not_sure'?'not_sure':'';var value=profile.riskAnswers&&profile.riskAnswers[name];return value===true?'true':value===false?'false':value==='not_sure'?'not_sure':'';}
     // One question per screen (Founder UX): sub-index within the step, state persists to draft.
     if(UI.checkIdx==null){UI.checkIdx=qs.findIndex(function(q){return savedAnswer(q[0])==='';});if(UI.checkIdx<0)UI.checkIdx=qs.length-1;}
     var idx=UI.checkIdx; if(idx>=qs.length) idx=qs.length-1;
@@ -913,76 +942,116 @@
         var risk={}; qs.slice(0,5).forEach(function(qq){ var v=savedAnswer(qq[0]); risk[qq[0]] = v==='true'?true:v==='false'?false:'not_sure'; });
         var activity=savedAnswer('ordinaryServiceDigital');UI.checkIdx=null;submitStep(4,sid,{ordinaryServiceDigital:activity==='true'?true:activity==='false'?false:'not_sure',riskAnswers:risk});
       } else { UI.checkIdx=idx+1; paint(); }
-    },{disabled:cur==null}) ];
-    foot.push(btn(t('common.back'),'g',function(){ if(idx>0){ UI.checkIdx=idx-1; paint(); } else { UI.checkIdx=null; run('onBack',{},{}); } }));
-    return stepShell(4, t('s4.title'), body, foot);
+    },{disabled:!['true','false','not_sure'].includes(cur)}) ];
+    return stepShell(4, t('s4.title'), body, foot,{onBack:function(){ if(idx>0){ UI.checkIdx=idx-1; paint(); } else { UI.checkIdx=null; run('onBack',{},{}); } }});
+  }
+  function setupAnswer(value){
+    return value===true?t('common.yes'):value===false?t('common.no'):value==='not_sure'?t('common.not_sure'):t('common.review');
+  }
+  function setupOwnershipPercent(holder){
+    return holder&&Number.isFinite(holder.ownershipBasisPoints)?Math.round(holder.ownershipBasisPoints/100):null;
+  }
+  function setupReviewTable(label, rows, kind){
+    return h('table',{class:'tm-setup-review-table '+kind,'aria-label':label},[
+      h('colgroup',{},[h('col',{class:'tm-setup-review-label-col'}),h('col',{class:'tm-setup-review-value-col'})]),
+      h('tbody',{},rows.map(function(row){return h('tr',{},[
+        h('th',{scope:'row',class:'tm-setup-review-label',text:row[0]}),
+        h('td',{class:'tm-setup-review-value'},row[1])
+      ]);} ))
+    ]);
   }
   function step5(){
     var sid='ltd.onboarding.step5';
     var prof=(S().company&&S().company.profile)||{};
     var elig=(S().company&&S().company.bookkeepingEligibility)||{allowed:true,reasons:[]};
-    var confirmed=getChoice(sid,'confirm','')==='yes';
     var draft=(S().company&&S().company.draftState&&S().company.draftState.registrationStatus==='not_available');
+    var blockingReasons=(elig.reasons||[]).filter(function(reason){return reason!=='question_confirmation_required';});
+    var canStart=elig.allowed||blockingReasons.length===0;
+    var blocked=!draft&&!canStart;
     var body=[];
-    body.push(notice(elig.allowed?'ok':'warn', draft?t('s5.draft_title'):t('s5.ready_title'), draft?t('s5.draft_body'):t('s5.ready_body')));
+    if(draft||blocked)body.push(notice(draft?'ok':'warn', draft?t('s5.draft_title'):t('s5.blocked_title'), draft?t('s5.draft_body'):t('s5.blocked_body')));
     var pp=(S().company&&S().company.periodPlan&&S().company.periodPlan.accounts)||{};
-    var ctp=(S().company&&S().company.periodPlan&&S().company.periodPlan.corporationTaxPeriods)||[];
-    var num=(prof.companyNumber)||((S().company&&S().company.entity&&S().company.entity.companyNumber));
     var tradingYes=(prof.tradingStatus)==='trading';
-    var owners=(prof.shareholders||[]).map(function(sh){ return sh.name+' '+Math.round((sh.ownershipBasisPoints||0)/100)+'%'; }).join(' \u00B7 ');
-    var srows=[ [t('s5.company'), h('span',{text:(S().company&&S().company.entity&&S().company.entity.name)||prof.legalName||''})] ];
-    if(num) srows.push([t('records.company_number'), h('span',{class:'tm-num',text:num})]);
-    srows.push([t('s5.trading_status'), h('span',{text: tradingYes?t('records.trading_yes'):t('records.trading_no')})]);
-    if(tradingYes && prof.tradingStartDate) srows.push([t('s5.trading_since'), h('span',{class:'tm-num',text:isoToDisplay(prof.tradingStartDate)})]);
-    if(pp.startDate) srows.push([t('s5.accounts_period'), h('span',{class:'tm-num',text:isoToDisplay(pp.startDate)+' \u2013 '+isoToDisplay(pp.endDate)})]);
-    ctp.forEach(function(p,i){ srows.push([t('s5.ct_period',{number:i+1}), h('span',{class:'tm-num',text:isoToDisplay(p.startDate)+' \u2013 '+isoToDisplay(p.endDate)})]); });
-    if(owners) srows.push([t('s5.ownership'), h('span',{text:owners})]);
-    srows.push([t('s5.your_role'), h('span',{text:(S().company&&S().company.draftState&&S().company.draftState.directorAnswer==='yes')?t('term.director'):t('common.review')})]);
-    body.push(summRows(srows));
-    var reasons=(elig.reasons&&elig.reasons.length)?elig.reasons:(((S().company&&S().company.taxEstimateEligibility&&S().company.taxEstimateEligibility.status)==='review')?['review']:[]);
+    var shareholders=prof.shareholders||[],holder=shareholders.filter(function(sh){return sh.isAccountHolder;})[0]||shareholders[0]||{};
+    var holderPercent=setupOwnershipPercent(holder),director=prof.accountHolder&&prof.accountHolder.isDirector===true;
+    var roleValue=[h('span',{class:'tm-setup-review-value-line',text:[holder.name||'',director?t('term.director'):t('common.review')].filter(Boolean).join(' \u00B7 ')}),h('span',{class:'tm-setup-review-value-line tm-num',text:holderPercent==null?t('common.review'):holderPercent+'%'})];
+    shareholders.filter(function(sh){return sh!==holder;}).forEach(function(sh){
+      var percent=setupOwnershipPercent(sh);
+      roleValue.push(h('span',{class:'tm-setup-review-value-line',text:[sh.name||t('common.review'),percent==null?t('common.review'):percent+'%'].join(' \u00B7 ')}));
+    });
+    var activityText=tradingYes?t('records.trading_yes')+(prof.tradingStartDate?' \u00B7 '+isoToDisplay(prof.tradingStartDate):''):t('s5.not_started');
+    var ctText=prof.corporationTaxStatus==='registered'?t('common.yes'):prof.corporationTaxStatus==='not_registered'?t('s2.not_yet'):t('common.not_sure');
+    var companyRows=[
+      [t('s5.company'),h('span',{text:(S().company&&S().company.entity&&S().company.entity.name)||prof.legalName||''})],
+      [t('s5.company_activity'),h('span',{text:activityText})],
+      [t('s5.accounts_period'),h('span',{class:'tm-num',text:pp.startDate?isoToDisplay(pp.startDate)+' \u2013 '+isoToDisplay(pp.endDate):t('common.review')})],
+      [t('s5.role_ownership'),h('span',{class:'tm-setup-review-value-lines'},roleValue)],
+      [t('s5.ct_added'),h('span',{text:ctText})]
+    ];
+    body.push(h('section',{class:'tm-setup-review-card tm-setup-company-review'},[
+      h('div',{class:'tm-setup-review-heading'},[h('h2',{text:t('records.company_details')}),infoTrigger('s5.learn')]),
+      setupReviewTable(t('records.company_details'),companyRows,'company')
+    ]));
+    var risks=prof.riskAnswers||{};
+    var otherRows=[['groupStructure','s4.q1'],['associatedCompanies','s4.q2'],['propertyOrInvestment','s4.q3'],['inventoryOrStock','s4.q4'],['fullVat','s4.q5']].map(function(pair){return[t(pair[1]),h('span',{text:setupAnswer(risks[pair[0]])})];});
+    var ordinaryServiceAnswer=prof.activityType==='service_digital'?true:prof.activityType==='not_service_digital'?false:prof.activityType==='not_sure'?'not_sure':null;
+    otherRows.push([t('s4.q6'),h('span',{text:setupAnswer(ordinaryServiceAnswer)})]);
+    body.push(h('section',{class:'tm-setup-review-card tm-setup-other-review'},[
+      h('h2',{text:t('s5.other_company_details')}),setupReviewTable(t('s5.other_company_details'),otherRows,'circumstances')
+    ]));
+    var taxGate=S().company&&S().company.taxEstimateEligibility;
+    var reasons=blockingReasons.length?blockingReasons:(taxGate&&taxGate.status==='review_required'?(taxGate.reasons&&taxGate.reasons.length?taxGate.reasons:['review']):[]);
     if(reasons.length){
       reasons.forEach(function(rc){
         var line=reviewReasonLine(rc);
         if(line){ var nz=notice('warn', line, null); nz.append(h('button',{class:'tm-linkbtn',type:'button',style:'margin-top:4px',onClick:function(){ run('onFixCompanyFact',{reasonCode:rc},{scope:sid}); }},t('s5.fix'))); body.push(nz); }
-        else body.push(notice('warn', t('common.review_required'), t('s5.review_notice')));
+        else body.push(notice('warn', t('common.review_required'), t(canStart?'s5.review_notice':'s5.blocked_body')));
       });
     }
-    body.push(h('div',{class:'tm-secondary-actions'},[
-      btn(t('s5.review_answers'),'g sm',function(){ run('onBack',{},{}); }),
-      btn(t('s5.learn'),'g sm',function(){ run('onOpenInfo',{infoId:'s5.learn'},{}); })
-    ]));
-    body.push(h('div',{class:'tm-step5-confirm'},[checkControl({label:t('s5.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }})]));
-    var foot=[ btn(draft?t('s5.save_draft'):t('s5.start'),'p',function(){
-      submitStep(5,sid,{confirmed:true}); }, {disabled:!confirmed}) ];
-    return stepShell(5, draft?t('s5.draft_title'):t('s5.ready_title'), body, foot);
+    var foot=[draft?btn(t('s5.save_draft'),'p',function(){run('onSaveCompanyDraft',{},{});}):btn(t('common.start'),'p',function(){
+      submitStep(5,sid,{confirmed:true}); }, {disabled:!canStart})];
+    return stepShell(5, draft?t('s5.draft_title'):blocked?t('s5.blocked_title'):t('s5.ready_title'), body, foot);
   }
   function reviewReasonLine(code){
     var map={ 'company_registration_required_before_bookkeeping':'reason.registration',
       'company_registration_required':'reason.registration',
       'director_confirmation_required':'reason.director',
       'account_holder_director_confirmation_required':'reason.director',
-      'ownership_incomplete':'reason.ownership' };
+      'ownership_incomplete':'reason.ownership',
+      'ordinary_service_or_digital_company_required':'reason.activity_profile',
+      'company_registration_review_required':'reason.registration',
+      'company_identity_confirmation_required':'reason.identity_confirmation',
+      'trading_status_review_required':'reason.trading_status',
+      'sole_shareholder_review_required':'reason.ownership' };
     return map[code] ? t(map[code]) : null;
   }
   function screenRegistrationPending(){
-    var c=S().company||{}; var reasons=(S().lastResult&&S().lastResult.reviewReasons)||(c.reviewReasons)||[];
-    var needsDirector=reasons.indexOf('director_confirmation_required')>=0 || (c.draftState&&c.draftState.directorAnswer!=='yes');
-    var body=[ notice('warn', t('pending.title'), t('pending.body')) ];
+    var c=S().company||{},prof=c.profile||{},setup=c.setupAnswers||prof.setupAnswers||{},unknown=setup.registrationAnswer==='not_sure';var reasons=(S().lastResult&&S().lastResult.reviewReasons)||(c.reviewReasons)||[];
+    var needsDirector=reasons.indexOf('director_confirmation_required')>=0;
+    var body=[notice('warn',t(unknown?'pending.registration_review_title':'pending.title'),t(unknown?'pending.registration_review_body':'pending.body'))];
     if(needsDirector) body.push(notice('info', null, t('pending.director_note')));
-    var prof=c.profile||{}; var e=c.entity||{};
+    var e=c.entity||{};
     body.push(summRows([
       [t('records.registered_name'), h('span',{text:e.name||prof.legalName||'\u2014'})],
-      [t('s5.trading_status'), h('span',{text:t('reason.registration')})]
+      [t('s1.registered_question'),h('span',{text:t(unknown?'common.not_sure':'common.no')})]
     ]));
-    var foot=[ btn(t('s3.save_draft'),'p',function(){ run('onSaveCompanyDraft',{},{}); }),
-      btn(t('common.back_to_setup'),'g',function(){ run('onBack',{},{}); }) ];
-    return stepShell(3, t('pending.title'), body, foot);
+    var foot=[btn(t('common.back_to_setup'),'p',function(){run('onBack',{},{});})];
+    return stepShell(1,t(unknown?'pending.registration_review_title':'pending.title'),body,foot);
   }
   function screenDirectorReview(){
     var body=[ notice('warn', t('director_review.title'), t('director_review.body')) ];
-    var foot=[ btn(t('common.back_to_setup'),'p',function(){ run('onBack',{},{}); }),
-      btn(t('s3.save_draft'),'g',function(){ run('onSaveCompanyDraft',{},{}); }) ];
+    var foot=[ btn(t('s3.save_draft'),'g',function(){ run('onSaveCompanyDraft',{},{}); }) ];
     return stepShell(3, t('director_review.title'), body, foot);
+  }
+  function screenTradingReview(){
+    return stepShell(2,t('trading_review.title'),[notice('warn',t('trading_review.title'),t('trading_review.body'))],[
+      btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
+    ]);
+  }
+  function screenOwnershipReview(){
+    return stepShell(3,t('ownership_review.title'),[notice('warn',t('ownership_review.title'),t('ownership_review.body'))],[
+      btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
+    ]);
   }
 
   function reasonText(){ return t('common.review_required'); }
@@ -996,9 +1065,10 @@
     var active=area==='records'?'tax':area;
     var header=h('div',{class:'tm-summary-sheet'+(area==='overview'?'':' slim')});
     header.append(h('div',{class:'tm-top'},[
-      h('button',{class:'tm-wsback',type:'button',onClick:function(){ run(opts.detail?'onBack':'onOpenHome',{},{}); }},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]),
-      webLogo('header')
+      webLogo('header'),
+      taxYearLabel()?h('div',{class:'tm-year',text:taxYearLabel()}):null
     ]));
+    header.append(h('button',{class:'tm-wsback tm-company-return',type:'button',onClick:function(){ run(opts.detail?'onBack':'onOpenHome',{},{}); }},[isRTL()?'\u2192':'\u2190',' ',opts.detail?t('common.back'):t('workspace.all_businesses')]));
     var titles={money:'review01.money',pay:'review01.pay',tax:'review01.year',records:'workspace.records'};
     header.append(h('div',{class:'tm-wstitle',text:opts.title||(area==='overview'?(comp&&comp.name)||'':t(titles[area]))}));
     header.append(h('div',{class:'tm-wsmeta'},[
@@ -1014,7 +1084,7 @@
     var mainCol=h('div',{class:'tm-col'},[header,tabBar]);
     content.forEach(function(n){ if(n) mainCol.append(n); });
     var rail=h('aside',{class:'rail'},[
-      webLogo('rail'),
+      h('div',{class:'tm-rail-brand'},[webLogo('rail'),taxYearLabel()?h('div',{class:'tm-year',text:taxYearLabel()}):null]),
       h('div',{class:'nav-d'},tabs.map(function(tb){return h('button',{class:active===tb[0]?'on':'',type:'button',dataset:{area:tb[0]},onClick:function(){selectWorkspace(tb[0]);}},[directionNavIcon(tb[0]),t(tb[1])]);})),
       h('button',{class:'tm-wsback back-d',type:'button',onClick:function(){run('onOpenHome',{},{});}},[isRTL()?'\u2192':'\u2190',' ',t('workspace.all_businesses')])
     ]);
@@ -1347,16 +1417,20 @@
   function areaOverview(){
     var ap=metric('accountingProfit'),ct=metric('corporationTax'),rev=metric('revenue'),cost=metric('allowableRunningExpenses');
     var ready=ct.status==='supported_estimate';
-    var summary=h('div',{class:'tm-review-summary'},[
-      h('button',{class:'tm-metric tm-review-tax',type:'button',dataset:{metric:'corporationTax',role:'out',taxState:taxDisplayState()},onClick:function(){if(ready)run('onOpenMetric',{metricId:'corporationTax'},{});else openTaxCalculation();}},[
-        h('div',{class:'l',text:t('tax.ct_estimate')}),
-        h('div',{class:'v'},[ready?moneyRole(ct.amountMinor,'out'):h('span',{text:taxDisplayLabel()})]),!ready?h('div',{class:'st',text:t(taxDisplayState()==='not_calculated'?'tax.calculate':'tax.review_calculation')}):null]),
-      metricCell('accountingProfit',t('tax.accounting_profit_loss'),ap.amountMinor,'signed'),
-      metricCell('revenue',t('overview.money_in'),rev.amountMinor,'in'),
-      metricCell('allowableRunningExpenses',t('overview.company_costs'),cost.amountMinor,'out')
+    var hero=h('section',{class:'tm-hero tm-overview-hero',dataset:{overviewHero:'canonical'}},[
+      h('div',{class:'lbl',text:t('tax.accounting_profit_loss')}),
+      h('div',{class:'big'},[moneyRole(ap.amountMinor,'signed')]),
+      h('button',{class:'tm-overview-tax',type:'button',dataset:{metric:'corporationTax',role:'out',taxState:taxDisplayState()},onClick:function(){if(ready)run('onOpenMetric',{metricId:'corporationTax'},{});else openTaxCalculation();}},[
+        h('span',{class:'tm-overview-tax-label',text:t('tax.ct_estimate')}),
+        h('span',{class:'tm-overview-tax-value'},[ready?moneyRole(ct.amountMinor,'out'):h('span',{text:taxDisplayLabel()}),h('span',{'aria-hidden':'true',text:isRTL()?'\u2039':'\u203a'})])
+      ]),
+      h('div',{class:'tm-overview-figures'},[
+        h('button',{class:'tm-overview-figure',type:'button',dataset:{metric:'revenue',role:'in'},onClick:function(){run('onOpenMetric',{metricId:'revenue'},{});}},[h('span',{text:t('overview.money_in')}),moneyRole(rev.amountMinor,'in')]),
+        h('button',{class:'tm-overview-figure',type:'button',dataset:{metric:'allowableRunningExpenses',role:'out'},onClick:function(){run('onOpenMetric',{metricId:'allowableRunningExpenses'},{});}},[h('span',{text:t('overview.company_costs')}),moneyRole(cost.amountMinor,'out')])
+      ])
     ]);
-    var nodes=[summary],ro=readOnlyNotice();if(ro)nodes.push(ro);
-    if(can('create_event')) nodes.push(h('div',{class:'tm-pair'},[
+    var nodes=[hero],ro=readOnlyNotice();if(ro)nodes.push(ro);
+    if(can('create_event')) nodes.push(h('div',{class:'tm-pair tm-overview-actions'},[
       btn(t('money.add_income'),'p',function(){openSheet('income');}),
       btn(t('money.add_expense'),'s',function(){openSheet('expense');})]));
     var items=todoItems({codes:yearTodoCodes()});
@@ -2904,6 +2978,8 @@
       case 'ltd.onboarding.step1': case 'ltd.onboarding.registration-details': return step1();
       case 'ltd.onboarding.registration-pending': return screenRegistrationPending();
       case 'ltd.onboarding.director-review': return screenDirectorReview();
+      case 'ltd.onboarding.trading-review': return screenTradingReview();
+      case 'ltd.onboarding.ownership-review': return screenOwnershipReview();
       case 'ltd.onboarding.step2': return step2();
       case 'ltd.onboarding.step3': return step3();
       case 'ltd.onboarding.step4': return step4();
@@ -2968,7 +3044,8 @@
     var keepTaskFocus=focusedTask&&UI.lastRouteKey===routeId()&&!UI.sheet&&!overlays().length&&!pendingDiscard()&&!UI.webHomeDiscard?focusedTask.dataset.todoAction:null;
     var oldWebDiscard=mount.querySelector('[data-web-home-discard]'),discardFocus=oldWebDiscard?Array.from(oldWebDiscard.querySelectorAll('button')).indexOf(document.activeElement):-1;
     var scrollY=root.scrollY||0,oldSheet=mount.querySelector('.tm-sbody'),sheetScroll=oldSheet?oldSheet.scrollTop:0;
-    var sheetKey=UI.sheet?UI.sheet.kind+':'+JSON.stringify(UI.sheet.ctx||{})+':'+(UI.sheet.selectedFact||''):'';
+    var infoOverlay=overlays().filter(function(ov){return ov.type==='information';}).slice(-1)[0];
+    var discardOverlay=pendingDiscard(),sheetKey=UI.sheet?UI.sheet.kind+':'+JSON.stringify(UI.sheet.ctx||{})+':'+(UI.sheet.selectedFact||''):(infoOverlay?'info:'+infoOverlay.id:discardOverlay?'discard:'+(discardOverlay.screenId||'setup'):'');
     flushActive();
     UI.roShown=false;
     var app=h('div',{class:'tm-app', 'data-theme':UI.theme, dir:isRTL()?'rtl':'ltr',lang:UI.locale});
@@ -2980,7 +3057,7 @@
     // footer button, a cancel control or the next sheet (UI-09).
     if(UI.toast) col.append(h('div',{class:'tm-toast',role:'status','aria-live':'polite'},[h('div',{class:'b',text:UI.toast})]));
     col.append(screen);
-    if(UI.sheet||overlays().length||UI.webHomeDiscard)col.setAttribute('inert','');
+    if(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard)col.setAttribute('inert','');
     app.append(col);
     // overlays: info sheet(s) from facade nav
     overlays().forEach(function(ov){ if(ov.type==='information') app.append(infoSheet(ov)); });
@@ -2999,6 +3076,15 @@
     if(typeof root.scrollTo==='function')root.scrollTo(0,scrollY);
     var newSheet=mount.querySelector('.tm-sbody');if(newSheet&&UI.lastSheetKey===sheetKey)newSheet.scrollTop=sheetScroll;
     if(sheetKey&&UI.lastSheetKey!==sheetKey){var close=mount.querySelector('.tm-dialog-close');if(close)close.focus({preventScroll:true});}
+    if(!overlays().length&&UI.infoReturnFocusId){
+      var infoFocus=Array.from(mount.querySelectorAll('[data-info]')).find(function(button){return button.dataset.info===UI.infoReturnFocusId;});
+      UI.infoReturnFocusId=null;
+      if(infoFocus&&!infoFocus.disabled&&!infoFocus.closest('[inert]'))infoFocus.focus({preventScroll:true});
+    }
+    if(!pendingDiscard()&&UI.setupExitReturnFocus){
+      var exitFocus=mount.querySelector('[data-setup-exit]');UI.setupExitReturnFocus=false;
+      if(exitFocus&&!exitFocus.disabled&&!exitFocus.closest('[inert]'))exitFocus.focus({preventScroll:true});
+    }
     UI.lastSheetKey=sheetKey;
     UI.mountedKey=renderKey();
     // focus first error field

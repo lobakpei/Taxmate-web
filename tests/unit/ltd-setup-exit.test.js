@@ -7,7 +7,7 @@ const {TaxMateLtdUIFacade}=require('../../src/integration/ltd/TaxMateLtdUIFacade
 const Structural=require('../../src/integration/ltd/company-structural-state');
 const clone=value=>JSON.parse(JSON.stringify(value));
 function fixture(options={}){const state=options.state||make('fresh').driver.state,driver=new CanonicalCompanyDriver({state,now:()=>DEFAULT_NOW,entitlementSnapshot:PRO_ENTITLEMENT,...options}),storage=options.storage||Structural.memoryStorage(),facade=new TaxMateLtdUIFacade({driver,storage,draftKey:'setup-test'});return{driver,facade,storage};}
-const step1={companyNumberStatus:'provided',companyNumber:'12345678',legalName:'Synthetic Setup Ltd',incorporationDate:'2026-04-06'};
+const step1={companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'12345678',legalName:'Synthetic Setup Ltd',incorporationDate:'2026-04-06'};
 async function start(f){await f.facade.onAddBusinessCategoryChosen({category:'limited_company'});return f.driver.activeProfile().entityId;}
 async function field(f,id,value,screenId='ltd.onboarding.step1'){await f.facade.onDraftChanged({screenId,field:{id,type:'text',value}});}
 

@@ -87,6 +87,9 @@ body{
 .tm-brand .mk2{color:var(--brand)}
 .tm-year{display:inline-flex; align-items:center; gap:5px; font-size:12.5px; font-weight:700;
   color:var(--ink); background:var(--card); border:1px solid var(--line); border-radius:999px; padding:6px 11px; box-shadow:var(--e-card)}
+.tm-setup-brand-header{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;margin:0 -16px 10px;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;background:var(--navy);color:#fff}
+.tm-setup-brand-header .tm-logo{display:block;width:auto;height:22px}
+.tm-setup-brand-header .tm-year{color:#fff;background:transparent;border-color:var(--navy-line);box-shadow:none}
 
 /* 4 — PROMO STRIP --------------------------------------------------------- */
 .tm-promo{background:linear-gradient(120deg,#F4A21E,#E8890F); color:#fff;
@@ -184,6 +187,8 @@ body{
   display:flex; flex-direction:column; position:relative}
 @media (min-width:900px){.tm-sheet{border-radius:24px; max-height:88vh}}
 .tm-sheet.child{box-shadow:var(--e-child)}
+.tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.5);backdrop-filter:none}
+.tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px}
 .tm-grab{width:38px; height:4px; border-radius:2px; background:var(--line); margin:10px auto 2px; flex:0 0 auto}
 .tm-sbody{padding:8px 20px 16px; overflow-y:auto; flex:1 1 auto}
 .tm-sfoot{flex:0 0 auto; padding:14px 20px calc(14px + env(safe-area-inset-bottom));
@@ -291,6 +296,27 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 .tm-secondary-actions{display:flex;flex-wrap:wrap;gap:12px;margin-top:8px}
 .tm-secondary-actions .tm-btn{flex:1 1 150px;min-height:44px}
 .tm-step5-confirm{margin-top:18px}
+.tm-setup-review-card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:18px;margin-top:14px;overflow:hidden}
+.tm-setup-review-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+.tm-setup-review-card h2{font-size:var(--t-section);line-height:1.35;margin:0 0 12px;font-weight:800}
+.tm-setup-review-table{width:100%;table-layout:fixed;border-collapse:collapse}
+.tm-setup-review-table.company .tm-setup-review-label-col{width:36%}
+.tm-setup-review-table.company .tm-setup-review-value-col{width:64%}
+.tm-setup-review-table.circumstances .tm-setup-review-label-col{width:78%}
+.tm-setup-review-table.circumstances .tm-setup-review-value-col{width:22%}
+.tm-setup-review-table th,.tm-setup-review-table td{padding:12px 0;border-top:1px solid var(--line);vertical-align:top;line-height:1.45;overflow-wrap:anywhere}
+.tm-setup-review-table tr:first-child th,.tm-setup-review-table tr:first-child td{border-top:0}
+.tm-setup-review-label{padding-inline-end:16px!important;color:var(--muted);font-size:13px;font-weight:500;text-align:start}
+.tm-setup-review-value{color:var(--ink);font-size:13.5px;font-weight:800;text-align:end}
+.tm-setup-review-value-lines,.tm-setup-review-value-line{display:block}
+.tm-overview-hero .tm-overview-tax,.tm-overview-hero .tm-overview-figure{appearance:none;width:100%;border:0;background:none;color:inherit;font:inherit;cursor:pointer;text-align:start}
+.tm-overview-hero .tm-overview-tax{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:2px solid currentColor;padding:12px 0 0;margin-top:14px}
+.tm-overview-tax-label{font-weight:800}
+.tm-overview-tax-value{display:flex;align-items:center;gap:6px;font-weight:800;text-align:end}
+.tm-overview-figures{margin-top:10px}
+.tm-overview-hero .tm-overview-figure{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.16)}
+.tm-overview-hero .tm-overview-figure>span:first-child{font-size:13px;color:inherit;opacity:.72}
+.tm-overview-hero .tm-overview-figure .tm-num{font-size:15px;font-weight:800}
 .tm-ownership-card{margin-top:18px}
 .tm-record-actions{display:flex;flex-direction:column;gap:12px;margin-top:12px;margin-bottom:4px}
 .tm-record-actions .tm-btn{min-height:44px}
@@ -348,6 +374,12 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
   .tm-secondary-actions{flex-direction:column;gap:10px}
   .tm-secondary-actions .tm-btn{width:100%;flex:0 0 auto}
   .tm-record-actions{gap:10px;margin-top:10px}
+  .tm-setup-review-card{padding:16px 14px}
+  .tm-setup-review-table.company .tm-setup-review-label-col{width:40%}
+  .tm-setup-review-table.company .tm-setup-review-value-col{width:60%}
+  .tm-setup-review-table.circumstances .tm-setup-review-label-col{width:74%}
+  .tm-setup-review-table.circumstances .tm-setup-review-value-col{width:26%}
+  .tm-setup-review-label{padding-inline-end:12px!important}
 }
 
 /* 18 — HELPERS ------------------------------------------------------------ */

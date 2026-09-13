@@ -3,8 +3,8 @@
 // No production account, authentication, network provider or user data is used.
 const fs=require('node:fs'),path=require('node:path'),http=require('node:http'),assert=require('node:assert/strict');
 const {spawnSync}=require('node:child_process'),{chromium}=require('playwright');
-const root=path.resolve(__dirname,'../..'),artifact=path.join(root,'.hosting-build/ltd-step2-browser'),evidence=path.join(root,'.hosting-build/ltd-step2-evidence'),origin='http://127.0.0.1:4199';
-const red=process.argv.includes('--red'),removedSlot=process.argv.includes('--removed-slot'),reopenedSlot=process.argv.includes('--reopened-slot'),directContinue=process.argv.includes('--direct-continue'),label=(removedSlot?'removed-slot-':reopenedSlot?'reopened-slot-':directContinue?'direct-continue-':'')+(red?'red':'green');let browser,server,page;
+const root=path.resolve(__dirname,'../..'),firebaseRoot=path.dirname(require.resolve('firebase/package.json')),artifact=path.join(root,'.hosting-build/ltd-step2-browser'),evidence=path.join(root,'.hosting-build/ltd-step2-evidence'),origin='http://127.0.0.1:4199';
+const red=process.argv.includes('--red'),q6Blocked=process.argv.includes('--q6-blocked'),removedSlot=process.argv.includes('--removed-slot'),reopenedSlot=process.argv.includes('--reopened-slot'),directContinue=process.argv.includes('--direct-continue'),label=(removedSlot?'removed-slot-':reopenedSlot?'reopened-slot-':directContinue?'direct-continue-':q6Blocked?'q6-blocked-':'')+(red?'red':'green');let browser,server,page;
 async function run(){
  fs.mkdirSync(evidence,{recursive:true});
  assert.equal(spawnSync(process.execPath,['scripts/build-hosting.js','production','ltd-step2-browser'],{cwd:root,stdio:'inherit'}).status,0);
@@ -15,7 +15,7 @@ async function run(){
  browser=await chromium.launch({headless:true,executablePath});
  const context=await browser.newContext({viewport:{width:390,height:844},isMobile:true,hasTouch:true,serviceWorkers:'block'});
  await context.addInitScript(()=>{localStorage.setItem('taxmateuk_account_v1:local:onboarding-done','1');localStorage.setItem('taxmateuk_analytics_consent','denied');});
- await context.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin))return route.continue();const file=/\/firebasejs\/[^/]+\/(firebase-[a-z-]+-compat\.js)$/.exec(url);if(file)return route.fulfill({path:path.join(root,'node_modules/firebase',file[1]),contentType:'text/javascript'});return route.abort();});
+ await context.route('**/*',async route=>{const url=route.request().url();if(url.startsWith(origin))return route.continue();const file=/\/firebasejs\/[^/]+\/(firebase-[a-z-]+-compat\.js)$/.exec(url);if(file)return route.fulfill({path:path.join(firebaseRoot,file[1]),contentType:'text/javascript'});return route.abort();});
  page=await context.newPage();const errors=[];page.on('pageerror',error=>errors.push(error.message));
  await page.goto(origin);await page.waitForFunction(()=>typeof TaxMateCompanyState!=='undefined');
  await page.evaluate(async({removedSlot,reopenedSlot})=>{
@@ -67,20 +67,35 @@ async function run(){
   fs.writeFileSync(path.join(evidence,label+'-result.json'),JSON.stringify({status:'PASS',scope:'ISOLATED_LOCAL_GUARD_ONLY',errors,...stale},null,2));console.log(JSON.stringify({status:'PASS',scope:'REMOVED_SLOT_GUARD_AND_SAVED_STEP2',errors}));return;
  }
  await rootUI.getByRole('button',{name:'Yes',exact:true}).click();
+ const infoTrigger=rootUI.locator('button[data-info]').first();
+ await infoTrigger.click();
+ await rootUI.locator('.tm-info-dialog').waitFor();
+  const infoGeometry=await rootUI.locator('.tm-info-dialog').evaluate(node=>{const rect=node.getBoundingClientRect(),active=document.activeElement;return{centerDeltaX:Math.abs((rect.left+rect.width/2)-innerWidth/2),centerDeltaY:Math.abs((rect.top+rect.height/2)-innerHeight/2),focused:node.contains(active),scrim:getComputedStyle(node.closest('.tm-info-dialog-scrim')).backgroundColor};});
+ assert.ok(infoGeometry.centerDeltaX<2&&infoGeometry.centerDeltaY<2,`information dialog is not centred: ${JSON.stringify(infoGeometry)}`);
+  assert.equal(infoGeometry.focused,true,'information dialog moves focus inside when opened');
+ assert.equal(infoGeometry.scrim,'rgba(15, 22, 32, 0.5)','information dialog uses the approved lighter backdrop');
+ await rootUI.locator('.tm-info-dialog').getByRole('button',{name:/Back to the question/i}).click();
+ assert.equal(await infoTrigger.evaluate(node=>document.activeElement===node),true,'information dialog returns focus to its trigger');
+ await rootUI.getByRole('button',{name:'Save & leave',exact:true}).click();
+ const exitDialog=rootUI.locator('[role="dialog"]').last();await exitDialog.waitFor();
+ for(const label of ['Keep draft and leave','Continue setup','Remove draft'])assert.equal(await exitDialog.getByRole('button',{name:label,exact:true}).count(),1,`setup exit dialog exposes ${label}`);
+ await exitDialog.getByRole('button',{name:'Continue setup',exact:true}).click();
+ assert.equal(await rootUI.getByRole('button',{name:'Save & leave',exact:true}).count(),1,'Step 1 has one Save & leave entry after continuing setup');
  await rootUI.locator('input[data-field="companyNumber"]').pressSequentially('lobakpe1');
- await rootUI.getByRole('button',{name:/Check.*Companies House/}).click();
- await rootUI.locator('input[data-field="legalName"]').waitFor();
- await page.waitForFunction(()=>document.querySelector('input[data-field="legalName"]')?.value==='LOBAKPE FOUNDER PREVIEW LTD');
- await rootUI.getByRole('button',{name:'Continue',exact:true}).click();
+  await rootUI.getByRole('button',{name:/Check.*Companies House/}).click();
+  await rootUI.locator('input[data-field="legalName"]').waitFor();
+  await page.waitForFunction(()=>document.querySelector('input[data-field="legalName"]')?.value==='LOBAKPE FOUNDER PREVIEW LTD');
+  await rootUI.getByRole('button',{name:'Yes',exact:true}).last().click();
+  await rootUI.getByRole('button',{name:'Continue',exact:true}).click();
  await page.waitForFunction(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId==='ltd.onboarding.step2'||step2Trace.some(row=>row.name==='onContinueStep'&&row.result.status==='field_error'));
  assert.equal(await page.evaluate(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId),'ltd.onboarding.step2');
  await rootUI.getByRole('button',{name:'Yes',exact:true}).first().click();
- if(directContinue)await rootUI.getByRole('button',{name:'Not yet',exact:true}).last().click();
+  if(directContinue)await rootUI.getByRole('button',{name:'No',exact:true}).last().click();
  await rootUI.locator('input[data-field="tradingStartDate"]').pressSequentially('06/04/2026',{delay:40});
- if(!directContinue)await rootUI.getByRole('button',{name:'Not yet',exact:true}).last().click();
- if(red&&await rootUI.getByRole('button',{name:'Not yet',exact:true}).last().getAttribute('aria-pressed')!=='true'){
+  if(!directContinue)await rootUI.getByRole('button',{name:'No',exact:true}).last().click();
+  if(red&&await rootUI.getByRole('button',{name:'No',exact:true}).last().getAttribute('aria-pressed')!=='true'){
   await page.waitForFunction(()=>!step2Facade.getSnapshot().busy.active);
-  await rootUI.getByRole('button',{name:'Not yet',exact:true}).last().click();
+   await rootUI.getByRole('button',{name:'No',exact:true}).last().click();
  }
  await page.screenshot({path:path.join(evidence,'step2-before-'+label+'.png'),fullPage:true});
  await rootUI.getByRole('button',{name:'Continue',exact:true}).click();
@@ -90,20 +105,45 @@ async function run(){
  fs.writeFileSync(path.join(evidence,label+'-result.json'),JSON.stringify({scope:'ISOLATED_LOCAL_MOBILE_UI',errors,...result},null,2));
  console.log(JSON.stringify({route:result.route,errors,exceptions:result.exceptions,callbacks:result.trace.filter(row=>row.name!=='onDraftChanged')}));
  if(!red){
-  assert.equal(result.route,'ltd.onboarding.step3');
+ assert.equal(result.route,'ltd.onboarding.step3');
   await rootUI.locator('input[data-field="founderName"]').fill('Synthetic Director');
-  for(let i=0;i<2;i++)await rootUI.locator('.tm-choices').nth(i).getByRole('button',{name:'Yes',exact:true}).click();
+  await rootUI.locator('.tm-choices').nth(0).getByRole('button',{name:'Yes',exact:true}).click();
+  await rootUI.locator('.tm-choices').nth(1).getByRole('button',{name:'No',exact:true}).click();
+   await rootUI.locator('input[data-field="founderShares"]').fill('51');
+   await rootUI.locator('input[data-field="founderShares"]').press('Tab');
+   await rootUI.locator('input[data-field="otherShareholderName"]').fill('Synthetic Co-owner');
+   await rootUI.locator('input[data-field="otherShareholderName"]').press('Tab');
+   await rootUI.locator('input[data-field="otherShares"]').fill('49');
+   await rootUI.locator('input[data-field="otherShares"]').press('Tab');
+   await rootUI.getByRole('button',{name:'Continue',exact:true}).waitFor({state:'visible'});
   await rootUI.getByRole('button',{name:'Continue',exact:true}).click();
   await page.waitForFunction(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId==='ltd.onboarding.step4');
-  for(let i=0;i<6;i++){await rootUI.getByRole('button',{name:i===5?'Yes':'No',exact:true}).click();await rootUI.locator('button.tm-btn.p').last().click();}
+   for(let i=0;i<6;i++){await rootUI.getByRole('button',{name:i===5&&!q6Blocked?'Yes':'No',exact:true}).click();await rootUI.locator('button.tm-btn.p').last().click();}
   await page.waitForFunction(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId==='ltd.onboarding.step5');
-  await page.screenshot({path:path.join(evidence,'step5-'+label+'.png'),fullPage:true});
-  await rootUI.locator('.tm-step5-confirm button').click();await rootUI.locator('button.tm-btn.p').last().click();
+  const ownershipReview=await rootUI.locator('.tm-setup-company-review').innerText();
+  assert.match(ownershipReview,/Synthetic Director[\s\S]*51%/,'Step 5 carries the account-holder ownership');
+   assert.match(ownershipReview,/Synthetic Co-owner[\s\S]*49%/,'Step 5 carries every additional canonical shareholder');
+   await page.screenshot({path:path.join(evidence,'step5-'+label+'.png'),fullPage:true});
+   if(q6Blocked){
+    assert.equal(await rootUI.getByRole('button',{name:'Start',exact:true}).isDisabled(),true,'Step 5 cannot start when the company does not match the supported activity');
+    assert.equal(await rootUI.getByRole('button',{name:/Fix/i}).count()>0,true,'Step 5 explains how to fix the blocking answer');
+    await rootUI.getByRole('button',{name:/Fix/i}).first().click();
+    await page.waitForFunction(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId==='ltd.onboarding.step4');
+    assert.equal(await page.evaluate(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId),'ltd.onboarding.step4');
+    assert.deepEqual(errors,[]);assert.deepEqual(await page.evaluate(()=>step2Exceptions),[]);
+    fs.writeFileSync(path.join(evidence,label+'-result.json'),JSON.stringify({status:'PASS',scope:'ISOLATED_LOCAL_MOBILE_UI_Q6_BLOCK',errors},null,2));console.log(JSON.stringify({status:'PASS',scope:'Q6_BLOCKED_AND_FIX_ROUTE'}));return;
+   }
+   await rootUI.getByRole('button',{name:'Start',exact:true}).click();
   await page.waitForFunction(()=>step2Facade.getSnapshot().navigation.routes.at(-1).screenId==='ltd.workspace.overview');
   const completed=await page.evaluate(()=>({route:step2Facade.getSnapshot().navigation.routes.at(-1).screenId,profile:step2Facade.getSnapshot().company.profile,facts:step2FixtureFacts(),trace:step2Trace,exceptions:step2Exceptions}));
-  assert.equal(completed.profile.tradingStartDate,'2026-04-06');assert.equal(completed.profile.corporationTaxStatus,'not_registered');assert.equal(completed.profile.lifecycleStatus,'confirmed');assert.equal(completed.facts.activeCompanyCount,1);assert.equal(completed.facts.usesRemovedIdentity,false);assert.equal(completed.facts.removedUnchanged,true);assert.deepEqual(errors,[]);assert.deepEqual(completed.exceptions,[]);
-  await page.screenshot({path:path.join(evidence,'overview-'+label+'.png'),fullPage:true});
-  fs.writeFileSync(path.join(evidence,label+'-result.json'),JSON.stringify({status:'PASS',scope:'ISOLATED_LOCAL_MOBILE_UI_STEPS_1_TO_5',errors,...completed},null,2));console.log(JSON.stringify({status:'PASS',route:completed.route,facts:completed.facts}));
+   assert.equal(completed.profile.tradingStartDate,'2026-04-06');assert.equal(completed.profile.corporationTaxStatus,'not_registered');assert.equal(completed.profile.lifecycleStatus,'confirmed');assert.equal(completed.facts.activeCompanyCount,1);assert.equal(completed.facts.usesRemovedIdentity,false);assert.equal(completed.facts.removedUnchanged,true);assert.deepEqual(errors,[]);assert.deepEqual(completed.exceptions,[]);
+   await page.screenshot({path:path.join(evidence,'overview-'+label+'.png'),fullPage:true});
+   await page.setViewportSize({width:1440,height:1000});
+   await page.evaluate(()=>window.scrollTo(0,0));await page.waitForTimeout(50);
+   const desktop=await rootUI.locator('.tm-workspace-shell').evaluate(shell=>{const app=shell.closest('.tm-app'),rail=shell.querySelector(':scope > .rail'),bottom=shell.querySelector('.tm-bottom-nav'),rect=rail.getBoundingClientRect(),visible=node=>{const r=node.getBoundingClientRect(),s=getComputedStyle(node);return r.width>0&&r.height>0&&s.display!=='none'&&s.visibility!=='hidden';},logos=[...shell.querySelectorAll('.tm-logo')].filter(visible),returns=[...shell.querySelectorAll('.tm-company-return,.back-d')].filter(visible);return{appPaddingTop:getComputedStyle(app).paddingTop,railTop:Math.round(rect.top),railDisplay:getComputedStyle(rail).display,bottomDisplay:getComputedStyle(bottom).display,visibleLogos:logos.length,visibleCompanyReturns:returns.length,noHorizontalOverflow:document.documentElement.scrollWidth<=document.documentElement.clientWidth};});
+   assert.equal(desktop.appPaddingTop,'0px','desktop workspace removes demo-only app padding');assert.equal(desktop.railTop,0,'desktop navigation rail starts at the viewport top');assert.equal(desktop.railDisplay,'flex','desktop navigation rail is visible');assert.equal(desktop.bottomDisplay,'none','desktop hides the mobile bottom navigation');assert.equal(desktop.visibleLogos,1,'desktop shows one TaxMate logo');assert.equal(desktop.visibleCompanyReturns,1,'desktop shows one All businesses action');assert.equal(desktop.noHorizontalOverflow,true,'desktop workspace has no horizontal overflow');
+   await page.screenshot({path:path.join(evidence,'overview-desktop-'+label+'.png'),fullPage:true});
+   fs.writeFileSync(path.join(evidence,label+'-result.json'),JSON.stringify({status:'PASS',scope:'ISOLATED_LOCAL_MOBILE_UI_STEPS_1_TO_5',errors,...completed},null,2));console.log(JSON.stringify({status:'PASS',route:completed.route,facts:completed.facts}));
  }
 }
 run().catch(async error=>{console.error(error);if(page){await page.screenshot({path:path.join(evidence,'unexpected-failure.png'),fullPage:true}).catch(()=>{});const detail=await page.evaluate(()=>({trace:window.step2Trace,exceptions:window.step2Exceptions,text:document.body.innerText,lastResult:window.step2Facade?.lastResult})).catch(()=>null);fs.writeFileSync(path.join(evidence,'unexpected-failure.json'),JSON.stringify(detail,null,2));console.log(JSON.stringify(detail));}process.exitCode=1;}).finally(async()=>{if(browser)await browser.close();if(server)await new Promise(resolve=>server.close(resolve));});

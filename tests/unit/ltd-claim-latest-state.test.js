@@ -6,7 +6,7 @@ const Repository=require('../../src/integration/ltd/company-state-repository');
 const Profile=require('../../src/core/company-profile');
 const clone=value=>JSON.parse(JSON.stringify(value));
 const hash=value=>crypto.createHash('sha256').update(JSON.stringify(value)).digest('hex');
-const values={companyNumberStatus:'provided',companyNumber:'12345678',legalName:'Pending Claim Ltd',incorporationDate:'2026-04-06'};
+const values={companyNumberStatus:'provided',identityDetailsConfirmed:true,companyNumber:'12345678',legalName:'Pending Claim Ltd',incorporationDate:'2026-04-06'};
 
 async function waitingClaim(){
  let canonical=clone(make('fresh').driver.state),writes=0,release,started;

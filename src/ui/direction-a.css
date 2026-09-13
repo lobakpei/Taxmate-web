@@ -338,6 +338,8 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand .mk,
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand .mk2{display:none}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-year,
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsperiod{display:inline-flex;align-items:center;font-size:12.5px;font-weight:700;background:transparent;color:#fff;border:1px solid var(--navy-line);border-radius:999px;padding:6px 11px;box-shadow:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-brand-header{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:64px;margin:0 -16px 10px;padding:calc(8px + env(safe-area-inset-top)) 16px 8px;background:var(--navy);color:#fff}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-brand-header .tm-logo{display:block;width:auto;height:22px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsback{appearance:none;border:0;background:none;color:var(--ink);font-weight:700;font-size:14px;min-height:44px;padding:8px 0}
 /* White only on the navy surfaces (summary sheet, desktop rail); standalone detail screens keep ink so Back is readable. */
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-wsback,html[data-direction-a="true"] #taxmate-ltd-ui-root .rail .tm-wsback{color:#fff}
@@ -410,6 +412,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-
 
 /* Desktop rails use the same approved geometry as the Fable prototype. */
 @media (min-width:1024px){
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app{padding:0}
   html[data-direction-a="true"] body:not(.ltd-active)>.top{
     position:fixed;top:0;bottom:0;left:max(0px,calc(50% - 650px));width:232px;max-width:none;
     padding:22px 16px 40px 40px;align-items:flex-start;
@@ -439,7 +442,9 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col.workspace-host{max-width:none;padding:0}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell{display:grid;grid-template-columns:232px minmax(0,640px);gap:32px;max-width:1040px;margin:0 auto;padding:0 32px 40px 0;align-items:start}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail{display:flex;position:sticky;top:0;min-height:100vh;margin-inline-start:-40px;padding:22px 16px 40px 40px;background:var(--navy);flex-direction:column;gap:4px}
-  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .tm-logo{display:block;width:auto;height:22px;margin:0 0 22px 12px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .tm-rail-brand{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:0 0 22px 12px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .tm-rail-brand .tm-logo{display:block;width:auto;height:22px;margin:0}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .tm-rail-brand .tm-year{font-size:11px;padding:5px 8px}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d{display:flex;flex-direction:column;gap:4px}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d button{appearance:none;border:0;background:none;color:rgba(255,255,255,.6);font-size:14px;font-weight:700;display:flex;align-items:center;gap:10px;padding:11px 12px;border-radius:10px;min-height:44px;text-align:start}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .nav-d button.on{background:rgba(255,255,255,.08);color:#fff}
@@ -447,10 +452,14 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.rail .back-d{margin-top:20px;color:rgba(255,255,255,.7)}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main{padding-top:22px}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main>.tm-col{max-width:none;padding:0 0 40px;min-height:0}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main>.tm-col>.tm-tabs{display:none}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.side{display:none}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.side .card{margin:0}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav{display:none}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet{margin:0;border-radius:22px;padding:0 20px 20px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet>.tm-top,
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet>.tm-company-return{display:none}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-brand-header{margin:0 0 10px}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-scrim{align-items:center}
   html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-sheet{border-radius:24px;max-height:88vh}
 }
@@ -564,6 +573,56 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{background:transparen
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head .tm-stitle{font-size:21px;line-height:1.3;margin:0;font-weight:800;min-width:0;flex:1;overflow-wrap:anywhere}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;border:0;background:none;color:var(--ink);font-size:22px;cursor:pointer}
+
+/* Founder-approved LTD setup and Today integration, 2026-09-13.  These rules
+   are deliberately LTD-only: personal bookkeeping and generic action sheets
+   retain their existing layout and behaviour. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.5);backdrop-filter:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-top{min-height:52px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;overflow:hidden}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card h2{font-size:15px;line-height:1.35;margin:0 0 12px;font-weight:800}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table{width:100%;table-layout:fixed;border-collapse:collapse}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.company .tm-setup-review-label-col{width:36%}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.company .tm-setup-review-value-col{width:64%}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.circumstances .tm-setup-review-label-col{width:78%}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.circumstances .tm-setup-review-value-col{width:22%}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table th,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table td{padding:12px 0;border-top:1px solid var(--line);vertical-align:top;line-height:1.45;overflow-wrap:anywhere}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table tr:first-child th,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table tr:first-child td{border-top:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-label{padding-inline-end:16px!important;color:var(--muted);font-size:13px;font-weight:500;text-align:start}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-value{color:var(--ink);font-size:13.5px;font-weight:800;text-align:end}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-value-lines,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-value-line{display:block}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-company-return{display:flex;width:max-content;margin:2px 0 8px;color:#fff;opacity:.92}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet>.tm-top{min-height:calc(64px + env(safe-area-inset-top));padding-top:calc(12px + env(safe-area-inset-top))}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-overview-hero{background:transparent;color:#fff;border:0;border-radius:0;box-shadow:none;padding:0;margin:12px 0 0;overflow:visible}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-overview-hero .lbl{font-size:13px;font-weight:600;color:#B8BCC1;opacity:1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-overview-hero .big{font-size:46px;letter-spacing:-1.8px;color:#fff;margin:4px 0 12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-tax,
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-figure{appearance:none;width:100%;border:0;background:none;color:#fff;font:inherit;cursor:pointer;text-align:start}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-tax{display:flex;align-items:center;justify-content:space-between;gap:12px;border-top:2px solid var(--y);padding:12px 0 0;margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-tax-label{font-size:14px;font-weight:800;color:var(--y)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-tax-value{display:flex;align-items:center;gap:6px;font-size:15px;font-weight:800;text-align:end}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-figures{margin-top:10px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-figure{display:flex;align-items:baseline;justify-content:space-between;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.16)}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-figure>span:first-child{font-size:13px;color:#B8BCC1}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-hero .tm-overview-figure .tm-num{font-size:15px;font-weight:800}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-overview-actions .tm-btn.s{background:var(--navy2);color:#fff;border:1px solid var(--navy-line)}
+@media (min-width:900px){
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-shell>.main .tm-summary-sheet>.tm-company-return{display:none}
+}
+@media (max-width:420px){
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card{padding:16px 14px}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.company .tm-setup-review-label-col{width:40%}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.company .tm-setup-review-value-col{width:60%}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.circumstances .tm-setup-review-label-col{width:74%}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-table.circumstances .tm-setup-review-value-col{width:26%}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-label{padding-inline-end:12px!important}
+  html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-summary-sheet .tm-overview-hero .big{font-size:40px}
+}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-wsmeta{display:flex;flex-wrap:wrap;gap:4px 8px}
 
 /* The same joined-row and short-detail modules in the actual personal app. */
