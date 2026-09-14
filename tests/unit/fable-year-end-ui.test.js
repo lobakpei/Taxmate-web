@@ -37,13 +37,14 @@ test('unknown figures render as Please check and are never coerced to £0.00',()
   assert.doesNotMatch(renderer,/String\(it\.deadline\.date\)|JSON\.stringify\(it\.deadline\)/);
 });
 
-test('money semantics: an explicit cost column is always the expense colour, other values follow their sign',()=>{
+test('money semantics: zero stays neutral, a non-zero cost is the expense colour, and other values follow their sign',()=>{
   // Presentation only — moneyClass never changes a value, a sign or a classification.
-  assert.match(renderer,/function moneyClass\(minor, role\)\{[\s\S]{0,400}if\(role==='out'\) return 'neg';[\s\S]{0,200}return minor>0\?'pos':minor<0\?'neg':'';/);
+  assert.match(renderer,/function moneyClass\(minor, role\)\{[\s\S]{0,400}if\(minor===0\) return '';[\s\S]{0,120}if\(role==='out'\) return 'neg';[\s\S]{0,200}return minor>0\?'pos':minor<0\?'neg':'';/);
   for(const [row,role] of [['operatingCostsMinor','out'],['directorSalaryMinor','out'],['corporationTaxMinor','out'],['turnoverMinor','in'],['profitBeforeTaxMinor','signed']])
     assert.ok(renderer.includes(`['${row}',`)&&new RegExp(`\\['${row}','[a-z._]+','${role}'\\]`).test(renderer),`${row} carries the ${role} money role`);
   assert.match(renderer,/var MONEY_IN_TYPES=\{company_income:1,director_loan_funding:1,share_capital_funding:1,sales_invoice_payment:1\}/);
   assert.match(app,/const moneyCls = \(value, role\) =>/);
+  assert.match(app,/if\(n===0\) return '';\s*if\(role==='out'\) return 'neg';/);
   for(const call of ["moneyCls(personal.profitMinor,'signed')","moneyCls(personal.incomeMinor,'in')","moneyCls(personal.expensesMinor,'out')"])assert.ok(app.includes(call),`personal shell uses ${call}`);
   // Money tokens exist in both themes and are not the brand palette.
   assert.match(directionCss,/--money-in:#167A43;--money-out:#BD3037/);
@@ -104,7 +105,8 @@ test('the year and pack screens lead with figures and one action, with detail on
   // Reason codes are merged into a few actionable to-dos rather than listed one by one.
   assert.match(renderer,/function todoItems\(opts\)/);
   assert.match(renderer,/var DIRECTOR_CHECK_CODES=/);
-  assert.match(renderer,/items\.push\(\{id:'statutory',text:t\('todo\.statutory_items',\{count:statutory\}\),action:'checklist'\}\)/);
+  assert.match(renderer,/else if\(\/\^statutory_\/\.test\(c\)\)[\s\S]{0,260}items\.push\(\{id:'statutory:'\+item\.id,text:itemTitle\(item\),action:'checklist',itemId:item\.id\}\)/);
+  assert.match(renderer,/case 'checklist':[\s\S]{0,260}if\(item\.itemId\)UI\.disc\['stat:'\+item\.itemId\]=true/);
   assert.match(renderer,/function statutoryDisclosure\(opts\)/);
   assert.match(renderer,/out\.push\(h\('div',\{class:'tm-keyfigures'\},\[figRows\(fig,KEY_ROWS,'profitAndLoss'\)\]\)\)/);
   assert.match(renderer,/disclosure\('year\.details', t\('year\.view_details'\)/);

@@ -12,19 +12,21 @@ let app,db,bucket,env,count=0;
 if(ready)test.before(async()=>{assert.match(projectId,/^demo-/);app=initializeApp({projectId,storageBucket:projectId+'.appspot.com'},'shared-receipt-r2');db=getFirestore(app);bucket=getStorage(app).bucket();env=await initializeTestEnvironment({projectId,firestore:{rules:fs.readFileSync(path.join(__dirname,'../../firestore.rules'),'utf8')},storage:{rules:fs.readFileSync(path.join(__dirname,'../../storage.rules'),'utf8')}});});
 test.after(async()=>{if(env)await env.cleanup();if(app)await deleteApp(app);});
 const paid={paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000};
+const storageControl=(ent={},retentionEpoch=0)=>({...ent,accountResetStatus:'complete',accountResetEpoch:0,accountResetEpochString:'0',accountRetention:{...(ent.accountRetention||{}),controlStatus:'complete',lastRetentionEpoch:retentionEpoch,lastRetentionEpochString:String(retentionEpoch)}});
+const storageMetadata=(retentionEpoch=0)=>({retentionEpoch:String(retentionEpoch),accountResetEpoch:'0'});
 async function waitFor(fn,label){const end=Date.now()+30000;while(Date.now()<end){if(await fn())return;await new Promise(r=>setTimeout(r,100));}throw Error(label);}
 async function seed(ownerUid){
   const n=++count,uid=ownerUid||'receipt-owner-'+process.pid+'-'+n,peer='receipt-peer-'+process.pid+'-'+n,code='R2-'+process.pid+'-'+n,path=`receipts/${uid}/existing.jpg`,url=`http://localhost/o/${encodeURIComponent(path)}?alt=media`;
   const record={id:'existing',bizId:code,businessId:code,date:'2026-09-01',kind:'expense',amount:12,createdAt:1,updatedAt:1,deletedAt:null,deviceId:'existing-device',schemaVersion:5,receiptPath:path,receiptUrl:url};
-  for(const member of [uid,peer]){await db.doc(`users/${member}/entitlements/current`).set(paid);await db.doc(`partnerships/${code}/members/${member}`).set({uid:member,role:'member'});}
+  for(const member of [uid,peer]){await db.doc(`users/${member}/entitlements/current`).set(storageControl(paid));await db.doc(`partnerships/${code}/members/${member}`).set({uid:member,role:'member'});}
   await db.doc(`partnerships/${code}`).set({createdBy:uid,name:'Existing shared ledger'});
-  await bucket.file(path).save(Buffer.from('existing-receipt-bytes'),{metadata:{contentType:'image/jpeg',metadata:{sharedProtected:'false'}}});
+  await bucket.file(path).save(Buffer.from('existing-receipt-bytes'),{metadata:{contentType:'image/jpeg',metadata:{sharedProtected:'false',...storageMetadata()}}});
   const recordPath=`partnerships/${code}/entries/existing`;await db.doc(recordPath).set(record);
   return{uid,peer,code,path,record,recordPath,client:env.authenticatedContext(uid).firestore(),peerClient:env.authenticatedContext(peer).firestore(),storage:env.authenticatedContext(uid).storage()};
 }
 async function intact(s){assert.equal((await bucket.file(s.path).download())[0].toString(),'existing-receipt-bytes');assert.equal((await db.doc(s.recordPath).get()).data().deletedAt,null);}
 run('R2 downgraded uploader cannot tombstone, remove, overwrite, delete or strip protection; original record and bytes survive',async()=>{
-  const s=await seed();await db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'});
+  const s=await seed();await db.doc(`users/${s.uid}/entitlements/current`).set(storageControl({paidTier:'free',subscriptionStatus:'canceled'}));
   await assertFails(setDoc(doc(s.client,s.recordPath),{...s.record,updatedAt:2,deletedAt:2}));
   await assertFails(setDoc(doc(s.client,s.recordPath),{...s.record,updatedAt:2,receiptPath:null,receiptUrl:null}));
   await assertFails(deleteObject(ref(s.storage,s.path)));await assertFails(updateMetadata(ref(s.storage,s.path),{customMetadata:{sharedProtected:null}}));
@@ -54,7 +56,7 @@ run('R2 another active shared reference protects bytes until its own authorised 
   await waitFor(async()=>!(await bucket.file(s.path).exists())[0],'last active reference removal did not clean bytes');
 });
 run('R2 cleanup lock rejects concurrent aliases and nested metadata references; deleted names cannot be recreated',async()=>{
-  const s=await seed(),orphan=`receipts/${s.uid}/orphan.jpg`;await bucket.file(orphan).save(Buffer.from('orphan'),{metadata:{contentType:'image/jpeg'}});
+  const s=await seed(),orphan=`receipts/${s.uid}/orphan.jpg`;await bucket.file(orphan).save(Buffer.from('orphan'),{metadata:{contentType:'image/jpeg',metadata:storageMetadata()}});
   const result=await Cleanup.cleanupReceipt({db,bucket,path:orphan,hooks:{afterLock:async()=>{
     const add={...s.record,id:'race',receiptPath:orphan,receiptUrl:`http://localhost/o/${encodeURIComponent(orphan)}?alt=media`};
     await assert.rejects(setDoc(doc(s.client,`users/${s.uid}/entries/race`),add),/receipt_reference_unavailable/);
@@ -67,26 +69,26 @@ require('./receipt-isolation-scenarios')(run,()=>({db,bucket,env,seed,waitFor}))
 require('./admission-lifecycle-scenarios')(run,()=>({db,bucket,env,seed,waitFor}));
 run('R2 Free ordinary personal deletion remains allowed and invokes reference-safe cleanup',async()=>{
   const s=await seed(),personalPath=`users/${s.uid}/entries/personal`,photo=`receipts/${s.uid}/personal.jpg`,record={...s.record,id:'personal',receiptPath:photo,receiptUrl:null};
-  await bucket.file(photo).save(Buffer.from('personal'),{metadata:{contentType:'image/jpeg'}});await db.doc(personalPath).set(record);await db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'});
+  await bucket.file(photo).save(Buffer.from('personal'),{metadata:{contentType:'image/jpeg',metadata:storageMetadata()}});await db.doc(personalPath).set(record);await db.doc(`users/${s.uid}/entitlements/current`).set(storageControl({paidTier:'free',subscriptionStatus:'canceled'}));
   await assertSucceeds(setDoc(doc(s.client,personalPath),{...record,updatedAt:9,deletedAt:9}));await waitFor(async()=>!(await bucket.file(photo).exists())[0],'Free personal cleanup failed');await intact(s);
 });
 run('R2 retained LTD references and account-reset cleanup cannot remove another active shared receipt',async()=>{
   const s=await seed();assert.equal((await Cleanup.cleanupReceipt({db,bucket,path:s.path,ignorePersonalUid:s.uid})).status,'referenced');
-  const photo=`receipts/${s.uid}/ltd.jpg`;await bucket.file(photo).save(Buffer.from('ltd'),{metadata:{contentType:'image/jpeg'}});await db.doc(`users/${s.uid}/ltd/v1/economicEvents/evidence`).set({deletedAt:null,payload:{evidence:{receiptPath:photo}}});
+  const photo=`receipts/${s.uid}/ltd.jpg`;await bucket.file(photo).save(Buffer.from('ltd'),{metadata:{contentType:'image/jpeg',metadata:storageMetadata()}});await db.doc(`users/${s.uid}/ltd/v1/economicEvents/evidence`).set({deletedAt:null,payload:{evidence:{receiptPath:photo}}});
   assert.equal((await Cleanup.cleanupReceipt({db,bucket,path:photo})).status,'referenced');assert.equal((await bucket.file(photo).exists())[0],true);
 });
 run('R2 real callable rejects non-owners, preserves an active shared receipt and keeps Free current-year orphan cleanup after retention',async()=>{
   const signup=await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=demo-key`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({returnSecureToken:true})});assert.equal(signup.ok,true);const user=await signup.json(),s=await seed(user.localId);
   const call=async path=>{const response=await fetch(`http://${process.env.FUNCTIONS_EMULATOR_HOST}/demo-taxmate/europe-west2/cleanupReceipt`,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+user.idToken},body:JSON.stringify({data:{path}})});return{status:response.status,body:await response.json()};};
-  await db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'});
+  await db.doc(`users/${s.uid}/entitlements/current`).set(storageControl({paidTier:'free',subscriptionStatus:'canceled'}));
   assert.equal((await call(`receipts/${s.peer}/anything.jpg`)).status,403);assert.equal((await call(s.path)).body.result.status,'referenced');await intact(s);
-  await db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled',currentPeriodEnd:Date.UTC(2025,5,1)});
+  await db.doc(`users/${s.uid}/entitlements/current`).set(storageControl({paidTier:'free',subscriptionStatus:'canceled',currentPeriodEnd:Date.UTC(2025,5,1)},1));
   await db.doc(`users/${s.uid}/retention/current`).set({schemaVersion:2,status:'complete',epoch:1,epochString:'1',cutoffDate:'2026-04-06',deleteOnDate:'2026-04-06',retainThroughDate:'2026-04-05'});
-  const photo=`receipts/${s.uid}/current-year-orphan.jpg`;await bucket.file(photo).save(Buffer.from('new-year'),{metadata:{contentType:'image/jpeg',metadata:{retentionEpoch:'1'}}});
+  const photo=`receipts/${s.uid}/current-year-orphan.jpg`;await bucket.file(photo).save(Buffer.from('new-year'),{metadata:{contentType:'image/jpeg',metadata:storageMetadata(1)}});
   const cleaned=await call(photo);assert.equal(cleaned.status,200);assert.equal(cleaned.body.result.status,'deleted');assert.equal((await bucket.file(photo).exists())[0],false);
 });
 run('R3 failed cleanup fences only its own receipt; independent cleanup succeeds and durable recovery needs no caller',async()=>{
-  const s=await seed(),photo=`receipts/${s.uid}/retry.jpg`;await bucket.file(photo).save(Buffer.from('retry'),{metadata:{contentType:'image/jpeg'}});
+  const s=await seed(),photo=`receipts/${s.uid}/retry.jpg`;await bucket.file(photo).save(Buffer.from('retry'),{metadata:{contentType:'image/jpeg',metadata:storageMetadata()}});
   await Cleanup.jobRef(db,photo).set({path:photo,status:'pending'});
   await assert.rejects(Cleanup.cleanupReceipt({db,bucket,path:photo,queued:true,hooks:{afterLock:async()=>{throw Error('injected_cleanup_failure');}}}),/injected_cleanup_failure/);
   assert.equal((await bucket.file(photo).download())[0].toString(),'retry');assert.equal((await db.doc('receiptCleanupControl/current').get()).exists,false);

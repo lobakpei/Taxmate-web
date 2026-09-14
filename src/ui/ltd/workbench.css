@@ -187,9 +187,8 @@ body{
   display:flex; flex-direction:column; position:relative}
 @media (min-width:900px){.tm-sheet{border-radius:24px; max-height:88vh}}
 .tm-sheet.child{box-shadow:var(--e-child)}
-.tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.5);backdrop-filter:none}
-.tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px}
-.tm-grab{width:38px; height:4px; border-radius:2px; background:var(--line); margin:10px auto 2px; flex:0 0 auto}
+.tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.32);backdrop-filter:none}
+.tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px;overflow:hidden}
 .tm-sbody{padding:8px 20px 16px; overflow-y:auto; flex:1 1 auto}
 .tm-sfoot{flex:0 0 auto; padding:14px 20px calc(14px + env(safe-area-inset-bottom));
   border-top:1px solid var(--line); background:var(--card); display:flex; flex-direction:column; gap:9px}
@@ -268,6 +267,7 @@ select.tm-input{appearance:none; background-image:none; cursor:pointer; padding-
 /* 14 — WORKSPACE ---------------------------------------------------------- */
 .tm-wsback{display:inline-flex; align-items:center; gap:6px; color:var(--brand-deep); font-weight:800; font-size:13px; background:none; border:0; cursor:pointer; font-family:inherit; padding:16px 0 4px}
 [data-theme="dark"] .tm-wsback{color:var(--brand)}
+.tm-setup-exit{min-height:44px;padding:8px 12px!important;border:1px solid var(--line)!important;border-radius:999px;background:var(--card)!important;color:var(--ink)!important}
 .tm-wstitle{font-size:24px; font-weight:800; letter-spacing:-.6px; margin:2px 0 3px}
 .tm-wsmeta{font-size:12.5px; color:var(--muted)}
 .tm-wsperiod{display:inline-block; font-size:12px; color:var(--muted); background:var(--card); border:1px solid var(--line); border-radius:999px; padding:5px 11px; margin-top:8px}

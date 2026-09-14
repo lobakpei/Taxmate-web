@@ -9,7 +9,7 @@ module.exports=function register(run,context){
   async function fixture(fileName='r3-orphan.jpg'){
     const c=context(),a=await c.seed(),b=await c.seed(),company='company:r3-'+(++serial);
     await c.db.doc(`users/${b.uid}/ltdControl/activeCompany`).set({status:'active_slot_claimed',activeCompanyId:company});
-    const photo=`receipts/${a.uid}/${fileName}`;await c.bucket.file(photo).save(Buffer.from('R3 immutable original'),{metadata:{contentType:'image/jpeg'}});
+    const photo=`receipts/${a.uid}/${fileName}`;await c.bucket.file(photo).save(Buffer.from('R3 immutable original'),{metadata:{contentType:'image/jpeg',metadata:{retentionEpoch:'0',accountResetEpoch:'0'}}});
     await Cleanup.jobRef(c.db,photo).set({path:photo,status:'pending'});
     async function independent(label){
       const id='b-'+label+'-'+(++serial),record={...b.record,id,receiptPath:null,receiptUrl:null};
@@ -20,7 +20,7 @@ module.exports=function register(run,context){
       await setDoc(doc(b.client,`users/${b.uid}/app/meta`),{nested:{receiptUrl:b.record.receiptUrl},label});
       const envelope=Ltd.envelope('economicEvents',{id,entityId:company,updatedAt:1,createdAt:1,evidenceRefs:[b.path]},company);
       await setDoc(doc(b.client,`users/${b.uid}/ltd/v1/economicEvents/${envelope.documentId}`),envelope);
-      const own=`receipts/${b.uid}/${id}.jpg`;await uploadBytes(ref(b.storage,own),Buffer.from('B independent photo'),{contentType:'image/jpeg'});
+      const own=`receipts/${b.uid}/${id}.jpg`;await uploadBytes(ref(b.storage,own),Buffer.from('B independent photo'),{contentType:'image/jpeg',customMetadata:{retentionEpoch:'0',accountResetEpoch:'0'}});
       assert.equal((await Cleanup.cleanupReceipt({db:c.db,bucket:c.bucket,path:own})).status,'deleted');
       assert.equal((await c.db.doc(`users/${b.uid}/entries/${id}`).get()).data().amount,record.amount);
       assert.equal((await c.bucket.file(b.path).exists())[0],true,'B active receipt survives A cleanup');

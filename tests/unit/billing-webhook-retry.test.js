@@ -3,6 +3,7 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const {fixture,retryAutomatically}=require('../helpers/billing-retry-local');
 const Billing=require('../../functions/billing-entitlements');
 const {projectPayment}=require('../../functions/billing-service');
+const {quarantineDeletionEvent}=require('../../functions/billing-webhook');
 
 async function setup(t){
   const f=await fixture();t.after(()=>f.close());
@@ -15,6 +16,8 @@ async function assertCompleted(f,events){
   assert.equal(record.confirmedRefundImpact.basis,'confirmed');assert.equal(record.confirmedRefundImpact.afterTier,'pro');
   assert.equal(entitlement.paidTier,'pro');assert.equal(entitlement.paidAccess.proExpiresAt,f.end);
   assert.equal(entitlement.paidAccess.plusExpiresAt,0);assert.equal(entitlement.refundReviewState,'full-refund-applied');
+  assert.equal(entitlement.accountResetStatus,'complete');assert.equal(entitlement.accountResetEpoch,0);assert.equal(entitlement.accountResetEpochString,'0');
+  assert.equal(entitlement.accountRetention.controlStatus,'complete');assert.equal(entitlement.accountRetention.lastRetentionEpoch,0);assert.equal(entitlement.accountRetention.lastRetentionEpochString,'0');
   const history=await f.db.collection(f.paths.case+'/events').get();
   assert.deepEqual(history.docs.map(d=>d.id).sort(),['impact_'+f.ids.refund,'provider_'+f.ids.refund+'_succeeded'].sort());
   assert.deepEqual(f.counts.writes,[]);
@@ -116,6 +119,65 @@ test('conflicting customer mappings fail closed rather than acknowledge the wron
   const f=await setup(t),event=f.event('charge.refunded');await f.db.doc('billingCustomers/duplicate-'+f.uid).set({stripeCustomerId:f.ids.customer});
   assert.equal((await f.deliver(event)).status,500);assert.equal((await f.receipt(event)).state,'retry_required');
   assert.equal(f.counts.refreshes,0);assert.deepEqual(f.counts.writes,[]);
+});
+
+test('Stripe projection rereads the customer and reset fence after provider I/O',async t=>{
+  const f=await setup(t);let fenced=false;
+  f.hooks['subscriptions.list']=async()=>{
+    if(fenced)return;fenced=true;
+    await f.db.doc('billingCustomers/'+f.uid).set({stripeCustomerId:f.ids.customer,accountDeleted:true,billingQuarantined:true,deletionId:'delete-race',resetEpoch:0});
+    await f.db.doc('accountResets/'+f.uid).set({status:'billing_quarantined',billingQuarantined:true,resetEpoch:0,correlationId:'delete-race'});
+    await f.db.runTransaction(async tx=>tx.delete(f.db.doc(f.paths.entitlement)));
+  };
+  await assert.rejects(()=>f.refresh(f.uid),error=>error&&error.billingReason==='account_reset');
+  assert.equal(await f.read(f.paths.entitlement),undefined,'a refresh started before quarantine must not recreate the deleted entitlement');
+  assert.equal((await f.read('billingCustomers/'+f.uid)).accountDeleted,true);
+});
+
+test('Stripe projection requires the customer binding to match a completed reset epoch',async t=>{
+  const f=await setup(t);
+  await f.db.doc('accountResets/'+f.uid).set({status:'complete',resetEpoch:1,correlationId:'reset-complete'});
+  await assert.rejects(()=>f.refresh(f.uid),error=>error&&error.billingReason==='account_reset');
+  assert.equal((await f.read('billingCustomers/'+f.uid)).resetEpoch,undefined,'a legacy epoch-zero mapping cannot be reused after a reset');
+});
+
+test('Stripe events during deletion create a fenced signal and remain retryable without projecting access',async t=>{
+  let f;f=await fixture({quarantineBillingEvent:input=>quarantineDeletionEvent({...input,db:f.db,now:f.now})});t.after(()=>f.close());t.mock.method(console,'error',()=>{});
+  await f.db.doc('accountResets/'+f.uid).set({status:'deleting',resetEpoch:7,correlationId:'delete-7'});
+  const event=f.event('refund.created');assert.equal((await f.deliver(event)).status,500);
+  assert.equal((await f.receipt(event)).state,'retry_required');assert.equal(f.counts.refreshes,0);
+  const signal=await f.read('billingDeletionSignals/'+f.uid),reset=await f.read('accountResets/'+f.uid),record=await f.read(f.paths.case);
+  assert.equal(signal.provider,'stripe');assert.equal(signal.eventId,event.id);assert.equal(signal.deletionId,'delete-7');assert.equal(signal.resetEpoch,7);assert.equal(signal.accountDeleted,false);
+  assert.equal(reset.billingEventProvider,'stripe');assert.equal(reset.billingEventWatermark,f.now());assert.equal(record.state,'refund_pending');
+});
+
+test('Stripe events for a deleted-account tombstone are quarantined and acknowledged without reviving access',async t=>{
+  let f;f=await fixture({quarantineBillingEvent:input=>quarantineDeletionEvent({...input,db:f.db,now:f.now})});t.after(()=>f.close());t.mock.method(console,'error',()=>{});
+  await f.db.doc('billingCustomers/'+f.uid).set({stripeCustomerId:f.ids.customer,accountDeleted:true,deletionId:'delete-complete',resetEpoch:9});
+  await f.db.doc('accountResets/'+f.uid).set({status:'complete',resetEpoch:10,correlationId:'delete-complete'});
+  const event=f.event('refund.created');assert.equal((await f.deliver(event)).status,200);assert.equal((await f.receipt(event)).state,'processed');assert.equal(f.counts.refreshes,0);
+  const signal=await f.read('billingDeletionSignals/'+f.uid),record=await f.read(f.paths.case);
+  assert.equal(signal.accountDeleted,true);assert.equal(signal.deletionId,'delete-complete');assert.equal(signal.resetEpoch,9);assert.equal(record.state,'refund_pending');
+});
+
+test('a late Stripe event after the irreversible billing quarantine is acknowledged without invalidating deletion recovery',async t=>{
+  let f;f=await fixture({quarantineBillingEvent:input=>quarantineDeletionEvent({...input,db:f.db,now:f.now})});t.after(()=>f.close());t.mock.method(console,'error',()=>{});
+  await f.db.doc('billingCustomers/'+f.uid).set({stripeCustomerId:f.ids.customer,accountDeleted:true,billingQuarantined:true,deletionId:'delete-quarantined',resetEpoch:4});
+  await f.db.doc('accountResets/'+f.uid).set({status:'billing_quarantined',billingQuarantined:true,resetEpoch:4,correlationId:'delete-quarantined'});
+  const event=f.event('refund.created');assert.equal((await f.deliver(event)).status,200);assert.equal((await f.receipt(event)).state,'processed');assert.equal(f.counts.refreshes,0);
+  const signal=await f.read('billingDeletionSignals/'+f.uid),reset=await f.read('accountResets/'+f.uid);
+  assert.equal(signal.deletionId,'delete-quarantined');assert.equal(signal.accountDeleted,true);assert.equal(reset.status,'billing_quarantined');assert.equal(reset.billingEventWatermark,undefined);
+});
+
+test('an exact Stripe plan-change reservation is consumed with its projected upgrade and creates no false conflict',async t=>{
+  const f=await setup(t),reservationId='dce81207-1a8d-4cdf-aa8e-06a79e9c10ab',flowKey='plan:1cfe74ce-a06c-46ac-9e76-a7df8876ef87';
+  f.data.subscriptions.splice(1);f.data.invoices.splice(1);f.data.charges.splice(1);f.data.refunds.splice(0);
+  f.data.subscriptions[0].items.data[0].price.id='price_isolated_pro';
+  f.data.invoices[0].lines.data[0].pricing.price_details.price='price_isolated_pro';f.data.invoices[0].amount_paid=999;f.data.invoices[0].lines.data[0].amount=999;f.data.charges[0].amount=999;
+  await f.db.doc(f.paths.entitlement).set({paidTier:'plus',subscriptionStatus:'active',paidAccess:{plusExpiresAt:f.end,proExpiresAt:0},currentPeriodEnd:f.end,serverVerifiedAt:f.now()-1000});
+  await f.db.doc('billingPurchaseReservations/'+f.uid).set({status:'provider_pending',provider:'stripe',tier:'pro',cadence:'monthly',flowKey,reservationId,resetEpoch:0,startedAt:f.now()-1000});
+  const result=await f.refresh(f.uid,{reservationFlowKey:flowKey,reservationId});
+  assert.equal(result.paidTier,'pro');assert.equal(result.billingConflict,undefined);assert.equal(await f.read('billingPurchaseReservations/'+f.uid),undefined);
 });
 
 test('actual funding reader resolves modern invoice payments and partial/full refund policy without fake unlocks',async t=>{

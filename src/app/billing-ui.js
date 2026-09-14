@@ -44,7 +44,7 @@ async function billingOperation(run,refresh=true){
   catch(error){if(generation===BILLING_UI.generation){BILLING_UI.error=billingError(error);const target=document.querySelector('.sb.open [data-billing-error]');if(target)target.textContent=BILLING_UI.error;else if(OB&&firstSyncSurfaceOpen()){OB._intentError=BILLING_UI.error;obRender();}}}
   finally{if(generation===BILLING_UI.generation){BILLING_UI.busy=false;billingRender();document.querySelectorAll('#sb-refund button,#sb-billing button').forEach(b=>b.disabled=false);}}
 }
-function billingSheet(title,body,id='billing'){const root=document.getElementById('sb-'+id);root.querySelector('[data-billing-title]').textContent=title;root.querySelector('[data-billing-body]').innerHTML=taxmateFlowBrand()+billingButton(t('ob.back'),`closeSheet('${id}')`)+body+'<p class="ferr" data-billing-error role="status"></p>';openSheet(id);}
+function billingSheet(title,body,id='billing'){const root=document.getElementById('sb-'+id);root.querySelector('[data-billing-title]').textContent=title;root.querySelector('[data-billing-body]').innerHTML=taxmateFlowBrand()+body+'<p class="ferr" data-billing-error role="status"></p>';openSheet(id);}
 function pageBilling(){
   const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine),ui=BILLING_UI,view=ui.view;
   const title={overview:t('review01.billing'),history:bt('history'),cases:t('review01.refundStatus'),plans:bt('plans'),staff:bt('support'),'staff-case':bt('caseDetails')}[view];

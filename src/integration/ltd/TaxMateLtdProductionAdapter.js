@@ -53,7 +53,7 @@
         mode:b.hasExistingCompany()?'existing':'fresh',repository:canonicalRepository,copy,deviceId:b.deviceId(),now:Date.now,
         entitlementSnapshot:b.entitlementSnapshot(),trustedActiveCompanyId:b.activeCompanyId(),personalTaxJurisdiction:b.personalTaxJurisdiction(),companiesHouseProvider:provider,
         activeCompanyClaim:data=>b.callTrusted('claimActiveLtdCompany',data),
-        manageCompanySetup:async data=>{try{return await b.callTrusted('manageLtdSetup',data);}catch(error){throw Object.assign(new Error(error.details?.reason||error.code||'setup_check_unavailable'),{code:error.details?.reason||error.code||'setup_check_unavailable'});}},
+        manageCompanySetup:async data=>{try{return await b.callTrusted('manageLtdSetup',data);}catch(error){const reason=error.details?.reason||error.reasonCode||error.code||'setup_check_unavailable';throw Object.assign(new Error(reason),{code:reason,reasonCode:reason});}},
         runtime:{providerMode:provider.founderShortcutMode?'founder_shortcut_local_emulator':'actual_taxmate_app',founderShortcutMode:provider.founderShortcutMode===true,firebase:true,firebaseEmulators:root.TAXMATE_FIREBASE_EMULATORS===true,sentry:b.sentryEnabled(),googleSignIn:true,billing:true,promo:true,analytics:b.analyticsEnabled(),serviceWorker:'serviceWorker' in navigator,externalNetwork:true}
       });
       facade=decorateProductionFacade(new root.TaxMateLtdUIFacadeModule.TaxMateLtdUIFacade({driver,storage:localStorage,draftKey:b.ltdDraftKey(),actionTimeoutMs:30000,trace:event=>console.info('Ltd action trace',event),prepareAction:()=>{driver.setEntitlementSnapshot(b.entitlementSnapshot());driver.setTrustedActiveCompanyId(b.activeCompanyId());driver.setPersonalTaxJurisdiction(b.personalTaxJurisdiction());}}));

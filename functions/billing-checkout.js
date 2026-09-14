@@ -4,12 +4,16 @@ const {all,idOf,fail}=require('./billing-service');
 const {createRecovery}=require('./billing-checkout-recovery');
 const publicOffer=q=>Object.fromEntries(['id','tier','cadence','currency','priceMinor','createdAt','expiresAt','contract','earlySupplyText','termsVersion'].map(k=>[k,q[k]]));
 const EARLY_SUPPLY='I expressly request the paid service to start now, during any applicable cancellation period. This does not waive mandatory rights. Lawful proportionate charges for services supplied before cancellation apply only where the statutory request and information conditions are met.';
-function createService({db,client,targetPrice,customerFor,appUrl,moneyOperationsEnabled=false,consumerDisclosuresReady=false,now=Date.now}){
+function createService({db,client,targetPrice,customerFor,appUrl,moneyOperationsEnabled=false,consumerDisclosuresReady=false,closeReservation=async()=>{},reconcileReservation=async()=>{},now=Date.now}){
   const recovery=createRecovery({db,client,now});
   async function existing(uid){const map=await db.doc(`billingCustomers/${uid}`).get();if(!map.exists)return[];return all(p=>client.subscriptions.list(p),{customer:map.data().stripeCustomerId,status:'all'});}
   async function openOperation(uid){const ref=db.doc(`billingCheckoutLocks/${uid}`),snap=await ref.get(),operation=snap.data();if(!operation||operation.state==='expired')return null;
-    if(operation.sessionId){const session=await client.checkout.sessions.retrieve(operation.sessionId);if(operation.recoveredSession&&session.status==='complete'&&!['paid','no_payment_required'].includes(session.payment_status))fail('checkout_reconciliation_required');if(['expired','complete'].includes(session.status)){await ref.update({state:'expired',closedReason:session.status});return null;}return{operation,session};}
-    return recovery.reconcile(uid,operation);
+    if(operation.sessionId){const session=await client.checkout.sessions.retrieve(operation.sessionId);if(session.status==='complete'){
+      if(!['paid','no_payment_required'].includes(session.payment_status))fail('checkout_reconciliation_required');
+      const live=(await existing(uid)).some(value=>!['canceled','incomplete_expired'].includes(value.status));if(live)fail('existing_subscription_manage');
+      await ref.update({state:'expired',closedReason:'complete'});await closeReservation(uid,operation.offerId,operation.reservationId||'', 'completed_subscription_ended');return null;
+    }if(session.status==='expired'){await ref.update({state:'expired',closedReason:session.status});await closeReservation(uid,operation.offerId,operation.reservationId||'',session.status);return null;}return{operation,session};}
+    const recovered=await recovery.reconcile(uid,operation);if(!recovered)await closeReservation(uid,operation.offerId,operation.reservationId||'','provider_not_created_or_expired');return recovered;
   }
   async function offer(user,data){
     if(!['plus','pro'].includes(data?.tier)||!['monthly','yearly'].includes(data?.cadence))fail('checkout_plan_required','invalid-argument');
@@ -34,17 +38,19 @@ function createService({db,client,targetPrice,customerFor,appUrl,moneyOperations
     const lock=db.doc(`billingCheckoutLocks/${user.uid}`);let operation;
     await db.runTransaction(async tx=>{const old=await tx.get(lock);operation=old.data();
       if(operation&&operation.state!=='expired'&&operation.offerId!==offer.id)fail('checkout_already_open');
-      if(!operation||operation.state==='expired'){operation={uid:user.uid,offerId:offer.id,key:'taxmate-checkout-'+offer.id,state:'submitting',startedAt:now(),termsAccepted:true,earlySupplyRequested:true,termsVersion:offer.termsVersion,earlySupplyText:offer.earlySupplyText};tx.set(lock,operation);}
+      if(!operation||operation.state==='expired'){operation={uid:user.uid,offerId:offer.id,reservationId:String(data.reservationId||'')||null,key:'taxmate-checkout-'+offer.id,state:'submitting',startedAt:now(),termsAccepted:true,earlySupplyRequested:true,termsVersion:offer.termsVersion,earlySupplyText:offer.earlySupplyText};tx.set(lock,operation);}
+      else if(operation.reservationId&&data.reservationId&&operation.reservationId!==data.reservationId)fail('checkout_reconciliation_required');
     });
-    if(operation.sessionId){const session=await client.checkout.sessions.retrieve(operation.sessionId);if(session.status==='open')return{url:session.url,confirmation:{id:offer.id,...(await db.doc(`billingPurchaseConfirmations/${offer.id}`).get()).data()}};if(session.status==='expired'){await lock.update({state:'expired'});fail('checkout_offer_expired');}fail('existing_subscription_manage','already-exists');}
+    if(operation.sessionId){const session=await client.checkout.sessions.retrieve(operation.sessionId);if(session.status==='open')return{url:session.url,confirmation:{id:offer.id,...(await db.doc(`billingPurchaseConfirmations/${offer.id}`).get()).data()}};if(session.status==='expired'){await lock.update({state:'expired'});await closeReservation(user.uid,offer.id,operation.reservationId||'','expired');fail('checkout_offer_expired');}fail('existing_subscription_manage','already-exists');}
     if(now()-operation.startedAt>20*3600000)fail('checkout_reconciliation_required');
     const customer=await customerFor(user,client),confirmation=db.doc(`billingPurchaseConfirmations/${offer.id}`);
     const confirmed={uid:user.uid,offerId:offer.id,addressee:user.token.email||user.uid,providedAt:now(),state:'payment_not_confirmed',termsVersion:offer.termsVersion,termsHtml:offer.contract.termsHtml,earlySupplyRequested:true,earlySupplyText:offer.earlySupplyText,tier:offer.tier,cadence:offer.cadence,currency:offer.currency,priceMinor:offer.priceMinor};
     // Preserve personally addressed terms before service starts. A provider event
     // later confirms the payment; this record alone never grants paid access.
     await db.runTransaction(async tx=>{if(!(await tx.get(confirmation)).exists)tx.create(confirmation,confirmed);});
+    const providerStartedAt=now();await lock.update({providerStartedAt,state:'provider_pending'});operation={...operation,providerStartedAt,state:'provider_pending'};
     let session;
-    try{session=await client.checkout.sessions.create({mode:'subscription',branding_settings:{display_name:'TaxMate',logo:{type:'url',url:new URL('/taxmate-checkout-logo.png',appUrl).href}},adaptive_pricing:{enabled:false},customer,line_items:[{price:offer.priceId,quantity:1}],allow_promotion_codes:true,automatic_tax:{enabled:false},billing_address_collection:'required',consent_collection:{terms_of_service:'required'},success_url:appUrl+'?billing=success',cancel_url:appUrl+'?billing=cancelled',metadata:{firebaseUid:user.uid,taxmateOffer:offer.id,termsVersion:offer.termsVersion},subscription_data:{metadata:{firebaseUid:user.uid,tier:offer.tier,billingCadence:offer.cadence,taxmateOffer:offer.id}}},{idempotencyKey:operation.key});}
+    try{session=await client.checkout.sessions.create({mode:'subscription',branding_settings:{display_name:'TaxMate',logo:{type:'url',url:new URL('/taxmate-checkout-logo.png',appUrl).href}},adaptive_pricing:{enabled:false},customer,line_items:[{price:offer.priceId,quantity:1}],allow_promotion_codes:true,automatic_tax:{enabled:false},billing_address_collection:'required',consent_collection:{terms_of_service:'required'},success_url:appUrl+'?billing=success',cancel_url:appUrl+'?billing=cancelled',metadata:{firebaseUid:user.uid,taxmateOffer:offer.id,taxmateReservation:String(operation.reservationId||''),termsVersion:offer.termsVersion},subscription_data:{metadata:{firebaseUid:user.uid,tier:offer.tier,billingCadence:offer.cadence,taxmateOffer:offer.id,taxmateReservation:String(operation.reservationId||'')}}},{idempotencyKey:operation.key});}
     catch(error){await recovery.recordFailure({uid:user.uid,operation,customerId:customer,error});throw error;}
     await lock.update({sessionId:session.id,state:'open'});await offerRef.update({state:'checkout_open',sessionId:session.id,acceptedAt:operation.startedAt});return{url:session.url,confirmation:{id:offer.id,...(await confirmation.get()).data()}};
   }
@@ -53,6 +59,23 @@ function createService({db,client,targetPrice,customerFor,appUrl,moneyOperations
     // Contract content never changes; provider outcome is a separate document.
     await db.doc(`billingPurchaseOutcomes/${id}`).set({uid:snap.data().uid,offerId:id,sessionId:session.id,paymentStatus:session.payment_status||null,subscriptionId:idOf(session.subscription),confirmedAt:now()});
   }
-  return{offer,checkout,records,paidSession};
+  async function reconciledSession(session){const id=session&&session.metadata&&session.metadata.taxmateOffer,uid=session&&session.metadata&&session.metadata.firebaseUid,reservationId=session&&session.metadata&&session.metadata.taxmateReservation;if(id&&uid)await reconcileReservation(uid,id,reservationId,session);}
+  async function definitiveFailureSession(session,eventType,expectedUid){
+    if(!['checkout.session.async_payment_failed','checkout.session.expired'].includes(eventType))return false;
+    const metadata=session&&session.metadata||{},id=String(metadata.taxmateOffer||''),uid=String(metadata.firebaseUid||''),reservationId=String(metadata.taxmateReservation||'');
+    if(!id||!uid||!reservationId||uid!==String(expectedUid||''))return false;
+    if(['paid','no_payment_required'].includes(String(session.payment_status||'')))return false;
+    if(eventType==='checkout.session.expired'&&session.status!=='expired')return false;
+    const [offerSnap,lockSnap]=await Promise.all([db.doc(`billingCheckoutOffers/${id}`).get(),db.doc(`billingCheckoutLocks/${uid}`).get()]),offer=offerSnap.exists?offerSnap.data()||{}:{},lock=lockSnap.exists?lockSnap.data()||{}:{};
+    if(!offerSnap.exists||offer.uid!==uid||offer.sessionId&&offer.sessionId!==session.id)return false;
+    if(lock.offerId!==id||lock.sessionId&&lock.sessionId!==session.id||lock.reservationId&&lock.reservationId!==reservationId)return false;
+    const closed=await closeReservation(uid,id,reservationId,eventType);if(!closed)return false;
+    const outcome=eventType==='checkout.session.expired'?'expired':'async_payment_failed',stamp=now();
+    await db.doc(`billingCheckoutLocks/${uid}`).update({state:'expired',closedReason:outcome,closedAt:stamp});
+    await db.doc(`billingCheckoutOffers/${id}`).update({state:outcome,closedAt:stamp});
+    await db.doc(`billingPurchaseOutcomes/${id}`).set({uid,offerId:id,sessionId:session.id,paymentStatus:session.payment_status||null,outcome,confirmedAt:stamp});
+    return true;
+  }
+  return{offer,checkout,records,paidSession,reconciledSession,definitiveFailureSession};
 }
 module.exports={createService,publicOffer,EARLY_SUPPLY,supplierDisclosureVerified:contract.establishmentAddressVerified===true};

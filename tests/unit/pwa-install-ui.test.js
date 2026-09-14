@@ -1,11 +1,13 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
+const vm=require('node:vm');
 
 const app=fs.readFileSync('src/app/app.js','utf8');
 const html=fs.readFileSync('index.html','utf8');
 const sw=fs.readFileSync('sw.js','utf8');
 const dispatcher=fs.readFileSync('src/app/action-dispatch.js','utf8');
+const {VERSIONS}=require('../../src/core/versions');
 
 test('Home puts the formal Hero first and keeps the approved compact install copy after it',()=>{
   assert.match(app,/'pwa\.homeTitle':'Install TaxMate'/);
@@ -41,16 +43,25 @@ test('all contextual advice stays in Assistant and PWA chrome uses one deep rele
   assert.match(html,/<meta name="theme-color" content="#0F1620">/);
   assert.equal(manifest.theme_color,'#0F1620');assert.equal(manifest.background_color,'#0F1620');
   assert.match(html,/manifest\.json\?v=20260905-1/);assert.match(app,/sw\.js\?v=20260905-1/);
-  assert.match(sw,/manifest\.json\?v=20260905-1/);assert.match(sw,/taxmate-v2-ltd-step2-20260909-1/);
+  assert.match(sw,/manifest\.json\?v=20260905-1/);assert.ok(sw.includes(VERSIONS.PWA_CACHE_VERSION));
 });
 
 test('Settings keeps its existing install entry while installed state hides both surfaces',()=>{
   const more=app.slice(app.indexOf('function pageMore()'),app.indexOf('function setAnalyticsConsent'));
   assert.match(more,/\$\{installCard\(\)\}/);
-  assert.match(app,/function installCard\(\)\{\s*if\(isPwaInstalled\(\)\) return '';/);
+  assert.match(app,/function installCard\(\)\{\s*const options=pwaInstallOptions\(\);\s*if\(options\.isNative\|\|options\.supportsPwaInstall===false\|\|TaxMatePwaInstall\.isInstalled\(options\)\) return '';/);
   assert.match(app,/display-mode: standalone/);
   assert.match(app,/window\.navigator\.standalone===true/);
   assert.match(app,/window\.addEventListener\('appinstalled'/);
+});
+
+test('native capability gate suppresses every PWA install entry and action',()=>{
+  assert.match(app,/isNative:nativePlatform\?\.isNative===true/);
+  assert.match(app,/supportsPwaInstall:nativePlatform\?\.supportsPwaInstall!==false/);
+  assert.match(app,/async function doInstall\(\)\{\s*if\(window\.TaxMatePlatform\?\.isNative\|\|window\.TaxMatePlatform\?\.supportsPwaInstall===false\)return false;/);
+  const source=app.slice(app.indexOf('function installCard()'),app.indexOf('function closePwaInstallSurfaces()'));
+  for(const options of [{isNative:true,supportsPwaInstall:false},{isNative:true,supportsPwaInstall:true},{isNative:false,supportsPwaInstall:false}]){const context=vm.createContext({pwaInstallOptions:()=>options,TaxMatePwaInstall:{isInstalled:()=>false},t:value=>value});vm.runInContext(source,context);assert.equal(context.installCard(),'');}
+  const browser=vm.createContext({pwaInstallOptions:()=>({isNative:false,supportsPwaInstall:true}),TaxMatePwaInstall:{isInstalled:()=>false},t:value=>value});vm.runInContext(source,browser);assert.match(browser.installCard(),/data-tm-click="doInstall\(\)"/);
 });
 
 test('only native Android prompt or the existing iOS TaxMate sheet is used',()=>{

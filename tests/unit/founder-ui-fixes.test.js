@@ -11,10 +11,13 @@ test('home add-business and catch-up controls have explicit separation', () => {
   assert.match(html, /\.home-add-business\+\.catchup-card\{margin-top:14px\}/);
 });
 
-test('account UI and authentication expose Google only', () => {
+test('Web account UI and authentication expose Google only while App Store billing links remain allowed', () => {
   assert.match(app, /data-tm-click="signIn\('google'\)"/);
-  assert.doesNotMatch(app, /Continue with Apple|Google or Apple sign-in|apple\.com|signIn\('apple'\)|'ac\.apple'/);
-  assert.match(app, /const provider = new firebase\.auth\.GoogleAuthProvider\(\)/);
+  assert.doesNotMatch(app, /Continue with Apple|Google or Apple sign-in|signIn\('apple'\)|'ac\.apple'/);
+  assert.match(app, /https:\/\/apps\.apple\.com\/account\/subscriptions/);
+  assert.match(app, /const provider\s*=\s*new firebase\.auth\.GoogleAuthProvider\(\)/);
+  assert.match(app, /provider\.setCustomParameters\(\{prompt:'select_account'\}\)/);
+  assert.match(app, /signInWithPopup\(provider\)/);
 });
 
 test('Review 01 uses the shared card module for the tax summary', () => {
@@ -69,10 +72,12 @@ test('draft persistence has one-shot suppression while canonical emits always re
   assert.match(renderer,/else if\(!opts\.skipPaint\) paintIfChanged\(\)/);
   assert.match(renderer,/function paintIfChanged\(\)\{ if\(UI\.mountedKey!==renderKey\(\)\) paint\(\); \}/);
   assert.doesNotMatch(renderer,/if\s*\(\s*key\s*===\s*UI\.mountedKey\s*\)\s*\{?\s*return/);
-  assert.match(adapter,/canonicalListener=\(\)=>\{if\(!driver\)return;driver\.reload\(\);driver\.setEntitlementSnapshot\(b\.entitlementSnapshot\(\)\);facade\.emit\(\);\};root\.addEventListener\('taxmate:canonical-state-updated',canonicalListener\)/);
+  assert.match(adapter,/canonicalListener=\(\)=>refreshFromCanonicalState\(\);root\.addEventListener\('taxmate:canonical-state-updated',canonicalListener\)/);
+  assert.match(adapter,/function refreshFromCanonicalState\(\)\{[\s\S]{0,420}driver\.reload\(\);driver\.setEntitlementSnapshot\(bridge\(\)\.entitlementSnapshot\(\)\)[\s\S]{0,260}facade\.emit\(\)/);
   assert.doesNotMatch(adapter,/isFixtureSession|fixtureRepository|fixtureSession/);
-  assert.match(adapter,/refreshFromCanonicalState:\(\)=>\{if\(driver\)\{driver\.reload\(\);[\s\S]*facade\.emit\(\)/);
-  assert.match(renderer,/if\(UI\.skipNextDraftEmitRender>0\)[\s\S]*paint\(\);\s*\}\s*\n\s*function paint/);
+  assert.match(adapter,/TaxMateLtdProductionAdapter=Object\.freeze\(\{[\s\S]{0,260}refreshFromCanonicalState,/);
+  const subscribedRender=renderer.slice(renderer.indexOf('function render(mount, facade, snapshot, options)'),renderer.indexOf('function paint(background)'));
+  assert.ok(subscribedRender.indexOf('if(UI.skipNextDraftEmitRender>0)')<subscribedRender.indexOf('paint(options&&options.background===true)'), 'draft-only suppression must run before the subscribed repaint');
 });
 
 test('Ltd entry clears personal overlays without an automatic install prompt and has a CSS fail-safe',()=>{

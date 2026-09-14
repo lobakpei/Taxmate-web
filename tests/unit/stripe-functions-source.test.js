@@ -68,8 +68,9 @@ test('visible Plans UI uses the production Auth and App Check secured Checkout p
 });
 
 test('rapid Plans activation cannot split one user across Stripe customers',()=>{
-  const app=fs.readFileSync('src/app/app.js','utf8');
-  assert.match(source,/idempotencyKey:`taxmate-customer-\$\{user\.uid\}`/);
+  const app=fs.readFileSync('src/app/app.js','utf8'),binding=fs.readFileSync('functions/billing-customer-binding.js','utf8');
+  assert.match(source,/BillingCustomerBinding\.customerFor/);
+  assert.match(binding,/idempotencyKey:`taxmate-customer-\$\{user\.uid\}-\$\{reset\.resetEpoch\}`/);
   assert.match(app,/let BILLING_ACTION_PENDING=false/);
   assert.match(app,/if\(BILLING_ACTION_PENDING\)return/);
   assert.match(app,/BILLING_ACTION_PENDING=true/);
@@ -112,12 +113,12 @@ test('refund policy is server-projected without client fake unlocks',()=>{
 test('Stripe webhook verifies signatures and projects authoritative funded entitlement truth',()=>{
   const webhook=fs.readFileSync('functions/billing-webhook.js','utf8');
   const entitlements=fs.readFileSync('functions/billing-entitlements.js','utf8');
-  assert.match(source,/BillingWebhook\.createHandler\(\{db,client,secret:STRIPE_WEBHOOK_SECRET\.value\(\),refresh:uid=>refreshBilling\(uid,client\)/);
-  assert.match(source,/BillingEntitlements\.reconcile\(\{db,client,uid,descriptor:priceDescriptor,retentionLifecycle\}\)/);
+  assert.match(source,/BillingWebhook\.createHandler\(\{db,client,secret:STRIPE_WEBHOOK_SECRET\.value\(\),refresh:\(uid,context\)=>refreshBilling\(uid,client,context\)/);
+  assert.match(source,/BillingEntitlements\.reconcile\(\{db,client,uid,descriptor:priceDescriptor,retentionLifecycle,reservationFlowKey:/);
   assert.match(webhook,/webhooks\.constructEvent\(req\.rawBody,req\.headers\['stripe-signature'\],secret\)/);
   assert.match(webhook,/stripeWebhookEvents\/\$\{event\.id\}/);
-  assert.match(webhook,/await refresh\(maps\.docs\[0\]\.id\)/);
-  assert.ok(webhook.indexOf('await refresh(maps.docs[0].id)')<webhook.indexOf("tx.update(ref,{state:'processed'"));
+  assert.match(webhook,/await refresh\(uid,/);
+  assert.ok(webhook.indexOf('await refresh(uid,')<webhook.indexOf("tx.update(ref,{state:'processed'"));
   assert.match(entitlements,/inputs=await readFunding\(client,mapping\.data\(\)\.stripeCustomerId\)/);
   assert.match(entitlements,/fundedSnapshot\(inputs,\{descriptor,now:stamp,previous,retentionLifecycle\}\)/);
   assert.match(entitlements,/lease\.data\(\)\?\.token!==token\|\|lease\.data\(\)\?\.until<=now\(\)/);

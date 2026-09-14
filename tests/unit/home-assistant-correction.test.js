@@ -73,7 +73,8 @@ test('Founder browser coverage includes resettable modes, real deep links, sync 
   for(const mode of ['sole','mixed','ltdOnly','assistant'])assert.match(browser,new RegExp(`${mode}:\\{email:`));
   assert.match(browser,/Assistant Home count derives five visible canonical tasks/);
   assert.match(browser,/date deep-link opens the exact canonical entry/);
-  assert.match(browser,/Assistant dismissal did not reach canonical synced yearData/);
-  assert.match(browser,/unfinished Ltd removal requires explicit confirmation/);
+  assert.match(browser,/Assistant review rows expose no duplicate dismiss action/);
+  assert.match(browser,/unfinished local Ltd setup remains a single resumable Assistant task/);
+  assert.match(browser,/local Ltd draft exposes no duplicate removal action/);
   assert.match(browser,/200% browser-zoom equivalent CSS viewport/);
 });

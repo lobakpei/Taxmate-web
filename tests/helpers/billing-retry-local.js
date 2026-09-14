@@ -17,7 +17,7 @@ function memoryDb(){
   }});
   return{doc,collection,runTransaction:fn=>{
     const task=tail.then(async()=>{const staged=new Map([...rows].map(([key,value])=>[key,copy(value)]));
-      const result=await fn({get:async ref=>snap(ref.path,staged),set:(ref,value)=>staged.set(ref.path,copy(value)),update:(ref,value)=>{assert(staged.has(ref.path));staged.set(ref.path,{...staged.get(ref.path),...copy(value)});},create:(ref,value)=>{assert(!staged.has(ref.path));staged.set(ref.path,copy(value));}});
+      const result=await fn({get:async ref=>snap(ref.path,staged),set:(ref,value,options)=>staged.set(ref.path,options&&options.merge?{...staged.get(ref.path),...copy(value)}:copy(value)),update:(ref,value)=>{assert(staged.has(ref.path));staged.set(ref.path,{...staged.get(ref.path),...copy(value)});},create:(ref,value)=>{assert(!staged.has(ref.path));staged.set(ref.path,copy(value));},delete:ref=>staged.delete(ref.path)});
       rows.clear();for(const [key,value]of staged)rows.set(key,value);return result;
     });tail=task.catch(()=>{});return task;
   }};
@@ -31,7 +31,7 @@ async function makeDb(){
   const db=new Firestore({projectId:process.env.GCLOUD_PROJECT,host:'127.0.0.1:38580',ssl:false});
   return{db,close:()=>db.terminate(),backend:'fresh-isolated-firestore-emulator'};
 }
-async function fixture(){
+async function fixture({quarantineBillingEvent}={}){
   const storage=await makeDb(),db=storage.db,uid='isolated-closeout-'+crypto.randomUUID(),suffix=uid.replaceAll('-','_');
   const ids={customer:'cus_'+suffix,charge:'ch_original_'+suffix,otherCharge:'ch_independent_'+suffix,refund:'re_'+suffix,invoice:'in_original_'+suffix,otherInvoice:'in_independent_'+suffix,sub:'sub_original_'+suffix,otherSub:'sub_independent_'+suffix,case:'case_'+crypto.createHash('sha256').update(uid).digest('hex').slice(0,40)};
   let stamp=Date.parse('2026-09-08T12:00:00Z');const start=stamp/1000-86400,end=stamp/1000+29*86400;
@@ -58,10 +58,10 @@ async function fixture(){
   await db.doc('billingCustomers/'+uid).set({stripeCustomerId:ids.customer});
   await db.doc('users/'+uid+'/entitlements/current').set({paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:end*1000,serverVerifiedAt:stamp-1000});
   await db.doc('billingRefundCases/'+ids.case).set({id:ids.case,uid,paymentId:ids.charge,approvedMinor:399,currency:'gbp',state:'refund_pending',revision:2});
-  const refresh=async who=>{counts.refreshes++;assert.equal(who,uid);return Billing.reconcile({db,client,uid:who,descriptor,retentionLifecycle,now});};
+  const refresh=async(who,options={})=>{counts.refreshes++;assert.equal(who,uid);return Billing.reconcile({db,client,uid:who,descriptor,retentionLifecycle,now,...options});};
   const refunds=createService({db,client,now,onRefundChanged:refresh,readReviewContext:caseRecord=>Review.readContext({db,client,caseRecord,descriptor,effectiveTier,now})});
   const secret='whsec_synthetic_closeout_only';
-  const handler=createHandler({db,client,secret,refresh,refunds,now});
+  const handler=createHandler({db,client,secret,refresh,refunds,quarantineBillingEvent,now});
   const event=(type,id=crypto.randomUUID())=>({id:'evt_isolated_'+id,object:'event',type,created:Math.floor(stamp/1000),livemode:false,data:{object:type==='charge.refunded'?{id:ids.charge,customer:ids.customer}:{id:ids.refund}}});
   async function deliver(event,{invalidSignature=false}={}){
     const rawBody=Buffer.from(JSON.stringify(event));

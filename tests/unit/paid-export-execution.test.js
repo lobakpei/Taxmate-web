@@ -14,7 +14,7 @@ test('paid export handlers reject Free before loading reports or touching data',
   }
 });
 test('Manage subscription dispatch opens the account overview and plans without opening a payment session',()=>{
-  const listeners={},context=vm.createContext({console,document:{addEventListener:(event,handler)=>listeners[event]=handler}});
+  const listeners={},context=vm.createContext({console,navigator:{onLine:true},document:{addEventListener:(event,handler)=>listeners[event]=handler}});
   context.window=context;let prompts=0,calls=0,continued;const opened=[];
   Object.assign(context,{openBillingOverview:()=>opened.push('overview'),openBillingPlans:()=>opened.push('plans')});
   // The reminder is localised (six languages); the test resolves English copy through the app's own I18N table.

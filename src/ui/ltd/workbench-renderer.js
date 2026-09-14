@@ -129,9 +129,10 @@
   // 'signed' = by sign (profit, cash, balances), 'neutral' = ink. Zero stays neutral and
   // an unknown value is "Please check", never £0.00. Values and signs are never changed.
   function moneyClass(minor, role){
-    // An explicit cost / tax / liability column stays in the expense colour whatever the
-    // stored sign, zero included, so a column always reads as money out. Ordinary values
-    // follow their sign; a neutral column and an ordinary zero stay ink.
+    // An explicit non-zero cost / tax / liability stays in the expense colour whatever
+    // the stored sign. Every exact zero stays in the theme ink. Ordinary values follow
+    // their sign; presentation never changes the accounting value or classification.
+    if(minor===0) return '';
     if(role==='out') return 'neg';
     if(role==='in'||role==='signed') return minor>0?'pos':minor<0?'neg':'';
     return '';
@@ -485,10 +486,6 @@
   /* ---- sheet scaffold ---------------------------------------------------- */
   function sheet(o){
     // o:{kick,title,child,body:[nodes],foot:[nodes],onClose,progress:{n,total}}
-    var head=[h('div',{class:'tm-grab'})];
-    var body=[];
-    if(o.progress) body.push(h('div',{class:'tm-progress'},[h('i',{},[]).cloneNode(false)]));
-    if(o.progress){ var bar=body[body.length-1].firstChild||body[body.length-1]; }
     var bodyKids=[];
     if(o.kick) bodyKids.push(h('div',{class:'tm-kick',text:o.kick}));
     if(o.progress){
@@ -497,17 +494,16 @@
     }
     (o.body||[]).forEach(function(n){ if(n) bodyKids.push(n); });
     var sBody=h('div',{class:'tm-sbody'}, bodyKids);
-    var parts=[h('div',{class:'tm-grab'}),h('div',{class:'tm-dialog-head'},[
-      h('div',{class:'tm-stitle',text:o.title||o.kick||''}),
-      h('button',{class:'tm-dialog-close',type:'button','aria-label':t('common.close'),onClick:function(){if(o.onClose)o.onClose();}},'×')
-    ]),sBody];
+    var dialogHead=[h('div',{class:'tm-stitle',text:o.title||o.kick||''})];
+    if(o.showClose!==false)dialogHead.push(h('button',{class:'tm-dialog-close',type:'button','aria-label':t('common.close'),onClick:function(){if(o.onClose)o.onClose();}},'×'));
+    var parts=[h('div',{class:'tm-dialog-head'},dialogHead),sBody];
     if(o.foot&&o.foot.length) parts.push(h('div',{class:'tm-sfoot'}, o.foot.filter(Boolean)));
     var card=h('div',{class:'tm-sheet'+(o.child?' child':'')+(o.dialogClass?' '+o.dialogClass:''), role:'dialog','aria-modal':'true',
       'aria-label':o.title||o.kick||'',tabindex:'-1',onKeydown:function(e){
         if(e.key==='Escape'){e.preventDefault();if(o.onClose)o.onClose();}
         if(e.key==='Tab'){var fields=Array.from(card.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),textarea:not(:disabled),a[href]')).filter(function(n){return n.getClientRects().length;});var first=fields[0],last=fields[fields.length-1];if(e.shiftKey&&document.activeElement===first){e.preventDefault();last.focus();}else if(!e.shiftKey&&document.activeElement===last){e.preventDefault();first.focus();}}
       },onClick:function(e){ e.stopPropagation(); }}, parts);
-    return h('div',{class:'tm-scrim'+(o.scrimClass?' '+o.scrimClass:''), onClick:function(){ if(o.onClose)o.onClose(); }},[card]);
+    return h('div',{class:'tm-scrim'+(o.scrimClass?' '+o.scrimClass:''), onClick:function(){ if(o.closeOnScrim!==false&&o.onClose)o.onClose(); }},[card]);
   }
 
   /* ====================================================================== */
@@ -547,7 +543,7 @@
       var title=t('common.learn_more');
       body.push(h('div',{class:'tm-infosec'},[h('p',{text:id})]));
     }
-    return sheet({ child:true, dialogClass:'tm-info-dialog', scrimClass:'tm-info-dialog-scrim', kick:t('info.what'), title:title, body:body,
+    return sheet({ child:true, dialogClass:'tm-info-dialog', scrimClass:'tm-info-dialog-scrim', title:title, body:body,showHandle:false,showClose:false,closeOnScrim:false,
       foot:[ btn(t('info.back_to_question'),'p',function(){ run('onCloseInfo',{},{}); }) ],
       onClose:function(){ run('onCloseInfo',{},{}); } });
   }
@@ -556,12 +552,12 @@
   function discardSheet(webHome){
     if(!webHome&&S().setupExit){
       var state=S().setupExit,reason=state.status==='completed'?'setup.completed':state.status==='legacy'?'setup.legacy_slot':state.status==='has_records'?'setup.has_records':state.status==='loading'?'setup.checking':state.reason==='setup_changed_review_again'?'setup.changed':state.reason==='setup_discard_uncertain'?'setup.uncertain':state.status==='unavailable'?'setup.unavailable':null;
-      return sheet({child:true,title:t('setup.exit_title'),body:[h('p',{class:'tm-muted',text:t('setup.exit_body')}),h('p',{class:'tm-muted',text:t('setup.remove_consequence')}),reason?notice('neutral',null,t(reason)):null],foot:[
+      return sheet({child:true,title:t('setup.exit_title'),showClose:false,body:[h('p',{class:'tm-muted',text:t('setup.exit_body')}),h('p',{class:'tm-muted',text:t('setup.remove_consequence')}),reason?notice('neutral',null,t(reason)):null],foot:[
         btn(t('setup.keep_exit'),'p',function(){run('onSaveCompanyDraft',{},{onOk:function(){UI.sheet=null;paint();}});},{disabled:state.reason==='setup_discard_uncertain'}),
         btn(t('setup.continue_setup'),'g',function(){run('onDiscardCancelled',{},{});}),
         btn(t('setup.remove_draft'),'d',function(){run('onDiscardCompanySetup',{},{onOk:function(){UI.cache={};UI.choices={};UI.sheet=null;paint();}});},{disabled:!state.canDiscard})],onClose:function(){run('onDiscardCancelled',{},{});}});
     }
-    var result=sheet({ child:true, title:t('design.discard_title'),
+    var result=sheet({ child:true, title:t('design.discard_title'), showClose:false,
       body:[ h('p',{class:'tm-muted',text:t('design.discard_body')}) ],
       foot:[
         btn(t('design.discard'),'d',function(){ if(webHome)return webHome.confirm();run('onDiscardConfirmed',{},{onOk:function(){ UI.cache={}; UI.choices={}; UI.sheet=null; paint(); }}); }),
@@ -732,10 +728,10 @@
       if(options.onBack)return options.onBack();
       run('onBack',{},{});
     }},[isRTL()?'\u2192':'\u2190',' ',t('common.back')]);
-    var setupExit=h('button',{class:'tm-wsback',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){
+    var setupExit=h('button',{class:'tm-wsback tm-setup-exit',type:'button',onPointerDown:preserveStep2DateClick,onClick:function(){
       UI.setupExitReturnFocus=true;captureSetupInputs();run('onDismissRequested',{reason:'cancel'},{});
     },dataset:{setupExit:''}},t('setup.save_leave'));
-    wrap.append(h('div',{class:'tm-top tm-setup-top'},stepN===1?[h('span',{'aria-hidden':'true'}),setupExit]:[setupBack]));
+    wrap.append(h('div',{class:'tm-top tm-setup-top'},stepN===1?[h('span',{'aria-hidden':'true'}),setupExit]:[setupBack,setupExit]));
     wrap.append(pr);
     wrap.append(h('div',{class:'tm-kick',text:t('setup.step_of',{step:stepN,total:5})}));
     wrap.append(h('div',{class:'tm-wstitle',text:title}));
@@ -808,9 +804,7 @@
     var profile=S().company&&S().company.profile||{};
     var setup=(S().company&&S().company.setupAnswers)||profile.setupAnswers||{},registrationAnswer=setup.registrationAnswer||(profile.companyNumberStatus==='provided'?'yes':profile.companyNumberStatus==='not_available'?'no':'');
     if(registrationAnswer!=='yes'||setup.identityDetailsConfirmed!==true){
-      return stepShell(2,t('setup.title'),[notice('info',t('s2.unregistered_title'),t('s2.unregistered_body'))],[
-        btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
-      ]);
+      return stepShell(2,t('setup.title'),[notice('info',t('s2.unregistered_title'),t('s2.unregistered_body'))],[]);
     }
     var savedTrading=setup.tradingAnswer||(profile.tradingStatus==='trading'?'yes':profile.tradingStatus==='not_started'?'no':'');
     var trading=fieldVal(sid,'tradingAnswer', getChoice(sid,'trading')||savedTrading||'');
@@ -969,7 +963,7 @@
     var canStart=elig.allowed||blockingReasons.length===0;
     var blocked=!draft&&!canStart;
     var body=[];
-    if(draft||blocked)body.push(notice(draft?'ok':'warn', draft?t('s5.draft_title'):t('s5.blocked_title'), draft?t('s5.draft_body'):t('s5.blocked_body')));
+    if(draft||blocked)body.push(notice(draft?'ok':'warn', null, draft?t('s5.draft_body'):t('s5.blocked_body')));
     var pp=(S().company&&S().company.periodPlan&&S().company.periodPlan.accounts)||{};
     var tradingYes=(prof.tradingStatus)==='trading';
     var shareholders=prof.shareholders||[],holder=shareholders.filter(function(sh){return sh.isAccountHolder;})[0]||shareholders[0]||{};
@@ -1028,7 +1022,7 @@
   function screenRegistrationPending(){
     var c=S().company||{},prof=c.profile||{},setup=c.setupAnswers||prof.setupAnswers||{},unknown=setup.registrationAnswer==='not_sure';var reasons=(S().lastResult&&S().lastResult.reviewReasons)||(c.reviewReasons)||[];
     var needsDirector=reasons.indexOf('director_confirmation_required')>=0;
-    var body=[notice('warn',t(unknown?'pending.registration_review_title':'pending.title'),t(unknown?'pending.registration_review_body':'pending.body'))];
+    var body=[notice('warn',null,t(unknown?'pending.registration_review_body':'pending.body'))];
     if(needsDirector) body.push(notice('info', null, t('pending.director_note')));
     var e=c.entity||{};
     body.push(summRows([
@@ -1039,19 +1033,14 @@
     return stepShell(1,t(unknown?'pending.registration_review_title':'pending.title'),body,foot);
   }
   function screenDirectorReview(){
-    var body=[ notice('warn', t('director_review.title'), t('director_review.body')) ];
-    var foot=[ btn(t('s3.save_draft'),'g',function(){ run('onSaveCompanyDraft',{},{}); }) ];
-    return stepShell(3, t('director_review.title'), body, foot);
+    var body=[ notice('warn', null, t('director_review.body')) ];
+    return stepShell(3, t('director_review.title'), body, []);
   }
   function screenTradingReview(){
-    return stepShell(2,t('trading_review.title'),[notice('warn',t('trading_review.title'),t('trading_review.body'))],[
-      btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
-    ]);
+    return stepShell(2,t('trading_review.title'),[notice('warn',null,t('trading_review.body'))],[]);
   }
   function screenOwnershipReview(){
-    return stepShell(3,t('ownership_review.title'),[notice('warn',t('ownership_review.title'),t('ownership_review.body'))],[
-      btn(t('s3.save_draft'),'g',function(){run('onSaveCompanyDraft',{},{});})
-    ]);
+    return stepShell(3,t('ownership_review.title'),[notice('warn',null,t('ownership_review.body'))],[]);
   }
 
   function reasonText(){ return t('common.review_required'); }
@@ -2261,7 +2250,7 @@
   function sheetIncome(){ var sid='ui.income';
     var confirmed=getChoice(sid,'confirm','')==='yes';
     var category=getChoice(sid,'incomeCategory','');
-    return sheet({ kick:t('money.add_income'), title:t('money.add_income'),
+    return sheet({ title:t('money.add_income'), showClose:false,
       body:[errSummary(sid)].concat(commonFields(sid)).concat([
         textField({scope:sid,fid:'invoicePartyId',label:t('income.invoice_party'),type:'text',persist:false}),
         h('div',{class:'tm-question',text:t('income.category_title')}),
@@ -2288,7 +2277,7 @@
     var targets=expenseAllocTargets();
     var expCat=getChoice(sid,'cat');
     if(step===1){
-      return sheet({ kick:t('design.step_basics'), title:t('money.add_expense'), progress:{n:1,total:4},
+      return sheet({ kick:t('design.step_basics'), title:t('money.add_expense'), showClose:false, progress:{n:1,total:4},
         body:[errSummary(sid)].concat(commonFields(sid)).concat([
           h('div',{class:'tm-question',text:t('expense_category.title')}),
           choiceGroup({scope:sid,name:'cat',options:[
@@ -2331,7 +2320,7 @@
         body.push(totalBar(t('records.impact'), h('span',{class:'tm-num',text:sum+'%'}), sum===100));
         if(sum!==100) body.push(notice('warn', null, t('error.allocation_total')));
       }
-      return sheet({ kick:t('design.step_shared'), title:t('design.step_shared'), progress:{n:3,total:4},
+      return sheet({ title:t('design.step_shared'), progress:{n:3,total:4},
         body:body,
         foot:[ btn(t('common.continue'),'p',function(){ flushActive(); if(onlyThis==='no'&&allocSum(sid,targets)!==100){paint();return;} UI.sheet.step=4; paint(); },{disabled:!onlyThis}),
           btn(t('common.back'),'g',function(){ UI.sheet.step=2; paint(); }) ], onClose:function(){ requestClose(sid); } });
@@ -2349,7 +2338,7 @@
     ];
     if(who==='personal') body4.push(notice('info', t('term.company_owes_you'), t('overview.personal_money_body')));
     var canSave = !!capital && !!special && !!invoice;
-    return sheet({ kick:t('design.step_review'), title:t('design.step_review'), progress:{n:4,total:4},
+    return sheet({ title:t('design.step_review'), progress:{n:4,total:4},
       body:body4,
       foot:[ btn(t('common.save'),'p',function(){ flushActive();
           var base=basePayload(sid);
@@ -2431,7 +2420,7 @@
     if(!lend && amt>(loan.amountMinor||0)) body.push(notice('warn', t('repay.over_limit'), null));
     var confirmed = lend ? (getChoice(sid,'confirm','')==='yes') : true;
     if(lend) body.push(checkControl({label:t('lend.confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'confirm', v?'yes':''); }}));
-    return sheet({ kick: lend?t('money.lend'):t('money.repay'), title: lend?t('money.lend'):t('money.repay'),
+    return sheet({ title:lend?t('money.lend'):t('money.repay'), showClose:false,
       body:body,
       foot:[ btn(t('common.save'),'p',function(){ flushActive(); var p=basePayload(sid);
           if(lend) run('onAddDirectorLoanFunding',p,{scope:sid,onOk:function(){ toast(t('common.done')); closeSheet(); }});
@@ -2462,7 +2451,7 @@
       if(advanced==='custom') body.push(textField({scope:sid,fid:'lossAmount',label:t('ct_review.choose_loss'),kind:'money',type:'number',persist:false}));
     }
     var q1=getChoice(sid,'recCheck',''), q2=getChoice(sid,'perCheck',''), q3=getChoice(sid,'lossCheck','');
-    return sheet({ kick:t('ct_review.title'), title:t('ct_review.title'), body:body,
+    return sheet({ title:t('ct_review.title'), showClose:idx>0, body:body,
       foot:[ btn(last?t('ct_review.calculate'):t('s4.next_question'),'p',function(){
           if(!last){UI.ctIdx=idx+1;paint();return;}flushActive();
           var lossUse = advanced==='custom' ? [toMinor(fieldVal(sid,'lossAmount',''))||0] : [];
@@ -2481,7 +2470,7 @@
       }}),
       dateField({scope:sid,fid:'when',persist:false,label:t('scenario.when')})
     ];
-    return sheet({ kick:t('scenario.title'), title:t('scenario.title'), body:body,
+    return sheet({ title:t('scenario.title'), showClose:false, body:body,
       foot:[ btn(t('tax.compare'),'p',function(){ flushActive();
           var amt=toMinor(fieldVal(sid,'amountMinor',''))||0,when=fieldVal(sid,'when','')||todayISO();
           run('onRunScenario',{ordinaryFacts:{amountMinor:amt,when:when},asOfDate:when},{scope:sid,onReview:function(){ closeSheet(); },onOk:function(){ closeSheet(); }});
@@ -2511,7 +2500,7 @@
     body.push(checkControl({label:t('salary.ordinary_confirm'),checked:ordinaryConfirmed,onToggle:function(v){setChoice(sid,'ordinary',v?'yes':'');}}));
     body.push(checkControl({label:t('salary.simple_confirm'),checked:simpleConfirmed,onToggle:function(v){setChoice(sid,'simple',v?'yes':'');}}));
     body.push(checkControl({label:t('salary.paye_registered_confirm'),checked:payeRegistered,onToggle:function(v){setChoice(sid,'payeRegistered',v?'yes':'');}}));
-    return sheet({ kick:t('salary.title'), title:t('salary.title'),
+    return sheet({ title:t('salary.title'), showClose:false,
       body:[notice('neutral', null, t('salary.no_paye_note'))].concat(body),
       foot:[ btn(t('salary.save'),'p',function(){ flushActive();
           run('onRecordSalary',{salary:{ payDate:fieldVal(sid,'payDate',''), grossSalaryMinor:toMinor(fieldVal(sid,'gross','')),
@@ -2534,7 +2523,7 @@
       textField({scope:sid,fid:'board',label:t('dividend.board_reference'),type:'text',persist:false}),
       textField({scope:sid,fid:'minutes',label:t('dividend.minutes_reference'),type:'text',persist:false})
     ];
-    return sheet({ kick:t('dividend.declare_title'), title:t('dividend.declare_title'), body:body,
+    return sheet({ title:t('dividend.declare_title'), showClose:false, body:body,
       foot:[ btn(t('dividend.save_declaration'),'p',function(){ flushActive();
           run('onDeclareDividend',{dividend:{
             declarationDate:fieldVal(sid,'declDate',''), paymentDate:fieldVal(sid,'payDate',''),
@@ -2551,7 +2540,7 @@
     var allocs=ctx.allocations||[{id:'a1'}];
     var body=[errSummary(sid), h('p',{class:'tm-muted',text:t('dividend.voucher_references')})];
     allocs.forEach(function(al,i){ body.push(textField({scope:sid,fid:'v'+i,label:t('dividend.voucher_references')+' '+(i+1),type:'text',persist:false})); });
-    return sheet({ kick:t('dividend.payment_title'), title:t('dividend.payment_title'), body:body,
+    return sheet({ title:t('dividend.payment_title'), showClose:false, body:body,
       foot:[ btn(t('dividend.save_payment'),'p',function(){ flushActive();
           var vs=allocs.map(function(al,i){ return fieldVal(sid,'v'+i,''); }).filter(Boolean);
           run('onRecordDividendPayment',{declarationId:ctx.declarationId, voucherArtifactRefs:vs},{scope:sid,onReview:function(){ closeSheet(); },onOk:function(){ closeSheet(); }});
@@ -2569,7 +2558,7 @@
       // not reused dividend/accounts copy.
       checkControl({label:sfCopy('confirm'), checked:confirmed, onToggle:function(v){ setChoice(sid,'ev',v?'yes':''); }})
     ];
-    return sheet({ kick:sfCopy('title'), title:sfCopy('title'), body:body,
+    return sheet({ title:sfCopy('title'), showClose:false, body:body,
       foot:[ btn(t('common.save'),'p',function(){ flushActive();
           var ref=fieldVal(sid,'evidence','');
           run('onRecordShareFunding',{amountMinor:toMinor(fieldVal(sid,'amountMinor','')), date:fieldVal(sid,'date',''),
@@ -2587,7 +2576,7 @@
       textField({scope:sid,fid:'evidenceRef',label:t('records.evidence'),hint:t('common.optional'),type:'text',persist:false})
     ];
     var reason=fieldVal(sid,'reason','');
-    return sheet({ kick:t('money.correct_record'), title:t('money.correct_record'), body:body,
+    return sheet({ title:t('money.correct_record'), showClose:false, body:body,
       foot:[ btn(t('common.save'),'p',function(){ flushActive();
           var repl={}; var a=toMinor(fieldVal(sid,'amountMinor','')); if(a!=null) repl.amountMinor=a;
           var dt=fieldVal(sid,'date',''); if(dt) repl.date=dt; var ds=fieldVal(sid,'description',''); if(ds) repl.description=ds;
@@ -2600,7 +2589,7 @@
     var body=[ notice('warn', t('design.remove_action'), t('records.remove_warning')),
       notice('neutral', null, t('records.backup_first')),
       checkControl({label:t('design.remove_confirm'), checked:getChoice(sid,'confirm','')==='yes', onToggle:function(v){ setChoice(sid,'confirm',v?'yes':''); }}) ];
-    return sheet({ child:true, kick:t('design.remove_action'), title:t('design.remove_action'), body:body,
+    return sheet({ child:true, title:t('design.remove_action'), showClose:false, body:body,
       foot:[ btn(t('design.remove_action'),'d',function(){ run('onRemoveCompany',{confirmed:true},{scope:sid,onOk:function(){ UI.sheet=null; toast(t('common.done')); paint(); }}); }, {disabled:getChoice(sid,'confirm','')!=='yes'}),
         btn(t('common.cancel'),'g',function(){ closeSheet(); }) ], onClose:closeSheet });
   }
@@ -2782,7 +2771,7 @@
     var collected=collectFacts(sid),missing=collected.missing;
     var hasScopedAnswer=selected?Object.prototype.hasOwnProperty.call(collected.facts,selected):Object.keys(collected.facts).some(function(k){return factGroup(k)===ctx.groupId;});
     if(missing.length) body.push(notice('warn',null,t('statutory.evidence_required',{groups:missing.map(function(g){return t('statutory.group.'+g);}).join(', ')})));
-    return sheet({ title:t('review01.checks'), body:body,
+    return sheet({ title:t('review01.checks'), showClose:false, body:body,
       foot:[ (selected||ctx.groupId)?btn(t('statutory.save_checks'),'p',function(){ flushActive();
           var col=collectFacts(sid); if(col.missing.length){ paint(); return; }
           if(!c){ toast(t('statutory.unavailable')); return; }
@@ -2797,7 +2786,7 @@
   function rtiIncomplete(sid){ return !getChoice(sid,'status','')||!fieldVal(sid,'evidence','')||!fieldVal(sid,'reason','')||!fieldVal(sid,'reportedOn',''); }
   function sheetRti(){ var sid='ui.rti'; var ctx=UI.sheet.ctx||{};
     var rec=((S().workspace&&S().workspace.salaryRecords)||[]).filter(function(r){return r.id===ctx.recordId;})[0];
-    if(!rec) return sheet({child:true,title:t('rti.title'),body:[notice('warn',null,t('error.fix_issue'))],foot:[btn(t('common.cancel'),'g',closeSheet)],onClose:closeSheet});
+    if(!rec) return sheet({child:true,title:t('rti.title'),showClose:false,body:[notice('warn',null,t('error.fix_issue'))],foot:[btn(t('common.cancel'),'g',closeSheet)],onClose:closeSheet});
     if(!UI.sheet.requestId){ UI.sheet.requestId=newRequestId('rti'); if(!fieldVal(sid,'reportedOn','')) setField(sid,'reportedOn',todayISO()); }
     var status=getChoice(sid,'status','');
     var body=[errSummary(sid),
@@ -2811,7 +2800,7 @@
     ];
     if(UI.review[sid]&&UI.review[sid].length) body.push(notice('warn',null,UI.review[sid].indexOf('payroll_reporting_source_changed')>=0?t('rti.source_changed'):UI.review[sid].indexOf('payroll_reporting_request_conflict')>=0?t('rti.conflict'):t('common.review_required')));
     var ready=!rtiIncomplete(sid);
-    return sheet({ kick:t('salary.title'), title:t('rti.title'), body:body,
+    return sheet({ kick:t('salary.title'), title:t('rti.title'), showClose:false, body:body,
       foot:[ btn(t('rti.save'),'p',function(){ flushActive();
           run('onUpdatePayrollReporting',{recordId:rec.id, requestId:UI.sheet.requestId, sourceEventRevisionId:rec.sourceEventRevisionId, expectedReportingRevision:(rec.payrollReporting&&rec.payrollReporting.revision)||0, status:getChoice(sid,'status',''), reportedOn:fieldVal(sid,'reportedOn',''), evidenceRefs:[fieldVal(sid,'evidence','')].filter(Boolean), reason:fieldVal(sid,'reason','')},{scope:sid,onReview:function(){ paint(); },onOk:function(){ toast(t('rti.saved')); closeSheet(); }});
         },{disabled:!ready,dataset:{action:'rti-save'}}),
@@ -2847,7 +2836,7 @@
       ])); })(i); }
     body.push(btn(t('bank.add_line'),'g sm',function(){ UI.sheet.lineRows=(UI.sheet.lineRows||0)+1; paint(); },{dataset:{action:'bank-add-line'}}));
     var ready=!bankIncomplete(sid);
-    return sheet({ kick:t('bank.title'), title:ctx.recordId?t('bank.edit'):t('bank.title'), body:body,
+    return sheet({ kick:ctx.recordId?t('bank.title'):null, title:ctx.recordId?t('bank.edit'):t('bank.title'), showClose:false, body:body,
       foot:[ btn(t('bank.save'),'p',function(){ flushActive();
           var stmt={startDate:fieldVal(sid,'startDate',''),endDate:fieldVal(sid,'endDate',''),openingBalanceMinor:toMinor(fieldVal(sid,'opening','')),closingBalanceMinor:toMinor(fieldVal(sid,'closing','')),lines:bankLinesFromSheet(sid),matches:[],evidenceRefs:[fieldVal(sid,'evidence','')].filter(Boolean)};
           if(UI.sheet.statementId) stmt.id=UI.sheet.statementId;
@@ -2865,11 +2854,11 @@
         h('div',{class:'rl',text:line.description||'—'}),h('div',{class:'tm-num',text:isoToDisplay(line.date)}),moneyRole(line.amountMinor,'signed')
       ]));});
     }
-    return sheet({title:t('bank.title'),body:body,foot:[btn(t('common.back'),'g',closeSheet)],onClose:closeSheet});
+    return sheet({title:t('bank.title'),showClose:false,body:body,foot:[btn(t('common.back'),'g',closeSheet)],onClose:closeSheet});
   }
   function sheetBankMatch(){ var sid='ui.bankMatch'; var ctx=UI.sheet.ctx||{};
     var rec=latestReconciliation();
-    if(!rec) return sheet({child:true,title:t('bank.match_title'),body:[notice('warn',null,t('bank.none_yet'))],foot:[btn(t('common.cancel'),'g',closeSheet)],onClose:closeSheet});
+    if(!rec) return sheet({child:true,title:t('bank.match_title'),showClose:false,body:[notice('warn',null,t('bank.none_yet'))],foot:[btn(t('common.cancel'),'g',closeSheet)],onClose:closeSheet});
     if(!UI.sheet.seeded){ UI.sheet.seeded=true; (rec.matches||[]).forEach(function(m){ setChoice(sid,'m:'+m.statementLineId,m.bookEventId); }); }
     var lines=rec.statementLines||[];
     // Candidates are exactly the engine's unmatched company-bank movements plus the line's current match.
@@ -2917,7 +2906,7 @@
     var body=[errSummary(sid), notice('warn',t('bank.delete'),t('bank.delete_warning')),
       textField({scope:sid,fid:'reason',label:t('records.reason'),type:'text',persist:false,onInput:updateButton}),
       textField({scope:sid,fid:'evidence',label:t('detail.evidence'),hint:t('statutory.evidence_hint'),type:'text',persist:false,onInput:updateButton})];
-    return sheet({ child:true, kick:t('bank.title'), title:t('bank.delete'), body:body,
+    return sheet({ child:true, kick:t('bank.title'), title:t('bank.delete'), showClose:false, body:body,
       foot:[ btn(t('bank.delete'),'d',function(){ flushActive(); if(incomplete())return; run('onDeleteBankReconciliation',{reconciliationId:ctx.recordId,reasonCode:fieldVal(sid,'reason','').trim(),evidenceRefs:[fieldVal(sid,'evidence','').trim()]},{scope:sid,onOk:function(){ toast(t('common.done')); closeSheet(); }}); },{disabled:incomplete(),dataset:{action:'bank-delete-confirm'}}),
         btn(t('common.cancel'),'g',function(){ closeSheet(); }) ], onClose:closeSheet });
   }
@@ -3075,7 +3064,7 @@
     if(UI.webHomeDiscard){var webDialog=mount.querySelector('[data-web-home-discard]');if(!oldWebDiscard||discardFocus>=0)webDialog.querySelectorAll('button')[Math.max(0,discardFocus)].focus({preventScroll:true});}
     if(typeof root.scrollTo==='function')root.scrollTo(0,scrollY);
     var newSheet=mount.querySelector('.tm-sbody');if(newSheet&&UI.lastSheetKey===sheetKey)newSheet.scrollTop=sheetScroll;
-    if(sheetKey&&UI.lastSheetKey!==sheetKey){var close=mount.querySelector('.tm-dialog-close');if(close)close.focus({preventScroll:true});}
+    if(sheetKey&&UI.lastSheetKey!==sheetKey){var dialogFocus=mount.querySelector('.tm-dialog-close')||mount.querySelector('[role="dialog"] button:not(:disabled)');if(dialogFocus)dialogFocus.focus({preventScroll:true});}
     if(!overlays().length&&UI.infoReturnFocusId){
       var infoFocus=Array.from(mount.querySelectorAll('[data-info]')).find(function(button){return button.dataset.info===UI.infoReturnFocusId;});
       UI.infoReturnFocusId=null;

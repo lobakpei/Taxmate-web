@@ -1,6 +1,7 @@
 'use strict';
 const {all,idOf,fail}=require('./billing-service');
 const crypto=require('node:crypto');
+const AccountWriteFence=require('./account-write-fence');
 const WEIGHT={free:0,plus:1,pro:2};
 const subscriptionId=invoice=>idOf(invoice.subscription)||idOf(invoice.parent?.subscription_details?.subscription);
 const priceId=line=>idOf(line.price)||idOf(line.pricing?.price_details?.price);
@@ -77,18 +78,29 @@ function fundedSnapshot(inputs,{descriptor,now:stamp,previous={},retentionLifecy
   next.accountRetention=retentionLifecycle(previous,next,stamp);
   return{...previous,...next};
 }
-async function reconcile({db,client,uid,descriptor,retentionLifecycle,now=Date.now}){
-  const ref=db.doc(`users/${uid}/entitlements/current`),mapping=await db.doc(`billingCustomers/${uid}`).get();
+async function reconcile({db,client,uid,descriptor,retentionLifecycle,now=Date.now,reservationFlowKey='',reservationId=''}){
+  const ref=db.doc(`users/${uid}/entitlements/current`),mappingRef=db.doc(`billingCustomers/${uid}`),mapping=await mappingRef.get();
   if(!mapping.exists)return null;
+  const customerMapping=mapping.data()||{};if(customerMapping.accountDeleted===true)fail('account_reset');
   const lock=db.doc(`billingProjectionLocks/${uid}`),token=crypto.randomUUID();
   await db.runTransaction(async tx=>{const snap=await tx.get(lock);if(Number(snap.data()?.until)>now())fail('billing_refresh_in_progress');tx.set(lock,{token,until:now()+120000});});
   try{
   const stamp=now(),inputs=await readFunding(client,mapping.data().stripeCustomerId),renewals=await nextRenewals(client,inputs.subscriptions,descriptor);
   let result;await db.runTransaction(async tx=>{
-    const [snap,lease]=await Promise.all([tx.get(ref),tx.get(lock)]),previous=snap.exists?snap.data():{};
+    const resetRef=db.doc(`accountResets/${uid}`),retentionRef=db.doc(`users/${uid}/retention/current`),reservationRef=db.doc(`billingPurchaseReservations/${uid}`),[snap,lease,resetSnap,retentionSnap,reservationSnap,currentMappingSnap]=await Promise.all([tx.get(ref),tx.get(lock),tx.get(resetRef),tx.get(retentionRef),tx.get(reservationRef),tx.get(mappingRef)]),previous=snap.exists?snap.data():{},reset=resetSnap.exists?resetSnap.data()||{}:{},resetEpoch=reset.resetEpoch==null?0:Number(reset.resetEpoch),currentMapping=currentMappingSnap.exists?currentMappingSnap.data()||{}:{};
     if(lease.data()?.token!==token||lease.data()?.until<=now())fail('billing_refresh_retry');
-    const next=fundedSnapshot(inputs,{descriptor,now:stamp,previous,retentionLifecycle});
+    if(!Number.isSafeInteger(resetEpoch)||resetEpoch<0||resetSnap.exists&&String(reset.status||'')!=='complete'||!currentMappingSnap.exists||currentMapping.accountDeleted===true||currentMapping.stripeCustomerId!==customerMapping.stripeCustomerId||Number(currentMapping.resetEpoch??0)!==resetEpoch||Number(customerMapping.resetEpoch??0)!==resetEpoch)fail('account_reset');
+    const next=fundedSnapshot(inputs,{descriptor,now:stamp,previous,retentionLifecycle}),storageProjection=AccountWriteFence.storageProjection(resetSnap,next.accountRetention,retentionSnap);Object.assign(next,storageProjection);
     next.nextRenewals=renewals;
+    const reservation=reservationSnap.exists?reservationSnap.data()||{}:{},stripeActive=['plus','pro'].includes(next.paidTier)&&Math.max(Number(next.paidAccess&&next.paidAccess.plusExpiresAt)||0,Number(next.paidAccess&&next.paidAccess.proExpiresAt)||0)>stamp,priorStripeActive=['plus','pro'].includes(previous.paidTier)&&Math.max(Number(previous.paidAccess&&previous.paidAccess.plusExpiresAt)||0,Number(previous.paidAccess&&previous.paidAccess.proExpiresAt)||0)>stamp;
+    const exactReservation=reservation.status==='provider_pending'&&reservation.provider==='stripe'&&reservation.flowKey===reservationFlowKey&&(!reservationId||reservation.reservationId===reservationId)&&reservation.tier===next.paidTier&&reservation.cadence===next.billingCadence&&Number(reservation.resetEpoch||0)===resetEpoch;
+    const reservationTargetProjected=reservation.provider==='stripe'&&reservation.tier===next.paidTier&&reservation.cadence===next.billingCadence;
+    if(stripeActive&&reservation.status==='provider_pending'&&!exactReservation&&(reservation.provider!=='stripe'||!priorStripeActive||reservationTargetProjected)){
+      next.billingConflict={provider:'stripe',reason:reservation.provider==='stripe'?'reservation_missing_or_mismatch':'provider_overlap',detectedAt:stamp};
+      tx.set(reservationRef,{status:'billing_conflict',conflictProvider:'stripe',conflictDetectedAt:stamp,updatedAt:stamp},{merge:true});
+    }else if(stripeActive&&!priorStripeActive&&!reservationSnap.exists)next.billingConflict={provider:'stripe',reason:'reservation_missing_or_mismatch',detectedAt:stamp};
+    else if(previous.billingConflict&&!next.billingConflict)next.billingConflict=previous.billingConflict;
+    if(exactReservation)tx.delete(reservationRef);
     if(snap.exists)tx.update(ref,next);else tx.set(ref,next);result={...previous,...next};
   });return result;
   }finally{await db.runTransaction(async tx=>{const snap=await tx.get(lock);if(snap.data()?.token===token)tx.update(lock,{until:0});});}

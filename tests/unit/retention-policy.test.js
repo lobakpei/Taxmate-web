@@ -59,6 +59,18 @@ test('server projected promotions and payment grace prevent deletion and use the
   for(const snapshot of [{...free,promotionAccess:{plusExpiresAt:until}},{...free,promotionAccess:{proPermanent:true}},{...free,lastPaidTier:'plus',graceUntil:until}]){assert.equal(Policy.decide(snapshot,now).status,'paid');assert.notEqual(Entitlement.resolve(snapshot,now,false).tier,'free');assert.equal(Policy.lifecycle(snapshot,{paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:until},now).purgeRequired,undefined);}
   assert.equal(Policy.accessEnd({...free,promotionAccess:{plusExpiresAt:Date.UTC(2026,11,1)}},now),Date.UTC(2026,11,1));
 });
+test('server projected Google Play access uses the same paid retention lifecycle',()=>{
+  const now=Date.UTC(2027,5,1),until=Date.UTC(2028,5,1),snapshot={...free,googlePlayAccess:{active:true,tier:'pro',expiresAt:until,status:'active'}};
+  assert.equal(Policy.decide(snapshot,now).status,'paid');
+  assert.equal(Policy.lifecycle({},snapshot,now).scheduledDeletionDate,'2029-04-06');
+  assert.equal(Policy.accessEnd({...free,googlePlayAccess:{active:false,tier:'free',purchasedTier:'pro',expiresAt:Date.UTC(2026,11,1),status:'expired'}},now),Date.UTC(2026,11,1));
+});
+test('server projected App Store access uses the same paid retention lifecycle and end date',()=>{
+  const now=Date.UTC(2027,5,1),until=Date.UTC(2028,6,1),snapshot={...free,appStoreAccess:{active:true,tier:'pro',expiresAt:until,status:'active'}};
+  assert.equal(Policy.decide(snapshot,now).status,'paid');
+  assert.equal(Policy.lifecycle({},snapshot,now).scheduledDeletionDate,'2029-04-06');
+  assert.equal(Policy.accessEnd({...free,appStoreAccess:{active:false,tier:'free',purchasedTier:'pro',expiresAt:Date.UTC(2026,10,1),status:'expired'}},now),Date.UTC(2026,10,1));
+});
 test('authoritative roll-forward preserves a newer locally saved company profile instead of erasing it',async()=>{
  const Sync=require('../../src/core/ltd-sync'),fixture=make(),base=JSON.parse(JSON.stringify(fixture.driver.state)),now=Date.UTC(2027,5,1);fixture.driver.now=()=>fixture.driver.state.domain.updatedAt+1000;assert.equal((await fixture.facade.onEditCompany({field:'legalName',value:'Updated before deletion Ltd',reason:'Confirmed new company name',evidenceRefs:['local:company-name']})).status,'ok');const local=fixture.driver.state;
  const remote=Policy.apply(base,Policy.plan(base,free,now),now),owned=Policy.apply(local,Policy.plan(local,free,now),now+1),ids=new Set(remote.domain.entities.filter(e=>e.type==='limited_company').map(e=>e.id)),envelopes=[];

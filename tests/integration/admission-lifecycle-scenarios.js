@@ -35,10 +35,10 @@ module.exports=function register(run,context){
   run('R4 Pro to Plus revokes pending shared/LTD permits but preserves LTD historical reads and Free ordinary edit',async()=>{
     const f=await scopes(),ltd=f.rows[2],shared=f.rows[3];await f.db.doc(ltd.target).set(ltd.payload);
     const a=await Admission.prepareWrite({db:f.db,uid:f.s.uid,...ltd}),b=await Admission.prepareWrite({db:f.db,uid:f.s.uid,...shared});
-    await f.db.doc(`users/${f.s.uid}/entitlements/current`).set({paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000});
+    await f.db.doc(`users/${f.s.uid}/entitlements/current`).set({paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000},{merge:true});
     await assertFails(getDoc(doc(f.s.client,a.path)));await assertFails(getDoc(doc(f.s.client,b.path)));assert.equal((await getDoc(doc(f.s.client,ltd.target))).exists(),true);
     await f.waitFor(async()=>!await exists(a.path)&&!await exists(b.path),'revoked tier copies remain');
-    await f.db.doc(`users/${f.s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'});
+    await f.db.doc(`users/${f.s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'},{merge:true});
     const row=f.rows[0],permit=await Admission.prepareWrite({db:f.db,uid:f.s.uid,...row});await commit(f.s.client,row.target,row.payload,permit);assert.equal(await exists(row.target),true);
   });
   run('R4 membership date floor and retention epoch deny draft direct reads just like corresponding ledger data',async()=>{
@@ -67,7 +67,7 @@ module.exports=function register(run,context){
     await f.db.doc(`accountResets/${f.s.uid}`).set({status:'complete'});
     const response=await fetch(`http://${process.env.FIREBASE_AUTH_EMULATOR_HOST}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=demo-key`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({returnSecureToken:true})}),user=await response.json(),s=await f.seed(user.localId);
     const own=await Admission.prepareWrite({db:f.db,uid:s.uid,target:s.recordPath,payload:s.record}),other=await Admission.prepareWrite({db:f.db,uid:s.peer,target:s.recordPath,payload:s.record});
-    await f.db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'});
+    await f.db.doc(`users/${s.uid}/entitlements/current`).set({paidTier:'free',subscriptionStatus:'canceled'},{merge:true});
     const ordinary=await Admission.prepareWrite({db:f.db,uid:s.uid,target:`users/${s.uid}/app/meta`,payload:{privateDraft:'abandoned before reset',receiptPath:s.path}});
     const result=await fetch(`http://${process.env.FUNCTIONS_EMULATOR_HOST}/demo-taxmate/europe-west2/deleteAccountData`,{method:'POST',headers:{'content-type':'application/json',authorization:'Bearer '+user.idToken},body:JSON.stringify({data:{}})});assert.equal(result.status,200,JSON.stringify(await result.clone().json()));
     assert.equal(await exists(own.path),false);assert.equal(await exists(ordinary.path),false);assert.equal(await exists(pinPath(s.path,ordinary)),false);assert.equal(await exists(other.path),true);assert.equal(await exists(s.recordPath),true);assert.equal((await f.bucket.file(s.path).exists())[0],true);assert.equal((await f.db.doc(`accountResets/${s.uid}`).get()).data().status,'complete');

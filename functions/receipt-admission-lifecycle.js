@@ -1,7 +1,7 @@
 'use strict';
 // Admissions/pins are the durable work inventory. No second payload copy, TTL
 // dependency, client timer, or global write lock is introduced by this reaper.
-const crypto=require('node:crypto'),Admission=require('./receipt-admission'),Policy=require('./retention-policy');
+const crypto=require('node:crypto'),Admission=require('./receipt-admission'),Policy=require('./retention-policy'),AccountWriteFence=require('./account-write-fence');
 const GROUPS=['receiptAdmissions','receiptLtdAdmissions','admissionPins'],PAGE_SIZE=40;
 const pinId=path=>crypto.createHash('sha256').update(path).digest('hex');
 function identity(path,value){
@@ -14,12 +14,15 @@ function pro(ent,at){
   const access=ent.promotionAccess||{},p=ent.promotion||{};
   return ['active','trialing'].includes(ent.subscriptionStatus)&&ent.paidTier==='pro'&&(!ent.currentPeriodEnd||ent.currentPeriodEnd>at)
     ||Number(ent.paidAccess?.proExpiresAt)>at||access.proPermanent===true||Number(access.proExpiresAt)>at
+    ||ent.googlePlayAccess?.active===true&&ent.googlePlayAccess.tier==='pro'&&Number(ent.googlePlayAccess.expiresAt)>at
+    ||ent.appStoreAccess?.active===true&&ent.appStoreAccess.tier==='pro'&&Number(ent.appStoreAccess.expiresAt)>at
     ||p.status==='active'&&p.tier==='pro'&&(p.expiresAt===null||Number(p.expiresAt)>at);
 }
 async function revoked(tx,db,id,value,at){
   const [r,e,a,m]=await Promise.all([tx.get(db.doc(`users/${id.uid}/retention/current`)),tx.get(db.doc(`users/${id.uid}/entitlements/current`)),tx.get(db.doc(`accountResets/${id.uid}`)),id.partnershipId?tx.get(db.doc(`partnerships/${id.partnershipId}/members/${id.uid}`)):null]);
   const control=r.data(),ent=e.data()||{},decision=Policy.decide(ent,at);
-  if(a.exists&&['deleting','failed'].includes(a.data().status)||control&&!['complete','complete_with_warnings'].includes(control.status)||decision.status==='expired'&&String(control?.cutoffDate||'')<decision.cutoffDate)return true;
+  let accountResetEpoch;try{accountResetEpoch=AccountWriteFence.readyEpoch(a);}catch(_){return true;}
+  if(Number(value.accountResetEpoch||0)!==accountResetEpoch||control&&!['complete','complete_with_warnings'].includes(control.status)||decision.status==='expired'&&String(control?.cutoffDate||'')<decision.cutoffDate)return true;
   const payloads=id.kind==='ltd'?Object.values(value.records||{}).flatMap(rows=>Object.values(rows)):[value.payload||{}];
   if(control&&payloads.some(row=>row.retentionEpoch!==control.epoch))return true;
   if(id.kind!=='personal'&&!pro(ent,at))return true;

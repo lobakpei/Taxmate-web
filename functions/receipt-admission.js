@@ -1,7 +1,7 @@
 'use strict';
 // Recursive legacy payloads need an exact, server-owned receipt admission.
 // Original ledger Rules still authorise the atomic write and consumption.
-const crypto=require('node:crypto'),Policy=require('./retention-policy');
+const crypto=require('node:crypto'),Policy=require('./retention-policy'),AccountWriteFence=require('./account-write-fence');
 const hash=value=>crypto.createHash('sha256').update(value).digest('hex');
 const ADMISSION_MS=120000,EXPIRY_MARGIN_MS=30000;
 function receiptPaths(value,out=new Set()){
@@ -31,37 +31,54 @@ async function assertAvailable(tx,db,values){
   for(const doc of docs)if(doc.exists&&doc.data().status!=='available')throw Error('receipt_reference_unavailable');
   return paths;
 }
-async function preparationFence(tx,db,uid,partnershipId=null){
-  const [retention,reset,member]=await Promise.all([tx.get(db.doc(`users/${uid}/retention/current`)),tx.get(db.doc(`accountResets/${uid}`)),partnershipId?tx.get(db.doc(`partnerships/${partnershipId}/members/${uid}`)):null]);
-  if(retention.exists&&!['complete','complete_with_warnings'].includes(retention.data().status)||reset.exists&&['deleting','failed'].includes(reset.data().status))throw Error('receipt_admission_account_unavailable');
-  if(partnershipId&&!member.exists)throw Error('receipt_admission_membership_required');
+function assertedAccountResetEpoch(value){
+  const raw=value&&Object.prototype.hasOwnProperty.call(value,'accountResetEpoch')?value.accountResetEpoch:0,epoch=Number(raw);
+  if(typeof raw!=='number'||!Number.isSafeInteger(epoch)||epoch<0)throw Error('receipt_admission_reset_epoch_invalid');
+  return epoch;
 }
-async function prepareWrite({db,uid,target,payload,now=()=>Date.now()}){
-  if(String(target||'').split('/')[2]==='ltd')return prepareBatch({db,uid,records:[{target,payload}],now});
+function expectedAccountResetEpoch(value){
+  const raw=value==null?0:value,epoch=Number(raw);
+  if(typeof raw!=='number'||!Number.isSafeInteger(epoch)||epoch<0)throw Error('receipt_admission_reset_epoch_invalid');
+  return epoch;
+}
+async function preparationFence(tx,db,uid,expectedEpoch,partnershipId=null){
+  let resetEpoch;
+  const [retention,member]=await Promise.all([tx.get(db.doc(`users/${uid}/retention/current`)),partnershipId?tx.get(db.doc(`partnerships/${partnershipId}/members/${uid}`)):null]);
+  try{resetEpoch=await AccountWriteFence.readInTransaction({tx,db,uid,expectedEpoch});}catch(error){if(error instanceof AccountWriteFence.AccountWriteFenceError)throw Error('receipt_admission_account_unavailable');throw error;}
+  if(retention.exists&&!['complete','complete_with_warnings'].includes(retention.data().status))throw Error('receipt_admission_account_unavailable');
+  if(partnershipId&&!member.exists)throw Error('receipt_admission_membership_required');
+  return resetEpoch;
+}
+async function prepareWrite({db,uid,target,payload,accountResetEpoch=0,now=()=>Date.now()}){
+  if(String(target||'').split('/')[2]==='ltd')return prepareBatch({db,uid,records:[{target,payload}],accountResetEpoch,now});
   if(!permittedTarget(uid,target)||!payload||typeof payload!=='object'||Array.isArray(payload)||Buffer.byteLength(JSON.stringify(payload))>850*1024)throw Error('invalid_receipt_admission');
   const parts=target.split('/');
   const ref=db.doc(`${target}/receiptAdmissions/${uid}`),pinId=hash(ref.path),token=crypto.randomUUID(),expiresAt=now()+ADMISSION_MS;
+  const claimedEpoch=expectedAccountResetEpoch(accountResetEpoch),payloadEpoch=assertedAccountResetEpoch(payload);let currentEpoch;
   await db.runTransaction(async tx=>{
-    await preparationFence(tx,db,uid,parts[0]==='partnerships'?parts[1]:null);
+    currentEpoch=await preparationFence(tx,db,uid,claimedEpoch,parts[0]==='partnerships'?parts[1]:null);
+    if(claimedEpoch!==currentEpoch||payloadEpoch!==currentEpoch)throw Error('receipt_admission_reset_epoch_mismatch');
     const previous=await tx.get(ref),paths=await assertAvailable(tx,db,[payload]);
     for(const path of previous.data()?.receiptPaths||[])tx.delete(objectRef(db,path).collection('admissionPins').doc(pinId));
-    for(const path of paths)tx.set(objectRef(db,path).collection('admissionPins').doc(pinId),{uid,admissionPath:ref.path,token,expiresAt});
-    tx.set(ref,{uid,target,payload,receiptPaths:paths,token,expiresAt});
+    for(const path of paths)tx.set(objectRef(db,path).collection('admissionPins').doc(pinId),{uid,admissionPath:ref.path,token,expiresAt,accountResetEpoch:currentEpoch});
+    tx.set(ref,{uid,target,payload,receiptPaths:paths,token,expiresAt,accountResetEpoch:currentEpoch});
   });
-  return{path:ref.path,token,expiresAt};
+  return{path:ref.path,token,expiresAt,accountResetEpoch:currentEpoch};
 }
-async function prepareBatch({db,uid,records,now=()=>Date.now()}){
+async function prepareBatch({db,uid,records,accountResetEpoch=0,now=()=>Date.now()}){
   if(!Array.isArray(records)||!records.length||records.length>400||Buffer.byteLength(JSON.stringify(records))>850*1024)throw Error('invalid_receipt_admission_batch');
   const values={};for(const row of records){const p=String(row.target||'').split('/');if(!permittedTarget(uid,row.target)||p[2]!=='ltd'||!row.payload||typeof row.payload!=='object')throw Error('invalid_receipt_admission_batch');(values[p[4]]||=( {} ))[p[5]]=row.payload;}
   const ref=db.doc(`users/${uid}/receiptLtdAdmissions/current`),pinId=hash(ref.path),token=crypto.randomUUID(),expiresAt=now()+ADMISSION_MS;
+  const claimedEpoch=expectedAccountResetEpoch(accountResetEpoch),payloadEpochs=new Set(records.map(row=>assertedAccountResetEpoch(row.payload)));let currentEpoch;
   await db.runTransaction(async tx=>{
-    await preparationFence(tx,db,uid);
+    currentEpoch=await preparationFence(tx,db,uid,claimedEpoch);
+    if(claimedEpoch!==currentEpoch||payloadEpochs.size!==1||!payloadEpochs.has(currentEpoch))throw Error('receipt_admission_reset_epoch_mismatch');
     const previous=await tx.get(ref),paths=await assertAvailable(tx,db,records.map(row=>row.payload));
     for(const path of previous.data()?.receiptPaths||[])tx.delete(objectRef(db,path).collection('admissionPins').doc(pinId));
-    for(const path of paths)tx.set(objectRef(db,path).collection('admissionPins').doc(pinId),{uid,admissionPath:ref.path,token,expiresAt});
+    for(const path of paths)tx.set(objectRef(db,path).collection('admissionPins').doc(pinId),{uid,admissionPath:ref.path,token,expiresAt,accountResetEpoch:currentEpoch});
     const epochs=new Set(records.map(row=>row.payload.retentionEpoch??0));
-    tx.set(ref,{uid,records:values,retentionEpoch:epochs.size===1?[...epochs][0]:-1,receiptPaths:paths,token,expiresAt});
-  });return{path:ref.path,token,expiresAt};
+    tx.set(ref,{uid,records:values,retentionEpoch:epochs.size===1?[...epochs][0]:-1,accountResetEpoch:currentEpoch,receiptPaths:paths,token,expiresAt});
+  });return{path:ref.path,token,expiresAt,accountResetEpoch:currentEpoch};
 }
 async function hasPendingAdmission(db,path,now=()=>Date.now()){
   const pins=await objectRef(db,path).collection('admissionPins').get();

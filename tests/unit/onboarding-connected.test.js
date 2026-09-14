@@ -44,7 +44,7 @@ test('Partner Sync stores only code intent and writes membership only after expl
   assert.doesNotMatch(confirmation,/inviter|share|previewPartnershipInvitation/i);
   assert.match(confirm,/await joinPartnershipByCode\(code\)/);
   assert.match(app,/if\(PARTNER_JOIN_IN_FLIGHT&&PARTNER_JOIN_IN_FLIGHT\.code===code\)return PARTNER_JOIN_IN_FLIGHT\.promise/);
-  assert.match(functions,/exports\.joinPartnership=onCall\(baseOpts[\s\S]*await requireTier\(user\.uid,'pro'\)[\s\S]*collection\('members'\)\.doc\(user\.uid\)\.set/);
+  assert.match(functions,/exports\.joinPartnership=onCall\(baseOpts[\s\S]*await requireTier\(user\.uid,'pro'\)[\s\S]*accountWriteEpoch\(tx,user\.uid,req\.data\?\.accountResetEpoch\)[\s\S]*tx\.set\(member/);
   assert.doesNotMatch(functions,/previewPartnershipInvitation/);
 });
 
@@ -78,12 +78,36 @@ test('shared Pro gate uses the canonical promotion backend and approved pricing 
   assert.match(app,/<s><bdi dir="ltr">£11\.99<\/bdi><\/s> <bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
   assert.match(app,/£99\.99\/year/);
   assert.equal((app.match(/await redeemPromotionThroughCanonicalBackend\(code\)/g)||[]).length,2);
-  assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized\}\);[\s\S]{0,180}await loadEntitlementFromCloud\(user\.uid\)/);
+  assert.match(app,/const result=await callSecureFunction\('redeemPromotion',\{code:normalized,accountResetEpoch:currentAccountResetEpoch\(\)\}\);[\s\S]{0,180}await loadEntitlementFromCloud\(user\.uid\)/);
   assert.match(app,/if\(currentTier\(\)!=='pro'\)\{OB\._intentMessage=[^\n]+OB\._promoError=t\('ob\.promoNoPro'\)/);
   assert.match(app,/function obProUpgrade\(\)\{if\(!OB\)return;startProPurchase\('onboarding'\);\}/);
   assert.match(app,/function proBillingAvailability\(\)/);
   assert.match(app,/provider&&provider\.enabled===true&&typeof provider\.purchasePro==='function'/);
+  assert.ok(app.indexOf("return Object.freeze({mode:'local_review',purchaseEnabled:true})")<app.indexOf("return Object.freeze({mode:'emulator',purchaseEnabled:true})"),'explicit Founder local-review billing provider takes precedence over generic emulator billing');
   assert.doesNotMatch(proGate,/free.month|savings|grandfather|previous.price/i);
+});
+
+test('connected onboarding keeps one compact route label and one back action',()=>{
+  const progress=app.match(/function obProgress\(pct,label,back\)\{[\s\S]*?\n\}/)[0];
+  const login=app.match(/function obScrLogin\(\)\{[\s\S]*?\n\}/)[0];
+  const redeem=app.match(/function obScrRedeem\(\)\{[^\n]*\}/)[0];
+  const partnerCode=app.match(/function obScrPartnerCode\(\)\{[\s\S]*?\n\}/)[0];
+  const partnerConfirm=app.match(/function obScrPartnerConfirm\(\)\{[\s\S]*?\n\}/)[0];
+  const proGate=app.match(/function obScrProGate\(\)\{[\s\S]*?\n\}/)[0];
+  assert.match(progress,/label\?`<div class="ob-plabel">\$\{label\}<\/div>`:''/);
+  assert.match(html,/\.ob-back\{[^}]*min-height:44px;[^}]*font-size:15px/);
+  assert.doesNotMatch(login,/class="ob-btn ghost"[^>]*obCancelRequiredSignIn/);
+  for(const screen of [redeem,partnerCode,partnerConfirm,proGate]){
+    assert.match(screen,/obProgress\([^,]+,''/);
+    assert.doesNotMatch(screen,/class="ob-btn ghost"[^>]*>\$\{t\('ob\.back'\)\}/);
+  }
+});
+
+test('onboarding plan and native install states describe the action truthfully',()=>{
+  assert.match(app,/if\(context==='onboarding'\)btn=billingConflict\.active&&tier!=='free'[\s\S]{0,420}: isCurrent[\s\S]{0,180}disabled aria-disabled="true"[\s\S]{0,100}t\('tier\.current'\)/);
+  assert.match(app,/function doInstall\(\)\{\s*if\(window\.TaxMatePlatform\?\.isNative\|\|window\.TaxMatePlatform\?\.supportsPwaInstall===false\)return false;/);
+  assert.match(app,/isNative:nativePlatform\?\.isNative===true/);
+  assert.match(app,/supportsPwaInstall:nativePlatform\?\.supportsPwaInstall!==false/);
 });
 
 test('dark and light record rows use theme-safe ink while negative values remain coral',()=>{

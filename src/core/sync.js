@@ -25,7 +25,7 @@
     [...(local||[]),...(remote||[])].forEach(r=>{ if(!r||!r.id)return; const old=map.get(r.id),winner=preferredRecord(old,r); if(!old||winner===r) map.set(r.id,clone(r)); });
     return Array.from(map.values()).sort((a,b)=>String(a.id).localeCompare(String(b.id)));
   }
-  const RECORD_METADATA_KEYS=new Set(['businessId','createdAt','deviceId','recordType','retentionEpoch','schemaVersion','source','taxYear','updatedAt']);
+  const RECORD_METADATA_KEYS=new Set(['accountResetEpoch','businessId','createdAt','deviceId','recordType','retentionEpoch','schemaVersion','source','taxYear','updatedAt']);
   function canonicalRecordPayload(record){
     if(!plain(record))return record;
     const out={};
@@ -193,9 +193,11 @@
     next.lastSuccessAt=Number(now)||Date.now(); return next;
   }
   function due(outbox,now){ const at=Number(now)||Date.now(); return normalizeOutbox(outbox).items.filter(x=>!x.nextAttemptAt||Number(x.nextAttemptAt)<=at); }
-  function fenceOutbox(outbox,epochValue){
+  function fenceOutbox(outbox,epochValue,accountResetEpochValue=null){
     const epoch=Number(epochValue)||0,next=normalizeOutbox(outbox);
-    next.items=next.items.filter(item=>Number(item.retentionEpoch||item.record&&item.record.retentionEpoch||0)>=epoch);
+    const accountResetEpoch=accountResetEpochValue==null?null:Number(accountResetEpochValue)||0;
+    next.items=next.items.filter(item=>Number(item.retentionEpoch||item.record&&item.record.retentionEpoch||0)>=epoch
+      && (accountResetEpoch==null||Number(item.accountResetEpoch||item.record&&item.record.accountResetEpoch||0)===accountResetEpoch));
     return next;
   }
   function status(input){

@@ -5,6 +5,29 @@ service cloud.firestore {
     function owner(uid) { return signedIn() && request.auth.uid == uid; }
     function entitlementPath(uid) { return /databases/$(database)/documents/users/$(uid)/entitlements/current; }
     function retentionPath(uid) { return /databases/$(database)/documents/users/$(uid)/retention/current; }
+    function accountResetPath(uid) { return /databases/$(database)/documents/accountResets/$(uid); }
+    function hasAccountReset(uid) { return exists(accountResetPath(uid)); }
+    function accountResetReady(uid) {
+      let reset = hasAccountReset(uid) ? get(accountResetPath(uid)).data : {};
+      return !hasAccountReset(uid)
+        || (reset.status == 'complete'
+          && reset.get('resetEpoch', 0) is int
+          && reset.get('resetEpoch', 0) >= 0);
+    }
+    function accountResetEpoch(uid) {
+      return hasAccountReset(uid) ? get(accountResetPath(uid)).data.get('resetEpoch', 0) : 0;
+    }
+    function readableAtAccountResetEpoch(uid) {
+      return accountResetReady(uid)
+        && (resource == null
+          || (resource.data.get('accountResetEpoch', 0) is int
+            && resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid)));
+    }
+    function writableAtAccountResetEpoch(uid) {
+      return accountResetReady(uid)
+        && request.resource.data.get('accountResetEpoch', 0) is int
+        && request.resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid);
+    }
     function hasRetention(uid) { return exists(retentionPath(uid)); }
     function retentionReady(uid) {
       return (!hasRetention(uid) || get(retentionPath(uid)).data.status in ['complete', 'complete_with_warnings']) && !retentionDue(uid);
@@ -19,10 +42,10 @@ service cloud.firestore {
     }
     function retentionEpoch(uid) { return hasRetention(uid) ? get(retentionPath(uid)).data.epoch : 0; }
     function readableAtRetentionEpoch(uid) {
-      return retentionReady(uid) && (resource == null || !hasRetention(uid) || (resource.data.retentionEpoch is number && resource.data.retentionEpoch == retentionEpoch(uid)));
+      return readableAtAccountResetEpoch(uid) && retentionReady(uid) && (resource == null || !hasRetention(uid) || (resource.data.retentionEpoch is number && resource.data.retentionEpoch == retentionEpoch(uid)));
     }
     function writableAtRetentionEpoch(uid) {
-      return retentionReady(uid) && (!hasRetention(uid) || (request.resource.data.retentionEpoch is number && request.resource.data.retentionEpoch == retentionEpoch(uid)));
+      return writableAtAccountResetEpoch(uid) && retentionReady(uid) && (!hasRetention(uid) || (request.resource.data.retentionEpoch is number && request.resource.data.retentionEpoch == retentionEpoch(uid)));
     }
     function hasEntitlement(uid) { return exists(entitlementPath(uid)); }
     function graceTierAtLeast(uid, minimum) {
@@ -32,7 +55,9 @@ service cloud.firestore {
     function paidTierAtLeast(uid, minimum) {
       let ent = hasEntitlement(uid) ? get(entitlementPath(uid)).data : {};
       let p = 'paidAccess' in ent ? ent.paidAccess : {};
-      return ('pro' in minimum && 'proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
+      return ('googlePlayAccess' in ent && ent.googlePlayAccess.active == true && ent.googlePlayAccess.tier in minimum && ent.googlePlayAccess.expiresAt > request.time.toMillis())
+        || ('appStoreAccess' in ent && ent.appStoreAccess.active == true && ent.appStoreAccess.tier in minimum && ent.appStoreAccess.expiresAt > request.time.toMillis())
+        || ('pro' in minimum && 'proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
         || ('plus' in minimum && 'plusExpiresAt' in p && p.plusExpiresAt > request.time.toMillis())
         || (hasEntitlement(uid) && !('paidAccess' in ent)
         && get(entitlementPath(uid)).data.subscriptionStatus in ['active', 'trialing']
@@ -61,7 +86,7 @@ service cloud.firestore {
     }
     function pro(uid) { return paidTierAtLeast(uid, ['pro']) || projectedPromotionAccess(uid, 'pro') || promotionTierAtLeast(uid, ['pro']); }
     function member(partnershipId) {
-      return signedIn() && exists(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid));
+      return signedIn() && accountResetReady(request.auth.uid) && exists(/databases/$(database)/documents/partnerships/$(partnershipId)/members/$(request.auth.uid));
     }
     function validRecord() {
       return request.resource.data.id is string
@@ -72,7 +97,7 @@ service cloud.firestore {
     }
     function validLtdRecord(collection, recordId) {
       return collection in ['persons', 'entities', 'companyProfiles', 'companyProfileRevisions', 'companyOwnershipVersions', 'projects', 'paymentAccounts', 'economicEvents', 'companyTaxPeriods', 'companyLossRecords', 'salaryRecords', 'dividendDeclarations', 'personalIncomeLinks', 'salesInvoices', 'supplierBills', 'fixedAssets', 'bankReconciliations']
-        && request.resource.data.keys().hasOnly(['schemaVersion', 'companyId', 'collection', 'documentId', 'recordId', 'revision', 'updatedAt', 'deviceId', 'deletedAt', 'payload', 'checksum', 'retentionEpoch'])
+        && request.resource.data.keys().hasOnly(['schemaVersion', 'companyId', 'collection', 'documentId', 'recordId', 'revision', 'updatedAt', 'deviceId', 'deletedAt', 'payload', 'checksum', 'retentionEpoch', 'accountResetEpoch'])
         && request.resource.data.schemaVersion == 1
         && request.resource.data.companyId is string
         && request.resource.data.companyId.size() > 0
@@ -136,6 +161,7 @@ service cloud.firestore {
     function receiptAdmitted(path) {
       return exists(path) && get(path).data.uid == request.auth.uid
         && get(path).data.expiresAt > request.time.toMillis()
+        && get(path).data.get('accountResetEpoch', 0) == accountResetEpoch(request.auth.uid)
         && get(path).data.payload == request.resource.data
         && !existsAfter(path);
     }
@@ -143,16 +169,18 @@ service cloud.firestore {
       let path=/databases/$(database)/documents/users/$(uid)/receiptLtdAdmissions/current;
       return exists(path) && get(path).data.uid == request.auth.uid
         && get(path).data.expiresAt > request.time.toMillis()
+        && get(path).data.get('accountResetEpoch', 0) == accountResetEpoch(uid)
         && get(path).data.records[collection][recordId] == request.resource.data
         && !existsAfter(path);
     }
     function admissionAccountReady(uid) {
-      let reset=/databases/$(database)/documents/accountResets/$(uid);
-      return retentionReady(uid) && (!exists(reset) || !(get(reset).data.status in ['deleting','failed']));
+      return retentionReady(uid) && accountResetReady(uid);
     }
     function liveAdmission(uid) {
       return owner(uid) && resource.data.uid == uid
-        && resource.data.expiresAt > request.time.toMillis() && admissionAccountReady(uid);
+        && resource.data.expiresAt > request.time.toMillis()
+        && resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid)
+        && admissionAccountReady(uid);
     }
     function personalAdmissionReadable(uid) {
       return liveAdmission(uid) && (!hasRetention(uid) || resource.data.payload.retentionEpoch == retentionEpoch(uid));
@@ -165,13 +193,15 @@ service cloud.firestore {
     }
 
     match /users/{uid} {
-      allow read, write: if owner(uid);
+      allow read: if owner(uid) && readableAtAccountResetEpoch(uid);
+      allow create, update: if owner(uid) && writableAtAccountResetEpoch(uid);
+      allow delete: if false;
       match /entries/{entryId} { allow read: if owner(uid) && readableAtRetentionEpoch(uid); allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && validRecord() && receiptAdmitted(/databases/$(database)/documents/users/$(uid)/entries/$(entryId)/receiptAdmissions/$(request.auth.uid)) && request.resource.data.id == entryId; allow delete: if false; }
       match /app/{document} { allow read: if owner(uid) && readableAtRetentionEpoch(uid); allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && receiptAdmitted(/databases/$(database)/documents/users/$(uid)/app/$(document)/receiptAdmissions/$(request.auth.uid)); allow delete: if false; }
-      match /entitlements/{document=**} { allow read: if owner(uid); allow write: if false; }
-      match /retention/{document=**} { allow read: if owner(uid); allow write: if false; }
-      match /ltdControl/{document=**} { allow read: if owner(uid); allow write: if false; }
-      match /ltdSetupOutcomes/{document=**} { allow read: if owner(uid); allow write: if false; }
+      match /entitlements/{document=**} { allow read: if owner(uid) && accountResetReady(uid); allow write: if false; }
+      match /retention/{document=**} { allow read: if owner(uid) && accountResetReady(uid); allow write: if false; }
+      match /ltdControl/{document=**} { allow read: if owner(uid) && accountResetReady(uid); allow write: if false; }
+      match /ltdSetupOutcomes/{document=**} { allow read: if owner(uid) && accountResetReady(uid); allow write: if false; }
       match /ltd/v1/{collection}/{recordId} {
         allow read: if owner(uid) && readableAtRetentionEpoch(uid);
         allow create, update: if owner(uid) && writableAtRetentionEpoch(uid) && pro(uid) && activeLtdMatches(uid) && validLtdRecord(collection, recordId) && ltdSetupWriteAllowed(uid,collection) && ltdReceiptAdmitted(uid,collection,recordId);
@@ -182,13 +212,14 @@ service cloud.firestore {
     match /partnerships/{partnershipId} {
       allow create: if false;
       allow read: if member(partnershipId);
-      allow update: if member(partnershipId) && pro(request.auth.uid) && request.resource.data.createdBy == resource.data.createdBy;
+      allow update: if member(partnershipId) && pro(request.auth.uid) && writableAtAccountResetEpoch(request.auth.uid)
+        && request.resource.data.createdBy == resource.data.createdBy
+        && request.resource.data.lastWriterUid == request.auth.uid
+        && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['name','businessUpdatedAt','businessDeviceId','lastWriterUid','accountResetEpoch']);
       allow delete: if false;
       match /members/{uid} {
         allow read: if member(partnershipId);
-        allow create: if false;
-        allow update: if (request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid) && !request.resource.data.diff(resource.data).affectedKeys().hasAny(['retentionCutoffDate','retentionEpoch']);
-        allow delete: if (request.auth.uid == uid || get(/databases/$(database)/documents/partnerships/$(partnershipId)).data.createdBy == request.auth.uid) && retentionReady(uid);
+        allow create, update, delete: if false;
       }
       match /entries/{entryId} {
         allow read: if member(partnershipId) && memberRecordVisible(partnershipId);
@@ -200,7 +231,7 @@ service cloud.firestore {
     // Admission creation/update remains server-only. Consumption and the exact
     // authorised ledger mutation must commit atomically; no replay is possible.
     match /{target=**}/receiptAdmissions/{uid} {
-      allow delete: if owner(uid) && resource.data.uid == uid;
+      allow delete: if owner(uid) && admissionAccountReady(uid) && resource.data.uid == uid && resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid);
       allow create, update: if false;
     }
     match /users/{uid}/entries/{entryId}/receiptAdmissions/{writer} {
@@ -213,8 +244,8 @@ service cloud.firestore {
       allow get: if sharedAdmissionReadable(partnershipId,uid);
     }
     match /users/{uid}/receiptLtdAdmissions/current {
-      allow get: if liveAdmission(uid) && pro(uid) && (!hasRetention(uid) || resource.data.retentionEpoch == retentionEpoch(uid));
-      allow delete: if owner(uid) && resource.data.uid == uid;
+      allow get: if liveAdmission(uid) && resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid) && pro(uid) && (!hasRetention(uid) || resource.data.retentionEpoch == retentionEpoch(uid));
+      allow delete: if owner(uid) && admissionAccountReady(uid) && resource.data.uid == uid && resource.data.get('accountResetEpoch', 0) == accountResetEpoch(uid);
       allow create, update: if false;
     }
     match /accountResets/{uid} { allow read: if owner(uid); allow write: if false; }

@@ -66,7 +66,8 @@ test('onboarding accessibility uses a dark action ink, 44px targets and localize
   assert.match(html,/\.ob-seg button\{[^}]*min-height:44px/s);
   assert.match(app,/Object\.assign\(I18N\.ur,\{[\s\S]*'billing\.cadenceAria':'بلنگ کی مدت'/);
   assert.match(app,/<bdi class="current" dir="ltr">£9\.99<\/bdi> \/ \$\{t\('billing\.unit\.month'\)\}/);
-  assert.match(app,/function obSetLang\(l\)\{ S\.settings\.lang=l; save\(\); applyStaticI18n\(\);/);
+  assert.match(app,/function setLanguagePreference\(value\)\{[\s\S]{0,260}S\.settings\.lang=value;[\s\S]{0,260}localStorage\.setItem\(accountSlotKey\('language-preference'\),value\)[\s\S]{0,160}applyStaticI18n\(\);return true;/);
+  assert.match(app,/function obSetLang\(l\)\{ if\(!OB\|\|!setLanguagePreference\(l\)\)return;OB\._langOpen=false;obRender\(\); \}/);
   assert.match(app,/function syncStatusMessage\(current=syncStatus\(\)\)/);
 });
 

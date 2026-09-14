@@ -1,6 +1,8 @@
 const test=require('node:test'); const assert=require('node:assert/strict'); const fs=require('node:fs'); const path=require('node:path');
 const root=path.join(__dirname,'../..'); const fire=fs.readFileSync(path.join(root,'firestore.rules'),'utf8'); const storage=fs.readFileSync(path.join(root,'storage.rules'),'utf8');
 test('normal clients cannot write appConfig, billing, or entitlement truth',()=>{ assert.match(fire,/appConfig[\s\S]*allow write: if false/); assert.match(fire,/entitlements[\s\S]*allow write: if false/); assert.match(fire,/billing[\s\S]*allow read, write: if false/); });
+test('server-projected Google Play access participates in Firestore and receipt gates without exposing billing records',()=>{assert.match(fire,/googlePlayAccess\.active == true/);assert.match(fire,/googlePlayAccess\.tier in minimum/);assert.match(storage,/googlePlayAccess\.active == true/);assert.match(storage,/googlePlayAccess\.tier in \['plus', 'pro'\]/);assert.match(fire,/match \/\{document=\*\*\} \{ allow read, write: if false; \}/);});
+test('server-projected App Store access participates in Firestore and receipt gates without client billing writes',()=>{assert.match(fire,/appStoreAccess\.active == true/);assert.match(fire,/appStoreAccess\.tier in minimum/);assert.match(storage,/appStoreAccess\.active == true/);assert.match(storage,/appStoreAccess\.tier in \['plus', 'pro'\]/);assert.match(fire,/entitlements[\s\S]*allow write: if false/);});
 test('normal clients cannot enumerate or modify Founder promo truth or redemptions',()=>{assert.match(fire,/founderPromotions[\s\S]*allow read, write: if false/);assert.match(fire,/promotionRedemptions[\s\S]*allow read, write: if false/);});
 test('server reset epochs and legacy safety claims are owner-readable but never client-writable',()=>{assert.match(fire,/accountResets\/\{uid\}[\s\S]*allow read: if owner\(uid\); allow write: if false/);assert.match(fire,/accountClaims\/\{uid\}[\s\S]*allow read: if owner\(uid\); allow write: if false/);assert.doesNotMatch(fire,/accountQuarantines/);});
 test('personal records are UID isolated and physical deletes are denied',()=>{ assert.match(fire,/request\.auth\.uid == uid/); assert.match(fire,/entries\/\{entryId\}[\s\S]*allow delete: if false/); });
@@ -8,3 +10,25 @@ test('Ltd sync retains owner reads but requires Pro plus the server-owned active
 test('Ltd sync allowlist includes the four company-book collections',()=>{for(const collection of ['salesInvoices','supplierBills','fixedAssets','bankReconciliations'])assert.match(fire,new RegExp("'"+collection+"'"),collection);});
 test('partnership access preserves member reads but gates server-created collaboration writes to Pro',()=>{ assert.match(fire,/members\/\$\(request\.auth\.uid\)/); assert.match(fire,/promotionAccess/); assert.match(fire,/allow create: if false/); assert.match(fire,/allow read: if member\(partnershipId\)/); assert.match(fire,/allow create, update: if member\(partnershipId\) && memberRecordWritable\(partnershipId\) && safeSharedReceipt\(\) && receiptAdmitted\([^\n]+ && pro\(request\.auth\.uid\)/); });
 test('receipt storage is owner-only, image-only, size limited and entitlement-gated on upload',()=>{ assert.match(storage,/request\.auth\.uid == uid/); assert.match(storage,/firestore\.get/); assert.match(storage,/paidTier in \['plus', 'pro'\]/); assert.match(storage,/promotionAccess\.plusExpiresAt/); assert.match(storage,/allow create:[\s\S]*receiptAccess\(uid\)/); assert.match(storage,/allow get:[^\n]*request\.auth\.uid == uid && receiptEpochReadable\(uid\)/); assert.match(storage,/allow list:[^\n]*request\.auth\.uid == uid && retentionReady\(uid\)/); assert.match(storage,/allow update, delete: if false/); assert.match(storage,/contentType\.matches\('image\/\.\*'\)/); assert.match(storage,/10 \* 1024 \* 1024/); });
+test('account reset is a fail-closed read/write epoch fence across personal, Ltd, shared, and admission rules',()=>{
+  assert.match(fire,/function accountResetReady\(uid\)[\s\S]*reset\.status == 'complete'/);
+  assert.match(fire,/function readableAtAccountResetEpoch\(uid\)[\s\S]*resource\.data\.get\('accountResetEpoch', 0\)[\s\S]*accountResetEpoch\(uid\)/);
+  assert.match(fire,/function writableAtAccountResetEpoch\(uid\)[\s\S]*request\.resource\.data\.get\('accountResetEpoch', 0\)[\s\S]*accountResetEpoch\(uid\)/);
+  assert.match(fire,/receiptAdmitted\(path\)[\s\S]*get\(path\)\.data\.get\('accountResetEpoch', 0\) == accountResetEpoch/);
+  assert.match(fire,/keys\(\)\.hasOnly\([^\n]*'accountResetEpoch'/);
+  assert.match(fire,/match \/members\/\{uid\}[\s\S]*allow create, update, delete: if false/);
+  assert.match(fire,/lastWriterUid == request\.auth\.uid/);
+});
+test('Storage uses one explicit entitlement control plus receipt tombstone within the two-document access budget',()=>{
+  for(const field of ['accountResetStatus','accountResetEpoch','accountResetEpochString'])assert.match(storage,new RegExp(`'${field}' in ent`));
+  for(const field of ['controlStatus','lastRetentionEpoch','lastRetentionEpochString'])assert.match(storage,new RegExp(`'${field}' in control`));
+  assert.match(storage,/ent\.accountResetStatus == 'complete'/);
+  for(const field of ['accountResetEpoch','accountResetEpochString','controlStatus','lastRetentionEpoch','lastRetentionEpochString'])assert.match(storage,new RegExp(field));
+  assert.match(storage,/resource\.metadata\.accountResetEpoch == accountResetEpochString\(uid\)/);
+  assert.match(storage,/request\.resource\.metadata\.accountResetEpoch == accountResetEpochString\(uid\)/);
+  assert.match(storage,/resource != null[\s\S]*resource\.metadata != null[\s\S]*'retentionEpoch' in resource\.metadata[\s\S]*'accountResetEpoch' in resource\.metadata/);
+  assert.match(storage,/request\.resource\.metadata != null[\s\S]*'retentionEpoch' in request\.resource\.metadata[\s\S]*'accountResetEpoch' in request\.resource\.metadata/);
+  assert.match(storage,/receiptObjects\/\$\(uid\)\/files\/\$\(fileName\)/);
+  assert.doesNotMatch(storage,/users\/\$\(uid\)\/retention\/current/);
+  assert.doesNotMatch(storage,/accountResets\/\$\(uid\)/);
+});

@@ -5,7 +5,7 @@ test('R4 cleanup identity only recognises original ordinary/meta/shared/LTD admi
  for(const path of ['users/b/entries/e/receiptAdmissions/a','users/a/entitlements/current/receiptAdmissions/a','users/a/receiptLtdAdmissions/other','users/a/entries/e','receiptObjects/a/files/x'])assert.equal(Life.identity(path,{uid:'a'}),null);
 });
 test('R4 pending paid-write permissions follow Pro and promotion expiry, never convert Plus historical access into Pro writes',()=>{
- const at=1000;assert.equal(Life.pro({paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:1001},at),true);
+ const at=1000;assert.equal(Life.pro({paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:1001},at),true);assert.equal(Life.pro({googlePlayAccess:{active:true,tier:'pro',expiresAt:1001}},at),true);assert.equal(Life.pro({appStoreAccess:{active:true,tier:'pro',expiresAt:1001}},at),true);assert.equal(Life.pro({appStoreAccess:{active:true,tier:'plus',expiresAt:1001}},at),false);
  for(const ent of [{paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:2000},{paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:1000},{lastPaidTier:'pro',graceUntil:2000},{}])assert.equal(!!Life.pro(ent,at),false);
  assert.equal(Life.pro({promotionAccess:{proPermanent:true}},at),true);assert.equal(Life.pro({promotion:{tier:'pro',status:'active',expiresAt:null}},at),true);assert.equal(!!Life.pro({promotion:{tier:'pro',status:'active',expiresAt:1000}},at),false);
 });

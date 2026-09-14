@@ -10,14 +10,17 @@ const {spawnSync}=require('node:child_process');
 const {chromium}=require('playwright');
 const {initializeTestEnvironment}=require('@firebase/rules-unit-testing');
 const firestore=require('firebase/firestore');
+const firebaseAdmin=require('../../functions/node_modules/firebase-admin');
 const CompanyBooks=require('../../src/core/company-books');
+const currentVersions=require('../../src/core/versions').VERSIONS;
 
 const root=path.resolve(__dirname,'../..');
 const emulatorPorts={auth:Number(process.env.TAXMATE_AUTH_EMULATOR_PORT||9099),firestore:Number(process.env.TAXMATE_FIRESTORE_EMULATOR_PORT||8080),storage:Number(process.env.TAXMATE_STORAGE_EMULATOR_PORT||9199),functions:Number(process.env.TAXMATE_FUNCTIONS_EMULATOR_PORT||5001)};
 const previewPort=Number(process.env.TAXMATE_PAID_SYNC_PORT||4176);
 const artifact=path.join(root,'.hosting-build','paid-sync-preview');
 const evidence=path.resolve(process.env.TAXMATE_PAID_SYNC_EVIDENCE||path.join(root,'.paid-sync-browser-evidence'));
-const resultPath=path.join(evidence,'paid-sync-browser-result.json');
+const navigationOnly=process.env.TAXMATE_PAID_SYNC_NAVIGATION_ONLY==='1';
+const resultPath=path.join(evidence,navigationOnly?'paid-sync-navigation-browser-result.json':'paid-sync-browser-result.json');
 const runId=Date.now().toString(36);
 const ltdSyncOnly=process.env.TAXMATE_LTD_SYNC_ONLY==='1';
 // Keep Chromium profile paths short on Windows. Deep worktree + profile paths can
@@ -59,10 +62,22 @@ function startServer(){
   return new Promise((resolve,reject)=>{server.once('error',reject);server.listen(previewPort,'127.0.0.1',resolve);});
 }
 async function createUser(email){const response=await fetch(`http://127.0.0.1:${emulatorPorts.auth}/identitytoolkit.googleapis.com/v1/accounts:signUp?key=demo-api-key`,{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({email,password:'Paid-Sync-Only-20260826!',returnSecureToken:true})});if(!response.ok)throw new Error(`Auth emulator user creation failed: ${await response.text()}`);return response.json();}
-const entitlement=tier=>({subscriptionStatus:tier==='pro'?'active':'inactive',paidTier:tier,currentPeriodEnd:tier==='pro'?Date.now()+86400000:0,serverVerifiedAt:Date.now()});
+const entitlement=tier=>({
+  subscriptionStatus:tier==='pro'?'active':'inactive',
+  paidTier:tier,
+  currentPeriodEnd:tier==='pro'?Date.now()+86400000:0,
+  serverVerifiedAt:Date.now(),
+  // Browser fixtures represent the post-rollout state. Production keeps these
+  // server-owned mirrors in sync before the corresponding Storage Rules ship.
+  accountResetStatus:'complete',
+  accountResetEpoch:0,
+  accountResetEpochString:'0',
+  accountRetention:{controlStatus:'complete',lastRetentionEpoch:0,lastRetentionEpochString:'0',activeRetentionEpoch:null}
+});
 async function adminSet(pathName,value){await testEnv.withSecurityRulesDisabled(async c=>firestore.setDoc(firestore.doc(c.firestore(),...pathName.split('/')),value));}
 async function adminGet(pathName){let value=null;await testEnv.withSecurityRulesDisabled(async c=>{const snap=await firestore.getDoc(firestore.doc(c.firestore(),...pathName.split('/')));value=snap.exists()?snap.data():null;});return value;}
 async function adminDelete(pathName){await testEnv.withSecurityRulesDisabled(async c=>firestore.deleteDoc(firestore.doc(c.firestore(),...pathName.split('/'))));}
+async function adminStorageExists(pathName){if(!firebaseAdmin.apps.length)firebaseAdmin.initializeApp({projectId:'demo-taxmate',storageBucket:'demo-taxmate.appspot.com'});const [exists]=await firebaseAdmin.storage().bucket('demo-taxmate.appspot.com').file(pathName).exists();return exists;}
 async function collectionRows(pathName){let rows=[];await testEnv.withSecurityRulesDisabled(async c=>{const snap=await firestore.getDocs(firestore.collection(c.firestore(),...pathName.split('/')));rows=snap.docs.map(doc=>doc.data());});return rows;}
 function stateForA(now){const shared=business('biz-shared','Durable Partnership','SHARE888',now),personal=business('biz-a-personal','A private trade',null,now,'sole');return{v:5,tab:'home',year:'2026-27',incFilter:'all',expFilter:'all',incCat:'all',expCat:'all',businesses:[shared,personal],businessTombstones:[],entries:[record('history-1','biz-shared','income',100,1000),record('history-2','biz-shared','expense',20,2000),record('local-gap','biz-shared','expense',7,3000),record('private-a','biz-a-personal','income',50,4000)],tombstones:[],yearData:{},customCats:{},folders:[],folderTombstones:[],expFolder:'all',catRenames:{},activeCats:{},metaVersions:{},metaUpdatedAt:now,settings:{lang:'en',tier:'free',theme:'auto'}};}
 // Seed only this lane's accounts and SHARE888. Clearing the closed LTD lane
@@ -97,7 +112,35 @@ async function uniqueLocalIds(page){return page.evaluate(()=>eval("(()=>{const r
   fs.mkdirSync(evidence,{recursive:true});prepareArtifact();await startServer();testEnv=await initializeTestEnvironment({projectId:'demo-taxmate',firestore:{rules:fs.readFileSync(path.join(root,'firestore.rules'),'utf8')},storage:{rules:fs.readFileSync(path.join(root,'storage.rules'),'utf8')}});
   let userA,userB,localA;
   if(!ltdSyncOnly){
-  const navUser=await createUser(`navigation-${runId}@taxmate.local`),navFixture=await seedProductionShape(navUser,'navigation',true);let nav=await launch(profileNav);await nav.page.evaluate(state=>{const next=JSON.parse(JSON.stringify(state));next.tab='more';localStorage.setItem('taxmateuk_account_v1:local:canonical',JSON.stringify(next));localStorage.setItem('taxmateuk_account_v1:local:onboarding-done','1');},navFixture.state);await nav.page.reload({waitUntil:'domcontentloaded'});await nav.page.waitForFunction(()=>typeof window.ensureFB==='function'&&typeof window.firebase!=='undefined');await signIn(nav.page,`navigation-${runId}@taxmate.local`);await waitSynced(nav.page,'Settings reload reaches Cloud convergence');equal(await nav.page.evaluate(()=>eval('S.tab')),'more','Settings reload remains on Settings after convergence');const navigationCycles=['more','income','expenses','tax','receipts','more','income','expenses','tax','receipts'];for(let index=0;index<navigationCycles.length;index++){const tab=navigationCycles[index];await nav.page.evaluate(tab=>{S.tab=tab;persistRemoteState();render();},tab);await nav.page.reload({waitUntil:'domcontentloaded'});await nav.page.waitForFunction(expected=>firebase.auth().currentUser&&eval("CLOUD.hydrationState==='converged'")&&eval("syncStatus().state==='synced'")&&eval('ACCOUNT_UI_READY.state')==='ready'&&eval('S.tab')===expected,tab,{timeout:60000});const presented=await nav.page.evaluate(()=>({tab:eval('S.tab'),ui:eval('ACCOUNT_UI_READY.state'),onboarding:eval('firstSyncSurfaceOpen()'),operable:eval('accountHomeUiFacts().operable')}));check(presented.tab===tab&&presented.ui==='ready'&&presented.onboarding===false&&presented.operable===true,`navigation and sync cycle ${index+1} of 10 restores ${tab} as an operable page without F5`);}await nav.context.close();
+  const navUser=await createUser(`navigation-${runId}@taxmate.local`),navFixture=await seedProductionShape(navUser,'navigation',true);
+  let nav=await launch(profileNav);
+  await nav.page.evaluate(state=>{const next=JSON.parse(JSON.stringify(state));next.tab='more';localStorage.setItem('taxmateuk_account_v1:local:canonical',JSON.stringify(next));localStorage.setItem('taxmateuk_account_v1:local:onboarding-done','1');},navFixture.state);
+  await nav.page.reload({waitUntil:'domcontentloaded'});
+  await nav.page.waitForFunction(()=>typeof window.ensureFB==='function'&&typeof window.firebase!=='undefined');
+  await signIn(nav.page,`navigation-${runId}@taxmate.local`);
+  await waitSynced(nav.page,'Account reload reaches Cloud convergence');
+  equal(await nav.page.evaluate(()=>eval('S.tab')),'home','A newly restored account session opens on Home after convergence');
+  const navigationCycles=['more','income','expenses','tax','receipts','more','income','expenses','tax','receipts'];
+  for(let index=0;index<navigationCycles.length;index++){
+    const tab=navigationCycles[index];
+    await nav.page.evaluate(tab=>go(tab),tab);
+    await nav.page.waitForFunction(expected=>eval('S.tab')===expected&&eval('ACCOUNT_UI_READY.state')==='ready'&&eval('accountHomeUiFacts().operable'),tab,{timeout:60000});
+    check(true,`navigation and sync cycle ${index+1} of 10 opens ${tab} as an operable page`);
+    await nav.page.reload({waitUntil:'domcontentloaded'});
+    await nav.page.waitForFunction(()=>firebase.auth().currentUser&&eval("CLOUD.hydrationState==='converged'")&&eval("syncStatus().state==='synced'")&&eval('ACCOUNT_UI_READY.state')==='ready'&&eval('S.tab')==='home',{timeout:60000});
+    const presented=await nav.page.evaluate(()=>({tab:eval('S.tab'),ui:eval('ACCOUNT_UI_READY.state'),onboarding:eval('firstSyncSurfaceOpen()'),operable:eval('accountHomeUiFacts().operable')}));
+    check(presented.tab==='home'&&presented.ui==='ready'&&presented.onboarding===false&&presented.operable===true,`navigation and sync cycle ${index+1} of 10 reloads to an operable Home`);
+  }
+  await nav.context.close();
+  if(navigationOnly){
+    equal(externalRequests.length,0,'navigation-only browser emits zero external or production requests');
+    equal(sentryRequests.length,0,'navigation-only browser emits zero production Sentry requests');
+    equal(networkFailures.length,0,`navigation-only browser has zero failed local responses: ${JSON.stringify(networkFailures)}`);
+    equal(consoleErrors.length,0,`navigation-only browser has zero console errors: ${JSON.stringify(consoleErrors)}`);
+    fs.writeFileSync(resultPath,JSON.stringify({status:'PASS',generatedAt:new Date().toISOString(),assertions:checks,passed,externalRequests,sentryRequests,networkFailures,consoleErrors},null,2));
+    process.stdout.write(`PAID_SYNC_NAVIGATION_BROWSER_PASS assertions=${checks}\n`);
+    return;
+  }
 
   let returning=await launch(profileReturning);await returning.page.waitForFunction(()=>eval('!!(OB&&OB.screen)'));const returningStep=await returning.page.evaluate(()=>eval('OB&&OB.screen'));check(!!returningStep,'fresh returning-user profile begins in onboarding');await signIn(returning.page,`navigation-${runId}@taxmate.local`);await waitSynced(returning.page,'returning-user onboarding reaches Cloud convergence');equal(await returning.page.evaluate(()=>eval('!!OB')),false,'existing Cloud account closes genuine returning-user onboarding');equal(await returning.page.evaluate(()=>eval('S.tab')),'home','existing account exits genuine returning-user onboarding to Home');await returning.context.close();
 
@@ -157,7 +200,7 @@ async function uniqueLocalIds(page){return page.evaluate(()=>eval("(()=>{const r
   await b.page.evaluate(async code=>{openJoinPartnership();document.getElementById('join-code').value=code;await joinPartnership();},sharedCode);await waitFor(()=>pageRecord(b.page,'local-gap'),'joining partner did not receive complete historical ledger');
   equal((await adminGet(`partnerships/SHARE888/members/${userB.localId}`)).role,'member','Partner Code creates durable User B membership');
   equal(await b.page.evaluate(()=>eval("S.entries.filter(record=>record.bizId==='biz-shared').length")),4,'User B immediately receives the full active historical shared ledger');
-  expectedR2ReceiptPath=await require('./shared-receipt-scenarios')({a,b,userA,adminSet,adminGet,entitlement,waitFor,waitSynced,pageRecord,check,equal,evidence});
+  expectedR2ReceiptPath=await require('./shared-receipt-scenarios')({a,b,userA,adminSet,adminGet,adminStorageExists,entitlement,waitFor,waitSynced,pageRecord,check,equal,evidence});
 
   await upsert(a.page,'a-to-b',40,'income');await waitFor(()=>pageRecord(b.page,'a-to-b'),'A to B create did not propagate');
   await upsert(b.page,'b-to-a',50,'expense');await waitFor(()=>pageRecord(a.page,'b-to-a'),'B to A create did not propagate');
@@ -176,12 +219,12 @@ async function uniqueLocalIds(page){return page.evaluate(()=>eval("(()=>{const r
   equal(await a.page.evaluate(()=>eval("S.entries.some(record=>record.id==='private-b')")),false,'User A cannot see User B unrelated personal record');equal(await b.page.evaluate(()=>eval("S.entries.some(record=>record.id==='private-a')")),false,'User B remains isolated from User A personal record after join');
   equal((await collectionRows(`users/${userA.localId}/entries`)).some(row=>row.id==='private-b'),false,'User B personal record never enters User A cloud namespace');equal((await collectionRows(`users/${userB.localId}/entries`)).some(row=>row.id==='private-a'),false,'User A personal record never enters User B cloud namespace');
   const remoteRows=await collectionRows('partnerships/SHARE888/entries'),remoteIds=remoteRows.map(row=>row.id);equal(remoteIds.length,new Set(remoteIds).size,'shared Cloud collection contains no duplicate record IDs');for(const page of [a.page,a2.page,b.page]){const ids=await uniqueLocalIds(page);equal(ids.count,ids.unique,'each browser context has no duplicate shared record IDs');}
-  const identity=await a.page.evaluate(()=>TaxMateCore.VERSIONS);equal(identity.APP_VERSION,'2.1.21','real Chrome runs TaxMate 2.1.21');equal(identity.BUILD_ID,'2026-09-07.direction-a-review01-candidate.1','real Chrome runs the LTD self-filing foundation build');equal(identity.PWA_CACHE_VERSION,'taxmate-v2-direction-a-review01-candidate-1','real Chrome runs the LTD self-filing isolated cache');
+  const identity=await a.page.evaluate(()=>TaxMateCore.VERSIONS);equal(identity.APP_VERSION,currentVersions.APP_VERSION,'real Chrome runs the current TaxMate version');equal(identity.BUILD_ID,currentVersions.BUILD_ID,'real Chrome runs the current production build');equal(identity.PWA_CACHE_VERSION,currentVersions.PWA_CACHE_VERSION,'real Chrome runs the current isolated cache');
   await a.page.screenshot({path:path.join(evidence,'device-a-final.png'),fullPage:true});await b.page.screenshot({path:path.join(evidence,'partner-b-final.png'),fullPage:true});equal(sentryRequests.length,0,'localhost/emulator browser execution emits zero Sentry requests');equal(externalRequests.length,0,'all browser traffic stayed on localhost emulators');
   const r2ObjectUrl=`http://127.0.0.1:${emulatorPorts.storage}/v0/b/demo-taxmate.appspot.com/o/${encodeURIComponent(expectedR2ReceiptPath)}`;
   const expectedR2Failures=networkFailures.filter(row=>row.url===r2ObjectUrl&&[403,404].includes(row.status));
   equal(expectedR2Failures.filter(row=>row.status===403).length,1,'R2 records exactly one intentional forbidden Storage delete');
-  equal(expectedR2Failures.filter(row=>row.status===404).length,1,'R2 records exactly one missing-object probe after authorised cleanup');
+  equal(expectedR2Failures.filter(row=>row.status===404).length,0,'R2 authoritative cleanup does not issue a redundant missing-object probe after physical deletion is confirmed');
   const expectedDenials=networkFailures.filter(row=>row.status===403&&!expectedLegacyDenials.includes(row)&&!expectedR2Failures.includes(row)),expectedTransportResets=networkFailures.filter(row=>row.status===400&&/Firestore\/Listen\/channel/.test(row.url)),unexpectedHttpFailures=networkFailures.filter(row=>row.status>=400&&!expectedDenials.includes(row)&&!expectedLegacyDenials.includes(row)&&!expectedR2Failures.includes(row)&&!expectedTransportResets.includes(row)),unexpectedConsoleErrors=consoleErrors.filter(message=>!/status of 403 \(Forbidden\)/.test(message)&&!(/status of 404 \(Not Found\)/.test(message)&&expectedR2Failures.some(row=>row.status===404))&&!(/status of 400 \(Bad Request\)/.test(message)&&expectedTransportResets.length));
   equal(expectedDenials.length,2,'real-browser entitlement checks produced exactly the two expected 403 denials');check(expectedDenials.some(row=>/joinPartnership$/.test(row.url)),'Free Partner Code join is the first expected 403');check(expectedDenials.some(row=>downgradeDenials.includes(row)&&((/documents:commit$/.test(row.url)&&row.deniedDocuments?.includes(`projects/demo-taxmate/databases/(default)/documents/partnerships/SHARE888/entries/downgrade-denied`))||(/documents:batchGet$/.test(row.url)&&row.deniedDocuments?.length===1&&row.deniedDocuments[0]===`projects/demo-taxmate/databases/(default)/documents/partnerships/SHARE888/entries/downgrade-denied/receiptAdmissions/${userB.localId}`))),'downgraded partnership write is denied at its exact permit read or ledger commit');equal(unexpectedHttpFailures.length,0,'forced offline lifecycle produced no unexpected HTTP failure');equal(unexpectedConsoleErrors.length,0,'real-browser journey produced no unexpected console or page errors');
   fs.writeFileSync(path.join(evidence,'r2-response-classification.json'),JSON.stringify({receiptPath:expectedR2ReceiptPath,expectedR2Failures,expectedDenials,unexpectedHttpFailures,unexpectedConsoleErrors},null,2));

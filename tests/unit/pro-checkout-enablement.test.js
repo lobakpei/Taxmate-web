@@ -32,16 +32,19 @@ test('localhost review remains isolated from Stripe and production copy is not l
   assert.match(app,/local&&provider&&provider\.enabled===true&&typeof provider\.purchasePro==='function'/);
   assert.match(app,/availability\.mode==='local_review'/);
   assert.match(app,/window\.TaxMateLocalBillingReview\.purchasePro/);
-  assert.match(app,/availability\.mode==='local_review'\?t\('billing\.reviewPurchase'\):availability\.purchaseEnabled\?t\('tier\.choose'/);
+  assert.match(app,/availability\.purchaseEnabled[\s\S]{0,100}\? availability\.mode==='local_review'[\s\S]{0,220}t\('billing\.reviewPurchase'\)[\s\S]{0,260}t\('tier\.choose'/);
+  assert.match(app,/availability\.mode==='local_review'\?t\('billing\.reviewNote'\):availability\.purchaseEnabled\?'':t\('billing\.purchaseUnavailable'\)/);
 });
 
 test('checkout return preserves and resumes the exact onboarding pending intent',()=>{
   assert.match(app,/function consumeBillingReturn\(\)/);
-  assert.match(app,/if\(value!=='success'&&value!=='cancelled'\)return null/);
+  assert.match(app,/const uid=activeAccountUid\(\);if\(!uid\)return null/);
+  assert.match(app,/status=url\.searchParams\.get\('billing'\);if\(!\['success','cancelled'\]\.includes\(status\)\)return null/);
+  assert.match(app,/if\(!marker\|\|marker\.uid!==uid\|\|!Number\.isFinite\(age\)\|\|age<0\|\|age>86400000\)return null/);
   assert.match(app,/const draft=obRestoreDraft\(\)/);
-  assert.match(app,/if\(!draft\|\|!draft\.pendingIntent\)return state/);
+  assert.match(app,/if\(marker\.pendingIntent&&draft\?\.pendingIntent&&JSON\.stringify\(marker\.pendingIntent\)===JSON\.stringify\(draft\.pendingIntent\)\)/);
   assert.match(app,/OB=draft/);
-  assert.match(app,/OB\.screen=state==='success'\?'intent-loading':'pro-gate'/);
+  assert.match(app,/OB\.screen=status==='success'\?'intent-loading':'pro-gate'/);
   assert.match(app,/function pendingIntentForHydration\(\)[\s\S]*OB\.pendingIntent=existing;[\s\S]*OB\.loggedIn=true;OB\.screen='intent-loading'/);
   assert.match(app,/if\(pendingIntentForHydration\(\)\)[\s\S]*obResumePendingIntentAfterHydration\(result\)/);
 });

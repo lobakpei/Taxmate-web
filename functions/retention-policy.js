@@ -13,6 +13,8 @@
   function boundary(at){const year=Number(yearStart(at).slice(0,4))+1;return{retainThroughDate:year+'-04-05',deleteOnDate:year+'-04-06',retainUntil:Date.UTC(year,3,5,23)};}
   function paid(snapshot={},now=Date.now()){
     if(Number(snapshot.paidAccess?.plusExpiresAt)>now||Number(snapshot.paidAccess?.proExpiresAt)>now)return true;
+    if(snapshot.googlePlayAccess?.active===true&&PAID.has(snapshot.googlePlayAccess.tier)&&Number(snapshot.googlePlayAccess.expiresAt)>now)return true;
+    if(snapshot.appStoreAccess?.active===true&&PAID.has(snapshot.appStoreAccess.tier)&&Number(snapshot.appStoreAccess.expiresAt)>now)return true;
     const projected=snapshot.promotionAccess||{};
     if(projected.plusPermanent===true||projected.proPermanent===true||Number(projected.plusExpiresAt)>now||Number(projected.proExpiresAt)>now)return true;
     if(ACTIVE.has(snapshot.subscriptionStatus)&&PAID.has(snapshot.paidTier)&&(!snapshot.currentPeriodEnd||Number(snapshot.currentPeriodEnd)>now))return true;
@@ -21,7 +23,8 @@
     return grants.some(p=>p&&p.status==='active'&&PAID.has(p.tier)&&Number(p.startsAt||0)<=now&&(p.permanent===true||p.expiresAt===null||Number(p.expiresAt)>now));
   }
   function accessEnd(snapshot={},now=Date.now()){
-    const values=[snapshot.accountRetention&&snapshot.accountRetention.paidAccessEndedAt,snapshot.currentPeriodEnd,snapshot.graceUntil,snapshot.promotionAccess?.plusExpiresAt,snapshot.promotionAccess?.proExpiresAt,snapshot.paidAccess?.plusExpiresAt,snapshot.paidAccess?.proExpiresAt];
+    const appStoreEnd=snapshot.appStoreAccess?.paidAccessEndedAt||snapshot.appStoreAccess?.expiresAt;
+    const values=[snapshot.accountRetention&&snapshot.accountRetention.paidAccessEndedAt,snapshot.currentPeriodEnd,snapshot.graceUntil,snapshot.promotionAccess?.plusExpiresAt,snapshot.promotionAccess?.proExpiresAt,snapshot.paidAccess?.plusExpiresAt,snapshot.paidAccess?.proExpiresAt,snapshot.googlePlayAccess?.expiresAt,appStoreEnd];
     if(snapshot.subscriptionStatus==='refunded')values[1]=snapshot.refundedAt;
     const grants=snapshot.promotions?Object.values(snapshot.promotions):snapshot.promotion?[snapshot.promotion]:[];
     for(const p of grants)if(p&&PAID.has(p.tier)&&p.expiresAt!=null)values.push(p.expiresAt);
@@ -44,7 +47,7 @@
     // reactivation arrives before the purge worker. Verification time is not an end.
     if(nextPaid&&!paid(previous,now)&&oldEnd){const b=boundary(oldEnd);if(ukDate(now)>=b.deleteOnDate&&String(retention.lastDeletionCutoffDate||'')<b.deleteOnDate){retention.purgeRequired=true;retention.requiredCutoffDate=b.deleteOnDate;retention.retainThroughDate=b.retainThroughDate;}}
     if(!nextPaid){const end=accessEnd(combined,now);if(end){const b=boundary(end);retention.paidAccessEndedAt=end;retention.retainThroughDate=b.retainThroughDate;retention.scheduledDeletionDate=b.deleteOnDate;retention.deleteAfterAt=b.retainUntil;}else retention.dateNeedsChecking=true;}
-    else if(!retention.purgeRequired){const ends=[combined.paidAccess?.plusExpiresAt,combined.paidAccess?.proExpiresAt,combined.currentPeriodEnd,combined.graceUntil,combined.promotionAccess?.plusExpiresAt,combined.promotionAccess?.proExpiresAt,...Object.values(combined.promotions||{single:combined.promotion}).filter(Boolean).map(p=>p.expiresAt)].map(Number).filter(n=>Number.isFinite(n)&&n>0),end=ends.length?Math.max(...ends):null;retention.dateNeedsChecking=!end;retention.deleteAfterAt=end?boundary(end).retainUntil:null;retention.scheduledDeletionDate=end?boundary(end).deleteOnDate:null;}
+    else if(!retention.purgeRequired){const ends=[combined.paidAccess?.plusExpiresAt,combined.paidAccess?.proExpiresAt,combined.currentPeriodEnd,combined.graceUntil,combined.promotionAccess?.plusExpiresAt,combined.promotionAccess?.proExpiresAt,combined.googlePlayAccess?.expiresAt,combined.appStoreAccess?.expiresAt,...Object.values(combined.promotions||{single:combined.promotion}).filter(Boolean).map(p=>p.expiresAt)].map(Number).filter(n=>Number.isFinite(n)&&n>0),end=ends.length?Math.max(...ends):null;retention.dateNeedsChecking=!end;retention.deleteAfterAt=end?boundary(end).retainUntil:null;retention.scheduledDeletionDate=end?boundary(end).deleteOnDate:null;}
     return retention;
   }
   function validateControl(value){

@@ -50,6 +50,8 @@ test('LIVE and TEST configuration are distinct and the source caller uses explic
   const source=fs.readFileSync(path.join(root,'functions','index.js'),'utf8');
   assert.match(source,/priceFor:\(tier,cadence\)=>BillingPrices\.current\(billingPriceConfiguration\(\),tier,cadence\)/);
   assert.match(source,/BillingPrices\.describe\(billingPriceConfiguration\(\),priceId\)/);
+  assert.match(source,/refresh:\(uid,context\)=>refreshBilling\(uid,client,context\)/);
+  assert.match(source,/billingPlans\(\)\.confirm\(user\.uid,req\.data,\{reservationId:reservation\.reservationId\}\)/);
   assert.match(source,/PRO_MONTHLY_PRICE\.value\(\)/);assert.match(source,/PRO_ANNUAL_PRICE\.value\(\)/);
 });
 test('normal disconnected readiness stays local and does not claim provider success',()=>{

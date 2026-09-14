@@ -19,8 +19,30 @@ test('unrecognised reconciliation and future state remain blocked',()=>{
 test('recovery offers the signed-in account an exit and sign-out preserves its stored bytes',async()=>{
   const source=fs.readFileSync('src/app/app.js','utf8'),stored=new Map([['account:canonical','original-account-bytes']]);
   let signedOut=false,activated=false;
-  const context=vm.createContext({cloudUser:()=>({uid:'recovery-account'}),fbConfigured:()=>true,t:key=>key,esc:String,TaxMateCore:{VERSIONS:{APP_VERSION:'test',BUILD_ID:'test'}},stopUserSync(){},closeOnboardingSurface(){},freshState:()=>({}),render(){},firebase:{auth:()=>({signOut:async()=>{signedOut=true;}})},TaxMateAccountStorage:{localScope:()=>({kind:'local'})},activateAccountScope(){activated=true;},localStorage:{removeItem:key=>stored.delete(key),setItem:(key,value)=>stored.set(key,value)}});
-  vm.runInContext(source.slice(source.indexOf('function pageStateRecovery(){'),source.indexOf('\nfunction render()'))+source.slice(source.indexOf('async function doSignOut(){'),source.indexOf('function userRoot(')),context);
+  const context=vm.createContext({CAT_EMOJIS:[],cloudUser:()=>({uid:'recovery-account'}),fbConfigured:()=>true,t:key=>key,esc:String,TaxMateCore:{VERSIONS:{APP_VERSION:'test',BUILD_ID:'test'}},stopUserSync(){},closeOnboardingSurface(){},freshState:()=>({}),render(){},firebase:{auth:()=>({signOut:async()=>{signedOut=true;}})},TaxMateAccountStorage:{localScope:()=>({kind:'local'})},activateAccountScope(){activated=true;},localStorage:{removeItem:key=>stored.delete(key),setItem:(key,value)=>stored.set(key,value)}});
+  const recoveryStart=source.indexOf('function pageStateRecovery(){'),renderStart=source.indexOf('\nfunction render(',recoveryStart);
+  vm.runInContext(source.slice(recoveryStart,renderStart)+source.slice(source.indexOf('async function doSignOut(){'),source.indexOf('function userRoot(')),context);
   const html=vm.runInContext('pageStateRecovery()',context);assert.match(html,/data-tm-click="doSignOut\(\)"/);assert.match(html,/href="help.html"/);assert.match(html,/mailto:support@taxmate.uk/);
   assert.equal(await vm.runInContext('doSignOut()',context),true);assert.ok(signedOut&&activated);assert.equal(stored.get('account:canonical'),'original-account-bytes');
+});
+test('terminal store history can be retained while active or unknown billing stops deletion before the atomic quarantine',()=>{
+  const server=fs.readFileSync('functions/index.js','utf8'),app=fs.readFileSync('src/app/app.js','utf8'),start=server.indexOf('exports.deleteAccountData='),playBlock=server.indexOf("reason:'active_google_play_billing'",start),appleBlock=server.indexOf("reason:'active_app_store_billing'",start),quarantine=server.indexOf("stage='billing_identity_quarantine'",start),destructive=server.indexOf("stage='admissions'",start);
+  assert.ok(start>=0&&playBlock>start&&appleBlock>playBlock&&quarantine>appleBlock&&destructive>quarantine,'active or unresolved provider state must stop before the irreversible boundary');
+  assert.equal(server.slice(start).includes("reason:'provider_billing_history_requires_support'"),false,'terminal purchase history alone is not a permanent deletion blocker');
+  assert.match(server,/playCurrentMappings\.length&&!playStates\.length/);
+  assert.match(server,/BillingDeletionSafety\.appStoreDeletionEvidence/);
+  const deletion=server.slice(start,server.indexOf('\nif(process.env.FUNCTIONS_EMULATOR',start));assert.doesNotMatch(deletion,/appStoreService\(\)\.refreshForUser/);
+  assert.match(app,/billingActionRequired=\['active_billing','active_google_play_billing','active_app_store_billing'/);
+  assert.match(app,/CLOUD\.deletionBlocked=false;try\{await refreshCachedAccountControls\(\{force:true\}\)/);
+  const i18n=require('../../scripts/i18n-audit').I18N;for(const locale of ['en','zh','pl','ro','es','ur'])assert.ok(i18n[locale]['m.eraseProviderHistory'].length>40,locale);
+});
+
+test('account deletion enters an atomic billing quarantine before erasing data and can resume the same fenced deletion',()=>{
+  const source=fs.readFileSync('functions/index.js','utf8'),start=source.indexOf('exports.deleteAccountData='),body=source.slice(start),enter=body.indexOf('enterDeletionBillingQuarantine'),erase=body.indexOf("stage='user_data'"),complete=body.indexOf('completeDeletionAfterBillingQuarantine');
+  assert.ok(enter>=0&&erase>enter&&complete>erase);
+  assert.match(body,/status==='billing_quarantined'\|\|status==='failed'&&prior\.billingQuarantined===true/);
+  assert.match(body,/status:'billing_quarantined'/);
+  assert.match(body,/billingQuarantined:destructiveStarted===true/);
+  const completion=source.slice(source.indexOf('async function completeDeletionAfterBillingQuarantine'),source.indexOf('async function quarantineStripeBillingEvent'));
+  assert.doesNotMatch(completion,/billingDeletionSignals|billingEventWatermark/,'late old-epoch provider events are quarantined and cannot invalidate completed destructive work');
 });

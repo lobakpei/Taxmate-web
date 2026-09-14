@@ -301,6 +301,33 @@ html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-w
 html[data-direction-a="true"] .sb>.sheet>.btn:last-child,
 html[data-direction-a="true"] .sb>.sheet>.sact:last-child{margin-bottom:calc(12px + env(safe-area-inset-bottom))}
 html[data-direction-a="true"] #sb-assistant>.sheet{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
+/* Informational feedback follows the same quiet, centred dialog pattern as the
+   approved LTD explanations. It is deliberately scoped so forms and action
+   sheets keep their bottom-sheet interaction. */
+html[data-direction-a="true"] #sb-notice{
+  align-items:center;padding:16px;box-sizing:border-box;background:rgba(15,22,32,.32)
+}
+html[data-direction-a="true"] #sb-notice>.sheet{
+  display:flex;flex-direction:column;width:min(460px,100%);max-width:460px;
+  max-height:min(82vh,620px);max-height:min(82dvh,620px);margin:0;padding:0;
+  border-radius:20px;overflow:hidden;overscroll-behavior:contain;
+  box-shadow:0 18px 48px rgba(15,22,32,.22)
+}
+html[data-direction-a="true"] #sb-notice .notice-dialog-body{
+  min-height:0;padding:24px 20px 18px;overflow-y:auto
+}
+html[data-direction-a="true"] #sb-notice .notice-dialog-body>.stitle{
+  margin:0;font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;color:var(--ink)
+}
+html[data-direction-a="true"] #sb-notice #notice-message{
+  margin:8px 0 0;white-space:pre-line;font-size:13.5px;line-height:1.55;color:var(--muted)
+}
+html[data-direction-a="true"] #sb-notice #notice-copy-wrap{margin:16px 0 0}
+html[data-direction-a="true"] #sb-notice .notice-copy-action{margin-top:8px}
+html[data-direction-a="true"] #sb-notice .notice-dialog-footer{
+  flex:0 0 auto;padding:14px 20px 20px;border-top:1px solid var(--line);background:var(--card)
+}
+html[data-direction-a="true"] #sb-notice .notice-dialog-footer>.btn{min-height:50px;margin:0}
 html[data-direction-a="true"] #sb-assistant .assistant-task-list{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);overflow:hidden;margin-top:10px}
 html[data-direction-a="true"] #sb-assistant .assistant-task{border:0;border-radius:0;padding:12px 14px;box-shadow:none}
 html[data-direction-a="true"] #sb-assistant .assistant-task+.assistant-task{border-top:1px solid var(--line)}
@@ -577,9 +604,10 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid
 /* Founder-approved LTD setup and Today integration, 2026-09-13.  These rules
    are deliberately LTD-only: personal bookkeeping and generic action sheets
    retain their existing layout and behaviour. */
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.5);backdrop-filter:none}
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.32);backdrop-filter:none}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px;overflow:hidden}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-top{min-height:52px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-exit{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;overflow:hidden}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-heading{display:flex;align-items:center;justify-content:space-between;gap:14px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card h2{font-size:15px;line-height:1.35;margin:0 0 12px;font-weight:800}

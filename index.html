@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-13.ltd-workspace-build12.1 -->
+<!-- build: 2026-09-13.shared-ui-store-billing-build13.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -550,7 +550,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="fg" id="en-pct-group">
     <label data-i18n="f.bizUse"></label>
     <div id="en-pct-collapsed">
-      <button type="button" class="chip on" style="pointer-events:none">100%</button>
+      <span class="chip on">100%</span>
       <button type="button" class="link" style="margin-inline-start:10px;font-weight:700" data-tm-click="expandPct()" data-i18n="f.bizUsePartial"></button>
     </div>
     <div id="en-pct-expanded" style="display:none">
@@ -798,16 +798,19 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   </div>
 </div></div>
 
-<!-- confirm sheet -->
-<div class="sb" id="sb-notice"><div class="sheet">
-  <div class="grab" data-tm-click="closeParentSheet(this)"></div>
-  <div class="stitle" id="notice-title"></div>
-  <div class="s" id="notice-message" style="margin:8px 0 18px;white-space:pre-line"></div>
-  <div id="notice-copy-wrap" style="display:none;margin-bottom:14px">
-    <textarea id="notice-copy" readonly rows="5" style="width:100%;resize:none"></textarea>
-    <button class="btn ghost" style="margin-top:8px" data-tm-click="copyNoticeText()">Copy</button>
+<!-- informational notice dialog -->
+<div class="sb" id="sb-notice" aria-labelledby="notice-title" aria-describedby="notice-message"><div class="sheet">
+  <div class="notice-dialog-body">
+    <div class="stitle" id="notice-title"></div>
+    <div class="s" id="notice-message"></div>
+    <div id="notice-copy-wrap" style="display:none">
+      <textarea id="notice-copy" readonly rows="5" style="width:100%;resize:none"></textarea>
+      <button type="button" class="btn ghost notice-copy-action" data-tm-click="copyNoticeText()">Copy</button>
+    </div>
   </div>
-  <button class="btn" data-tm-click="closeSheet('notice')">OK</button>
+  <div class="notice-dialog-footer">
+    <button type="button" class="btn" data-notice-primary data-tm-click="closeSheet('notice')">OK</button>
+  </div>
 </div></div>
 
 <div class="sb" id="sb-promo"><div class="sheet">
@@ -945,7 +948,8 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-scroll{padding-bottom:130px}
   .ob-scroll .ob-wrap{padding:0 18px}
   .ob-prow{display:flex;align-items:center;gap:12px;margin-bottom:11px}
-  .ob-back{display:inline-flex;align-items:center;justify-content:center;min-width:44px;min-height:44px;font-size:22px;color:var(--muted);background:none;border:0;cursor:pointer;line-height:1;padding:2px 4px}
+  .ob-back{display:inline-flex;align-items:center;justify-content:center;gap:4px;min-width:44px;min-height:44px;font-size:15px;font-weight:700;color:var(--muted);background:none;border:0;cursor:pointer;line-height:1.2;padding:8px 4px}
+  .ob-back>span[aria-hidden="true"]{font-size:20px;font-weight:500;line-height:1}
   .ob-plabel{font-size:12.5px;font-weight:700;color:var(--muted);letter-spacing:.3px}
   .ob-ptrack{height:6px;background:var(--line);border-radius:999px;overflow:hidden}
   .ob-pfill{height:100%;background:linear-gradient(90deg,var(--brand),var(--teal));border-radius:999px;transition:width .45s cubic-bezier(.4,0,.2,1)}
@@ -958,7 +962,6 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-langlink:active{background:var(--card)}
   .ob-sheet-back{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:998;animation:obFade .18s ease}
   .ob-sheet{position:fixed;left:0;right:0;bottom:0;z-index:999;background:var(--card);border-radius:22px 22px 0 0;padding:8px 16px calc(16px + env(safe-area-inset-bottom));max-width:480px;margin:0 auto;box-shadow:0 -8px 40px rgba(0,0,0,.35);animation:obSlideUp .26s cubic-bezier(.16,1,.3,1)}
-  .ob-sheet-grip{width:40px;height:4px;border-radius:999px;background:var(--line);margin:8px auto 12px}
   .ob-sheet-title{font-size:13px;font-weight:700;color:var(--muted);text-align:center;margin-bottom:8px}
   .ob-sheet-row{display:flex;align-items:center;justify-content:space-between;width:100%;border:0;background:none;font-family:inherit;font-size:17px;font-weight:700;color:var(--ink);cursor:pointer;padding:15px 8px;border-radius:12px;text-align:start}
   .ob-sheet-row:active{background:var(--bg)}

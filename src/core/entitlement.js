@@ -25,17 +25,40 @@
     if(offline&&(!verified||t-verified>72*3600*1000)) return {tier:'free',source:'offline-expired',reason:'verification-stale'};
     const legacyPaid=ACTIVE.has(snapshot.subscriptionStatus)&&TIERS[snapshot.paidTier]>0&&(!snapshot.currentPeriodEnd||t<Number(snapshot.currentPeriodEnd))?snapshot.paidTier:'free';
     const funded=snapshot.paidAccess,paidTier=funded?(Number(funded.proExpiresAt)>t?'pro':Number(funded.plusExpiresAt)>t?'plus':'free'):legacyPaid;
+    const playAccess=snapshot.googlePlayAccess||{},playTier=playAccess.active===true&&TIERS[playAccess.tier]>0&&Number(playAccess.expiresAt)>t?playAccess.tier:'free';
+    const appStoreAccess=snapshot.appStoreAccess||{},appStoreTier=appStoreAccess.active===true&&TIERS[appStoreAccess.tier]>0&&Number(appStoreAccess.expiresAt)>t?appStoreAccess.tier:'free';
+    const stripeExpiry=paidTier==='pro'?Number(funded?.proExpiresAt||snapshot.currentPeriodEnd||Infinity):paidTier==='plus'?Number(funded?.plusExpiresAt||snapshot.currentPeriodEnd||Infinity):0;
+    const purchased=[{tier:paidTier,source:'stripe',expiresAt:stripeExpiry,access:null},{tier:playTier,source:'google_play',expiresAt:Number(playAccess.expiresAt)||0,access:playAccess},{tier:appStoreTier,source:'app_store',expiresAt:Number(appStoreAccess.expiresAt)||0,access:appStoreAccess}].sort((a,b)=>TIERS[b.tier]-TIERS[a.tier]||b.expiresAt-a.expiresAt)[0];
+    const purchasedTier=purchased.tier;
     const promo=activePromotion(snapshot,t);
-    if(TIERS[paidTier]>0&&(!promo||TIERS[paidTier]>=TIERS[promo.tier])) return {tier:paidTier,source:'stripe',reason:snapshot.subscriptionStatus};
+    if(TIERS[purchasedTier]>0&&(!promo||TIERS[purchasedTier]>=TIERS[promo.tier])) return purchased.source==='stripe'?{tier:purchasedTier,source:'stripe',reason:snapshot.subscriptionStatus}: {tier:purchasedTier,source:purchased.source,reason:purchased.access.status||'active',expiresAt:Number(purchased.access.expiresAt),autoRenewEnabled:purchased.access.autoRenewEnabled===true};
     if(promo) return {tier:promo.tier,source:'promotion',reason:'active',expiresAt:promo.expiresAt===null?null:Number(promo.expiresAt),permanent:promo.permanent===true||promo.expiresAt===null,promoCode:promo.code};
     if(snapshot.graceUntil&&t<Number(snapshot.graceUntil)&&TIERS[snapshot.lastPaidTier]>0) return {tier:snapshot.lastPaidTier,source:'grace',reason:'payment-retry'};
     return {tier:'free',source:'fallback',reason:snapshot.subscriptionStatus||'expired'};
+  }
+  function chargeableProviders(snapshot,now=Date.now()){
+    const data=snapshot&&typeof snapshot==='object'?snapshot:{},t=Number(now)||Date.now(),rows=[];
+    const stripeStatuses=new Set(['active','trialing','past_due','unpaid','incomplete','paused']),stripeSubscriptions=Object.values(data.paidSubscriptions&&typeof data.paidSubscriptions==='object'?data.paidSubscriptions:{});
+    const stripeEnd=Math.max(Number(data.currentPeriodEnd)||0,Number(data.paidAccess&&data.paidAccess.plusExpiresAt)||0,Number(data.paidAccess&&data.paidAccess.proExpiresAt)||0);
+    const stripeStatus=String(data.subscriptionStatus||''),stripePending=stripeStatuses.has(stripeStatus)||stripeSubscriptions.some(value=>stripeStatuses.has(String(value&&value.providerStatus||'')));
+    if(stripePending||stripeEnd>t)rows.push({provider:'stripe',tier:TIERS[data.paidTier]>0?data.paidTier:Number(data.paidAccess&&data.paidAccess.proExpiresAt)>t?'pro':Number(data.paidAccess&&data.paidAccess.plusExpiresAt)>t?'plus':'free',status:stripeStatus||'funded',expiresAt:stripeEnd||null});
+    const play=data.googlePlayAccess||{},playStatus=String(play.status||''),playPending=['active','pending','on_hold','paused','in_grace_period'].includes(playStatus);
+    if(playPending||play.active===true&&Number(play.expiresAt)>t)rows.push({provider:'google_play',tier:TIERS[play.tier]>0?play.tier:TIERS[play.purchasedTier]>0?play.purchasedTier:'free',status:playStatus||'active',expiresAt:Number(play.expiresAt)||null});
+    const apple=data.appStoreAccess||{},appleStatus=String(apple.status||''),applePending=['active','pending','billing_retry','billing_grace_period'].includes(appleStatus);
+    if(applePending||apple.active===true&&Number(apple.expiresAt)>t)rows.push({provider:'app_store',tier:TIERS[apple.tier]>0?apple.tier:TIERS[apple.purchasedTier]>0?apple.purchasedTier:'free',status:appleStatus||'active',expiresAt:Number(apple.expiresAt)||null});
+    return rows;
+  }
+  function billingProviderConflict(snapshot,now=Date.now()){
+    const providers=chargeableProviders(snapshot,now);
+    return{active:providers.length>1,providers,evidence:snapshot&&snapshot.billingConflict||null};
   }
   function canUse(tier,required){ return (TIERS[tier]||0)>=(TIERS[required]||0); }
   function validatePromotionCode(code){ return typeof code==='string'&&/^[A-Z0-9][A-Z0-9_-]{3,31}$/.test(code.trim().toUpperCase()); }
   function paidAccessEnd(snapshot={},now=Date.now()){
     const values=[],grants=snapshot.promotions?Object.values(snapshot.promotions):snapshot.promotion?[snapshot.promotion]:[];
     for(const tier of ['plus','pro'])if(Number(snapshot.paidAccess?.[tier+'ExpiresAt'])>now)values.push(Number(snapshot.paidAccess[tier+'ExpiresAt']));
+    if(snapshot.googlePlayAccess?.active===true&&TIERS[snapshot.googlePlayAccess.tier]>0&&Number(snapshot.googlePlayAccess.expiresAt)>now)values.push(Number(snapshot.googlePlayAccess.expiresAt));
+    if(snapshot.appStoreAccess?.active===true&&TIERS[snapshot.appStoreAccess.tier]>0&&Number(snapshot.appStoreAccess.expiresAt)>now)values.push(Number(snapshot.appStoreAccess.expiresAt));
     const projected=snapshot.promotionAccess||{};
     for(const tier of ['plus','pro']){if(projected[tier+'Permanent']===true)return{status:'continuing',at:null};if(Number(projected[tier+'ExpiresAt'])>now)values.push(Number(projected[tier+'ExpiresAt']));}
     if(ACTIVE.has(snapshot.subscriptionStatus)&&TIERS[snapshot.paidTier]>0){
@@ -79,7 +102,7 @@
   // these structured keys and dates, never the legacy prose.
   function notification(snapshot,now){
     const at=Number(now)||Date.now(),access=resolve(snapshot,at,false),old=legacyNotification(snapshot,at);
-    const issue=snapshot&&(['past_due','unpaid','incomplete'].includes(snapshot.subscriptionStatus)||Object.values(snapshot.paidSubscriptions||{}).some(s=>['past_due','unpaid','incomplete'].includes(s.providerStatus)));
+    const issue=snapshot&&(['past_due','unpaid','incomplete'].includes(snapshot.subscriptionStatus)||Object.values(snapshot.paidSubscriptions||{}).some(s=>['past_due','unpaid','incomplete'].includes(s.providerStatus))||['in_grace_period','on_hold'].includes(snapshot.googlePlayAccess?.status)||['billing_retry','billing_grace_period'].includes(snapshot.appStoreAccess?.status));
     if(issue&&access.tier!=='free')return{id:'payment-issue-'+snapshot.currentPeriodEnd,stage:'payment-issue',messageKey:'paymentIssue',action:'plans',dateAt:snapshot.currentPeriodEnd,tier:access.tier};
     if(!old)return null;
     const base={...old,action:old.stage.startsWith('paid-end')||old.stage==='paid-renew'?'plans':'viewPlans',tier:access.tier};
@@ -92,5 +115,5 @@
     return{...base,messageKey:today>=dates.deleteOnDate?'noticeRetentionEnded':'noticeFreeRetained',dateIso:dates.retainThroughDate};
   }
   function hasPermanentPro(snapshot,now){return activePromotion(snapshot||{},Number(now)||Date.now())?.tier==='pro'&&activePromotion(snapshot||{},Number(now)||Date.now())?.permanent===true;}
-  return {TIERS,UK_TAX_YEAR_START_MONTH,UK_TAX_YEAR_START_DAY,ukDateParts,taxYearRetentionBoundary,resolve,canUse,validatePromotionCode,activePromotion,notification,hasPermanentPro,paidAccessEnd};
+  return {TIERS,UK_TAX_YEAR_START_MONTH,UK_TAX_YEAR_START_DAY,ukDateParts,taxYearRetentionBoundary,resolve,chargeableProviders,billingProviderConflict,canUse,validatePromotionCode,activePromotion,notification,hasPermanentPro,paidAccessEnd};
 });

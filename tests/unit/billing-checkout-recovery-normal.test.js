@@ -7,13 +7,13 @@ const contract=require('../../functions/contracts/terms-20260907.json');
 const uid='tmtest-20260907-plus-month',customerId='cus_VDYNc1uHo0bcWj',offerId='66fac414-52f3-4c40-970e-d7f4c7a29bcf',stamp=Date.parse('2026-09-07T20:10:00Z');
 const operation={uid,offerId,key:'taxmate-checkout-'+offerId,state:'submitting',startedAt:1788805677645,termsAccepted:true,earlySupplyRequested:true,termsVersion:contract.version,earlySupplyText:Checkout.EARLY_SUPPLY};
 const failure={uid,offerId,operationKey:operation.key,customerId,requestId:'req_nhoTJhFgTrFM5F',httpStatus:400,type:'invalid_request_error',reason:'terms_url_required',source:'verified_request_log',recordedAt:stamp};
-function fixture({confirmed=true,sessions=[]}={}){
+function fixture({confirmed=true,sessions=[],closeReservation=async()=>{},reconcileReservation=async()=>{}}={}){
   const originalOffer={id:offerId,uid,tier:'plus',cadence:'monthly',priceId:'price_plus',currency:'gbp',priceMinor:399,createdAt:1788805606685,expiresAt:1788806506685,contract,termsVersion:contract.version,earlySupplyText:Checkout.EARLY_SUPPLY,state:'offered'};
   const confirmation={uid,offerId,state:'payment_not_confirmed',providedAt:1788805677790,termsHtml:contract.termsHtml,termsVersion:contract.version,earlySupplyRequested:true,earlySupplyText:Checkout.EARLY_SUPPLY,priceMinor:399};
   const values=new Map([['billingCustomers/'+uid,{stripeCustomerId:customerId}],['billingCheckoutLocks/'+uid,structuredClone(operation)],['billingCheckoutOffers/'+offerId,originalOffer],['billingPurchaseConfirmations/'+offerId,confirmation]]);
   if(confirmed)values.set('billingCheckoutFailures/'+offerId,structuredClone(failure));
   const snap=p=>({exists:values.has(p),data:()=>structuredClone(values.get(p))});
-  const ref=p=>({path:p,get:async()=>snap(p),create:async v=>{assert(!values.has(p));values.set(p,structuredClone(v));},update:async v=>{assert(values.has(p));values.set(p,{...values.get(p),...structuredClone(v)});}});
+  const ref=p=>({path:p,get:async()=>snap(p),create:async v=>{assert(!values.has(p));values.set(p,structuredClone(v));},set:async(v,options)=>values.set(p,options&&options.merge?{...values.get(p),...structuredClone(v)}:structuredClone(v)),update:async v=>{assert(values.has(p));values.set(p,{...values.get(p),...structuredClone(v)});}});
   const tx={get:r=>r.get(),create:(r,v)=>{assert(!values.has(r.path));values.set(r.path,structuredClone(v));},update:(r,v)=>{assert(values.has(r.path));values.set(r.path,{...values.get(r.path),...structuredClone(v)});},set:(r,v)=>values.set(r.path,structuredClone(v))};
   const db={doc:ref,runTransaction:async fn=>fn(tx)},calls={list:0,create:0,customerFor:0};
   const client={subscriptions:{list:async()=>({data:[],has_more:false})},checkout:{sessions:{
@@ -21,7 +21,7 @@ function fixture({confirmed=true,sessions=[]}={}){
     retrieve:async id=>{const s=sessions.find(x=>x.id===id);assert(s);return s;},
     create:async(params,options)=>{calls.create++;assert.equal(params.customer,customerId);assert.equal(params.consent_collection.terms_of_service,'required');assert.equal(options.idempotencyKey,'taxmate-checkout-'+params.metadata.taxmateOffer);const s={id:'cs_test_local_success',customer:customerId,mode:'subscription',status:'open',url:'https://checkout.stripe.com/c/pay/cs_test_local_success',metadata:params.metadata};sessions.push(s);return s;}
   }}};
-  const service=Checkout.createService({db,client,targetPrice:async()=>({id:'price_plus',currency:'gbp',unit_amount:399}),customerFor:async user=>{calls.customerFor++;assert.equal(user.uid,uid);return customerId;},appUrl:'http://127.0.0.1:41905',moneyOperationsEnabled:true,consumerDisclosuresReady:true,now:()=>stamp});
+  const service=Checkout.createService({db,client,targetPrice:async()=>({id:'price_plus',currency:'gbp',unit_amount:399}),customerFor:async user=>{calls.customerFor++;assert.equal(user.uid,uid);return customerId;},appUrl:'http://127.0.0.1:41905',moneyOperationsEnabled:true,consumerDisclosuresReady:true,closeReservation,reconcileReservation,now:()=>stamp});
   return{service,values,calls,db,client,originalOffer:structuredClone(originalOffer),confirmation:structuredClone(confirmation)};
 }
 const user={uid,token:{email:'plus-month@taxmate-test.invalid'}};
@@ -53,6 +53,19 @@ test('an unresolved stored outcome is not cleared merely because the list is emp
 test('a recovered completed Session awaiting asynchronous payment remains blocked on ordinary repeat',async()=>{
   const f=fixture({confirmed:false,sessions:[{id:'cs_test_waiting',customer:customerId,mode:'subscription',status:'complete',payment_status:'unpaid',metadata:{firebaseUid:uid,taxmateOffer:offerId}}]});
   await assert.rejects(f.service.offer(user,{tier:'plus',cadence:'monthly'}),e=>e.billingReason==='existing_subscription_manage');await assert.rejects(f.service.offer(user,{tier:'plus',cadence:'monthly'}),e=>e.billingReason==='checkout_reconciliation_required');assert.equal(f.calls.create,0);assert.equal(f.values.get('billingCheckoutLocks/'+uid).state,'open');
+});
+for(const [eventType,sessionStatus]of [['checkout.session.async_payment_failed','complete'],['checkout.session.expired','expired']])test(eventType+' closes only its exact server reservation',async()=>{
+  const reservationId='92e99e10-131c-4e4d-8b58-1fa9a1ee2026',sessions=[],closed=[];
+  const f=fixture({sessions,closeReservation:async(who,which,reservation,event)=>{closed.push({who,which,reservation,event});return reservation===reservationId;}}),offered=await f.service.offer(user,{tier:'plus',cadence:'monthly'});
+  await f.service.checkout(user,{offerId:offered.offer.id,termsAccepted:true,earlySupplyRequested:true,reservationId});
+  const session={...sessions[0],status:sessionStatus,payment_status:'unpaid'};
+  assert.equal(await f.service.definitiveFailureSession({...session,metadata:{...session.metadata,taxmateReservation:'different-reservation'}},eventType,uid),false);
+  assert.equal(closed.filter(row=>row.reservation).length,0);
+  assert.equal(await f.service.definitiveFailureSession(session,eventType,uid),true);
+  assert.deepEqual(closed.at(-1),{who:uid,which:offered.offer.id,reservation:reservationId,event:eventType});
+  assert.equal(f.values.get('billingCheckoutLocks/'+uid).closedReason,eventType.endsWith('expired')?'expired':'async_payment_failed');
+  assert.equal(f.values.get('billingCheckoutOffers/'+offered.offer.id).state,eventType.endsWith('expired')?'expired':'async_payment_failed');
+  assert.equal(f.values.get('billingPurchaseOutcomes/'+offered.offer.id).outcome,eventType.endsWith('expired')?'expired':'async_payment_failed');
 });
 test('the observed Stripe validation response is classified without persisting raw text or headers',()=>{
   const result=Recovery.classifyCheckoutFailure({requestId:failure.requestId,statusCode:400,rawType:'invalid_request_error',message:'You cannot collect consent to your terms of service unless a URL is set in the Stripe Dashboard. Update your public business details.'});

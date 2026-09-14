@@ -12,6 +12,11 @@ test('Home promotion requires meaningful bookkeeping data and a real install pat
   assert.equal(P.canPromote({state:active,now}),false);
 });
 
+test('native packages never receive browser installation promotion',()=>{
+  assert.equal(P.canPromote({state:active,now,hasDeferredPrompt:true,isNative:true}),false);
+  assert.equal(P.canPromote({state:active,now,hasBrowserInstallInstructions:true,supportsPwaInstall:false}),false);
+});
+
 test('Not now suppresses promotion for exactly fourteen days',()=>{
   const dismissedAt=now-1;
   assert.equal(P.canPromote({state:active,now,dismissedAt,hasDeferredPrompt:true}),false);

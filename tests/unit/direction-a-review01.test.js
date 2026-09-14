@@ -30,10 +30,10 @@ test('F05 candidates use signed company-bank postings, including net salary, not
   assert.equal(h._bank(ev,rec),-91000);assert.equal(ev.sourceTransaction.amountMinor,120000);
   for(const invalid of [{...ev,status:'reversed'},{...ev,sourceTransaction:{...ev.sourceTransaction,beneficiaryEntityId:'other'}},{...ev,sourceTransaction:{...ev.sourceTransaction,date:'2027-01-01'}},{...ev,journals:[]}])assert.equal(h._bank(invalid,rec),null);
 });
-test('F02 every fixed expense pack field including zero is expense-coloured; relief is not tax paid',()=>{
+test('F02 every non-zero fixed expense pack field is expense-coloured while zero stays neutral; relief is not tax paid',()=>{
   const h=helpers();
   for(const id of ['costOfRawMaterialsAndConsumables','staffCosts','depreciationAndOtherAmountsWrittenOffAssets','otherCharges','tax','creditorsDueWithinOneYear','corporationTax']){
-    assert.equal(h._role({id}),'out');assert.equal(h._moneyClass(0,h._role({id})),'neg');
+    assert.equal(h._role({id}),'out');assert.equal(h._moneyClass(1,h._role({id})),'neg');assert.equal(h._moneyClass(0,h._role({id})),'');
   }
   for(const box of [430,440,475,525])assert.equal(h._ctRole(box),'out');
   assert.equal(h._ctRole(435),'in');assert.equal(h._role({id:'profitOrLoss'}),'signed');

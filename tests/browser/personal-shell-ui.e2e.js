@@ -27,8 +27,8 @@ const waitForServer=async()=>{const started=Date.now();while(Date.now()-started<
 const rgb=value=>String(value||'').replace(/\s/g,'');
 // Approved money-semantic values. The shipped shell runs Direction A, so direction-a.css
 // supplies the tokens; index.html keeps the legacy pair for the non-Direction-A path.
-const MONEY={light:{in:'rgb(22,122,67)',out:'rgb(189,48,55)'},dark:{in:'rgb(95,216,145)',out:'rgb(255,138,143)'}};
-const HERO={in:'rgb(95,216,145)',out:'rgb(255,138,143)'};
+const MONEY={light:{ink:'rgb(16,24,33)',in:'rgb(22,122,67)',out:'rgb(189,48,55)'},dark:{ink:'rgb(242,244,247)',in:'rgb(95,216,145)',out:'rgb(255,138,143)'}};
+const HERO={ink:'rgb(255,255,255)',in:'rgb(95,216,145)',out:'rgb(255,138,143)'};
 async function colourOf(locator){return rgb(await locator.evaluate(node=>getComputedStyle(node).color));}
 async function shot(page,name,fullPage=true){const file=path.join(evidence,name+'.png');await page.screenshot({path:file,fullPage});screenshots.push(name+'.png');}
 
@@ -68,7 +68,7 @@ async function main(){
   equal(await colourOf(page.locator('[data-personal-income-minor]')),HERO.in,'home hero: money in uses the income colour on navy');
   equal(await colourOf(page.locator('[data-personal-expenses-minor]')),HERO.out,'home hero: money out uses the expense colour on navy');
   equal(await colourOf(page.locator('[data-home-ledger-profit]')),HERO.in,'home hero: a positive profit uses the income colour');
-  equal(await colourOf(page.locator('.hero-owe .ho-val')),HERO.out,'home hero: estimated tax to pay reads as money out');
+  equal(await colourOf(page.locator('.hero-owe .ho-val')),HERO.ink,'home hero: zero estimated tax uses theme ink');
   const bizAmounts=page.locator('[data-home-business-row] .v');
   equal(await colourOf(bizAmounts.first()),MONEY.light.in,'home business rows: a positive share is the income colour');
   // Recent activity mixes income and expenses: each row carries its own direction.
@@ -99,11 +99,10 @@ async function main(){
   const taxRows=page.locator('[data-tax-business-row] .fv');
   equal(await colourOf(taxRows.first()),MONEY.light.in,'tax page: an attributable profit uses the income colour');
   const liability=page.locator('.frow.total').filter({hasText:/Total bill/}).locator('.fv');
-  equal(await colourOf(liability),MONEY.light.out,'tax page: the total bill reads as money out');
+  equal(await colourOf(liability),MONEY.light.ink,'tax page: the zero total bill uses theme ink');
   const class4=page.locator('.frow').filter({hasText:/Class 4/}).first().locator('.fv');
-  equal(await colourOf(class4),MONEY.light.out,'tax page: National Insurance reads as money out even at zero');
-  const balancing=await page.locator('[data-balancing-payment]').innerText();
-  equal(await colourOf(page.locator('[data-balancing-payment]')),balancing.includes('−')||balancing.includes('-')?MONEY.light.in:MONEY.light.out,'balancing tax is red including zero; a refund is green');
+  equal(await colourOf(class4),MONEY.light.ink,'tax page: zero National Insurance uses the theme ink');
+  equal(await colourOf(page.locator('[data-balancing-payment]')),MONEY.light.ink,'zero balancing tax uses theme ink');
   await shot(page,'personal-tax-en-light-390');
 
   // ---- Bottom navigation: one centred content group, no shift when selected --
@@ -172,7 +171,10 @@ async function main(){
       await shot(ctx.page,`personal-${tab}-${lang}-light-390`);
     }
     await go(ctx.page,'more');
-    await ctx.page.getByRole('button',{name:I18N[lang]['review01.billing'],exact:true}).click();
+    const billingButton=ctx.page.locator('button.settings-link[data-tm-click="openBillingOverview()"]');
+    equal(await billingButton.innerText(),I18N[lang]['review01.billing'],lang+': billing entry uses the selected language');
+    await billingButton.scrollIntoViewIfNeeded();
+    await billingButton.click();
     equal(await ctx.page.locator('[data-billing-overview] button').count(),0,lang+': account billing is not exposed before sign-in');
     check(await ctx.page.locator('#cf-msg').innerText().then(text=>text===I18N[lang]['ac.needSignInBody']),lang+': billing asks for sign-in in the selected language');
     await shot(ctx.page,`personal-billing-${lang}-light-390`);

@@ -16,7 +16,8 @@ const hosting=read('firebase.json');
 const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, BH15 9EL';
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
-  assert.equal(Legal.POLICY_VERSION,'2026-09-07.billing.1');
+  assert.equal(Legal.POLICY_VERSION,'2026-09-14.store-auth.1');
+  assert.equal(Legal.PRIVACY_LAST_UPDATED,'14 September 2026');
   assert.equal(Legal.PUBLIC_CORRESPONDENCE_ADDRESS,APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS);
   assert.equal(privacy,Legal.publicPage('privacy'));
   assert.equal(terms,Legal.publicPage('terms'));
@@ -25,9 +26,11 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/Hau Ying Ou-Yang/);
     assert.match(text,/support@taxmate\.uk/);
     assert.match(text,/Google/);
-    assert.doesNotMatch(text,/Apple Sign-In|Continue with Apple|sign in with Apple/i);
     assert.ok(text.includes(APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS));
   }
+  assert.match(terms,/Sign in with Apple/);
+  assert.match(read('help.html'),/Sign in with Apple/);
+  assert.match(privacy,/chosen sign-in provider/);
   assert.match(privacy,/lawful basis/i);
   assert.match(privacy,/international transfers/i);
   assert.match(privacy,/objection/i);
@@ -67,6 +70,20 @@ test('public and in-app legal surfaces share the current policy identity and cor
   for(const text of [privacy,Legal.privacyHtml]){
     assert.match(text,/Namecheap/);
     assert.match(text,/Microsoft Outlook/);
+    assert.match(text,/Stripe/);
+    assert.match(text,/Google Play obfuscated account identifiers, purchase tokens and token hashes/i);
+    assert.match(text,/App Store app-account tokens or hashes, transaction and original-transaction identifiers or hashes/i);
+    assert.match(text,/signed transaction/i);
+    assert.match(text,/does not delete the Firebase Authentication sign-in identity/i);
+    assert.match(text,/account-reset marker/i);
+    assert.match(text,/server-only provider billing/i);
+    assert.match(text,/fresh, empty TaxMate data lifecycle/i);
+    assert.match(text,/active, pending or otherwise uncertain[\s\S]*must be managed[\s\S]*or reconciled/i);
+  }
+  for(const text of [read('help.html'),Legal.helpHtml]){
+    assert.match(text,/Firebase Authentication sign-in identity/i);
+    assert.match(text,/server-only provider billing records and deletion tombstones/i);
+    assert.match(text,/fresh, empty TaxMate data lifecycle/i);
   }
   assert.match(app,/TaxMateLegal\.helpHtml/);
   assert.match(app,/TaxMateLegal\.privacyHtml/);
@@ -102,8 +119,8 @@ test('account deletion covers promotion records and partnership last-member beha
   assert.match(functions,/enforceAppCheck:process\.env\.FUNCTIONS_EMULATOR!==\'true\'/);
   assert.match(app,/firebase\.appCheck\(\)\.getToken\(false\)/);
   assert.match(app,/'X-Firebase-AppCheck':appCheck\.token/);
-  assert.match(app,/callSecureFunction\('joinPartnership',\{code\}\)/);
-  assert.match(app,/callSecureFunction\('leavePartnership',\{code\}\)/);
+  assert.match(app,/callSecureFunction\('joinPartnership',\{code,accountResetEpoch:currentAccountResetEpoch\(\)\}\)/);
+  assert.match(app,/callSecureFunction\('leavePartnership',\{code,accountResetEpoch:currentAccountResetEpoch\(\)\}\)/);
   assert.match(functions,/ReceiptCleanup\.cleanupReceiptWithRetry\(\{db,bucket,path:file\.name,ignorePersonalUid:uid\}\)/);
   assert.doesNotMatch(functions,/deleteFiles\(/);
   assert.doesNotMatch(functions,/catch\(e\)\{console\.error\('receipt cleanup'/);
@@ -122,7 +139,7 @@ test('Google is the only authentication frame/provider surface',()=>{
 
 test('stale unsupported legal, deletion and HMRC marketing claims are absent',()=>{
   const current=[app,privacy,terms,read('help.html'),Legal.helpHtml,Legal.privacyHtml,Legal.termsHtml].join('\n');
-  for(const claim of [/MTD-ready quarterly export/i,/for HMRC checks/i,/供稅局審查/i,/MTD 季度匯出/i,/Eksport kwartalny MTD/i,/Export trimestrial MTD/i,/Exportación trimestral MTD/i,/MTD سہ ماہی ایکسپورٹ/i,/Erase everything everywhere/i,/all your data has been deleted from this device and the cloud/i,/accepts no liability/i,/not liable for any losses/i,/data is never deleted/i,/Google Analytics 4 runs without client storage for aggregate usage/i])assert.doesNotMatch(current,claim);
+  for(const claim of [/MTD-ready quarterly export/i,/for HMRC checks/i,/供稅局審查/i,/MTD 季度匯出/i,/Eksport kwartalny MTD/i,/Export trimestrial MTD/i,/Exportación trimestral MTD/i,/MTD سہ ماہی ایکسپورٹ/i,/Erase everything everywhere/i,/all your data has been deleted from this device and the cloud/i,/removes?[^.]{0,180}Firebase Auth(?:entication)? identity/i,/accepts no liability/i,/not liable for any losses/i,/data is never deleted/i,/Google Analytics 4 runs without client storage for aggregate usage/i])assert.doesNotMatch(current,claim);
 });
 
 test('public runtime files contain no private contact details or secret credentials',()=>{

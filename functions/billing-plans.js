@@ -38,7 +38,7 @@ function createService({db,client,descriptor,priceFor,refresh,now=Date.now,money
     const id=crypto.randomUUID(),q={id,uid,subscriptionId:sub.id,customerId:idOf(sub.customer),itemId:item.id,signature:signature(sub),targetPrice:price.id,direction,fromTier:from.tier,tier:data.tier,cadence:from.cadence,currency:'gbp',dueNowMinor,creditMinor,chargeMinor,effectiveAt:direction==='upgrade'?stamp:periodEnd(sub),nextPaymentAt:periodEnd(sub),nextPriceMinor:price.unit_amount,prorationDate,expiresAt:stamp+15*60000,createdAt:stamp,state:'quoted'};
     await db.doc(`billingPlanQuotes/${id}`).create(q);return{quote:publicQuote(q)};
   }
-  async function confirm(uid,data){
+  async function confirm(uid,data,context={}){
     if(!moneyOperationsEnabled)fail('money_operations_not_enabled');
     if(!/^[a-f0-9-]{36}$/.test(String(data?.quoteId||'')))fail('quote_not_found','not-found');
     const ref=db.doc(`billingPlanQuotes/${data.quoteId}`);let q;
@@ -78,7 +78,7 @@ function createService({db,client,descriptor,priceFor,refresh,now=Date.now,money
       schedule=await client.subscriptionSchedules.update(schedule.id,{end_behavior:'release',proration_behavior:'none',phases:[first,{start_date:q.nextPaymentAt/1000,items:[{price:q.targetPrice,quantity:1}],iterations:1,proration_behavior:'none'}]},{idempotencyKey:`taxmate-plan-phases-${q.id}`});
       q={...q,state:'scheduled',scheduleId:schedule.id,completedAt:now()};
     }
-    await ref.set(q);await db.doc(`billingPlanLocks/${uid}`).set({quoteId:q.id,state:q.state});await refresh(uid);return{quote:publicQuote(q)};
+    await ref.set(q);await db.doc(`billingPlanLocks/${uid}`).set({quoteId:q.id,state:q.state});await refresh(uid,{reservationFlowKey:`plan:${q.id}`,reservationId:String(context.reservationId||'')});return{quote:publicQuote(q)};
     }catch(error){
       // A stale quote before the provider write is safe to replace. Once a
       // monetary operation may have started, keep its identity for reconciliation.

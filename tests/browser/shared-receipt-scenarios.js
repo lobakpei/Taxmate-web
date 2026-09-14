@@ -2,7 +2,7 @@
 const path=require('node:path');
 // Exercises an already persisted shared row in the real app on two members.
 // No UI handler or permission function is replaced by the harness.
-module.exports=async function({a,b,userA,adminSet,adminGet,entitlement,waitFor,waitSynced,pageRecord,check,equal,evidence}){
+module.exports=async function({a,b,userA,adminSet,adminGet,adminStorageExists,entitlement,waitFor,waitSynced,pageRecord,check,equal,evidence}){
   await a.page.evaluate(()=>{closeAllSheets();openEntry('expense','history-2');});
   const png=Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jRZkAAAAASUVORK5CYII=','base64');
   await a.page.setInputFiles('#en-receipt-pick',{name:'existing-receipt.png',mimeType:'image/png',buffer:png});
@@ -32,7 +32,7 @@ module.exports=async function({a,b,userA,adminSet,adminGet,entitlement,waitFor,w
   await b.page.locator('#taxmate-lightbox .danger').click();await b.page.locator('#cf-yes').click();
   await waitFor(async()=>(await adminGet('partnerships/SHARE888/entries/history-2'))?.receiptPath===null,'R2 authorised peer removal was not committed');
   await waitFor(async()=>(await pageRecord(a.page,'history-2'))?.receiptPath===null,'R2 uploader did not see peer receipt removal');
-  await waitFor(()=>a.page.evaluate(async p=>{try{await firebase.storage().ref(p).getMetadata();return false;}catch(error){return error.code==='storage/object-not-found';}},receiptPath),'R2 committed peer removal did not clean receipt bytes');
+  await waitFor(async()=>!(await adminStorageExists(receiptPath)),'R2 committed peer removal did not clean receipt bytes');
   check(true,'R2 authorised peer removes the uploader receipt and both members converge without consent from every member');
   await b.page.screenshot({path:path.join(evidence,'r2-authorised-peer-removal.png'),fullPage:true});
   await a.page.evaluate(()=>{closeLightbox();closeAllSheets();});await b.page.evaluate(()=>{closeLightbox();closeAllSheets();});

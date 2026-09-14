@@ -53,14 +53,16 @@ test('Step 5 derives Q6 and ownership from canonical saved values without false 
 });
 
 test('information dialog and overview styling stay narrowly scoped to the LTD root',()=>{
-  assert.match(css,/#taxmate-ltd-ui-root \.tm-info-dialog-scrim\{[^}]*align-items:center[^}]*rgba\(15,22,32,\.5\)[^}]*backdrop-filter:none/);
-  assert.match(css,/#taxmate-ltd-ui-root \.tm-info-dialog\{[^}]*max-height:min\(82dvh,620px\)[^}]*border-radius:20px/);
+  assert.match(css,/#taxmate-ltd-ui-root \.tm-info-dialog-scrim\{[^}]*align-items:center[^}]*rgba\(15,22,32,\.32\)[^}]*backdrop-filter:none/);
+  assert.match(css,/#taxmate-ltd-ui-root \.tm-info-dialog\{[^}]*max-height:min\(82dvh,620px\)[^}]*border-radius:20px[^}]*overflow:hidden/);
   assert.match(css,/#taxmate-ltd-ui-root \.tm-summary-sheet \.tm-overview-hero\{[^}]*background:transparent[^}]*border:0/);
   assert.match(css,/#taxmate-ltd-ui-root \.tm-summary-sheet>\.tm-top\{[^}]*min-height:calc\(64px \+ env\(safe-area-inset-top\)\)[^}]*padding-top:calc\(12px \+ env\(safe-area-inset-top\)\)/);
   assert.doesNotMatch(css,/html\[data-direction-a="true"\] \.tm-scrim\{align-items:center/);
   assert.match(renderer,/UI\.infoReturnFocusId=ov\.returnFocusId\|\|id/);
   assert.match(renderer,/infoOverlay\?'info:'\+infoOverlay\.id/);
   assert.match(renderer,/querySelectorAll\('\[data-info\]'\)[\s\S]*infoFocus\.focus\(\{preventScroll:true\}\)/);
+  assert.match(renderer,/showHandle:false,showClose:false,closeOnScrim:false/);
+  assert.doesNotMatch(renderer,/dialogClass:'tm-info-dialog'[^\n]*kick:t\('info\.what'\)/);
   assert.match(css,/@media \(min-width:1024px\)[\s\S]*\.tm-workspace-shell>\.main>\.tm-col>\.tm-tabs\{display:none\}/);
   assert.match(css,/@media \(min-width:1024px\)\{[\s\S]*#taxmate-ltd-ui-root \.tm-app\{padding:0\}/);
   assert.match(css,/@media \(min-width:1024px\)[\s\S]*\.tm-summary-sheet>\.tm-top,[\s\S]*\.tm-company-return\{display:none\}/);
@@ -68,17 +70,21 @@ test('information dialog and overview styling stay narrowly scoped to the LTD ro
 
 test('new approved copy is complete for every supported locale',()=>{
   const locales=['en','zh-HK','pl','ro','es','ur'];
-  const keys=['common.start','info.back_to_question','setup.save_leave','setup.continue_setup','s1.identity_question','s1.identity_needs_checking','s1.identity_info','s1.registration_unknown_notice','s2.trading_unknown_notice','s3.ownership_unknown_notice','pending.registration_review_title','pending.registration_review_body','trading_review.title','trading_review.body','ownership_review.title','ownership_review.body','s5.company_activity','s5.role_ownership','s5.ct_added','s5.other_company_details','s5.blocked_title','s5.blocked_body','reason.activity_profile','reason.identity_confirmation','reason.trading_status'];
+  const keys=['common.start','info.back_to_question','setup.save_leave','setup.continue_setup','setup.changed','setup.uncertain','s1.identity_question','s1.identity_needs_checking','s1.identity_info','s1.registration_unknown_notice','s2.trading_unknown_notice','s3.ownership_unknown_notice','pending.registration_review_title','pending.registration_review_body','trading_review.title','trading_review.body','ownership_review.title','ownership_review.body','s5.company_activity','s5.role_ownership','s5.ct_added','s5.other_company_details','s5.blocked_title','s5.blocked_body','reason.activity_profile','reason.identity_confirmation','reason.trading_status'];
   for(const locale of locales){
     for(const key of keys) assert.equal(typeof copy.canonical[locale][key],'string',`${locale} ${key}`);
+    assert.ok(copy.canonical[locale]['setup.changed'].includes(copy.canonical[locale]['setup.save_leave']),`${locale} changed-state recovery names the visible exit control`);
+    assert.ok(copy.canonical[locale]['setup.uncertain'].includes(copy.canonical[locale]['setup.save_leave']),`${locale} uncertain-state recovery names the visible exit control`);
   }
+  assert.equal(copy.canonical.en['setup.save_leave'],'Leave setup');
+  assert.equal(copy.canonical['zh-HK']['setup.save_leave'],'離開設定');
 });
 
 test('unsupported Step 4 activity answers stay blocked with truthful, actionable Step 5 copy',()=>{
   const step5=renderer.slice(renderer.indexOf('function step5()'),renderer.indexOf('function reviewReasonLine'));
   const reasons=renderer.slice(renderer.indexOf('function reviewReasonLine'),renderer.indexOf('function screenRegistrationPending'));
-  assert.match(step5,/draft\?t\('s5\.draft_title'\):t\('s5\.blocked_title'\)/);
-  assert.match(step5,/draft\?t\('s5\.draft_body'\):t\('s5\.blocked_body'\)/);
+  assert.match(step5,/notice\(draft\?'ok':'warn', null, draft\?t\('s5\.draft_body'\):t\('s5\.blocked_body'\)\)/);
+  assert.doesNotMatch(step5,/notice\(draft\?'ok':'warn', draft\?t\('s5\.draft_title'\):t\('s5\.blocked_title'\)/);
   assert.match(reasons,/ordinary_service_or_digital_company_required':'reason\.activity_profile'/);
   assert.match(step5,/run\('onFixCompanyFact',\{reasonCode:rc\}/);
   assert.notEqual(copy.canonical.en['s5.blocked_title'],copy.canonical.en['s5.ready_title']);
@@ -97,17 +103,20 @@ test('registration review and Step 1 each expose one setup exit path',()=>{
   const pending=renderer.slice(renderer.indexOf('function screenRegistrationPending'),renderer.indexOf('function screenDirectorReview'));
   const step1=renderer.slice(renderer.indexOf('function step1()'),renderer.indexOf('function lookupState'));
   assert.doesNotMatch(pending,/onSaveCompanyDraft|s3\.save_draft/);assert.equal((step1.match(/onSaveCompanyDraft/g)||[]).length,0);
+  assert.match(pending,/notice\('warn',null,t\(unknown\?'pending\.registration_review_body':'pending\.body'\)\)/);
   assert.match(renderer,/persistDraft\(sid,'identityDetailsConfirmed','select-one',''\)/);
   assert.match(facade,/identityDetailsConfirmed'[\s\S]*input\.field\.value!==['"]yes['"]/);
 });
 
-test('terminal setup review screens keep the single header Back control',()=>{
+test('guard and terminal review screens rely on the shared header controls without duplicate titles or save exits',()=>{
+  const step2=renderer.slice(renderer.indexOf('function step2()'),renderer.indexOf('function step3()'));
   const director=renderer.slice(renderer.indexOf('function screenDirectorReview'),renderer.indexOf('function screenTradingReview'));
   const trading=renderer.slice(renderer.indexOf('function screenTradingReview'),renderer.indexOf('function screenOwnershipReview'));
   const ownership=renderer.slice(renderer.indexOf('function screenOwnershipReview'),renderer.indexOf('function reasonText'));
+  assert.doesNotMatch(step2,/onSaveCompanyDraft|s3\.save_draft/);
   for(const screen of [director,trading,ownership]){
-    assert.doesNotMatch(screen,/common\.back_to_setup|run\('onBack'/);
-    assert.match(screen,/s3\.save_draft[\s\S]*onSaveCompanyDraft/);
+    assert.doesNotMatch(screen,/common\.back_to_setup|run\('onBack'|s3\.save_draft|onSaveCompanyDraft/);
+    assert.match(screen,/notice\('warn',\s*null,/);
   }
 });
 

@@ -35,12 +35,18 @@ async function openCompany(page){await page.getByRole('button',{name:/ToodaLoop 
 async function openTax(page){await workspaceNav(page,'tax');await page.locator('[data-action="open-checklist"]').waitFor();}
 async function openChecklist(page){const summary=page.locator('[data-action="open-checklist"]').first();if(await summary.getAttribute('data-open')!=='true')await summary.click();await page.locator('[data-statutory-count]').waitFor();}
 async function openTodo(page){const toggle=page.locator('[data-action="todo-toggle"]');if(await toggle.count()&&!(await page.locator('[data-todo]').count()))await toggle.click();await page.locator('[data-todo]').first().waitFor();}
+async function openPackDirectorChecks(page){
+  await openTax(page);
+  await page.locator('[data-action="download-self-filing-pack"]').click();
+  await page.locator('[data-pack-status]').waitFor();
+  await page.locator('[data-todo-action="director"]').click();
+}
 async function openDisclosure(page,action){const summary=page.locator(`[data-action="${action}"]`).first();if(await summary.getAttribute('data-open')!=='true')await summary.click();await sleep(200);}
 async function closeDisclosure(page,action){const summary=page.locator(`[data-action="${action}"]`).first();if(await summary.count()&&await summary.getAttribute('data-open')==='true')await summary.click();await sleep(200);}
 const sleep=ms=>new Promise(resolve=>setTimeout(resolve,ms));
 const rgb=value=>String(value||'').replace(/\s/g,'');
 // Approved money-semantic values (index.html / direction-a.css / workbench.css tokens).
-const MONEY={light:{in:'rgb(22,122,67)',out:'rgb(189,48,55)'},dark:{in:'rgb(95,216,145)',out:'rgb(255,138,143)'}};
+const MONEY={light:{ink:'rgb(16,24,33)',in:'rgb(22,122,67)',out:'rgb(189,48,55)'},dark:{ink:'rgb(242,244,247)',in:'rgb(95,216,145)',out:'rgb(255,138,143)'},hero:{ink:'rgb(255,255,255)',in:'rgb(95,216,145)',out:'rgb(255,138,143)'}};
 async function colourOf(locator){return rgb(await locator.evaluate(node=>getComputedStyle(node).color));}
 
 
@@ -63,15 +69,15 @@ async function main(){
   browser=await chromium.launch(executablePath?{headless:true,executablePath}:{headless:true});
 
   const mobile=await pageFor({width:390,height:844}),page=mobile.page;
-  await goto(page,'/?mode=existing&tier=pro&reset=1');
+  await goto(page,'/?mode=existing&tier=pro&theme=light&reset=1');
   await openCompany(page);
 
   // ---- Overview: key amounts, money colours by role, one to-do entry --------
   const s0=await snapshot();
   check(s0.statutory&&s0.statutory.checklist&&s0.statutory.checklist.items.length===12,'engine checklist has the 12 fixed items');
-  equal(await colourOf(page.locator('[data-metric="revenue"] .v')),MONEY.light.in,'money in uses the income colour on the overview');
-  equal(await colourOf(page.locator('[data-metric="allowableRunningExpenses"] .v')),MONEY.light.out,'company costs use the expense colour on the overview');
-  if(s0.workspace.projection.metrics.corporationTax.status==='supported_estimate')equal(await colourOf(page.locator('[data-metric="corporationTax"] .tm-num')),MONEY.light.out,'a supported zero Corporation Tax is red');
+    equal(await colourOf(page.locator('[data-metric="revenue"] .tm-num')),MONEY.hero.in,'money in uses the dark-summary income colour on the overview');
+    equal(await colourOf(page.locator('[data-metric="allowableRunningExpenses"] .tm-num')),MONEY.hero.out,'company costs use the dark-summary expense colour on the overview');
+    if(s0.workspace.projection.metrics.corporationTax.status==='supported_estimate')equal(await colourOf(page.locator('[data-metric="corporationTax"] .tm-num')),MONEY.hero.ink,'a supported zero Corporation Tax uses the dark-summary theme ink');
   else check((await page.locator('[data-metric="corporationTax"]').innerText()).includes('Please check'),'unknown Corporation Tax is a review state, not a fabricated zero');
   await openDisclosure(page,'open-overview-details');
   equal(await colourOf(page.locator('[data-metric="companyCash"] .v')),MONEY.light.in,'a positive company cash balance reads as money in');
@@ -117,7 +123,7 @@ async function main(){
 
   // ---- Record checks: facts with evidence -> onSaveStatutoryReview ----------
   // Exactly N relevant short rows, then one evidenced fact.
-  await page.locator('[data-todo-action="director"]').click();
+  await openPackDirectorChecks(page);
   equal(await page.locator('[data-review-fact]').count(),4,'4 checks opens precisely 4 short fact rows');
   equal(await page.locator('.tm-statgroup').count(),0,'the list does not expand 11 unrelated groups');
   equal(await page.locator('[data-action="statutory-save"]').count(),0,'the short list has no irrelevant Save action before choosing a fact');
@@ -129,10 +135,9 @@ async function main(){
   await page.locator('[data-fkey="ui.statutory::ev:accounts"]').fill('Reviewed eligibility evidence 2026-08-24');
   await page.locator('[data-action="statutory-save"]').click();
   await page.waitForFunction(()=>!document.querySelector('.tm-sheet'));
-  await openTax(page);
-  await page.locator('[data-todo-action="director"]').click();
+  await openPackDirectorChecks(page);
   equal(await page.locator('[data-review-fact]').count(),3,'after one evidenced confirmation precisely 3 checks remain');
-  await page.locator('.tm-dialog-close').click();
+  await page.locator('.tm-sfoot button').last().click();
   equal(await page.evaluate(()=>document.activeElement.getAttribute('data-todo-action')),'director','closing the fact list restores focus to the exact task opener');
   const yes=key=>page.locator(`[data-fact="${key}"] .tm-choice`).first();
   for(const group of [
@@ -311,7 +316,7 @@ async function main(){
   equal((await packButton.innerText()).trim(),'Download','the download button is a short verb, not the file name');
   const packFirstScreen=await page.locator('.tm-workspace-shell .main>.tm-col').innerText();
   check(/does not submit/i.test(packFirstScreen),'the pack screen still says once that TaxMate does not submit it');
-  check(!/iXBRL/.test(packFirstScreen),'submission mechanics are not on the first screen');
+  check(!/not an iXBRL file/i.test(packFirstScreen),'detailed submission mechanics are not on the first screen');
   check(!/Box 145/.test(packFirstScreen),'CT600 boxes are not on the first screen');
   await shot(page,'self-filing-pack-en-light-390');
   await openDisclosure(page,'open-pack-guidance');
@@ -392,8 +397,8 @@ async function main(){
   await goHome();
   await goto(dark.page,'/?mode=existing&tier=pro&theme=dark');
   await openCompany(dark.page);
-  equal(await colourOf(dark.page.locator('[data-metric="revenue"] .v')),MONEY.dark.in,'dark mode keeps money in on the income colour');
-  equal(await colourOf(dark.page.locator('[data-metric="allowableRunningExpenses"] .v')),MONEY.dark.out,'dark mode keeps company costs on the expense colour');
+    equal(await colourOf(dark.page.locator('[data-metric="revenue"] .tm-num')),MONEY.hero.in,'dark mode keeps money in on the dark-summary income colour');
+    equal(await colourOf(dark.page.locator('[data-metric="allowableRunningExpenses"] .tm-num')),MONEY.hero.out,'dark mode keeps company costs on the dark-summary expense colour');
   await workspaceNav(dark.page,'money');await sleep(300);
   const darkRows=dark.page.locator('.tm-rec[data-event-role]');
   const darkIn=darkRows.filter({has:dark.page.locator('[data-event-role="in"]')});

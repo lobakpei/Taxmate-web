@@ -19,7 +19,7 @@ async function setDoc(ref,payload,options){
   const context=contexts.get(ref.firestore);
   if(!context||!Admission.permittedTarget(context.uid,ref.path))return Client.setDoc(ref,payload,options);
   assert.equal(options,undefined,'Receipt admission binds a full replacement payload');
-  let permit;try{permit=await Admission.prepareWrite({db:context.admin,uid:context.uid,target:ref.path,payload});}catch(error){error.code=error.message==='receipt_reference_unavailable'?'failed-precondition':'permission-denied';throw error;}
+  let permit;try{permit=await Admission.prepareWrite({db:context.admin,uid:context.uid,target:ref.path,payload,accountResetEpoch:Number(payload&&payload.accountResetEpoch||0)});}catch(error){error.code=error.message==='receipt_reference_unavailable'?'failed-precondition':'permission-denied';throw error;}
   const batch=Client.writeBatch(ref.firestore);batch.set(ref,payload);batch.delete(Client.doc(ref.firestore,permit.path));return batch.commit();
 }
 module.exports={initializeTestEnvironment,setDoc,rawSetDoc:Client.setDoc};

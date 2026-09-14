@@ -10,6 +10,7 @@ const root=path.resolve(__dirname,'..');
 const firebase=localBinary(root,path.join('node_modules','.bin','firebase.cmd'));
 const generatedEnv=path.join(root,'functions','.env.local'),hadEnv=fs.existsSync(generatedEnv);
 const evidence=process.env.TAXMATE_PAID_SYNC_EVIDENCE||path.join(root,'.paid-sync-browser-evidence');
+const navigationOnly=process.argv.includes('--navigation-only')||process.env.TAXMATE_PAID_SYNC_NAVIGATION_ONLY==='1';
 const runtime=localToolEnvironment(root);
 const isolatedPorts={
   TAXMATE_AUTH_EMULATOR_PORT:process.env.TAXMATE_AUTH_EMULATOR_PORT||'19098',
@@ -31,7 +32,8 @@ const env={
   STRIPE_PLUS_LEGACY_PRICE_IDS:'',
   STRIPE_PRO_LEGACY_PRICE_IDS:'price_pro_legacy_emulator',
   PUBLIC_APP_URL:`http://127.0.0.1:${process.env.TAXMATE_PAID_SYNC_PORT||4176}`,
-  TAXMATE_PAID_SYNC_EVIDENCE:evidence
+  TAXMATE_PAID_SYNC_EVIDENCE:evidence,
+  TAXMATE_PAID_SYNC_NAVIGATION_ONLY:navigationOnly?'1':'0'
 };
 const isolated=prepare(root,env),command=`"${firebase}" emulators:exec${isolated.arg} --project demo-taxmate --only auth,firestore,storage,functions "node tests/browser/paid-sync.e2e.js"`;
 const child=spawnSync(command,{cwd:root,env,stdio:'inherit',shell:true});

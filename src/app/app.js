@@ -3048,6 +3048,24 @@ Object.assign(I18N.pl,{'promo.title':'Zrealizuj kod promocyjny','promo.body':'Wp
 Object.assign(I18N.ro,{'promo.title':'Folosește codul promoțional','promo.body':'Introdu codul exact așa cum l-ai primit.','promo.placeholder':'Cod promoțional','promo.apply':'Folosește codul','promo.invalid':'Acest cod promoțional nu este valid.','promo.notStarted':'Această promoție nu este încă disponibilă.','promo.expired':'Această promoție s-a încheiat.','promo.full':'Această promoție și-a atins limita.','promo.duplicate':'Ai folosit deja acest cod promoțional.','promo.service':'Accesul promoțional este indisponibil momentan. Încearcă din nou.','promo.success':'Promoție aplicată','billing.unavailable':'Plățile sunt indisponibile momentan. Încearcă din nou.','tier.manage':'Gestionează abonamentul','tier.permanent':'Acces Pro permanent','plan.freeSub':'Evidență și estimări fiscale pentru o afacere.','plan.plusSub':'Pentru bonuri, rapoarte și mai multe afaceri.','plan.proSub':'Pentru parteneriate și evidențe avansate.','plan.includesFree':'Tot ce include Gratuit, plus:','plan.includesPlus':'Tot ce include Plus, plus:','plan.renewal':'Abonamentele lunare și anuale se reînnoiesc până la anulare.','plan.promoUntil':'Acces {p} până la {d}','plan.renews':'{p} se reînnoiește la {d}','plan.ends':'{p} se termină la {d}','sec.help':'Ajutor și asistență','sy.joinTitle':'Alătură-te unui parteneriat','sy.readOnly':'Înregistrările comune sunt doar pentru citire fără Pro. Păstrează propria copie a datelor necesare.','biz.readOnly':'Această afacere este doar pentru citire în planul curent. Păstrează propria copie a datelor necesare.'});
 Object.assign(I18N.es,{'promo.title':'Canjear código promocional','promo.body':'Introduce el código exactamente como lo recibiste.','promo.placeholder':'Código promocional','promo.apply':'Canjear código','promo.invalid':'Este código promocional no es válido.','promo.notStarted':'Esta promoción aún no está disponible.','promo.expired':'Esta promoción ha terminado.','promo.full':'Esta promoción ha alcanzado su límite.','promo.duplicate':'Ya has usado este código promocional.','promo.service':'El acceso promocional no está disponible temporalmente. Inténtalo de nuevo.','promo.success':'Promoción aplicada','billing.unavailable':'Los pagos no están disponibles temporalmente. Inténtalo de nuevo.','tier.manage':'Gestionar suscripción','tier.permanent':'Acceso Pro permanente','plan.freeSub':'Contabilidad y estimación fiscal para un negocio.','plan.plusSub':'Para recibos, informes y más de un negocio.','plan.proSub':'Para sociedades y registros avanzados.','plan.includesFree':'Todo lo de Gratis, más:','plan.includesPlus':'Todo lo de Plus, más:','plan.renewal':'Las suscripciones mensuales y anuales se renuevan hasta su cancelación.','plan.promoUntil':'Acceso {p} hasta {d}','plan.renews':'{p} se renueva el {d}','plan.ends':'{p} termina el {d}','sec.help':'Ayuda y soporte','sy.joinTitle':'Unirse a una sociedad','sy.readOnly':'Los registros compartidos son de solo lectura sin Pro. Guarda tu propia copia de los datos que necesites.','biz.readOnly':'Este negocio es de solo lectura con tu plan actual. Guarda tu propia copia de los datos que necesites.'});
 Object.assign(I18N.ur,{'promo.title':'پروموشن کوڈ استعمال کریں','promo.body':'کوڈ بالکل ویسے درج کریں جیسے آپ کو ملا۔','promo.placeholder':'پروموشن کوڈ','promo.apply':'کوڈ استعمال کریں','promo.invalid':'یہ پروموشن کوڈ درست نہیں۔','promo.notStarted':'یہ پروموشن ابھی دستیاب نہیں۔','promo.expired':'یہ پروموشن ختم ہو چکی ہے۔','promo.full':'یہ پروموشن اپنی حد تک پہنچ چکی ہے۔','promo.duplicate':'آپ یہ پروموشن کوڈ پہلے استعمال کر چکے ہیں۔','promo.service':'پروموشن رسائی عارضی طور پر دستیاب نہیں۔ دوبارہ کوشش کریں۔','promo.success':'پروموشن لاگو ہو گئی','billing.unavailable':'ادائیگیاں عارضی طور پر دستیاب نہیں۔ دوبارہ کوشش کریں۔','tier.manage':'سبسکرپشن سنبھالیں','tier.permanent':'مستقل Pro رسائی','plan.freeSub':'ایک کاروبار کے لیے حساب کتاب اور ٹیکس تخمینہ۔','plan.plusSub':'رسیدوں، رپورٹس اور ایک سے زیادہ کاروبار کے لیے۔','plan.proSub':'شراکت اور جدید ریکارڈز کے لیے۔','plan.includesFree':'مفت پلان کی سب خصوصیات، مزید:','plan.includesPlus':'Plus کی سب خصوصیات، مزید:','plan.renewal':'ماہانہ اور سالانہ سبسکرپشن منسوخی تک تجدید ہوتی ہیں۔','plan.promoUntil':'{p} رسائی {d} تک','plan.renews':'{p} کی تجدید {d} کو','plan.ends':'{p} {d} کو ختم ہوگا','sec.help':'مدد اور معاونت','sy.joinTitle':'شراکت میں شامل ہوں','sy.readOnly':'Pro کے بغیر مشترکہ ریکارڈ صرف پڑھنے کے لیے ہیں۔ مطلوبہ ریکارڈ کی اپنی بیک اپ کاپی رکھیں۔','biz.readOnly':'موجودہ پلان پر یہ کاروبار صرف پڑھنے کے لیے ہے۔ مطلوبہ ریکارڈ کی اپنی بیک اپ کاپی رکھیں۔'});
+Object.assign(I18N.en,{'plan.managedPlay':'This plan is managed by Google Play.','plan.managedAppStore':'This plan is managed by the App Store.','billing.managePlay':'Your subscription is managed in Google Play. Open Google Play subscriptions to make changes.','billing.manageAppStore':'Your subscription is managed in the App Store. Open App Store subscriptions to make changes.'});
+Object.assign(I18N.zh,{'plan.managedPlay':'呢個方案由 Google Play 管理。','plan.managedAppStore':'呢個方案由 App Store 管理。','billing.managePlay':'你嘅訂閱由 Google Play 管理。請開啟 Google Play 訂閱設定作出更改。','billing.manageAppStore':'你嘅訂閱由 App Store 管理。請開啟 App Store 訂閱設定作出更改。'});
+Object.assign(I18N.pl,{'plan.managedPlay':'Ten plan jest zarządzany przez Google Play.','plan.managedAppStore':'Ten plan jest zarządzany przez App Store.','billing.managePlay':'Twoja subskrypcja jest zarządzana w Google Play. Otwórz subskrypcje Google Play, aby wprowadzić zmiany.','billing.manageAppStore':'Twoja subskrypcja jest zarządzana w App Store. Otwórz subskrypcje App Store, aby wprowadzić zmiany.'});
+Object.assign(I18N.ro,{'plan.managedPlay':'Acest plan este gestionat prin Google Play.','plan.managedAppStore':'Acest plan este gestionat prin App Store.','billing.managePlay':'Abonamentul tău este gestionat în Google Play. Deschide abonamentele Google Play pentru modificări.','billing.manageAppStore':'Abonamentul tău este gestionat în App Store. Deschide abonamentele App Store pentru modificări.'});
+Object.assign(I18N.es,{'plan.managedPlay':'Este plan se gestiona mediante Google Play.','plan.managedAppStore':'Este plan se gestiona mediante el App Store.','billing.managePlay':'Tu suscripción se gestiona en Google Play. Abre las suscripciones de Google Play para hacer cambios.','billing.manageAppStore':'Tu suscripción se gestiona en el App Store. Abre las suscripciones del App Store para hacer cambios.'});
+Object.assign(I18N.ur,{'plan.managedPlay':'یہ پلان Google Play کے ذریعے منظم ہوتا ہے۔','plan.managedAppStore':'یہ پلان App Store کے ذریعے منظم ہوتا ہے۔','billing.managePlay':'آپ کی سبسکرپشن Google Play میں منظم ہوتی ہے۔ تبدیلی کے لیے Google Play سبسکرپشنز کھولیں۔','billing.manageAppStore':'آپ کی سبسکرپشن App Store میں منظم ہوتی ہے۔ تبدیلی کے لیے App Store سبسکرپشنز کھولیں۔'});
+Object.assign(I18N.en,{'billing.conflictTitle':'More than one subscription needs attention','billing.conflictBody':'TaxMate found subscriptions with more than one payment provider. Manage each one below to prevent another renewal or charge.','billing.conflictBlocked':'Resolve subscriptions before choosing another plan','billing.manageStripeAction':'Manage TaxMate subscription','billing.managePlayAction':'Manage Google Play subscription','billing.manageAppStoreAction':'Manage App Store subscription'});
+Object.assign(I18N.zh,{'billing.conflictTitle':'多於一個訂閱需要處理','billing.conflictBody':'TaxMate 發現你有多於一個付款平台嘅訂閱。請逐一管理，避免再次續期或扣款。','billing.conflictBlocked':'請先處理現有訂閱，先再選擇方案','billing.manageStripeAction':'管理 TaxMate 訂閱','billing.managePlayAction':'管理 Google Play 訂閱','billing.manageAppStoreAction':'管理 App Store 訂閱'});
+Object.assign(I18N.pl,{'billing.conflictTitle':'Więcej niż jedna subskrypcja wymaga uwagi','billing.conflictBody':'TaxMate wykrył subskrypcje u więcej niż jednego dostawcy płatności. Zarządzaj każdą z nich poniżej, aby uniknąć kolejnego odnowienia lub obciążenia.','billing.conflictBlocked':'Najpierw rozwiąż istniejące subskrypcje','billing.manageStripeAction':'Zarządzaj subskrypcją TaxMate','billing.managePlayAction':'Zarządzaj subskrypcją Google Play','billing.manageAppStoreAction':'Zarządzaj subskrypcją App Store'});
+Object.assign(I18N.ro,{'billing.conflictTitle':'Mai multe abonamente necesită atenție','billing.conflictBody':'TaxMate a găsit abonamente la mai mulți furnizori de plăți. Gestionează-le separat mai jos pentru a evita o altă reînnoire sau plată.','billing.conflictBlocked':'Rezolvă abonamentele înainte de a alege alt plan','billing.manageStripeAction':'Gestionează abonamentul TaxMate','billing.managePlayAction':'Gestionează abonamentul Google Play','billing.manageAppStoreAction':'Gestionează abonamentul App Store'});
+Object.assign(I18N.es,{'billing.conflictTitle':'Hay más de una suscripción que requiere atención','billing.conflictBody':'TaxMate ha encontrado suscripciones con más de un proveedor de pagos. Gestiona cada una abajo para evitar otra renovación o cargo.','billing.conflictBlocked':'Resuelve las suscripciones antes de elegir otro plan','billing.manageStripeAction':'Gestionar suscripción de TaxMate','billing.managePlayAction':'Gestionar suscripción de Google Play','billing.manageAppStoreAction':'Gestionar suscripción del App Store'});
+Object.assign(I18N.ur,{'billing.conflictTitle':'ایک سے زیادہ سبسکرپشنز پر توجہ درکار ہے','billing.conflictBody':'TaxMate کو ایک سے زیادہ ادائیگی فراہم کنندگان کے ساتھ سبسکرپشنز ملی ہیں۔ مزید تجدید یا چارج سے بچنے کے لیے نیچے ہر ایک کا الگ نظم کریں۔','billing.conflictBlocked':'نیا پلان چننے سے پہلے موجودہ سبسکرپشنز حل کریں','billing.manageStripeAction':'TaxMate سبسکرپشن کا نظم کریں','billing.managePlayAction':'Google Play سبسکرپشن کا نظم کریں','billing.manageAppStoreAction':'App Store سبسکرپشن کا نظم کریں'});
+Object.assign(I18N.en,{'m.eraseProviderHistory':'Deletion is paused because this account has Google Play or App Store billing history. Your TaxMate data remains available. Review every store subscription, then contact support@taxmate.uk or try deletion again.'});
+Object.assign(I18N.zh,{'m.eraseProviderHistory':'由於呢個帳戶有 Google Play 或 App Store 付款記錄，刪除已暫停。你嘅 TaxMate 資料仍然可用。請先檢查每一個商店訂閱，之後聯絡 support@taxmate.uk 或再次嘗試刪除。'});
+Object.assign(I18N.pl,{'m.eraseProviderHistory':'Usuwanie zostało wstrzymane, ponieważ to konto ma historię płatności w Google Play lub App Store. Twoje dane TaxMate pozostają dostępne. Sprawdź wszystkie subskrypcje w sklepach, a następnie skontaktuj się z support@taxmate.uk lub spróbuj ponownie.'});
+Object.assign(I18N.ro,{'m.eraseProviderHistory':'Ștergerea este întreruptă deoarece acest cont are istoric de plăți Google Play sau App Store. Datele TaxMate rămân disponibile. Verifică toate abonamentele din magazine, apoi contactează support@taxmate.uk sau încearcă din nou.'});
+Object.assign(I18N.es,{'m.eraseProviderHistory':'La eliminación está en pausa porque esta cuenta tiene historial de pagos de Google Play o App Store. Tus datos de TaxMate siguen disponibles. Revisa todas las suscripciones de las tiendas y después contacta con support@taxmate.uk o vuelve a intentarlo.'});
+Object.assign(I18N.ur,{'m.eraseProviderHistory':'حذف کرنا روک دیا گیا ہے کیونکہ اس اکاؤنٹ میں Google Play یا App Store کی ادائیگی کی تاریخ موجود ہے۔ آپ کا TaxMate ڈیٹا دستیاب رہے گا۔ تمام اسٹور سبسکرپشنز دیکھیں، پھر support@taxmate.uk سے رابطہ کریں یا دوبارہ حذف کرنے کی کوشش کریں۔'});
 
 // Complete Founder Preview correction copy. English remains canonical; every key below has
 // an explicit six-locale value so onboarding, billing accessibility and sync status never
@@ -3275,7 +3293,7 @@ function t(key, vars){
   let s = (I18N[S.settings.lang] && I18N[S.settings.lang][key]) || I18N.en[key] || key;
   // Remove decorative emoji from product copy before interpolation, never from
   // user-entered names or other values. The approved greeting keeps its wave.
-  if(key!=='home.hi')s=s.replace(/[\p{Extended_Pictographic}\uFE0F\u200D]/gu,'').trim();
+  if(key!=='home.hi')s=s.replace(/[ \t]*[\p{Extended_Pictographic}\uFE0F\u200D]+/gu,'').trim();
   if(vars) for(const k in vars) s = s.split('{'+k+'}').join(vars[k]);
   return s;
 }
@@ -3409,20 +3427,28 @@ function trackEvent(name,params){try{if(!window.TaxMateAnalytics||!TaxMateAnalyt
 async function loadEntitlementFromCloud(uid){
   assertActiveAccountUid(uid);const cacheKey=accountSlotKey('entitlement-cache');
   try{
-    const doc = await userRoot(uid).collection('entitlements').doc('current').get({source:'server'});
+    const ref=userRoot(uid).collection('entitlements').doc('current');let doc=await ref.get({source:'server'});
+    if(!doc.exists){
+      try{localStorage.removeItem(cacheKey);}catch(e){}
+      assertActiveAccountUid(uid);
+      await callSecureFunction('bootstrapAccountStorageControls',{});
+      assertActiveAccountUid(uid);doc=await ref.get({source:'server'});
+      if(!doc.exists)throw new Error('account-storage-bootstrap-missing');
+    }
     if(doc.exists){
       ENTITLEMENT.snapshot=doc.data()||null;
       try{ localStorage.setItem(cacheKey,JSON.stringify(ENTITLEMENT.snapshot)); }catch(e){}
     }else ENTITLEMENT.snapshot=null;
     ENTITLEMENT.loaded=true;
-    if(!doc.exists){
-      try{localStorage.removeItem(cacheKey);}catch(e){}
-    }
   }catch(e){ENTITLEMENT.snapshot=null;if(!navigator.onLine)try{ENTITLEMENT.snapshot=JSON.parse(localStorage.getItem(cacheKey));}catch(_){}ENTITLEMENT.loaded=true;if(navigator.onLine)throw e;}
 }
 
 function currentTier(){
   return TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine).tier;
+}
+function chargeableBillingProviders(){return TaxMateEntitlement.chargeableProviders(ENTITLEMENT.snapshot,Date.now());}
+function billingProviderConflictState(){
+  return TaxMateEntitlement.billingProviderConflict(ENTITLEMENT.snapshot,Date.now());
 }
 let LTD_ACCESS_RUNTIME_WARNING=false;
 function ltdAccessDecision(action,state=S){
@@ -3450,7 +3476,7 @@ function tierFeatureList(tier){
 }
 function planBlock(tier,context='settings'){
   const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine);
-  const cur=access.tier,isCurrent=cur===tier,snapshot=ENTITLEMENT.snapshot||{};
+  const cur=access.tier,isCurrent=cur===tier,snapshot=ENTITLEMENT.snapshot||{},billingConflict=billingProviderConflictState(),providers=billingConflict.providers;
   const name = t('tier.'+tier);
   const sub = t('plan.'+tier+'Sub');
   const includes=tier==='plus'?t('plan.includesFree'):tier==='pro'?t('plan.includesPlus'):'';
@@ -3461,13 +3487,16 @@ function planBlock(tier,context='settings'){
     ? `<span class="tagchip green" style="margin-inline-start:auto">${t('tier.current')}</span>`
     : '';
   const permanent=TaxMateEntitlement.hasPermanentPro(ENTITLEMENT.snapshot,Date.now());
-  const paid=access.source==='stripe';
+  const paid=providers.length>0,manageProvider=(providers.find(item=>item.provider===access.source)||providers[0]||{}).provider;
   let status='';
   if(isCurrent&&permanent)status=t('tier.permanent');
   else if(isCurrent&&access.source==='promotion'&&access.expiresAt)status=t('plan.promoUntil',{p:name,d:new Date(access.expiresAt-1).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'})});
+  else if(isCurrent&&access.source==='google_play')status=t('plan.managedPlay');
+  else if(isCurrent&&access.source==='app_store')status=t('plan.managedAppStore');
   else if(isCurrent&&paid&&snapshot.currentPeriodEnd){const date=new Date(Number(snapshot.currentPeriodEnd)).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'});status=t(snapshot.cancelAtPeriodEnd?'plan.ends':'plan.renews',{p:name,d:date});}
   let btn='';
-  if(paid&&tier!=='free')btn=`<button class="btn ghost" style="margin-top:12px;width:100%" data-tm-click="openBillingPortal()">${t('tier.manage')}</button>`;
+  if(billingConflict.active&&tier!=='free')btn=`<button class="btn ghost" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`;
+  else if(paid&&tier!=='free')btn=`<button class="btn ghost" style="margin-top:12px;width:100%" data-tm-click="openBillingProvider('${manageProvider}')">${t('tier.manage')}</button>`;
   else if(!permanent&&!isCurrent&&tier==='pro'){
     const availability=proBillingAvailability();
     btn=availability.purchaseEnabled
@@ -3477,7 +3506,11 @@ function planBlock(tier,context='settings'){
       : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   }
   else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
-  if(context==='onboarding')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
+  if(context==='onboarding')btn=billingConflict.active&&tier!=='free'
+    ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`
+    : isCurrent
+      ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('tier.current')}</button>`
+      : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<section class="card plan-card" data-plan-card="${tier}" aria-labelledby="plan-${tier}-title" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3539,8 +3572,8 @@ function setTier(tier){
 }
 function proBillingAvailability(){
   const local=/^(?:localhost|127\.0\.0\.1)$/.test(location.hostname),provider=window.TaxMateLocalBillingReview;
-  if(local&&String(FIREBASE_CONFIG.projectId||'').startsWith('demo-')&&/^http:\/\/127\.0\.0\.1:\d+$/.test(FIREBASE_ENVIRONMENT.functionsOrigin||''))return Object.freeze({mode:'emulator',purchaseEnabled:true});
   if(local&&provider&&provider.enabled===true&&typeof provider.purchasePro==='function')return Object.freeze({mode:'local_review',purchaseEnabled:true});
+  if(local&&String(FIREBASE_CONFIG.projectId||'').startsWith('demo-')&&/^http:\/\/127\.0\.0\.1:\d+$/.test(FIREBASE_ENVIRONMENT.functionsOrigin||''))return Object.freeze({mode:'emulator',purchaseEnabled:true});
   const productionHosts=Array.isArray(FIREBASE_ENVIRONMENT.hosts)?FIREBASE_ENVIRONMENT.hosts:[];
   if(location.protocol==='https:'&&productionHosts.includes(location.hostname))return Object.freeze({mode:'production',purchaseEnabled:true});
   return Object.freeze({mode:'unavailable',purchaseEnabled:false});
@@ -3639,15 +3672,26 @@ function retentionStatusCard(){
         <div class="s" style="margin-top:8px">${t('ret.duty')}</div>
       </div>`;
 }
+function openBillingProvider(provider){
+  if(provider==='google_play'||provider==='app_store'){
+    const appStore=provider==='app_store',url=appStore?'https://apps.apple.com/account/subscriptions':'https://play.google.com/store/account/subscriptions';
+    showNotice(t('tier.manage'),t(appStore?'billing.manageAppStore':'billing.managePlay'));
+    window.open(url,'_blank','noopener,noreferrer');
+    return{provider,url};
+  }
+  if(provider==='stripe'){openBillingOverview();openBillingPlans();return{provider:'stripe'};}
+  return{provider:'none'};
+}
 function openBillingPortal(){
-  openBillingOverview();openBillingPlans();
+  const access=TaxMateEntitlement.resolve(ENTITLEMENT.snapshot,Date.now(),!navigator.onLine),providers=typeof TaxMateEntitlement.chargeableProviders==='function'?TaxMateEntitlement.chargeableProviders(ENTITLEMENT.snapshot,Date.now()):[],provider=(providers.find(item=>item.provider===access.source)||providers[0]||{provider:access.source}).provider;
+  return openBillingProvider(provider);
 }
 function promotionFailureMessage(error){return error&&error.reason==='not-started'?t('promo.notStarted'):error&&error.reason==='expired'?t('promo.expired'):error&&error.reason==='redemption-limit-reached'?t('promo.full'):error&&(error.reason==='duplicate'||error.code==='ALREADY_EXISTS')?t('promo.duplicate'):error&&(error.reason==='invalid'||error.code==='NOT_FOUND'||error.code==='INVALID_ARGUMENT')?t('promo.invalid'):t('promo.service');}
 async function redeemPromotionThroughCanonicalBackend(code){
   const normalized=String(code||'').trim().toUpperCase();
   if(!TaxMateEntitlement.validatePromotionCode(normalized))throw Object.assign(new Error('promotion-code-invalid'),{code:'INVALID_ARGUMENT',reason:'invalid'});
   const user=cloudUser();if(!user)throw Object.assign(new Error('promotion-sign-in-required'),{code:'UNAUTHENTICATED',reason:'sign-in'});
-  const result=await callSecureFunction('redeemPromotion',{code:normalized});
+  const result=await callSecureFunction('redeemPromotion',{code:normalized,accountResetEpoch:currentAccountResetEpoch()});
   if(cloudUser()?.uid!==user.uid)throw new Error('promotion-account-changed');
   await loadEntitlementFromCloud(user.uid);
   return result;
@@ -3681,6 +3725,7 @@ function isIOSSafari(){
 function pwaInstallOptions(){
   const displayModeStandalone=window.matchMedia('(display-mode: standalone)').matches;
   const navigatorStandalone=window.navigator.standalone===true;
+  const nativePlatform=window.TaxMatePlatform;
   if(displayModeStandalone||navigatorStandalone)pwaLocalSet(PWA_KEYS.installed,'1');
   return {
     state:S,
@@ -3691,7 +3736,9 @@ function pwaInstallOptions(){
     persistedInstalled:pwaLocalGet(PWA_KEYS.installed)==='1',
     hasDeferredPrompt:!!deferredInstall,
     isIOSSafari:isIOSSafari(),
-    hasBrowserInstallInstructions:!(displayModeStandalone||navigatorStandalone)
+    hasBrowserInstallInstructions:!(displayModeStandalone||navigatorStandalone),
+    isNative:nativePlatform?.isNative===true,
+    supportsPwaInstall:nativePlatform?.supportsPwaInstall!==false
   };
 }
 function isPwaInstalled(){return TaxMatePwaInstall.isInstalled(pwaInstallOptions());}
@@ -3702,7 +3749,8 @@ function recordPwaPromptViewed(){
   trackEvent('pwa_install_prompt_viewed');
 }
 function installCard(){
-  if(isPwaInstalled()) return '';
+  const options=pwaInstallOptions();
+  if(options.isNative||options.supportsPwaInstall===false||TaxMatePwaInstall.isInstalled(options)) return '';
   return `<div class="card">
     <div style="display:flex;align-items:center;gap:10px;margin-bottom:4px">
       <span style="font-size:20px">📲</span>
@@ -3733,9 +3781,16 @@ function markPwaInstalled(){
   if(!already)trackEvent('pwa_install_completed');
   render();
 }
+function billingProviderConflictCard(){
+  const state=billingProviderConflictState();if(!state.active)return'';
+  const key={stripe:'billing.manageStripeAction',google_play:'billing.managePlayAction',app_store:'billing.manageAppStoreAction'};
+  const buttons=state.providers.map(item=>`<button class="btn ghost" style="width:100%;margin-top:8px" data-billing-provider-manage="${item.provider}" data-tm-click="openBillingProvider('${item.provider}')">${t(key[item.provider])}</button>`).join('');
+  return `<section class="notice amber" data-billing-provider-conflict role="alert" style="margin:0 0 14px"><div class="t" style="margin-bottom:5px">${t('billing.conflictTitle')}</div><div class="s">${t('billing.conflictBody')}</div>${buttons}</section>`;
+}
 function proPlansCard(){
   return `<div class="card" style="background:transparent;border:none;padding:0;box-shadow:none">
     <div class="s" style="margin:0 2px 14px">${t('pro.sub')}</div>
+    ${billingProviderConflictCard()}
     <div class="seg" role="group" aria-label="${t('billing.cadenceAria')}" style="margin-bottom:8px">
       <button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button>
       <button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button>
@@ -3920,9 +3975,23 @@ function closePersonalSurfacesForLtd(){
   sheetOpener=null;
   LB={url:'',path:''};
 }
+function ltdSetupOperationsForAccount(items,uid,companyId){
+  return(Array.isArray(items)?items:[]).filter(operation=>operation.kind==='ltd-record'&&operation.companyId===companyId&&(operation.uid||operation.ownerUid)===uid&&(!operation.uid||operation.uid===uid)&&(!operation.ownerUid||operation.ownerUid===uid));
+}
+async function settleLtdSetupWrites(uid,companyId){
+  await flushSyncForConvergence(uid);
+  if(SYNC_RUNTIME.blocked)throw Object.assign(new Error('Company setup sync is unavailable.'),{code:'setup_sync_blocked',reasonCode:'setup_sync_blocked'});
+  const outbox=loadSyncOutbox();
+  if(!outbox||SYNC_RUNTIME.blocked)throw Object.assign(new Error('Company setup sync could not be verified.'),{code:'setup_sync_blocked',reasonCode:'setup_sync_blocked'});
+  const pending=ltdSetupOperationsForAccount(TaxMateSync.normalizeOutbox(outbox).items,uid,companyId);
+  if(!pending.length)return true;
+  const reason=pending.some(operation=>operation.status==='failed')?'setup_sync_failed':'setup_sync_pending';
+  throw Object.assign(new Error('Company setup changes have not finished syncing.'),{code:reason,reasonCode:reason});
+}
 async function callLtdTrusted(name,data){
   const beforeUser=cloudUser(),uid=beforeUser&&beforeUser.uid;if(!uid)throw Object.assign(new Error('Sign in before changing company setup'),{code:'account-owner-mismatch'});
-  const result=await callSecureFunction(name,data);
+  if(name==='manageLtdSetup'&&data?.action==='inspect')await settleLtdSetupWrites(uid,data.companyId);
+  const result=await callSecureFunction(name,{...(data||{}),accountResetEpoch:currentAccountResetEpoch()});
   if(cloudUser()?.uid!==uid)throw Object.assign(new Error('Account sign-in changed during the company operation.'),{code:'account-owner-mismatch'});assertActiveAccountUid(uid);
   if(name==='manageLtdSetup'&&result?.status==='discarded'){
     if(result.companyId!==data.companyId||result.operationId!==data.operationId)throw Object.assign(new Error('Unexpected setup discard response'),{code:'setup_discard_not_confirmed'});
@@ -3976,13 +4045,14 @@ const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const fmt = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmt0 = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{maximumFractionDigits:0});
 /* Money semantics (UI-01). role: 'in' income / positive column, 'out' explicit cost, tax
-   or liability column (expense colour whatever the sign, zero included), 'signed' by sign.
+   or liability column (expense colour whenever non-zero), 'signed' by sign. Zero stays ink.
    Presentation only: no value, sign, calculation or accounting classification changes. */
 const moneyCls = (value, role) => {
   if(value==null) return '';
   const n=Number(value);
-  if(role==='out') return 'neg';
   if(!isFinite(n)) return '';
+  if(n===0) return '';
+  if(role==='out') return 'neg';
   return n>0?'pos':n<0?'neg':'';
 };
 const esc = s => String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -4202,7 +4272,15 @@ function assistantStoredState(create=false){
   if(create)year.assistant=normalized;
   return normalized;
 }
-function assistantAllTasks(){return TaxMateAssistant.deriveTasks({state:S,taxYear:S.year,assistantState:assistantStoredState(false),receiptReminders:hasFeature('receiptPhoto')});}
+function assistantAllTasks(){
+  const tasks=TaxMateAssistant.deriveTasks({state:S,taxYear:S.year,assistantState:assistantStoredState(false),receiptReminders:hasFeature('receiptPhoto')});
+  const saved=localLtdSetup(),activeCompany=activeLtdProfile();
+  if(saved&&activeCompany?.lifecycleStatus!=='confirmed'&&!tasks.some(task=>task.kind==='ltd_setup')){
+    const profile=saved.pending&&saved.pending.profile||{};
+    tasks.unshift({id:`ltd-setup:${saved.companyId}`,category:'action_required',kind:'ltd_setup',companyId:saved.companyId,companyName:profile.legalName||t('ltd.rowType'),reasonCode:'ltd_setup_incomplete',dismissible:false,localDraft:true,actions:['resume_ltd_setup']});
+  }
+  return tasks;
+}
 function assistantVisibleTasks(){return TaxMateAssistant.visibleTasks(assistantAllTasks());}
 function assistantCountText(count){return count===1?t('assistant.countOne'):t('assistant.countMany',{n:count});}
 function assistantHomeCard(){
@@ -4231,7 +4309,10 @@ function assistantTaskActions(task,hidden=false){
   if(hidden)buttons.push(`<button class="btn ghost" data-tm-click="assistantRestore('${encoded}')">${t('assistant.restore')}</button>`);
   else if(task.kind==='entry_exact_date')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.addExactDate')}</button><button class="btn ghost" data-tm-click="assistantKeepEstimated('${encoded}')">${t('assistant.keepEstimated')}</button>`);
   else if(task.kind==='entry_required')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.fixEntry')}</button>`);
-  else if(task.kind==='ltd_setup')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.resumeLtd')}</button><button class="btn ghost" data-tm-click="assistantRemoveLtd('${encoded}')">${t('assistant.removeLtd')}</button>`);
+  else if(task.kind==='ltd_setup'){
+    buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.resumeLtd')}</button>`);
+    if(!task.localDraft)buttons.push(`<button class="btn ghost" data-tm-click="assistantRemoveLtd('${encoded}')">${t('assistant.removeLtd')}</button>`);
+  }
   else if(task.kind==='receipt_missing')buttons.push(`<button class="btn" data-tm-click="assistantOpenTask('${encoded}')">${t('assistant.openReceipts')}</button>`);
   return buttons.join('');
 }
@@ -4383,7 +4464,11 @@ function localLtdSetup(){
   try{const saved=JSON.parse(localStorage.getItem(accountSlotKey('ltd-drafts')+':setup')||'null'),pending=saved&&saved.pending;if(!pending||saved.schemaVersion!==1||pending.entityId!==saved.companyId||pending.profile?.entityId!==saved.companyId||pending.profile.lifecycleStatus!=='draft'||pending.profile.deletedAt!=null||!/^ltd\.onboarding\./.test(saved.resumeScreen||''))return null;if((S.domain.entities||[]).some(row=>row.id===saved.companyId&&row.deletedAt!=null))return null;return saved;}catch(_){return null;}
 }
 function ltdHomeBusinessCards(){
-  const profile=activeLtdProfile();if(!profile){const saved=localLtdSetup();return saved?`<div data-local-ltd-draft style="padding:14px 0"><div class="t">${esc(saved.pending.profile.legalName||t('ltd.rowType'))}</div><div class="s">${esc(t('ltd.rowSetupPending'))}</div><button class="link" data-tm-click="openLtdCompany()">${esc(t('ltd.finishSetup'))}</button></div>`:'';}
+  const profile=activeLtdProfile();if(!profile){const saved=localLtdSetup();if(!saved)return'';const name=saved.pending&&saved.pending.profile&&saved.pending.profile.legalName||t('ltd.rowType');return `<div class="row" data-local-ltd-draft>
+    <div class="avatar" style="background:var(--brand-soft);color:var(--brand-deep)">${esc(name.trim().charAt(0).toUpperCase()||'L')}</div>
+    <div class="grow"><div class="t">${esc(name)}</div><div class="s">${esc(t('ltd.rowType'))} · ${esc(t('ltd.rowSetupPending'))}</div></div>
+    <div style="text-align:end"><button class="link" data-tm-click="openLtdCompany()">${esc(t('ltd.finishSetup'))}</button></div>
+  </div>`;}
   const snapshot=window.TaxMateLtdProductionAdapter&&TaxMateLtdProductionAdapter.getSnapshot&&TaxMateLtdProductionAdapter.getSnapshot();
   const row=snapshot&&snapshot.businessList&&snapshot.businessList.find(item=>item.businessType==='limited_company')||null;
   const name=row&&row.name||profile.legalName||'Limited company',draft=profile.lifecycleStatus!=='confirmed',amount=row&&row.summary&&Number.isSafeInteger(row.summary.amountMinor)?row.summary.amountMinor:null,share=row&&row.share&&row.share.percent;
@@ -4442,7 +4527,7 @@ function pageHome(){
     <div class="big num ${moneyCls(personal.profitMinor,'signed')}" data-home-ledger-profit data-personal-profit-minor="${personal.profitMinor==null?'':personal.profitMinor}">${summaryAmount(personalProfit)}</div>
     <div class="hero-owe" data-tm-click="go('tax')">
       <span class="ho-label">${t('home.oweLine')}</span>
-      <span class="ho-val num ${moneyCls(owe==null?null:1,'out')}">${owe==null?'—':fmt(owe)} ›</span>
+      <span class="ho-val num ${moneyCls(owe,'out')}">${owe==null?'—':fmt(owe)} ›</span>
     </div>
     <div class="pills">
       <button class="pill" data-tm-click="go('income')"><div class="pl">${t(personal.hasPartnership?'home.shareIn':'home.in')}</div><div class="pv num ${moneyCls(personal.incomeMinor,'in')}" data-personal-income-minor="${personal.incomeMinor==null?'':personal.incomeMinor}">${summaryAmount(totalIn)}</div></button>
@@ -4634,7 +4719,7 @@ function pageTax(){
   <h1 class="h1 review01-page-title">${t('review01.personalTax')}</h1>
   <div class="card review01-tax-summary">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
-    <div class="big num ${tx.taxEstimateSupported?moneyCls(1,'out'):''}">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
+    <div class="big num ${tx.taxEstimateSupported?moneyCls(Math.max(tx.liability,0),'out'):''}">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
     <div class="hi">${tx.taxEstimateSupported?'':t('part.needsReview')}${t('tax.fileBy',{d:Number.isFinite(Date.parse(cfg.fileDeadline))?new Date(cfg.fileDeadline).toLocaleDateString(locale(),{day:'numeric',month:'short',year:'numeric'}):cfg.fileDeadline})}</div>
     <details class="review01-details" data-tax-calculation><summary>${t('review01.calculation')}</summary>
 <div class="card">
@@ -4646,12 +4731,12 @@ function pageTax(){
   <div class="card">
     <div class="frow"><span class="fl">${t('tax.pa')} <small>${tx.pa<cfg.pa?t('tax.paRed'):t('tax.paHint')}</small></span><span class="fv num ${moneyCls(-tx.pa,'signed')}" data-money-role="calculation-deduction">−${fmt(tx.pa).replace('−','')}</span></div>
     <div class="frow"><span class="fl">${t('tax.taxable')}</span><span class="fv num ${moneyCls(tx.taxable,'signed')}">${fmt(tx.taxable)}</span></div>
-    ${tx.basicAmt>0?`<div class="frow"><span class="fl">${t('tax.basic')} · 20% ${t('tax.on')} ${fmt0(tx.basicAmt)}</span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.basicAmt*cfg.basic)}</span></div>`:''}
-    ${tx.higherAmt>0?`<div class="frow"><span class="fl">${t('tax.higher')} · 40% ${t('tax.on')} ${fmt0(tx.higherAmt)}</span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.higherAmt*cfg.higher)}</span></div>`:''}
-    ${tx.addlAmt>0?`<div class="frow"><span class="fl">${t('tax.addl')} · 45% ${t('tax.on')} ${fmt0(tx.addlAmt)}</span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.addlAmt*cfg.addl)}</span></div>`:''}
-    <div class="frow"><span class="fl">${t('tax.c4')} <small>${t('tax.c4Hint')}</small></span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.class4)}</span></div>
+    ${tx.basicAmt>0?`<div class="frow"><span class="fl">${t('tax.basic')} · 20% ${t('tax.on')} ${fmt0(tx.basicAmt)}</span><span class="fv num ${moneyCls(tx.basicAmt*cfg.basic,'out')}">${fmt(tx.basicAmt*cfg.basic)}</span></div>`:''}
+    ${tx.higherAmt>0?`<div class="frow"><span class="fl">${t('tax.higher')} · 40% ${t('tax.on')} ${fmt0(tx.higherAmt)}</span><span class="fv num ${moneyCls(tx.higherAmt*cfg.higher,'out')}">${fmt(tx.higherAmt*cfg.higher)}</span></div>`:''}
+    ${tx.addlAmt>0?`<div class="frow"><span class="fl">${t('tax.addl')} · 45% ${t('tax.on')} ${fmt0(tx.addlAmt)}</span><span class="fv num ${moneyCls(tx.addlAmt*cfg.addl,'out')}">${fmt(tx.addlAmt*cfg.addl)}</span></div>`:''}
+    <div class="frow"><span class="fl">${t('tax.c4')} <small>${t('tax.c4Hint')}</small></span><span class="fv num ${moneyCls(tx.class4,'out')}">${fmt(tx.class4)}</span></div>
     ${class2Row}
-    <div class="frow total"><span class="fl">${t('tax.total')}</span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.liability)}</span></div>
+    <div class="frow total"><span class="fl">${t('tax.total')}</span><span class="fv num ${moneyCls(tx.liability,'out')}">${fmt(tx.liability)}</span></div>
   </div>
     </details>
   </div>
@@ -4664,7 +4749,7 @@ function pageTax(){
       <div class="t">${t('tax.payT')}</div>
       <button class="link" data-tm-click="openAdj()">${t('tax.editPos')}</button>
     </div>
-    <div class="frow"><span class="fl">${t('tax.thisBill')}</span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.liability)}</span></div>
+    <div class="frow"><span class="fl">${t('tax.thisBill')}</span><span class="fv num ${moneyCls(tx.liability,'out')}">${fmt(tx.liability)}</span></div>
     <div class="frow"><span class="fl">${t('tax.priorAdj')} <small>${t('tax.priorAdjS')}</small></span><span class="fv num ${moneyCls(-tx.priorAdj,'signed')}">${fmt(tx.priorAdj)}</span></div>
     <div class="frow"><span class="fl">${t('tax.poaPaid')}</span><span class="fv num ${moneyCls(tx.poaPaid,'out')}">−${fmt(tx.poaPaid).replace('−','')}</span></div>
     <div class="frow total"><span class="fl">${t('tax.balancing')}</span><span data-balancing-payment class="fv num ${moneyCls(tx.balancing,tx.balancing<0?'in':'out')}">${fmt(tx.balancing)}</span></div>
@@ -4674,11 +4759,11 @@ function pageTax(){
   <details class="review01-details card"><summary>${t('tax.datesT')}</summary>
     ${tx.poaRequired?`
       <div class="s" style="margin-bottom:10px">${t('tax.poaWhy')}</div>
-      <div class="frow"><span class="fl"><b>${t('tax.dateJan')}</b> <small>${t('tax.janS')}</small></span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.janTotal)}</span></div>
-      <div class="frow"><span class="fl"><b>${t('tax.dateJul')}</b> <small>${t('tax.julS')}</small></span><span class="fv num ${moneyCls(1,'out')}">${fmt(tx.poaEach)}</span></div>
+      <div class="frow"><span class="fl"><b>${t('tax.dateJan')}</b> <small>${t('tax.janS')}</small></span><span class="fv num ${moneyCls(tx.janTotal,'out')}">${fmt(tx.janTotal)}</span></div>
+      <div class="frow"><span class="fl"><b>${t('tax.dateJul')}</b> <small>${t('tax.julS')}</small></span><span class="fv num ${moneyCls(tx.poaEach,'out')}">${fmt(tx.poaEach)}</span></div>
       <div class="s" style="margin-top:10px">${t('tax.poaReduce')}</div>
     `:`
-      <div class="frow"><span class="fl"><b>${t('tax.dateJan')}</b> <small>${t('tax.noPoa')}</small></span><span class="fv num ${moneyCls(1,'out')}">${fmt(Math.max(tx.balancing,0))}</span></div>
+      <div class="frow"><span class="fl"><b>${t('tax.dateJan')}</b> <small>${t('tax.noPoa')}</small></span><span class="fv num ${moneyCls(Math.max(tx.balancing,0),'out')}">${fmt(Math.max(tx.balancing,0))}</span></div>
     `}
   </details>
 
@@ -4811,7 +4896,7 @@ async function onBatchReceiptFile(entryId, inputEl){
     try{ await u.getIdToken(); }catch(_){}
     const path = receiptPath(entryId);
     const ref = firebase.storage().ref(path);
-    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch())}});
+    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
     const url = await ref.getDownloadURL();
     if(!await entryMutationPreflight(e))return;
     e.receiptUrl = url;
@@ -5687,7 +5772,11 @@ async function eraseEverything(){
   let cloudOk=!accountUser,serverResult=null;
   if(accountUser){
     try{serverResult=await callSecureFunction('deleteAccountData',{});cloudOk=serverResult&&serverResult.deleted===true;}
-    catch(_){cloudOk=false;console.warn('Account deletion stopped',{category:'account_deletion',safeCode:'ACCOUNT_DELETE_SERVER_STAGE_FAILED',stage:'server_pipeline',correlation});}
+    catch(error){
+      cloudOk=false;const billingReason=String(error&&error.reason||''),billingActionRequired=['active_billing','active_google_play_billing','active_app_store_billing','google_play_status_required','app_store_status_required','billing_purchase_pending','billing_provider_event_pending'].includes(billingReason);
+      console.warn('Account deletion stopped',{category:'account_deletion',safeCode:billingActionRequired?'ACCOUNT_DELETE_BILLING_ACTION_REQUIRED':'ACCOUNT_DELETE_SERVER_STAGE_FAILED',stage:'server_pipeline',correlation});
+      if(billingActionRequired){CLOUD.deletionBlocked=false;try{await refreshCachedAccountControls({force:true});}catch(_){}render();setTimeout(()=>showNotice(t('m.danger'),t('m.eraseProviderHistory')),200);safeActionTrace('erase_everything','billing_action_required',correlation,'settings');ACCOUNT_ERASE_PENDING=false;return{deleted:false,billingActionRequired:true,reason:billingReason,correlation};}
+    }
   }
   if(!cloudOk){
     clearUserSyncListeners();CLOUD.deletionBlocked=true;
@@ -5841,7 +5930,7 @@ async function restorePortableBackup(inspected){
       if(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE)!==scope||CLOUD.retentionBlocked)throw new Error('restore_account_changed');
       const ext=(receipt.archivePath.split('.').pop()||'bin').toLowerCase(),path='receipts/'+(user?user.uid:'local')+'/restore-'+nonce+'-'+i+'.'+ext,blob=new Blob([receipt.bytes],{type:receipt.mimeType});let url;
       if(user&&hasFeature('receiptPhoto')){
-        const ref=firebase.storage().ref(path);await ref.put(blob,{contentType:receipt.mimeType,customMetadata:{retentionEpoch:String(currentRetentionEpoch())}});created.push({path,cloud:true});url=await ref.getDownloadURL();
+        const ref=firebase.storage().ref(path);await ref.put(blob,{contentType:receipt.mimeType,customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});created.push({path,cloud:true});url=await ref.getDownloadURL();
       }else{
         await TaxMateLocalReceipts.put(scope,path,blob,{epoch:currentRetentionEpoch()});created.push({path,cloud:false});await TaxMateLocalReceipts.objectUrl(scope,path);url=TaxMateLocalReceipts.url(path,location.origin);
       }
@@ -5921,8 +6010,8 @@ async function enableSync(bizId,requestedCode){
   if(!u){ showNotice(t('sy.title'),t('sy.needNet')); return; }
   let code=requestedCode||genCode();
   try{
-    try{await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name});}
-    catch(error){if(error.code!=='ALREADY_EXISTS'||requestedCode)throw error;code=genCode();await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name});}
+    try{await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name,accountResetEpoch:currentAccountResetEpoch()});}
+    catch(error){if(error.code!=='ALREADY_EXISTS'||requestedCode)throw error;code=genCode();await callSecureFunction('createPartnership',{code,bizId:b.id,name:b.name,accountResetEpoch:currentAccountResetEpoch()});}
     b.syncCode=code;Object.assign(b,TaxMateSync.touch(b,DEVICE_ID,Date.now()));
     S.entries.filter(e=>e.bizId===b.id).forEach(pushEntryRemote);
     pushBizRemote(b);save();
@@ -5994,7 +6083,7 @@ function joinPartnershipByCode(value){
   const promise=(async()=>{
     const db=await ensureFB();if(!db)throw Object.assign(new Error('partner-sync-unavailable'),{code:'UNAVAILABLE'});
     const user=await ensureAuth();if(!user)throw Object.assign(new Error('partner-auth-unavailable'),{code:'UNAUTHENTICATED'});
-    const joined=await callSecureFunction('joinPartnership',{code});
+    const joined=await callSecureFunction('joinPartnership',{code,accountResetEpoch:currentAccountResetEpoch()});
     const existing=bizById(joined.bizId);
     if(!existing)S.businesses.push(TaxMateSync.touch({id:joined.bizId,name:joined.name,structure:'partnership',share:50,syncCode:code,recordType:'business'},DEVICE_ID,Date.now()));
     else{existing.syncCode=code;Object.assign(existing,TaxMateSync.touch(existing,DEVICE_ID,Date.now()));}
@@ -6017,7 +6106,7 @@ async function joinPartnership(){
 async function leaveSync(bizId){
   const b = bizById(bizId); if(!b || !b.syncCode) return;
   const code=b.syncCode,user=cloudUser(),transition=AUTH_TRANSITION_GENERATION;if(!user)return;
-  try{await callSecureFunction('leavePartnership',{code});}
+  try{await callSecureFunction('leavePartnership',{code,accountResetEpoch:currentAccountResetEpoch()});}
   catch(e){console.warn(e);showNotice(t('sy.title'),t('sy.needNet'));return;}
   if(transition!==AUTH_TRANSITION_GENERATION||!cloudUser()||cloudUser().uid!==user.uid)return;
   const subs = FB.subs[code],unsubs=Array.isArray(subs)?subs:(subs&&Array.isArray(subs.unsubs)?subs.unsubs:[]);
@@ -6100,18 +6189,19 @@ function loadSyncOutbox(){
 }
 let SYNC_OUTBOX=loadSyncOutbox();
 let ACCOUNT_TRANSITION_PENDING=false;
-let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, retentionControl:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, ltdRefreshTimer:null, flushPromise:null, controlsRefreshPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, hydrationFailureKey:null, hydrationFailureCount:0, reportedSyncErrors:{}, generation:0, deletionBlocked:false, retentionBlocked:false, controlsCached:false, firstSyncBlocked:false };
+let CLOUD = { metaUnsub:null, entUnsub:null, ltdUnsubs:[], ltdRemote:[], ltdAnchor:null, resetControl:null, retentionControl:null, applying:false, pushTimer:null, retryTimer:null, hydrationRetryTimer:null, ltdRefreshTimer:null, flushPromise:null, controlsRefreshPromise:null, lastPushed:'', localEditAt:0, hydrationState:'idle', partnershipHydrationState:'idle', reconciliationState:'idle', ackState:'idle', hydrationError:null, inboundError:null, writeError:null, writeErrorKind:null, hydrationUid:null, hydrationPromise:null, hydrationResult:null, hydrationFailureKey:null, hydrationFailureCount:0, reportedSyncErrors:{}, generation:0, deletionBlocked:false, retentionBlocked:false, controlsCached:false, firstSyncBlocked:false };
 let FIRST_SYNC_CONFIRMATION=null,FIRST_SYNC_ACTION_PROMISE=null,AUTH_PENDING_INTENT=null,AUTH_PENDING_INTENT_INTERACTION=null,AUTH_PENDING_FORM=null;
 let ACCOUNT_UI_READY={state:'idle',correlation:null,expectedRows:0,renderedRows:0,onboardingOpen:false};
 function explicitOwner(value){return value&&String(value.accountOwnerUid||value.ownerUid||value.uid||'')||'';}
 function cloudMetaForAccount(meta,uid,{forWrite=false}={}){
   const value=meta&&typeof meta==='object'?meta:{},owner=explicitOwner(value);
   if(owner&&owner!==uid){if(forWrite)throw Object.assign(new Error('Cloud metadata belongs to another account.'),{code:'account-owner-mismatch'});console.warn('Cloud metadata skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:'meta_read'});return{};}
+  const epoch=currentAccountResetEpoch();if(epoch>0&&Number(value.accountResetEpoch||0)!==epoch){if(forWrite)throw Object.assign(new Error('Cloud metadata belongs to an older account lifecycle.'),{code:'account-reset-epoch-mismatch'});return{};}
   return value;
 }
 function cloudRecordsForAccount(records,uid,collection){
   const accepted=[];let skipped=0;
-  for(const record of records||[]){const owner=explicitOwner(record);if(owner&&owner!==uid){skipped++;continue;}if(CLOUD.retentionBlocked||CLOUD.retentionControl&&Number(record.retentionEpoch)!==CLOUD.retentionControl.epoch)continue;accepted.push(record);}
+  for(const record of records||[]){const owner=explicitOwner(record);if(owner&&owner!==uid){skipped++;continue;}if(CLOUD.retentionBlocked||CLOUD.retentionControl&&Number(record.retentionEpoch)!==CLOUD.retentionControl.epoch||currentAccountResetEpoch()>0&&Number(record.accountResetEpoch||0)!==currentAccountResetEpoch())continue;accepted.push(record);}
   if(skipped)console.warn('Cloud records skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:String(collection||'records').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:skipped});
   return accepted;
 }
@@ -6136,7 +6226,8 @@ function persistSyncOutbox(){
   catch(e){CLOUD.writeError='outbox-storage';CLOUD.writeErrorKind='outbox';console.warn('sync outbox persistence failed',e);renderSyncStatus();return false;}
 }
 function currentRetentionEpoch(){return Math.max(Number(CLOUD.retentionControl&&CLOUD.retentionControl.epoch)||0,Number(S&&S.retention&&S.retention.epoch)||0);}
-function enqueueSyncOperation(operation){if(SYNC_RUNTIME.blocked||CLOUD.firstSyncBlocked||CLOUD.retentionBlocked)return false;const outbox=loadSyncOutbox();if(!outbox)return false;const epoch=currentRetentionEpoch(),ready={...operation,retentionEpoch:epoch};if(ready.record)ready.record={...ready.record,retentionEpoch:epoch};SYNC_OUTBOX=TaxMateSync.enqueue(outbox,ready,Date.now());return persistSyncOutbox();}
+function currentAccountResetEpoch(){return Math.max(0,Number(CLOUD.resetControl&&CLOUD.resetControl.resetEpoch)||0);}
+function enqueueSyncOperation(operation){if(SYNC_RUNTIME.blocked||CLOUD.firstSyncBlocked||CLOUD.deletionBlocked||CLOUD.retentionBlocked)return false;const outbox=loadSyncOutbox();if(!outbox)return false;const epoch=currentRetentionEpoch(),accountResetEpoch=currentAccountResetEpoch(),ready={...operation,retentionEpoch:epoch,accountResetEpoch};if(ready.record)ready.record={...ready.record,retentionEpoch:epoch,accountResetEpoch};SYNC_OUTBOX=TaxMateSync.enqueue(outbox,ready,Date.now());return persistSyncOutbox();}
 function syncStatus(){
   if(SYNC_RUNTIME.blocked)return{state:'update-required',pending:null,message:t('sync.updateRequired'),error:SYNC_RUNTIME.reason};
   if(ACCOUNT_TRANSITION_PENDING)return{state:'checking',pending:null,message:t('sync.openingAccount'),error:null};
@@ -6237,9 +6328,10 @@ function beginAccountTransition(correlation,options={}){
 function accountReadWithTimeout(promise,timeoutMs=8000){let timer;return Promise.race([Promise.resolve(promise),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Object.assign(new Error('account-read-timeout'),{code:'deadline-exceeded'})),timeoutMs);})]).finally(()=>clearTimeout(timer));}
 async function readAccountControls(uid){
   if(!FB.ready||!FB.db)throw new Error('account-control-unavailable');
-  const [resetDoc,retentionDoc]=await accountReadWithTimeout(Promise.all([FB.db.collection('accountResets').doc(uid).get({source:'server'}),FB.db.collection('users').doc(uid).collection('retention').doc('current').get({source:'server'})])),reset=resetDoc.exists?resetDoc.data():null,retention=retentionDoc.exists?TaxMateRetentionPolicy.validateControl(retentionDoc.data()):null;
-  if(reset){const epoch=Number(reset.resetEpoch),status=String(reset.status||'');if(!Number.isSafeInteger(epoch)||epoch<0||!['complete','deleting','failed'].includes(status))throw Error('account-reset-invalid');return{reset:{status,resetEpoch:epoch},retention};}
-  return{reset:null,retention};
+  const resetDoc=await accountReadWithTimeout(FB.db.collection('accountResets').doc(uid).get({source:'server'})),reset=resetDoc.exists?resetDoc.data():null;let safeReset=null;
+  if(reset){const epoch=Number(reset.resetEpoch),status=String(reset.status||'');if(!Number.isSafeInteger(epoch)||epoch<0||!['complete','billing_quarantined','deleting','failed'].includes(status))throw Error('account-reset-invalid');safeReset={status,resetEpoch:epoch};if(status!=='complete')return{reset:safeReset,retention:null};}
+  const retentionDoc=await accountReadWithTimeout(FB.db.collection('users').doc(uid).collection('retention').doc('current').get({source:'server'})),retention=retentionDoc.exists?TaxMateRetentionPolicy.validateControl(retentionDoc.data()):null;
+  return{reset:safeReset,retention};
 }
 async function applyServerResetWithReceipts(scope,epoch){
   if(Number(TaxMateAccountStorage.read(localStorage,scope,'reset-epoch')||0)<Number(epoch))await TaxMateLocalReceipts.clearScope(TaxMateAccountStorage.token(scope));
@@ -6249,7 +6341,7 @@ function cachedAccountControls(uid){
   try{
     const scope=TaxMateAccountStorage.firebaseScope(uid),raw=TaxMateAccountStorage.read(localStorage,scope,'server-controls');if(!raw)return null;
     const value=JSON.parse(raw),reset=value&&value.reset||null,retention=value&&value.retention?TaxMateRetentionPolicy.validateControl(value.retention):null;
-    if(reset&&(!Number.isSafeInteger(Number(reset.resetEpoch))||Number(reset.resetEpoch)<0||!['complete','deleting','failed'].includes(String(reset.status||''))))return null;
+    if(reset&&(!Number.isSafeInteger(Number(reset.resetEpoch))||Number(reset.resetEpoch)<0||!['complete','billing_quarantined','deleting','failed'].includes(String(reset.status||''))))return null;
     return{reset:reset?{status:String(reset.status),resetEpoch:Number(reset.resetEpoch)}:null,retention};
   }catch(_){return null;}
 }
@@ -6266,12 +6358,12 @@ function applyRetentionControlLocally(control){
   for(const slot of ['preimport-backup','pre-ltd-rollback','onboarding-draft','ltd-drafts','canonical:atomic-pending'])TaxMateAccountStorage.remove(localStorage,scope,slot);
   for(const key of TaxMateAccountStorage.sessionKeys(sessionStorage,scope))sessionStorage.removeItem(key);
   const associationPrefix='taxmateuk_local_association_backup_v1:'+encodeURIComponent(scope.uid)+':';for(const key of Object.keys(localStorage))if(key.startsWith(associationPrefix))localStorage.removeItem(key);
-  SYNC_OUTBOX=TaxMateSync.fenceOutbox(loadSyncOutbox(),control.epoch);localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));
+  SYNC_OUTBOX=TaxMateSync.fenceOutbox(loadSyncOutbox(),control.epoch,currentAccountResetEpoch());localStorage.setItem(SYNC_OUTBOX_KEY,JSON.stringify(SYNC_OUTBOX));
   TaxMateAccountStorage.write(localStorage,scope,'canonical',JSON.stringify(S));CLOUD.retentionNeedsAuthoritativeLtd=true;
   const keep=[...(S.entries||[]).map(e=>e.receiptPath).filter(Boolean),...TaxMateCompanyEvidence.requiredReceiptAssociations(S).map(a=>a.originalPath)];TaxMateLocalReceipts.release();CLOUD.localRetentionPromise=TaxMateLocalReceipts.prune(TaxMateAccountStorage.token(scope),keep,control);return true;
 }
 function accountControlConnectivityFailure(error){const code=String(error&&error.code||'').toLowerCase().replace(/^firestore\//,'');return typeof navigator!=='undefined'&&navigator.onLine===false||['unavailable','deadline-exceeded','network-request-failed'].includes(code);}
-function retentionQuery(ref){return CLOUD.retentionControl?ref.where('retentionEpoch','==',CLOUD.retentionControl.epoch):ref;}
+function retentionQuery(ref){let query=CLOUD.retentionControl?ref.where('retentionEpoch','==',CLOUD.retentionControl.epoch):ref;return currentAccountResetEpoch()>0?query.where('accountResetEpoch','==',currentAccountResetEpoch()):query;}
 async function ensureRetentionCurrent(uid){
   let controls=await readAccountControls(uid),decision=TaxMateRetentionPolicy.decide(ENTITLEMENT.snapshot||{},Date.now());
   const pending=controls.retention&&!TaxMateRetentionPolicy.controlWritable(controls.retention),due=decision.status==='expired'&&(!controls.retention||controls.retention.cutoffDate<decision.cutoffDate);
@@ -6309,12 +6401,12 @@ async function refreshCachedAccountControls(options={}){
       // reconnecting or checking the same controls is background work.
       if(resetDue||restricted||retentionDue)beginAccountTransition(correlation,{targetScope:scope,navigation:'home'});
       if(resetDue){await applyServerResetWithReceipts(scope,reset.resetEpoch);if(!current())return false;activateAccountScope(scope,{force:true,navigation:'home'});}
-      CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';applyRetentionControlLocally(controls.retention);CLOUD.controlsCached=false;cacheAccountControls(user.uid,controls);ACCOUNT_TRANSITION_PENDING=false;
+      CLOUD.resetControl=reset||null;CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';applyRetentionControlLocally(controls.retention);CLOUD.controlsCached=false;cacheAccountControls(user.uid,controls);ACCOUNT_TRANSITION_PENDING=false;
       renderBackgroundAccount();safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':CLOUD.retentionBlocked?'retention_blocked':'controls_refreshed',correlation,'auth');
       installRetentionWatcher(user.uid);if(!CLOUD.deletionBlocked&&!CLOUD.retentionBlocked)await startUserSync(user);return true;
     }catch(error){
       if(!current())return false;
-      if(cached){CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');CLOUD.retentionBlocked=!!(cached.retention&&!['complete','complete_with_warnings'].includes(cached.retention.status));}
+      if(cached){CLOUD.resetControl=cached.reset||null;CLOUD.deletionBlocked=!!(cached.reset&&cached.reset.status!=='complete');CLOUD.retentionBlocked=!!(cached.retention&&!['complete','complete_with_warnings'].includes(cached.retention.status));}
       clearUserSyncListeners();ACCOUNT_TRANSITION_PENDING=false;CLOUD.controlsCached=true;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);CLOUD.hydrationState='failed';CLOUD.hydrationError='account-control-unavailable';
       reportSyncErrorOnce('account_controls',error);if(accountControlConnectivityFailure(error))scheduleAccountControlRetry(user.uid,transition);safeActionTrace('account_transition','control_refresh_failed',correlation,'auth');renderBackgroundAccount();
       const association=TaxMateAccountStorage.localAssociationState(localStorage);if(accountControlConnectivityFailure(error)&&cached&&!CLOUD.deletionBlocked&&!CLOUD.retentionBlocked&&association?.status==='confirmation'&&TaxMateAccountStorage.localAssociationTargets(localStorage,TaxMateAccountStorage.firebaseScope(user.uid)))setFirstSyncConfirmation(user,association.cloudState,correlation,true);return false;
@@ -6372,7 +6464,7 @@ function watchAuth(){
         const navigation=S.tab;ACCOUNT_SCOPE_HAD_CANONICAL=localStorage.getItem(STORE_KEY)!==null;
         S=load();S.tab=navigation;META_SYNC_SHADOW=metaSyncSnapshot(S);SYNC_OUTBOX=loadSyncOutbox();
       }
-      CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';applyRetentionControlLocally(controls.retention);CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);if(!controlsCached)cacheAccountControls(u.uid,controls);ACCOUNT_TRANSITION_PENDING=false;installRetentionWatcher(u.uid);
+      CLOUD.resetControl=reset||null;CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';applyRetentionControlLocally(controls.retention);CLOUD.controlsCached=controlsCached;CLOUD.firstSyncBlocked=TaxMateAccountStorage.localAssociationPending(localStorage);if(!controlsCached)cacheAccountControls(u.uid,controls);ACCOUNT_TRANSITION_PENDING=false;installRetentionWatcher(u.uid);
       if(ACCOUNT_SCOPE_NORMALIZATION_PENDING){try{persistCanonicalState(S);ACCOUNT_SCOPE_NORMALIZATION_PENDING=false;}catch(error){STATE_LOAD_ERROR=error;CLOUD.hydrationState='failed';safeActionTrace('account_transition','normalization_failed',correlation,'auth');renderBackgroundAccount();return;}}
       renderBackgroundAccount();
       safeActionTrace('account_transition',CLOUD.deletionBlocked?'deletion_blocked':'scope_ready',correlation,'auth');
@@ -6447,7 +6539,7 @@ function setLtdRemote(envelopes){CLOUD.ltdRemote=envelopes.slice().sort((a,b)=>S
 function ltdCloudForAccount(anchor,envelopes,source){
   if(CLOUD.retentionBlocked)throw Object.assign(new Error('Retention processing is in progress'),{code:'retention_stale_hydration'});
   const uid=activeAccountUid(),anchorOwner=explicitOwner(anchor),safeAnchor=anchorOwner&&anchorOwner!==uid?null:anchor,accepted=[];let skipped=anchor&&!safeAnchor?1:0;
-  for(const envelope of envelopes||[]){if(CLOUD.retentionControl&&Number(envelope?.retentionEpoch)!==CLOUD.retentionControl.epoch)continue;const owner=explicitOwner(envelope)||explicitOwner(envelope&&envelope.payload);if(owner&&owner!==uid){skipped++;continue;}accepted.push(envelope);}
+  for(const envelope of envelopes||[]){if(CLOUD.retentionControl&&Number(envelope?.retentionEpoch)!==CLOUD.retentionControl.epoch||currentAccountResetEpoch()>0&&Number(envelope?.accountResetEpoch||0)!==currentAccountResetEpoch())continue;const owner=explicitOwner(envelope)||explicitOwner(envelope&&envelope.payload);if(owner&&owner!==uid){skipped++;continue;}accepted.push(envelope);}
   if(skipped)console.warn('Ltd cloud records skipped',{category:'account_scope',safeCode:'EXPLICIT_OWNER_MISMATCH',stage:String(source||'ltd_read').replace(/[^a-z0-9_-]/gi,'_').slice(0,48),count:skipped});
   return{anchor:safeAnchor,envelopes:accepted};
 }
@@ -6542,7 +6634,7 @@ function cloudMetaFromState(){
     businesses:S.businesses||[],businessTombstones:S.businessTombstones||[],folders:S.folders||[],folderTombstones:S.folderTombstones||[],
     customCats:S.customCats||{},activeCats:S.activeCats||{},yearData:S.yearData||{},
     settings:accountSyncSettings(S),metaVersions:S.metaVersions||{},
-    updatedAt:Number(S.metaUpdatedAt)||0,deviceId:DEVICE_ID,retention:S.retention||null,retentionEpoch:currentRetentionEpoch()
+    updatedAt:Number(S.metaUpdatedAt)||0,deviceId:DEVICE_ID,retention:S.retention||null,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()
   };
   const uid=activeAccountUid();if(uid)value.accountOwnerUid=uid;return value;
 }
@@ -6577,14 +6669,14 @@ function queuePersonalState(uid){
 async function receiptAdmittedWrites(tx,rows){
   if(!rows.length)return;
   const user=cloudUser();if(!user)throw Object.assign(new Error('Sign in required.'),{code:'unauthenticated'});
-  const uid=user.uid,generation=CLOUD.generation,epoch=currentRetentionEpoch();
-  const batch=rows.length>1?await callSecureFunction('prepareReceiptWrite',{records:rows.map(row=>({target:row.ref.path,payload:row.record}))}):null;
-  const permits=await Promise.all(rows.map(async row=>{
-    const permit=batch||await callSecureFunction('prepareReceiptWrite',{target:row.ref.path,payload:row.record});
+  const uid=user.uid,generation=CLOUD.generation,epoch=currentRetentionEpoch(),accountResetEpoch=currentAccountResetEpoch(),fencedRows=rows.map(row=>({...row,record:{...row.record,accountResetEpoch}}));
+  const batch=fencedRows.length>1?await callSecureFunction('prepareReceiptWrite',{accountResetEpoch,records:fencedRows.map(row=>({target:row.ref.path,payload:row.record}))}):null;
+  const permits=await Promise.all(fencedRows.map(async row=>{
+    const permit=batch||await callSecureFunction('prepareReceiptWrite',{accountResetEpoch,target:row.ref.path,payload:row.record});
     return{...row,permit,permitRef:FB.db.doc(permit.path)};
   }));
   assertActiveAccountUid(uid);
-  if(!cloudUser()||cloudUser().uid!==uid||CLOUD.generation!==generation||currentRetentionEpoch()!==epoch)throw new Error('stale-receipt-admission');
+  if(!cloudUser()||cloudUser().uid!==uid||CLOUD.generation!==generation||currentRetentionEpoch()!==epoch||currentAccountResetEpoch()!==accountResetEpoch)throw new Error('stale-receipt-admission');
   // All reads precede writes. The payload and one-use admission consumption
   // commit atomically under the original membership/tier/retention Rules.
   const unique=[...new Map(permits.map(row=>[row.permit.path,row])).values()];
@@ -6614,7 +6706,7 @@ async function writeLtdRecordsAtomically(operations){
   return FB.db.runTransaction(async tx=>{const snapshots=[],writes=[];for(const row of rows)snapshots.push(await tx.get(row.ref));for(let index=0;index<rows.length;index++){const row=rows[index],remote=snapshots[index].exists?snapshots[index].data():null;if(!remote){writes.push({ref:row.ref,record:row.operation.record});continue;}TaxMateLtdSync.validateEnvelope(remote);const order=TaxMateLtdSync.compare(row.operation.record,remote);if(order>0)writes.push({ref:row.ref,record:row.operation.record});else if(order===0&&row.operation.record.checksum!==remote.checksum)throw Object.assign(new Error('ltd-sync-conflict'),{code:'ltd-sync-conflict',collection:row.operation.collection,recordId:row.operation.recordId});}await receiptAdmittedWrites(tx,writes);});
 }
 async function sendSyncOperation(operation){
-  if(CLOUD.retentionBlocked||Number(operation.retentionEpoch||0)!==currentRetentionEpoch())throw new Error('stale-retention-operation');
+  if(CLOUD.deletionBlocked||CLOUD.retentionBlocked||Number(operation.retentionEpoch||0)!==currentRetentionEpoch()||Number(operation.accountResetEpoch||0)!==currentAccountResetEpoch())throw new Error('stale-account-operation');
   const current=cloudUser();if(!current)throw Object.assign(new Error('Sign in required.'),{code:'unauthenticated'});assertActiveAccountUid(current.uid);
   if(operation.uid&&operation.uid!==current.uid||operation.ownerUid&&operation.ownerUid!==current.uid)throw Object.assign(new Error('Foreign sync operation blocked.'),{code:'account-owner-mismatch'});
   if(operation.kind==='partnership-entry'){
@@ -6625,19 +6717,19 @@ async function sendSyncOperation(operation){
     const ref=FB.db.collection('partnerships').doc(operation.code);
     await FB.db.runTransaction(async tx=>{
       const snap=await tx.get(ref);if(!snap.exists)throw new Error('partnership-not-found');
-      const current=snap.data()||{},remoteVersion={updatedAt:current.businessUpdatedAt,deviceId:current.businessDeviceId};
+      const partnershipData=snap.data()||{},remoteVersion={updatedAt:partnershipData.businessUpdatedAt,deviceId:partnershipData.businessDeviceId};
       if(TaxMateSync.compare(remoteVersion,operation.record)<0){
-        tx.set(ref,{name:operation.record.name,businessUpdatedAt:operation.record.updatedAt,businessDeviceId:operation.record.deviceId},{merge:true});
+        tx.set(ref,{name:operation.record.name,businessUpdatedAt:operation.record.updatedAt,businessDeviceId:operation.record.deviceId,lastWriterUid:current.uid,accountResetEpoch:currentAccountResetEpoch()},{merge:true});
       }
     });
     return;
   }
   if(operation.kind==='personal-state'){
-    const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState().map(record=>({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch()}));
+    const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState().map(record=>({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()}));
     const metaRef=userRoot(operation.uid).collection('app').doc('meta');let serverMeta=operationMeta;
     await FB.db.runTransaction(async tx=>{
       const snap=await tx.get(metaRef),remote=snap.exists?cloudMetaForAccount(snap.data(),operation.uid,{forWrite:true}):{};
-      serverMeta={...TaxMateSync.mergeMeta(operationMeta,remote),accountOwnerUid:operation.uid,retention:operationMeta.retention||null,retentionEpoch:currentRetentionEpoch()};await receiptAdmittedWrites(tx,[{ref:metaRef,record:serverMeta}]);
+      serverMeta={...TaxMateSync.mergeMeta(operationMeta,remote),accountOwnerUid:operation.uid,retention:operationMeta.retention||null,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()};await receiptAdmittedWrites(tx,[{ref:metaRef,record:serverMeta}]);
     });
     for(let i=0;i<operationRecords.length;i+=12){
       await Promise.all(operationRecords.slice(i,i+12).map(record=>writeRecordIfNewer(userRoot(operation.uid).collection('entries').doc(record.id),record)));
@@ -6664,6 +6756,9 @@ async function flushSyncOutbox(reason){
       return{state:'waiting',pending:null,error:'account-control-unavailable'};
     }
     if(!syncGenerationCurrent(user.uid,generation)||ACCOUNT_TRANSITION_PENDING||CLOUD.retentionBlocked)return{state:'cancelled',pending:null,error:'stale-account-control'};
+    const reset=controls.reset,knownResetEpoch=currentAccountResetEpoch();
+    if(reset&&reset.status!=='complete'||Number(reset&&reset.resetEpoch||0)!==knownResetEpoch){CLOUD.controlsCached=true;CLOUD.deletionBlocked=!!reset&&reset.status!=='complete';setTimeout(()=>refreshCachedAccountControls({force:true}),0);return{state:'account-safety-paused',pending:null,error:'stale-account-reset'};}
+    CLOUD.resetControl=reset||null;
     if(!TaxMateRetentionPolicy.controlWritable(controls.retention)||Number(controls.retention&&controls.retention.epoch||0)!==currentRetentionEpoch()){CLOUD.controlsCached=true;setTimeout(()=>refreshCachedAccountControls(),0);return;}
     SYNC_OUTBOX=loadSyncOutbox();
     const ltdAllowed=ltdAccessDecision('cloud_sync').allowed,pending=TaxMateSync.due(SYNC_OUTBOX,Date.now()).filter(operation=>(operation.kind!=='personal-state'||operation.uid===user.uid)&&(!operation.ownerUid||operation.ownerUid===user.uid)&&(operation.kind!=='ltd-record'||ltdAllowed));
@@ -6837,7 +6932,7 @@ function stopUserSync(){
   CLOUD.generation++;clearTimeout(CLOUD.hydrationRetryTimer);CLOUD.hydrationRetryTimer=null;clearTimeout(CLOUD.ltdRefreshTimer);CLOUD.ltdRefreshTimer=null;
   clearUserSyncListeners();
   CLOUD.lastPushed='';
-  CLOUD.hydrationState='idle';CLOUD.partnershipHydrationState='idle';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.hydrationFailureKey=null;CLOUD.hydrationFailureCount=0;CLOUD.reportedSyncErrors={};CLOUD.deletionBlocked=false;CLOUD.firstSyncBlocked=false;CLOUD.retentionBlocked=false;CLOUD.retentionControl=null;if(CLOUD.retentionUnsub){CLOUD.retentionUnsub();CLOUD.retentionUnsub=null;}
+  CLOUD.hydrationState='idle';CLOUD.partnershipHydrationState='idle';CLOUD.reconciliationState='idle';CLOUD.ackState='idle';CLOUD.hydrationError=null;CLOUD.inboundError=null;CLOUD.writeError=null;CLOUD.writeErrorKind=null;CLOUD.hydrationUid=null;CLOUD.hydrationPromise=null;CLOUD.hydrationResult=null;CLOUD.hydrationFailureKey=null;CLOUD.hydrationFailureCount=0;CLOUD.reportedSyncErrors={};CLOUD.deletionBlocked=false;CLOUD.firstSyncBlocked=false;CLOUD.retentionBlocked=false;CLOUD.resetControl=null;CLOUD.retentionControl=null;if(CLOUD.retentionUnsub){CLOUD.retentionUnsub();CLOUD.retentionUnsub=null;}
   renderSyncStatus();
 }
 async function pushUserState(uid, force){
@@ -7251,8 +7346,8 @@ function mileageCard(){
     advice=t('mi.adviceEqual'); badge=t('mi.equal'); nc='amber';
   }
   const rows = mi.miles>0
-    ? '<div class="frow"><span class="fl">'+t('mi.milesClaim')+'</span><span class="fv num '+moneyCls(1,'out')+'">'+fmt(mi.milesClaim)+'</span></div>'
-      +'<div class="frow"><span class="fl">'+t('mi.actual')+'</span><span class="fv num '+moneyCls(1,'out')+'">'+fmt(mi.vehicleExp)+'</span></div>'
+    ? '<div class="frow"><span class="fl">'+t('mi.milesClaim')+'</span><span class="fv num '+moneyCls(mi.milesClaim,'out')+'">'+fmt(mi.milesClaim)+'</span></div>'
+      +'<div class="frow"><span class="fl">'+t('mi.actual')+'</span><span class="fv num '+moneyCls(mi.vehicleExp,'out')+'">'+fmt(mi.vehicleExp)+'</span></div>'
       +'<div class="frow total"><span class="fl">'+t('mi.diff')+'</span><span class="fv num" style="color:'+badgeCol+'">'+diff+'</span></div>'
       +'<div class="notice '+nc+'" style="margin-top:10px;font-size:13px">'+advice+'</div>'
     : '<div class="s" style="color:var(--muted)">'+(mi.vehicleExp>0?t('mi.enterMiles'):t('mi.noVehicle'))+'</div>';
@@ -7569,7 +7664,7 @@ async function entryMutationPreflight(entry){
     const [controls,membership]=await Promise.all([readAccountControls(user.uid),FB.db.collection('partnerships').doc(business.syncCode).collection('members').doc(user.uid).get({source:'server'}),loadEntitlementFromCloud(user.uid)]);
     if(scope!==TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE)||generation!==CLOUD.generation||cloudUser()?.uid!==user.uid)throw new Error('stale-account');
     const sub=FB.subs[business.syncCode];if(sub){sub.memberUid=user.uid;sub.membership=membership.exists?membership.data():null;}
-    if(!TaxMateRetentionPolicy.controlWritable(controls.retention)||Number(controls.retention?.epoch||0)!==currentRetentionEpoch()||!entryMutationAllowed(entry))throw new Error('shared-read-only');
+    if(controls.reset&&controls.reset.status!=='complete'||Number(controls.reset&&controls.reset.resetEpoch||0)!==currentAccountResetEpoch()||!TaxMateRetentionPolicy.controlWritable(controls.retention)||Number(controls.retention?.epoch||0)!==currentRetentionEpoch()||!entryMutationAllowed(entry))throw new Error('shared-read-only');
     return true;
   }catch(_){refreshReceiptMutationControls();showNotice(t('sy.title'),t('sy.readOnly'));return false;}
 }
@@ -7617,7 +7712,7 @@ async function onReceiptFile(ev){
     const path = receiptPath(entId);
     const stor = firebase.storage();
     const ref = stor.ref(path);
-    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch())}});
+    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
     const url = await ref.getDownloadURL();
     if(!await entryMutationPreflight(receiptEntry))return;
     EN.receiptUrl = url;
@@ -7895,7 +7990,7 @@ function obRender(){
 function obGo(s){ if(OB)OB._intentRequest=(OB._intentRequest||0)+1;TaxMateOnboardingRoot.progress(OB,s,obRender); }
 function obProgress(pct,label,back){
   return `<div class="ob-progtop"><div class="ob-wrap">
-    <div class="ob-prow">${back?`<button class="ob-back" aria-label="${t('ob.back')}" data-tm-click="${back}">‹ ${t('ob.back')}</button>`:''}<div class="ob-plabel">${label}</div></div>
+    <div class="ob-prow">${back?`<button class="ob-back" aria-label="${t('ob.back')}" data-tm-click="${back}"><span aria-hidden="true">‹</span><span>${t('ob.back')}</span></button>`:''}${label?`<div class="ob-plabel">${label}</div>`:''}</div>
     <div class="ob-ptrack"><div class="ob-pfill" style="width:${pct}%"></div></div>
   </div></div>`;
 }
@@ -7911,13 +8006,14 @@ function obScrLogin(){
   const required=!!(OB&&OB._authReturnScreen);
   const source=required&&OB&&OB.pendingIntent&&OB.pendingIntent.source;
   const context=source==='ltd'?flowText('signInLtdPro'):source==='partner_sync'?flowText('signInPartnerPro'):t('ob.lede');
-  return `<div class="ob-scroll"><div class="ob-wrap ob-step ob-entry-shell">${obEntryBack(required?"obCancelRequiredSignIn()":"")}
+  const canCancel=required||OB._signingInFlow||OB._signInError;
+  return `<div class="ob-scroll"><div class="ob-wrap ob-step ob-entry-shell">${obEntryBack(canCancel?"obCancelRequiredSignIn()":"")}
     <div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>
     <h1>${required?t('ob.signIn'):t('ob.h1')}</h1>
     <p class="ob-lede">${context}</p>
     <button class="ob-tile solid" ${OB&&OB._signingInFlow?'disabled aria-busy="true"':''} data-tm-click="obSignIn()"><span><span class="ob-tt">${(OB&&OB._signingInFlow?flowText('openingGoogle'):OB._signInError?flowText('retry'):required?flowText('continueGoogle'):t('ob.signIn'))}</span><span class="ob-ts">${t('ob.signInS')}</span></span></button>
     ${OB._signInError?`<div class="ob-error show" role="alert">${esc(OB._signInError)}</div>`:''}
-    ${required||OB._signingInFlow||OB._signInError?`<button class="ob-btn ghost" data-tm-click="obCancelRequiredSignIn()">${t('ob.back')}</button>`:`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
+    ${canCancel?'':`<button class="ob-tile" data-tm-click="obNoLogin()"><span><span class="ob-tt">${t('ob.noAcc')}</span><span class="ob-ts">${t('ob.noAccS')}</span></span></button>`}
     ${required?'':`<div style="margin-top:18px;font-size:13px;color:var(--muted,#8a9);text-align:center;line-height:1.5;opacity:.85">${t('ob.codeLogin')}</div>`}
     <div class="ob-langfoot"><button class="ob-langlink" data-tm-click="obToggleLang()">${LANG_NAMES[S.settings.lang]} ›</button></div>
   </div></div>${obLangSheet()}`;
@@ -7926,7 +8022,6 @@ function obLangSheet(){
   if(!OB._langOpen) return '';
   return `<div class="ob-sheet-back" data-tm-click="obToggleLang()"></div>
     <div class="ob-sheet" role="dialog">
-      <div class="ob-sheet-grip"></div>
       <div class="ob-sheet-title">${t('ob.chooseLang')}</div>
       ${Object.keys(LANG_NAMES).map(l=>`<button class="ob-sheet-row ${S.settings.lang===l?'on':''}" data-tm-click="obSetLang('${l}')"><span>${LANG_NAMES[l]}</span>${S.settings.lang===l?'<span class="ob-sheet-tick">✓</span>':''}</button>`).join('')}
     </div>`;
@@ -7983,11 +8078,11 @@ function obStartLtd(){if(!OB)return;OB._intentError='';obSetPendingIntent('ltd',
 function obEntryBack(action){return '<div class="ob-entry-header">'+(action?`<button class="ob-back ob-entry-back" data-tm-click="${action}"><span aria-hidden="true">‹</span> ${t('ob.back')}</button>`:'')+'</div>';}
 function obEntryShell(body){return '<div class="ob-scroll"><div class="ob-wrap ob-step ob-entry-shell">'+obEntryBack("obGo('login')")+taxmateFlowBrand()+body+'</div></div>';}
 function taxmateFlowBrand(){return '<div class="ob-logo"><div class="brand-lockup onboarding-brand-lockup"><img class="brand-logo-light" src="/assets/brand/derived/taxmate-brand-logo-light.svg" alt="TaxMate"><img class="brand-logo-dark" src="/assets/brand/derived/taxmate-brand-logo-dark.svg" alt="TaxMate"></div></div>';}
-function flowText(key){const launchCopy={en:{openingGoogle:'Opening Google…',continueGoogle:'Continue with Google'},zh:{openingGoogle:'正在開啟 Google…',continueGoogle:'使用 Google 繼續'},pl:{openingGoogle:'Otwieranie Google…',continueGoogle:'Kontynuuj z Google'},ro:{openingGoogle:'Se deschide Google…',continueGoogle:'Continuă cu Google'},es:{openingGoogle:'Abriendo Google…',continueGoogle:'Continuar con Google'},ur:{openingGoogle:'Google کھول رہے ہیں…',continueGoogle:'Google کے ساتھ جاری رکھیں'}};if(launchCopy.en[key])return (launchCopy[S.settings.lang]||launchCopy.en)[key];const authCopy={"en":{"retry":"Retry","signInTimeout":"Sign-in took too long. Check your connection, then retry or go back. Your choices are saved.","signInFailed":"Google sign-in could not finish. Check your connection and try again, or go back.","signInLtdPro":"Limited Company is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in.","signInPartnerPro":"Partner Sync is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in."},"zh":{"retry":"重試","signInTimeout":"登入等候時間過長。請檢查連線後重試，或返回上一步；你的選擇已保存。","signInFailed":"未能完成 Google 登入。請檢查連線後重試，或返回上一步。","signInLtdPro":"有限公司是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。","signInPartnerPro":"夥伴同步是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。"},"pl":{"retry":"Spróbuj ponownie","signInTimeout":"Logowanie trwało zbyt długo. Sprawdź połączenie i spróbuj ponownie lub wróć. Twój wybór został zapisany.","signInFailed":"Nie udało się zakończyć logowania Google. Sprawdź połączenie i spróbuj ponownie lub wróć.","signInLtdPro":"Limited Company to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan.","signInPartnerPro":"Partner Sync to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan."},"ro":{"retry":"Reîncearcă","signInTimeout":"Autentificarea a durat prea mult. Verifică conexiunea, apoi reîncearcă sau revino. Opțiunile sunt salvate.","signInFailed":"Autentificarea Google nu s-a încheiat. Verifică conexiunea și reîncearcă sau revino.","signInLtdPro":"Limited Company este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare.","signInPartnerPro":"Partner Sync este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare."},"es":{"retry":"Reintentar","signInTimeout":"El inicio de sesión tardó demasiado. Comprueba la conexión y reintenta o vuelve atrás. Tus opciones están guardadas.","signInFailed":"No se pudo completar el inicio de sesión con Google. Comprueba la conexión y reintenta o vuelve atrás.","signInLtdPro":"Limited Company es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después.","signInPartnerPro":"Partner Sync es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después."},"ur":{"retry":"دوبارہ کوشش کریں","signInTimeout":"سائن ان میں بہت وقت لگا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔ آپ کا انتخاب محفوظ ہے۔","signInFailed":"Google سائن ان مکمل نہیں ہوا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔","signInLtdPro":"Limited Company ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔","signInPartnerPro":"Partner Sync ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔"}};if(authCopy.en[key])return (authCopy[S.settings.lang]||authCopy.en)[key];const copy={en:{redeem:'Redeem Code',signInCancelled:'Sign-in was cancelled. You can try again or go back.',paymentCancelled:'Payment was cancelled. Your choices are saved. Choose a plan to try again.'},zh:{redeem:'兌換優惠碼',signInCancelled:'已取消登入。你可以重試或返回上一步。',paymentCancelled:'已取消付款，已保留你的選擇。你可以重新選擇計劃。'},pl:{redeem:'Wykorzystaj kod',signInCancelled:'Logowanie anulowane. Spróbuj ponownie lub wróć.',paymentCancelled:'Płatność anulowana. Zachowano Twój wybór. Wybierz plan, aby spróbować ponownie.'},ro:{redeem:'Folosește un cod',signInCancelled:'Autentificarea a fost anulată. Reîncearcă sau revino.',paymentCancelled:'Plata a fost anulată. Opțiunile sunt salvate. Alege un plan pentru a reîncerca.'},es:{redeem:'Canjear código',signInCancelled:'Inicio de sesión cancelado. Reintenta o vuelve atrás.',paymentCancelled:'Pago cancelado. Tus opciones están guardadas. Elige un plan para reintentar.'},ur:{redeem:'کوڈ استعمال کریں',signInCancelled:'سائن ان منسوخ ہو گیا۔ دوبارہ کوشش کریں یا واپس جائیں۔',paymentCancelled:'ادائیگی منسوخ ہو گئی۔ آپ کا انتخاب محفوظ ہے۔ دوبارہ کوشش کے لیے پلان منتخب کریں۔'}};return (copy[S.settings.lang]||copy.en)[key];}
+function flowText(key){const launchCopy={en:{openingGoogle:'Opening Google…',continueGoogle:'Continue with Google'},zh:{openingGoogle:'正在開啟 Google…',continueGoogle:'使用 Google 繼續'},pl:{openingGoogle:'Otwieranie Google…',continueGoogle:'Kontynuuj z Google'},ro:{openingGoogle:'Se deschide Google…',continueGoogle:'Continuă cu Google'},es:{openingGoogle:'Abriendo Google…',continueGoogle:'Continuar con Google'},ur:{openingGoogle:'Google کھول رہے ہیں…',continueGoogle:'Google کے ساتھ جاری رکھیں'}};if(launchCopy.en[key])return (launchCopy[S.settings.lang]||launchCopy.en)[key];const authCopy={"en":{"retry":"Retry","signInTimeout":"Sign-in took too long. Check your connection, then retry or go back. Your choices are saved.","signInFailed":"Google sign-in could not finish. Check your connection and try again, or go back.","signInLtdPro":"Limited Company is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in.","signInPartnerPro":"Partner Sync is a Pro feature. Sign in first. If you do not already have Pro, you can choose a plan after signing in."},"zh":{"retry":"重試","signInTimeout":"登入等候時間過長。請檢查連線後重試，或返回上一步；你的選擇已保存。","signInFailed":"未能完成 Google 登入。請檢查連線後重試，或返回上一步。","signInLtdPro":"有限公司是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。","signInPartnerPro":"夥伴同步是 Pro 功能。請先登入；如果你未有 Pro，可以在登入後選擇計劃。"},"pl":{"retry":"Spróbuj ponownie","signInTimeout":"Logowanie trwało zbyt długo. Sprawdź połączenie i spróbuj ponownie lub wróć. Twój wybór został zapisany.","signInFailed":"Nie udało się zakończyć logowania Google. Sprawdź połączenie i spróbuj ponownie lub wróć.","signInLtdPro":"Limited Company to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan.","signInPartnerPro":"Partner Sync to funkcja Pro. Najpierw się zaloguj. Jeśli nie masz Pro, po zalogowaniu możesz wybrać plan."},"ro":{"retry":"Reîncearcă","signInTimeout":"Autentificarea a durat prea mult. Verifică conexiunea, apoi reîncearcă sau revino. Opțiunile sunt salvate.","signInFailed":"Autentificarea Google nu s-a încheiat. Verifică conexiunea și reîncearcă sau revino.","signInLtdPro":"Limited Company este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare.","signInPartnerPro":"Partner Sync este o funcție Pro. Autentifică-te mai întâi. Dacă nu ai Pro, poți alege un plan după autentificare."},"es":{"retry":"Reintentar","signInTimeout":"El inicio de sesión tardó demasiado. Comprueba la conexión y reintenta o vuelve atrás. Tus opciones están guardadas.","signInFailed":"No se pudo completar el inicio de sesión con Google. Comprueba la conexión y reintenta o vuelve atrás.","signInLtdPro":"Limited Company es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después.","signInPartnerPro":"Partner Sync es una función Pro. Inicia sesión primero. Si aún no tienes Pro, podrás elegir un plan después."},"ur":{"retry":"دوبارہ کوشش کریں","signInTimeout":"سائن ان میں بہت وقت لگا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔ آپ کا انتخاب محفوظ ہے۔","signInFailed":"Google سائن ان مکمل نہیں ہوا۔ کنکشن چیک کرکے دوبارہ کوشش کریں یا واپس جائیں۔","signInLtdPro":"Limited Company ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔","signInPartnerPro":"Partner Sync ایک Pro خصوصیت ہے۔ پہلے سائن ان کریں۔ اگر آپ کے پاس Pro نہیں ہے تو سائن ان کے بعد پلان منتخب کر سکتے ہیں۔"}};if(authCopy.en[key])return (authCopy[S.settings.lang]||authCopy.en)[key];const copy={en:{redeem:'Redeem Code',partnerCode:'Partner Sync code',checkAccess:'I’ve paid — check access',signInCancelled:'Sign-in was cancelled. You can try again or go back.',paymentCancelled:'Payment was cancelled. Your choices are saved. Choose a plan to try again.'},zh:{redeem:'兌換優惠碼',partnerCode:'夥伴同步碼',checkAccess:'我已付款 — 檢查權限',signInCancelled:'已取消登入。你可以重試或返回上一步。',paymentCancelled:'已取消付款，已保留你的選擇。你可以重新選擇計劃。'},pl:{redeem:'Wykorzystaj kod',partnerCode:'Kod Partner Sync',checkAccess:'Zapłacono — sprawdź dostęp',signInCancelled:'Logowanie anulowane. Spróbuj ponownie lub wróć.',paymentCancelled:'Płatność anulowana. Zachowano Twój wybór. Wybierz plan, aby spróbować ponownie.'},ro:{redeem:'Folosește un cod',partnerCode:'Cod Partner Sync',checkAccess:'Am plătit — verifică accesul',signInCancelled:'Autentificarea a fost anulată. Reîncearcă sau revino.',paymentCancelled:'Plata a fost anulată. Opțiunile sunt salvate. Alege un plan pentru a reîncerca.'},es:{redeem:'Canjear código',partnerCode:'Código Partner Sync',checkAccess:'Ya he pagado — comprobar acceso',signInCancelled:'Inicio de sesión cancelado. Reintenta o vuelve atrás.',paymentCancelled:'Pago cancelado. Tus opciones están guardadas. Elige un plan para reintentar.'},ur:{redeem:'کوڈ استعمال کریں',partnerCode:'پارٹنر سنک کوڈ',checkAccess:'ادائیگی ہو گئی — رسائی چیک کریں',signInCancelled:'سائن ان منسوخ ہو گیا۔ دوبارہ کوشش کریں یا واپس جائیں۔',paymentCancelled:'ادائیگی منسوخ ہو گئی۔ آپ کا انتخاب محفوظ ہے۔ دوبارہ کوشش کے لیے پلان منتخب کریں۔'}};return (copy[S.settings.lang]||copy.en)[key];}
 function obChoosePlan(tier){if(!OB)return;OB.selectedTier=tier;obPersistDraft();if(tier==='free'){obReturnFromProGate();return;}if(tier==='pro'){obProUpgrade();return;}if(!proBillingAvailability().purchaseEnabled)return;startBillingAction('createCheckoutSession',{tier,cadence:BILLING_CADENCE});}
 function obOpenRedeem(){if(!OB)return;OB._redeemReturn=OB.screen==='redeem'?OB._redeemReturn||'app':OB.screen;OB._promoError='';obGo('redeem');}
 function obBackFromRedeem(){if(!OB)return;if(OB._redeemReturn==='app'){const tab=OB._returnAppTab;obClose();if(['home','income','expenses','tax','more'].includes(tab))S.tab=tab;render();return;}obGo(OB._redeemReturn||'pro-gate');}
-function obScrRedeem(){return obShell(obProgress(20,flowText('redeem'),"obBackFromRedeem()"),`<h1>${flowText('redeem')}</h1><p class="ob-lede">${t('promo.body')}</p><div class="ob-card"><label for="ob-promo-code">${t('promo.placeholder')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)"><div class="ob-error ${OB._promoError?'show':''}" role="alert">${esc(OB._promoError||'')}</div>${OB._intentMessage?`<p role="status">${esc(OB._intentMessage)}</p>`:''}</div>`,`<button class="ob-btn" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button><button class="ob-btn ghost" data-tm-click="obBackFromRedeem()">${t('ob.back')}</button>`);}
+function obScrRedeem(){return obShell(obProgress(20,'',"obBackFromRedeem()"),`<h1>${flowText('redeem')}</h1><p class="ob-lede">${t('promo.body')}</p><div class="ob-card"><label for="ob-promo-code">${t('promo.placeholder')}</label><input id="ob-promo-code" type="text" maxlength="32" autocomplete="off" autocapitalize="characters" spellcheck="false" value="${esc(OB.promoCode||'')}" data-tm-input="obSetPromoCode(this.value)"><div class="ob-error ${OB._promoError?'show':''}" role="alert">${esc(OB._promoError||'')}</div>${OB._intentMessage?`<p role="status">${esc(OB._intentMessage)}</p>`:''}</div>`,`<button class="ob-btn" ${OB._promoBusy?'disabled':''} data-tm-click="obRedeemPromotionCode()">${OB._promoBusy?t('ob.entitlementPending'):t('promo.apply')}</button>`);}
 
 function obIntentCopy(value){return value==null?value:JSON.parse(JSON.stringify(value));}
 function obSetPendingIntent(source,details={}){
@@ -8021,8 +8116,8 @@ function obStartPartnerSync(){if(!OB)return;OB._intentError='';obSetPendingInten
 function obSetConnectCode(value){if(!OB)return;OB.connectCode=normalisePartnerCode(value).slice(0,8);OB._intentError='';obPersistDraft();}
 function obSetPromoCode(value){if(!OB)return;OB.promoCode=String(value||'').toUpperCase();OB._promoError='';obPersistDraft();}
 function obScrPartnerCode(){
-  return obShell(obProgress(10,t('ob.partnerEntry'),"obGo('entry')"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
-    <div class="ob-card"><label for="ob-partner-code">${t('sy.code')}</label><input type="text" id="ob-partner-code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD2345" value="${esc(OB.connectCode||'')}" style="text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px" data-tm-input="obSetConnectCode(this.value)" data-tm-keydown="if(event.key==='Enter')obPartnerContinue()"><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div></div>`,
+  return obShell(obProgress(10,'',"obGo('entry')"),`<h1>${t('ob.partnerTitle')}</h1><p class="ob-lede">${t('ob.partnerBody')}</p>
+    <div class="ob-card"><label for="ob-partner-code">${flowText('partnerCode')}</label><input type="text" id="ob-partner-code" maxlength="8" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="ABCD2345" value="${esc(OB.connectCode||'')}" style="text-transform:uppercase;letter-spacing:4px;font-weight:800;text-align:center;font-size:20px" data-tm-input="obSetConnectCode(this.value)" data-tm-keydown="if(event.key==='Enter')obPartnerContinue()"><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div></div>`,
     `<button class="ob-btn" data-tm-click="obPartnerContinue()">${t('ob.continue')}</button>`);
 }
 function obPartnerContinue(){
@@ -8065,8 +8160,8 @@ async function obExecutePendingIntent(){
 }
 function obScrPartnerConfirm(){
   const code=OB&&OB.pendingIntent&&OB.pendingIntent.partnerCode||OB.connectCode||'';
-  return obShell(obProgress(20,t('ob.partnerEntry'),"obGo('partner-code')"),`<h1>${t('ob.partnerConfirmTitle')}</h1><p class="ob-lede">${t('ob.partnerConfirmBody')}</p><div class="ob-card flat"><div class="ob-codevalue">${esc(code)}</div></div><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div>${OB._partnerBusy?`<div class="ob-busy">${t('ob.connecting')}</div>`:''}`,
-    `<button class="ob-btn" ${OB._partnerBusy?'disabled':''} data-tm-click="obConfirmPartnerConnection()">${OB._partnerBusy?t('ob.connecting'):t('ob.confirmConnect')}</button><button class="ob-btn ghost" ${OB._partnerBusy?'disabled':''} data-tm-click="obGo('partner-code')">${t('ob.back')}</button>`);
+  return obShell(obProgress(20,'',"obGo('partner-code')"),`<h1>${t('ob.partnerConfirmTitle')}</h1><p class="ob-lede">${t('ob.partnerConfirmBody')}</p><div class="ob-card flat"><div class="ob-codevalue">${esc(code)}</div></div><div class="ob-error ${OB._intentError?'show':''}">${esc(OB._intentError||'')}</div>${OB._partnerBusy?`<div class="ob-busy">${t('ob.connecting')}</div>`:''}`,
+    `<button class="ob-btn" ${OB._partnerBusy?'disabled':''} data-tm-click="obConfirmPartnerConnection()">${OB._partnerBusy?t('ob.connecting'):t('ob.confirmConnect')}</button>`);
 }
 async function obConfirmPartnerConnection(){
   if(!OB||OB._partnerBusy||!OB.pendingIntent)return;
@@ -8076,19 +8171,18 @@ async function obConfirmPartnerConnection(){
     OB._partnerBusy=false;OB.connectedBusiness={id:joined.bizId,name:joined.name||'Partnership'};OB.pendingIntent=null;OB.screen='partner-success';obRender();
   }catch(error){if(OB){OB._partnerBusy=false;OB._intentError=partnerJoinErrorMessage(error);OB.screen='partner-confirm';obRender();}}
 }
-function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell(obProgress(100,'',"obFinishPartnerConnection()"),`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
+function obScrPartnerSuccess(){const business=OB.connectedBusiness||{};return obShell(obProgress(100,'',''),`<h1>${t('ob.connected')}</h1><div class="ob-card partner-success-card"><div class="ob-tt">${esc(business.name||'Partnership')}</div><div class="ob-ts">${t('ob.partnerConnectedResult')}</div></div>`,`<button class="ob-btn" data-tm-click="obFinishPartnerConnection()">${t('ob.continueDashboard')}</button>`);}
 function obFinishPartnerConnection(){if(OB&&!OB._replay)try{localStorage.setItem(accountSlotKey('onboarding-done'),'partner-sync');}catch(_){}obClose();S.tab='home';save();render();window.scrollTo(0,0);}
 function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
   const purchaseNote=availability.mode==='local_review'?t('billing.reviewNote'):availability.purchaseEnabled?'':t('billing.purchaseUnavailable');
-  return obShell(obProgress(20,t('ob.proRequired'),"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
+  return obShell(obProgress(20,'',"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
     <div class="ob-seg" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
     ${['free','plus','pro'].map(tier=>planBlock(tier,'onboarding')).join('')}
     ${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy" role="status">${esc(message)}</div>`:''}${error?`<div class="ob-error show" role="alert">${esc(error)}</div>`:''}
-    <button class="ob-btn ghost" data-tm-click="obOpenRedeem()">${flowText('redeem')}</button><button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${esc(bt('refresh'))}</button>`,
-
-    `<button class="ob-btn ghost" ${OB._promoBusy?'disabled':''} data-tm-click="obReturnFromProGate()">${t('ob.back')}</button>`);
+    <button class="ob-btn ghost" data-tm-click="obOpenRedeem()">${flowText('redeem')}</button><button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${flowText('checkAccess')}</button>`,
+    '');
 }
 function obReturnFromProGate(){if(!OB)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent?.returnScreen||'entry');}
 function obProUpgrade(){if(!OB)return;startProPurchase('onboarding');}
@@ -8613,6 +8707,7 @@ window.addEventListener('pageshow',()=>scheduleOutboxFlush(0,'pageshow'));
 window.addEventListener('focus',()=>scheduleOutboxFlush(0,'focus'));
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')scheduleOutboxFlush(0,'foreground');});
 async function doInstall(){
+  if(window.TaxMatePlatform?.isNative||window.TaxMatePlatform?.supportsPwaInstall===false)return false;
   trackEvent('pwa_install_clicked');
   if(isIOS()){
     const proactive=document.getElementById('sb-pwainstall');

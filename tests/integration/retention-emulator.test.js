@@ -7,7 +7,7 @@ const {doc,getDoc,collection,query,where,getDocs}=require('firebase/firestore');
 const {ref,getBytes,uploadBytes,listAll}=require('firebase/storage');
 const {make}=require('../test-fixture'),Policy=require('../../src/core/retention-policy'),LtdSync=require('../../src/core/ltd-sync'),State=require('../../src/integration/ltd/company-state'),Worker=require('../../functions/retention-worker');
 const ready=!!process.env.FIRESTORE_EMULATOR_HOST&&!!process.env.FIREBASE_STORAGE_EMULATOR_HOST,run=ready?test:test.skip,projectId='demo-taxmate';
-const june=Date.UTC(2026,5,1),april=Date.UTC(2027,3,5,23),free={paidTier:'free',subscriptionStatus:'canceled',lastPaidTier:'pro',currentPeriodEnd:june};
+const june=Date.UTC(2026,5,1),april=Date.UTC(2027,3,5,23),free={paidTier:'free',subscriptionStatus:'canceled',lastPaidTier:'pro',currentPeriodEnd:june,accountResetStatus:'complete',accountResetEpoch:0,accountResetEpochString:'0',accountRetention:{controlStatus:'complete',lastRetentionEpoch:0,lastRetentionEpochString:'0'}};
 let app,db,bucket,env,count=0;
 if(ready)test.before(async()=>{Worker.assertDemoEnvironment(projectId);app=initializeApp({projectId,storageBucket:projectId+'.appspot.com'},'retention-suite');db=getFirestore(app);bucket=getStorage(app).bucket();env=await initializeTestEnvironment({projectId,firestore:{rules:fs.readFileSync(path.join(__dirname,'../../firestore.rules'),'utf8')},storage:{rules:fs.readFileSync(path.join(__dirname,'../../storage.rules'),'utf8')}});});
 test.after(async()=>{if(env)await env.cleanup();if(app)await deleteApp(app);});
@@ -22,7 +22,7 @@ async function seed(){
  const known=new Set(state.domain.entities.filter(e=>e.type==='limited_company').map(e=>e.id));for(const [c,rows]of Object.entries(LtdSync.recordsForSync(state)))for(const r of rows)await db.doc(`users/${uid}/ltd/v1/${c}/${Policy.docId(r.id)}`).set(Policy.envelope(c,r,LtdSync.companyIdForRecord(c,r,known),0));
  await db.doc(`partnerships/${uid}`).set({createdBy:uid,name:'Protected shared books'});for(const member of [uid,'other-'+uid])await db.doc(`partnerships/${uid}/members/${member}`).set({uid:member,role:'member'});
  await db.doc(`partnerships/${uid}/entries/shared-old`).set({...old,id:'shared-old',receiptPath:`receipts/${uid}/shared.jpg`});
- for(const name of ['old','new','shared','orphan'])await bucket.file(`receipts/${uid}/${name}.jpg`).save(Buffer.from([255,216,255,217]),{metadata:{contentType:'image/jpeg'}});
+ for(const name of ['old','new','shared','orphan'])await bucket.file(`receipts/${uid}/${name}.jpg`).save(Buffer.from([255,216,255,217]),{metadata:{contentType:'image/jpeg',metadata:{retentionEpoch:'0',accountResetEpoch:'0'}}});
  return{uid,state};
 }
 const invoke=(uid,extra={})=>Worker.retentionRun({db,bucket,uid,projectId,now:()=>april,...extra});
@@ -50,7 +50,7 @@ run('R4 admission cleanup failure cannot report retention complete; retry after 
  const result=await invoke(uid);assert.equal(result.status,'complete');assert.equal(result.epoch,failed.epoch);for(const row of rows)assert.equal((await db.doc(row.path).get()).exists,false);
 });
 run('R4 renewed Plus preserves the ledger while expired draft copies are independently removed; new valid data survives',async()=>{
- const {uid,state}=await seed();await db.doc(`users/${uid}/entitlements/current`).set({paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.UTC(2028,0,1)});
+ const {uid,state}=await seed();await db.doc(`users/${uid}/entitlements/current`).set({paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.UTC(2028,0,1)},{merge:true});
  const Admission=require('../../functions/receipt-admission'),Life=require('../../functions/receipt-admission-lifecycle'),client=env.authenticatedContext(uid).firestore(),target=`users/${uid}/entries/${state.entries[0].id}`;
  const old=await Admission.prepareWrite({db,uid,target,payload:state.entries[0]});assert.equal((await invoke(uid)).status,'not_due');assert.equal((await getDoc(doc(client,target))).exists(),true);
  await Life.cleanupAdmission({db,path:old.path,now:()=>Date.now()+Admission.ADMISSION_MS+1});assert.equal((await db.doc(old.path).get()).exists,false);assert.equal((await getDoc(doc(client,target))).exists(),true);
@@ -66,7 +66,7 @@ run('R3 one receipt deletion failure leaves a durable retry but does not strand 
 async function cloudState(uid){const meta=(await db.doc(`users/${uid}/app/meta`).get()).data(),entries=(await db.collection(`users/${uid}/entries`).get()).docs.map(d=>({data:d.data()})),ltd=[];for(const c of Policy.LTD_COLLECTIONS)for(const d of (await db.collection(`users/${uid}/ltd/v1/${c}`).get()).docs)ltd.push({data:d.data()});return State.migrate(Worker.stateFromCloud(meta,entries,ltd),april,'retention-check');}
 run('June expiry retains through London April 5; December Plus resumption prevents deletion',async()=>{
  const {uid}=await seed();assert.equal((await invoke(uid,{now:()=>april-1})).status,'not_due');
- await db.doc(`users/${uid}/entitlements/current`).set({...free,paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.UTC(2028,0,1)});
+ await db.doc(`users/${uid}/entitlements/current`).set({...free,paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.UTC(2028,0,1)},{merge:true});
  assert.equal((await invoke(uid)).status,'not_due');assert.equal((await db.doc(`users/${uid}/entries/entry-001`).get()).exists,true);
 });
 run('physical deletion preserves new-year books, balances, identity and other-member shared resources; epoch rejects old clients',async()=>{
@@ -107,10 +107,10 @@ run('purging locks own reads/writes while an unrelated member keeps access; forg
 run('Storage enforces due, in-progress and completed epochs while preserving paid access and new-year receipt reads',async()=>{
  const {uid}=await seed(),storage=env.authenticatedContext(uid).storage('gs://demo-taxmate.appspot.com'),image=ref(storage,`receipts/${uid}/new.jpg`),bytes=new Uint8Array([255,216,255,217]);
  await db.doc(`users/${uid}/entitlements/current`).set({accountRetention:{purgeRequired:true,requiredCutoffDate:'2027-04-06'}},{merge:true});await assertFails(getBytes(image));
- await invoke(uid,{hooks:{afterPlan:async()=>{await assertFails(getBytes(image));await assertFails(uploadBytes(ref(storage,`receipts/${uid}/while-purging.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1'}}));}}});
- assert.equal((await bucket.file(`receipts/${uid}/new.jpg`).getMetadata())[0].metadata.retentionEpoch,'1');await assertSucceeds(getBytes(image));await assertSucceeds(listAll(ref(storage,`receipts/${uid}`)));
- await assertFails(uploadBytes(ref(storage,`receipts/${uid}/free-upload.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1'}}));
+ await invoke(uid,{hooks:{afterPlan:async()=>{await assertFails(getBytes(image));await assertFails(uploadBytes(ref(storage,`receipts/${uid}/while-purging.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1',accountResetEpoch:'0'}}));}}});
+ const retainedMetadata=(await bucket.file(`receipts/${uid}/new.jpg`).getMetadata())[0].metadata;assert.equal(retainedMetadata.retentionEpoch,'1');assert.equal(retainedMetadata.accountResetEpoch,'0');await assertSucceeds(getBytes(image));await assertSucceeds(listAll(ref(storage,`receipts/${uid}`)));
+ await assertFails(uploadBytes(ref(storage,`receipts/${uid}/free-upload.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1',accountResetEpoch:'0'}}));
  await db.doc(`users/${uid}/entitlements/current`).set({paidTier:'plus',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000},{merge:true});
  await assertFails(uploadBytes(ref(storage,`receipts/${uid}/stale-upload.jpg`),bytes,{contentType:'image/jpeg'}));
- await assertSucceeds(uploadBytes(ref(storage,`receipts/${uid}/paid-current.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1'}}));
+ await assertSucceeds(uploadBytes(ref(storage,`receipts/${uid}/paid-current.jpg`),bytes,{contentType:'image/jpeg',customMetadata:{retentionEpoch:'1',accountResetEpoch:'0'}}));
 });

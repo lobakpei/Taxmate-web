@@ -24,8 +24,10 @@
   function supportsMeaningfulPath({hasDeferredPrompt=false,isIOSSafari=false,hasBrowserInstallInstructions=false}={}){
     return hasDeferredPrompt===true||isIOSSafari===true||hasBrowserInstallInstructions===true;
   }
-  function canPromote({state,now=Date.now(),dismissedAt=null,displayModeStandalone=false,navigatorStandalone=false,persistedInstalled=false,hasDeferredPrompt=false,isIOSSafari=false,hasBrowserInstallInstructions=false}={}){
-    return hasMeaningfulData(state)
+  function canPromote({state,now=Date.now(),dismissedAt=null,displayModeStandalone=false,navigatorStandalone=false,persistedInstalled=false,hasDeferredPrompt=false,isIOSSafari=false,hasBrowserInstallInstructions=false,isNative=false,supportsPwaInstall=true}={}){
+    return isNative!==true
+      &&supportsPwaInstall!==false
+      &&hasMeaningfulData(state)
       &&supportsMeaningfulPath({hasDeferredPrompt,isIOSSafari,hasBrowserInstallInstructions})
       &&!isInstalled({displayModeStandalone,navigatorStandalone,persistedInstalled})
       &&!dismissalIsActive(dismissedAt,now);

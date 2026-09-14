@@ -4,10 +4,42 @@ service firebase.storage {
     function imageUnderLimit() { return request.resource.size < 10 * 1024 * 1024 && request.resource.contentType.matches('image/.*'); }
     function entitlement(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/entitlements/current).data; }
     function hasEntitlement(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/entitlements/current); }
-    function hasRetention(uid) { return firestore.exists(/databases/(default)/documents/users/$(uid)/retention/current); }
-    function retention(uid) { return firestore.get(/databases/(default)/documents/users/$(uid)/retention/current).data; }
-    function retentionReadyWithExistence(uid, retentionExists) { return (!retentionExists || retention(uid).status in ['complete', 'complete_with_warnings']) && !retentionDue(uid); }
-    function retentionReady(uid) { return retentionReadyWithExistence(uid, hasRetention(uid)); }
+    // Storage Rules permit only two Firestore document accesses. The server
+    // mirrors account-reset and retention controls into the entitlement, so
+    // upload checks can still reserve the second access for receiptObjects.
+    function accountResetReady(uid) {
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      return hasEntitlement(uid)
+        && 'accountResetStatus' in ent
+        && 'accountResetEpoch' in ent
+        && 'accountResetEpochString' in ent
+        && ent.accountResetStatus == 'complete'
+        && ent.accountResetEpoch is int
+        && ent.accountResetEpoch >= 0
+        && ent.accountResetEpochString is string;
+    }
+    function accountResetEpoch(uid) {
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      return ent.accountResetEpoch;
+    }
+    function retentionControl(uid) {
+      let ent = hasEntitlement(uid) ? entitlement(uid) : {};
+      return 'accountRetention' in ent ? ent.accountRetention : {};
+    }
+    function retentionReady(uid) {
+      let control = retentionControl(uid);
+      return accountResetReady(uid)
+        && 'controlStatus' in control
+        && 'lastRetentionEpoch' in control
+        && 'lastRetentionEpochString' in control
+        && control.controlStatus in ['complete', 'complete_with_warnings']
+        && control.lastRetentionEpoch is int
+        && control.lastRetentionEpoch >= 0
+        && control.lastRetentionEpochString is string
+        && !retentionDue(uid);
+    }
+    function retentionEpochString(uid) { return retentionControl(uid).lastRetentionEpochString; }
+    function accountResetEpochString(uid) { return entitlement(uid).accountResetEpochString; }
     function retentionDue(uid) {
       let ent = hasEntitlement(uid) ? entitlement(uid) : {};
       let r = 'accountRetention' in ent ? ent.accountRetention : {};
@@ -21,17 +53,28 @@ service firebase.storage {
       return 'lastPaidTier' in ent && ent.lastPaidTier in ['plus','pro'] && 'graceUntil' in ent && ent.graceUntil > request.time.toMillis();
     }
     function receiptEpochReadable(uid) {
-      // Reuse the existence result so a receipt read does not repeat a missing
-      // retention-document lookup within Storage's Firestore access-call budget.
-      let retentionExists = hasRetention(uid);
-      return retentionReadyWithExistence(uid, retentionExists)
-        && (!retentionExists || resource.metadata.retentionEpoch == retention(uid).epochString);
+      return retentionReady(uid)
+        && resource != null
+        && resource.metadata != null
+        && 'retentionEpoch' in resource.metadata
+        && 'accountResetEpoch' in resource.metadata
+        && resource.metadata.retentionEpoch == retentionEpochString(uid)
+        && resource.metadata.accountResetEpoch == accountResetEpochString(uid);
     }
-    function receiptEpochWritable(uid) { return retentionReady(uid) && (!hasRetention(uid) || request.resource.metadata.retentionEpoch == retention(uid).epochString); }
+    function receiptEpochWritable(uid) {
+      return retentionReady(uid)
+        && request.resource.metadata != null
+        && 'retentionEpoch' in request.resource.metadata
+        && 'accountResetEpoch' in request.resource.metadata
+        && request.resource.metadata.retentionEpoch == retentionEpochString(uid)
+        && request.resource.metadata.accountResetEpoch == accountResetEpochString(uid);
+    }
     function paidReceiptAccess(uid) {
       let ent = hasEntitlement(uid) ? entitlement(uid) : {};
       let p = 'paidAccess' in ent ? ent.paidAccess : {};
-      return ('proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
+      return ('googlePlayAccess' in ent && ent.googlePlayAccess.active == true && ent.googlePlayAccess.tier in ['plus', 'pro'] && ent.googlePlayAccess.expiresAt > request.time.toMillis())
+        || ('appStoreAccess' in ent && ent.appStoreAccess.active == true && ent.appStoreAccess.tier in ['plus', 'pro'] && ent.appStoreAccess.expiresAt > request.time.toMillis())
+        || ('proExpiresAt' in p && p.proExpiresAt > request.time.toMillis())
         || ('plusExpiresAt' in p && p.plusExpiresAt > request.time.toMillis())
         || (hasEntitlement(uid) && !('paidAccess' in ent)
         && entitlement(uid).subscriptionStatus in ['active', 'trialing']
