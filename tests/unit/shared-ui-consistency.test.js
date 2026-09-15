@@ -34,9 +34,11 @@ test('read-only business-use value is text, not a disabled-looking button',()=>{
   assert.doesNotMatch(html,/<button[^>]*pointer-events:none[^>]*>100%<\/button>/);
 });
 
-test('billing dialog keeps its brand and one header dismiss control',()=>{
-  const billingSheet=section(billing,'function billingSheet(','function billingOverviewPage(');
-  assert.match(billingSheet,/taxmateFlowBrand\(\)\+body/);
+test('billing surfaces reuse the App header brand and keep one dismiss control',()=>{
+  const billingSheet=section(billing,'function billingSheet(','function pageBilling(');
+  assert.doesNotMatch(billingSheet,/taxmateFlowBrand\(/);
+  assert.doesNotMatch(section(billing,'function pageBilling()','function billingPlansPage()'),/taxmateFlowBrand\(/);
+  assert.match(html,/class="brand-lockup header-brand-lockup web-brand-home"/);
   assert.doesNotMatch(billingSheet,/billingButton\(t\('ob\.back'\)/);
   assert.match(html,/id="sb-billing"[\s\S]*?data-billing-title[\s\S]*?review01-close/);
 });

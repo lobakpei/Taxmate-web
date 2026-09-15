@@ -1423,7 +1423,7 @@
       btn(t('money.add_income'),'p',function(){openSheet('income');}),
       btn(t('money.add_expense'),'s',function(){openSheet('expense');})]));
     var items=todoItems({codes:yearTodoCodes()});
-    if(items.length){nodes.push(h('div',{class:'tm-h sm',text:t('todo.title')}));nodes.push(todoList(items.slice(0,3)));if(items.length>3)nodes.push(reviewLink(t('todo.more',{count:items.length-3}),function(){selectWorkspace('tax');},null,{dataset:{action:'open-remaining-todo'}}));}
+    if(items.length){nodes.push(h('div',{class:'tm-h sm',text:t('todo.title')}));nodes.push(todoList(items.slice(0,3)));if(items.length>3)nodes.push(reviewLink(t('todo.more',{count:items.length-3}),function(){selectWorkspace('tax');},null,{class:'tm-rec tm-todo-more',dataset:{action:'open-remaining-todo'}}));}
     nodes.push(h('div',{class:'tm-review-links'},[
       reviewLink(t('review01.year'),function(){selectWorkspace('tax');},null,{dataset:{action:'open-todo'}}),
       reviewLink(t('bank.title'),bankEntry,null,{dataset:{action:'open-bank'}}),

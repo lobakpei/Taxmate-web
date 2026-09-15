@@ -37,14 +37,14 @@ test('unknown figures render as Please check and are never coerced to £0.00',()
   assert.doesNotMatch(renderer,/String\(it\.deadline\.date\)|JSON\.stringify\(it\.deadline\)/);
 });
 
-test('money semantics: zero stays neutral, a non-zero cost is the expense colour, and other values follow their sign',()=>{
+test('money semantics: company zero stays neutral while personal role-labelled zero keeps its role colour',()=>{
   // Presentation only — moneyClass never changes a value, a sign or a classification.
   assert.match(renderer,/function moneyClass\(minor, role\)\{[\s\S]{0,400}if\(minor===0\) return '';[\s\S]{0,120}if\(role==='out'\) return 'neg';[\s\S]{0,200}return minor>0\?'pos':minor<0\?'neg':'';/);
   for(const [row,role] of [['operatingCostsMinor','out'],['directorSalaryMinor','out'],['corporationTaxMinor','out'],['turnoverMinor','in'],['profitBeforeTaxMinor','signed']])
     assert.ok(renderer.includes(`['${row}',`)&&new RegExp(`\\['${row}','[a-z._]+','${role}'\\]`).test(renderer),`${row} carries the ${role} money role`);
   assert.match(renderer,/var MONEY_IN_TYPES=\{company_income:1,director_loan_funding:1,share_capital_funding:1,sales_invoice_payment:1\}/);
   assert.match(app,/const moneyCls = \(value, role\) =>/);
-  assert.match(app,/if\(n===0\) return '';\s*if\(role==='out'\) return 'neg';/);
+  assert.match(app,/if\(role==='in'\) return 'pos';\s*if\(role==='out'\) return 'neg';/);
   for(const call of ["moneyCls(personal.profitMinor,'signed')","moneyCls(personal.incomeMinor,'in')","moneyCls(personal.expensesMinor,'out')"])assert.ok(app.includes(call),`personal shell uses ${call}`);
   // Money tokens exist in both themes and are not the brand palette.
   assert.match(directionCss,/--money-in:#167A43;--money-out:#BD3037/);

@@ -68,7 +68,7 @@ async function main(){
   equal(await colourOf(page.locator('[data-personal-income-minor]')),HERO.in,'home hero: money in uses the income colour on navy');
   equal(await colourOf(page.locator('[data-personal-expenses-minor]')),HERO.out,'home hero: money out uses the expense colour on navy');
   equal(await colourOf(page.locator('[data-home-ledger-profit]')),HERO.in,'home hero: a positive profit uses the income colour');
-  equal(await colourOf(page.locator('.hero-owe .ho-val')),HERO.ink,'home hero: zero estimated tax uses theme ink');
+  equal(await colourOf(page.locator('.hero-owe .ho-val')),HERO.out,'home hero: zero estimated tax keeps the tax/out colour on navy');
   const bizAmounts=page.locator('[data-home-business-row] .v');
   equal(await colourOf(bizAmounts.first()),MONEY.light.in,'home business rows: a positive share is the income colour');
   // Recent activity mixes income and expenses: each row carries its own direction.
@@ -99,10 +99,10 @@ async function main(){
   const taxRows=page.locator('[data-tax-business-row] .fv');
   equal(await colourOf(taxRows.first()),MONEY.light.in,'tax page: an attributable profit uses the income colour');
   const liability=page.locator('.frow.total').filter({hasText:/Total bill/}).locator('.fv');
-  equal(await colourOf(liability),MONEY.light.ink,'tax page: the zero total bill uses theme ink');
+  equal(await colourOf(liability),MONEY.light.out,'tax page: the zero total bill keeps the tax/out colour');
   const class4=page.locator('.frow').filter({hasText:/Class 4/}).first().locator('.fv');
-  equal(await colourOf(class4),MONEY.light.ink,'tax page: zero National Insurance uses the theme ink');
-  equal(await colourOf(page.locator('[data-balancing-payment]')),MONEY.light.ink,'zero balancing tax uses theme ink');
+  equal(await colourOf(class4),MONEY.light.out,'tax page: zero National Insurance keeps the tax/out colour');
+  equal(await colourOf(page.locator('[data-balancing-payment]')),MONEY.light.out,'zero balancing tax keeps the tax/out colour');
   await shot(page,'personal-tax-en-light-390');
 
   // ---- Bottom navigation: one centred content group, no shift when selected --
