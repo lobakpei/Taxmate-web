@@ -1082,7 +1082,7 @@
       h('div',{class:'cs',text:pp.startDate?t('workspace.company_period',{start:isoToDisplay(pp.startDate),end:isoToDisplay(pp.endDate)}):''})
     ])]);
     var bottom=h('nav',{class:'tm-bottom-nav','aria-label':t('nav.company_sections')},tabs.map(function(tb){return h('button',{class:active===tb[0]?'on':'',type:'button','aria-current':active===tb[0]?'page':null,dataset:{area:tb[0]},onClick:function(){selectWorkspace(tb[0]);}},[directionNavIcon(tb[0]),h('span',{text:t(tb[1])})]);}));
-    return h('div',{class:'tm-workspace-shell'},[rail,h('div',{class:'main'},[mainCol]),side,bottom]);
+    return h('div',{class:'tm-workspace-shell tm-workspace-'+area},[rail,h('div',{class:'main'},[mainCol]),side,bottom]);
   }
   function companyRow(){ return (S().businessList||[]).filter(function(b){return b.businessType==='limited_company';})[0]; }
   function founderPct(){ var sh=(S().company&&S().company.profile&&S().company.profile.shareholders)||[]; var me=sh.filter(function(x){return x.isAccountHolder;})[0]; return me?Math.round((me.ownershipBasisPoints||0)/100):100; }
@@ -1119,7 +1119,7 @@
     if(items.length)nodes.push(todoList(items));
     if(state!=='history_missing'&&state!=='unavailable')nodes.push(btn(t(state==='not_calculated'?'tax.calculate':'tax.review_calculation'),'s',openTaxCalculation,{dataset:{action:'dividend-tax-next'}}));
     else nodes.push(reviewLink(t('workspace.records'),function(){selectWorkspace('records');},null,{dataset:{action:'dividend-records-next'}}));
-    return h('div',{dataset:{dividendState:state}},nodes);
+    return h('div',{class:'tm-pay-dividend',dataset:{dividendState:state}},nodes);
   }
 
   /* ---- entitlement-aware visibility (handlers + backend checks unchanged) ---- */
@@ -1503,16 +1503,17 @@
     if(can('create_scenario')&&(ap.amountMinor>0||pot.amountMinor>0))actions.push(btn(t('tax.compare'),'p',function(){openSheet('scenario');}));
     if(can('confirm_salary'))actions.push(btn(t('tax.record_salary'),'s',function(){openSheet('salary');}));
     if(dividendAvailable()&&can('declare_dividend'))actions.push(btn(t('tax.record_declaration'),'s',function(){openSheet('dividend');}));
-    if(actions.length)nodes.push(h('div',{class:'tm-record-actions col'},actions));
+    if(actions.length)nodes.push(h('div',{class:'tm-pay-primary'},[
+      h('div',{class:'tm-record-actions col'},actions)
+    ]));
     var dividendStateNotice=dividendNotice();if(dividendStateNotice)nodes.push(dividendStateNotice);
     nodes.push(disclosure('tax.records',t('records.salary_dividend'),salaryDividendRecordsBody(),{action:'open-salary-dividends'}));
-    nodes.push(h('div',{class:'tm-review-links'},[
-      reviewLink(t('term.company_owes_you'),function(){run('onOpenMetric',{metricId:'directorLoan'},{});})
-    ]));
-    if(can('create_event'))nodes.push(h('div',{class:'tm-review-links'},[
+    var companyMoneyLinks=[reviewLink(t('term.company_owes_you'),function(){run('onOpenMetric',{metricId:'directorLoan'},{});})];
+    if(can('create_event'))companyMoneyLinks.push(
       reviewLink(t('money.lend'),function(){openSheet('lend');}),
       reviewLink(t('money.repay'),function(){openSheet('repay');})
-    ]));
+    );
+    nodes.push(h('div',{class:'tm-review-links tm-pay-links'},companyMoneyLinks));
     var ro=readOnlyNotice();if(ro)nodes.push(ro);
     return workspaceShell('pay',nodes);
   }

@@ -572,6 +572,41 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs{display:none}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button{font-size:11px;line-height:1.2;padding:4px 3px;gap:4px;color:#B8BCC1}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button .tm-navicon{width:20px;height:20px;padding:3px 8px;box-sizing:content-box;border-radius:9px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-navicon{width:20px;height:20px;padding:3px 8px}
+
+/* Pay yourself is a short decision screen, not a dashboard. Keep its company
+   context compact, join the dividend status to its next action, and present
+   the director-loan options as one list instead of three competing cards. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet.slim{
+  padding-bottom:12px;border-radius:0 0 20px 20px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-top{
+  min-height:54px;padding:7px 0 3px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-wsback{
+  min-height:38px;padding:5px 0
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-wstitle{
+  margin:0 0 3px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary{margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-record-actions{margin:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-btn{
+  min-height:50px;border-radius:14px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-btn:only-child{
+  background:var(--y);border-color:var(--y);color:var(--y-ink)
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend{
+  margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend .tm-notice.neutral{
+  margin:0;padding:14px;border:0;border-radius:0;background:transparent
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend>.tm-btn{
+  width:calc(100% - 24px);min-height:48px;margin:0 12px 12px;border-radius:12px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-links{margin-top:12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-links .tm-rec{min-height:58px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric{display:flex;justify-content:space-between;align-items:baseline;width:100%;border:0;border-top:1px solid var(--line);border-radius:0;padding:11px 0;gap:12px;box-shadow:none;text-align:start}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .v{font-size:14px;white-space:nowrap}
