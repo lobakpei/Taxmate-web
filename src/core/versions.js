@@ -5,12 +5,12 @@
 })(typeof globalThis !== 'undefined' ? globalThis : this, function versionsFactory() {
   const VERSIONS = Object.freeze({
     APP_VERSION: '2.1.32',
-    BUILD_ID: '2026-09-13.shared-ui-store-billing-build13.1',
+    BUILD_ID: '2026-09-18.full-ui-faq-build16.1',
     STATE_SCHEMA_VERSION: 5,
     TAX_RULESET_VERSION: '2026-27.2026-08-17.1',
     FORM_MAPPING_VERSION: '2025-26.2026-04-06.1',
     SYNC_SCHEMA_VERSION: 5,
-    PWA_CACHE_VERSION: 'taxmate-v2-shared-ui-store-billing-build13-20260913-1'
+    PWA_CACHE_VERSION: 'taxmate-v2-full-ui-faq-build16-20260918-1'
   });
   return { VERSIONS };
 });

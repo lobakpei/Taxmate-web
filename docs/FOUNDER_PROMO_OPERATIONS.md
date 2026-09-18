@@ -38,6 +38,20 @@ npm run promo:admin -- reschedule --code SAMPLECODE --starts-at 2026-08-20T00:00
 
 `reschedule` is rejected after the first redemption. It changes only `startsAt` and the audit timestamp; tier, expiry model, capacity and existing grants cannot be altered by this command.
 
+Amend the fixed expiry or capacity of an active configured code only while it has zero redemptions:
+
+```powershell
+npm run promo:admin -- amend-unused --code SAMPLECODE --expires-at 2027-02-01T00:00:00Z --max-redemptions 200
+```
+
+Atomically rename an active unused fixed-expiry code while amending its expiry or capacity:
+
+```powershell
+npm run promo:admin -- rename-unused --from OLDCODE --code NEWCODE --expires-at 2027-02-01T00:00:00Z --max-redemptions 200
+```
+
+Both commands require an active configured code with exactly zero redemptions, use Firestore update-time preconditions, and reject an existing rename target. They do not alter redeemed entitlements.
+
 Disable future redemption without removing entitlements already granted:
 
 ```powershell

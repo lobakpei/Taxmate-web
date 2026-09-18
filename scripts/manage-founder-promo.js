@@ -107,6 +107,36 @@ async function migratePending(values,token,now=Date.now()){
   return{code:configuration.code,migratedFrom:from,status:'ACTIVE',tier:configuration.tier,startsAt:configuration.startsAt,expiresAt:configuration.expiresAt||null,permanent:configuration.permanent===true,maxRedemptions:configuration.maxRedemptions,redemptionCount:0};
 }
 
+function unusedFixedExpiryConfiguration(current,values,now=Date.now()){
+  if(current.configurationState!=='configured'||current.active!==true||Number(current.redemptionCount)!==0)throw new Error('Promotion is not an active unused configured code');
+  const expiresAt=timestampMillis(values['expires-at'],'--expires-at');
+  const maxRedemptions=values['max-redemptions']===undefined?Number(current.maxRedemptions):integer(values['max-redemptions'],'--max-redemptions');
+  const configuration={...current,expiresAt,maxRedemptions,durationDays:undefined,permanent:false};
+  const validated=Promotions.validateConfiguration(configuration,now);if(!validated.ok)throw new Error(`Invalid promotion configuration: ${validated.reason}`);
+  return{...configuration,durationDays:undefined};
+}
+
+async function amendUnusedPromotion(values,token,now=Date.now()){
+  const code=Promotions.normalizeCode(values.code);if(!code)throw new Error('A valid --code is required');
+  const existing=await getPromotion(code,token);if(!existing)throw new Error('Promotion not found');
+  const current=decodeDocument(existing),configuration=unusedFixedExpiryConfiguration(current,values,now),iso=new Date(now).toISOString();
+  await patchPromotion(code,{expiresAt:configuration.expiresAt,maxRedemptions:configuration.maxRedemptions,permanent:false,updatedAt:iso},token,existing.updateTime);
+  return{code,status:'ACTIVE',tier:configuration.tier,startsAt:configuration.startsAt,expiresAt:configuration.expiresAt,permanent:false,maxRedemptions:configuration.maxRedemptions,redemptionCount:0};
+}
+
+async function renameUnusedPromotion(values,token,now=Date.now()){
+  const from=Promotions.normalizeCode(values.from),code=Promotions.normalizeCode(values.code);if(!from||!code)throw new Error('Valid --from and --code values are required');
+  const source=await getPromotion(from,token),target=await getPromotion(code,token);if(!source)throw new Error('Source promotion not found');if(target)throw new Error('Target promotion already exists');
+  const current=decodeDocument(source),configuration=unusedFixedExpiryConfiguration(current,values,now),iso=new Date(now).toISOString();
+  const fields={code,tier:configuration.tier,startsAt:configuration.startsAt,expiresAt:configuration.expiresAt,permanent:false,maxRedemptions:configuration.maxRedemptions,redemptionCount:0,active:true,configurationState:'configured',createdAt:current.createdAt||iso,updatedAt:iso};
+  const targetName=`projects/${PROJECT_ID}/databases/(default)/documents/founderPromotions/${code}`;
+  await request(`${DATABASE_ROOT}/documents:commit`,token,{method:'POST',body:JSON.stringify({writes:[
+    {update:{name:targetName,fields:encodeFields(fields)},currentDocument:{exists:false}},
+    {delete:source.name,currentDocument:{updateTime:source.updateTime}}
+  ]})});
+  return{code,renamedFrom:from,status:'ACTIVE',tier:fields.tier,startsAt:fields.startsAt,expiresAt:fields.expiresAt,permanent:false,maxRedemptions:fields.maxRedemptions,redemptionCount:0};
+}
+
 async function disablePromotion(codeValue,token,now=Date.now()){
   const code=Promotions.normalizeCode(codeValue);if(!code)throw new Error('A valid --code is required');
   const existing=await getPromotion(code,token);if(!existing)throw new Error('Promotion not found');
@@ -157,13 +187,15 @@ async function main(argv=process.argv.slice(2)){
   else if(values.command==='create')result=await createPromotion(values,token);
   else if(values.command==='migrate')result=await migratePending(values,token);
   else if(values.command==='reschedule')result=await reschedulePromotion(values,token);
+  else if(values.command==='amend-unused')result=await amendUnusedPromotion(values,token);
+  else if(values.command==='rename-unused')result=await renameUnusedPromotion(values,token);
   else if(values.command==='disable')result=await disablePromotion(values.code,token);
   else if(values.command==='status'||values.command==='view')result=await promotionStatus(values.code,token);
   else if(values.command==='list')result=await listPromotions(token);
   else if(values.command==='revoke')result=await revokeRedemption(values,token);
-  else throw new Error('Usage: promo:admin <init-pending|create|migrate|reschedule|disable|status|view|list|revoke> [--from PLACEHOLDER --code CODE --tier plus|pro --starts-at ISO --duration-days N|--expires-at ISO|--permanent true --max-redemptions N --uid UID]');
+  else throw new Error('Usage: promo:admin <init-pending|create|migrate|reschedule|amend-unused|rename-unused|disable|status|view|list|revoke> [--from CODE --code CODE --tier plus|pro --starts-at ISO --duration-days N|--expires-at ISO|--permanent true --max-redemptions N --uid UID]');
   process.stdout.write(`${JSON.stringify(result,null,2)}\n`);
 }
 
 if(require.main===module)main().catch(error=>{process.stderr.write(`${error.message}\n`);process.exitCode=1;});
-module.exports={PROJECT_ID,PENDING_CODES,argumentsMap,createConfiguration,encodeFields,decodeDocument,initializePending,createPromotion,migratePending,reschedulePromotion,disablePromotion,promotionStatus,listPromotions,revokeRedemption};
+module.exports={PROJECT_ID,PENDING_CODES,argumentsMap,createConfiguration,unusedFixedExpiryConfiguration,encodeFields,decodeDocument,initializePending,createPromotion,migratePending,amendUnusedPromotion,renameUnusedPromotion,reschedulePromotion,disablePromotion,promotionStatus,listPromotions,revokeRedemption};

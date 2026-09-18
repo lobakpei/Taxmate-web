@@ -596,7 +596,7 @@
   function topBar(){
     var yr=taxYearLabel();
     return h('div',{class:'tm-summary-sheet slim'},[h('div',{class:'tm-top'},[
-      webBrandHome([h('span',{class:'mk',text:'T'}), h('span',{},['Tax',h('span',{class:'mk2',text:'Mate'})])],'tm-brand'),
+      webLogo('top'),
       yr? h('div',{class:'tm-year',text:yr}) : null
     ])]);
   }

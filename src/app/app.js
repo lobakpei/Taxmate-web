@@ -3074,12 +3074,12 @@ Object.assign(I18N.en,{
   'billing.cadenceAria':'Billing cadence','billing.launch':'Launch price','billing.monthlyAria':'Standard price £11.99; launch price £9.99 per month.','billing.reviewPurchase':'Review Pro purchase locally','billing.reviewNote':'Local review only — no payment or production request.','billing.purchaseUnavailable':'Pro purchase is not available yet. Promotion codes still\u00a0work.',
   'sync.offline':'Offline','sync.offlinePending':'Offline — {n} change(s) waiting','sync.signIn':'Waiting for sign-in','sync.signInPending':'Waiting for sign-in — {n} pending','sync.restoreFailed':'Cloud restore failed — will retry','sync.restoring':'Restoring cloud data…','sync.checking':'Checking cloud data…','sync.readFailed':'Cloud sync read failed — will retry','sync.partnerDenied':'Partnership sync access failed — local data is safe','sync.writeDenied':'Sync write access failed — local data is safe','sync.retrying':'Sync retrying — {n} change(s) waiting','sync.syncing':'Syncing — {n} change(s) waiting','sync.finishing':'Finishing sync…','sync.synced':'Synced',
   'ob.signInLtdContext':'Sign in to continue setting up your Limited Company.','ob.signInPartnerContext':'Sign in to continue connecting with Partner Sync.','ob.bizRequired':'Enter a business name to continue.','ob.partnerConnectedResult':'This partnership is now connected.','ob.continueDashboard':'Continue to dashboard','ob.localPurchaseWorking':'Updating your local review entitlement…',
-  'help.title':'Help & support','help.body':'Task-based help for records, tax estimates, receipts, plans, backups and partnerships.','help.open':'Open Help & support'
+  'help.title':'Help & support','help.body':'Search quick answers about records, tax estimates, receipts, plans, backups, partnerships and Limited Companies.','help.open':'Browse FAQs'
 });
 Object.assign(I18N.zh,{
   'billing.cadenceAria':'收費週期','billing.launch':'推出優惠價','billing.monthlyAria':'標準價每月 £11.99；推出優惠價每月 £9.99。','billing.reviewPurchase':'本機預覽 Pro 購買流程','billing.reviewNote':'只供本機預覽，不會付款或連接 production。','billing.purchaseUnavailable':'Pro 購買暫未開放；推廣代碼仍可使用。',
   'sync.offline':'離線','sync.offlinePending':'離線 — {n} 項變更等候中','sync.signIn':'等待登入','sync.signInPending':'等待登入 — {n} 項等候中','sync.restoreFailed':'雲端還原失敗 — 將會重試','sync.restoring':'正在還原雲端資料…','sync.checking':'正在核對雲端資料…','sync.readFailed':'讀取雲端同步失敗 — 將會重試','sync.partnerDenied':'合夥同步權限失敗 — 本機資料安全','sync.writeDenied':'同步寫入權限失敗 — 本機資料安全','sync.retrying':'同步重試中 — {n} 項變更等候中','sync.syncing':'同步中 — {n} 項變更等候中','sync.finishing':'正在完成同步…','sync.synced':'已同步',
-  'ob.signInLtdContext':'登入以繼續設定你嘅有限公司。','ob.signInPartnerContext':'登入以繼續連接 Partner Sync。','ob.bizRequired':'請輸入業務名稱先繼續。','ob.partnerConnectedResult':'呢個合夥業務已經連接。','ob.continueDashboard':'繼續前往主頁','ob.localPurchaseWorking':'正在更新本機預覽權限…','help.title':'幫助與支援','help.body':'查看記錄、稅務估算、收據、方案、備份及合夥功能指引。','help.open':'開啟幫助與支援'
+  'ob.signInLtdContext':'登入以繼續設定你嘅有限公司。','ob.signInPartnerContext':'登入以繼續連接 Partner Sync。','ob.bizRequired':'請輸入業務名稱先繼續。','ob.partnerConnectedResult':'呢個合夥業務已經連接。','ob.continueDashboard':'繼續前往主頁','ob.localPurchaseWorking':'正在更新本機預覽權限…','help.title':'幫助與支援','help.body':'搜尋記錄、稅務估算、收據、方案、備份、合夥及有限公司嘅常見問題。','help.open':'瀏覽常見問題'
 });
 Object.assign(I18N.pl,{
   'billing.cadenceAria':'Okres rozliczeniowy','billing.launch':'Cena startowa','billing.monthlyAria':'Cena standardowa 11,99 GBP; cena startowa 9,99 GBP miesięcznie.','billing.reviewPurchase':'Sprawdź zakup Pro lokalnie','billing.reviewNote':'Tylko podgląd lokalny — bez płatności i żądań produkcyjnych.','billing.purchaseUnavailable':'Zakup Pro nie jest jeszcze dostępny. Kody promocyjne nadal działają.',
@@ -5088,7 +5088,6 @@ function pageMore(){
         <div class="t" style="margin-bottom:6px">${t('help.title')}</div>
         <div class="s" style="margin-bottom:12px">${t('help.body')}</div>
         <button class="btn soft" data-tm-click="openLegal('help')">${t('help.open')}</button>
-        <a href="mailto:support@taxmate.uk" style="display:block;margin-top:10px;color:var(--brand-deep);font-weight:700;text-align:center">support@taxmate.uk</a>
       </div>
     </div>
   </details>
@@ -5122,6 +5121,7 @@ function openLegal(which){
   if(!el) return;
   if(!window.TaxMateLegal){showNotice(t('sec.legal'),t('review01.legalUnavailable'));return;}
   el.innerHTML=which==='help'?TaxMateLegal.helpHtml:which==='privacy'?TaxMateLegal.privacyHtml:TaxMateLegal.termsHtml;
+  if(which==='help'&&window.TaxMateFAQ)TaxMateFAQ.reset(el);
   openSheet('legal');
 }
 

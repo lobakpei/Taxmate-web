@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-13.shared-ui-store-billing-build13.1 -->
+<!-- build: 2026-09-18.full-ui-faq-build16.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -504,7 +504,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 #legal-content .content-lede{color:var(--ink);font-size:15px;line-height:1.6;margin:0 0 14px}
 #legal-content .content-date{color:var(--muted);font-size:12px;font-weight:700;margin:0 0 16px}
 #legal-content .content-group{margin:0 0 20px}
-#legal-content .content-group>h3{font-size:16px;line-height:1.3;margin:0 0 8px}
+#legal-content .content-group>h2,#legal-content .content-group>h3{font-size:16px;line-height:1.3;margin:0 0 8px}
 #legal-content .content-accordion{border:1px solid var(--line);border-radius:14px;background:var(--card);margin:8px 0;overflow:hidden}
 #legal-content .content-accordion summary{cursor:pointer;font-size:14px;font-weight:800;line-height:1.35;padding:14px 16px;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 24px;align-items:start;gap:12px}
 #legal-content .content-accordion summary::-webkit-details-marker{display:none}
@@ -515,6 +515,26 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 #legal-content .content-accordion .content-body p:last-child{margin-bottom:0}
 #legal-content .content-accordion .content-body ul{margin:6px 0;padding-left:20px}
 #legal-content .content-accordion .content-body a{color:var(--brand-deep);font-weight:700}
+#legal-content .faq-search-wrap{position:relative;margin:0 0 18px}
+#legal-content .faq-search-wrap label>span{display:block;color:var(--ink);font-size:14px;font-weight:800;margin:0 0 8px}
+#legal-content .faq-search-wrap input{width:100%;min-height:48px;padding:12px 62px 12px 15px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14px;font-weight:600;line-height:1.35;outline:none}
+#legal-content .faq-search-wrap input:focus{border-color:var(--brand-deep);box-shadow:0 0 0 3px rgba(10,169,104,.18)}
+#legal-content .faq-clear{position:absolute;right:6px;bottom:4px;min-height:40px;padding:5px 10px;border:0;border-radius:9px;background:var(--brand-soft);color:var(--brand-deep);font-family:inherit;font-size:12px;font-weight:800;line-height:1;cursor:pointer}
+#legal-content .faq-popular{margin:0 0 20px}
+#legal-content .faq-popular h2,#legal-content .faq-filter-label{font-size:14px;font-weight:850;line-height:1.3;margin:0 0 9px}
+#legal-content .faq-popular-grid{display:grid;gap:8px}
+#legal-content .faq-popular-button{display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;gap:8px;width:100%;min-height:48px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-family:inherit;font-size:13px;font-weight:750;line-height:1.35;text-align:left;cursor:pointer}
+#legal-content .faq-popular-button span{color:var(--brand-deep);font-size:20px;justify-self:end}
+#legal-content .faq-filter-wrap{margin:0 0 18px}
+#legal-content .faq-filter-row{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#legal-content .faq-filter-row::-webkit-scrollbar{display:none}
+#legal-content .faq-filter{flex:0 0 auto;min-height:44px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted);font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;cursor:pointer}
+#legal-content .faq-filter.is-active{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
+#legal-content .faq-empty{border:1px dashed var(--line);border-radius:14px;padding:16px;margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.55;text-align:center}
+#legal-content .faq-contact{margin-top:22px}
+#legal-content .faq-contact p{margin:8px 0 12px;color:var(--muted);font-size:13px;line-height:1.55}
+#legal-content .faq-support-link{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:12px;background:var(--y);color:var(--y-ink)!important;font-size:13px;font-weight:850;text-decoration:none}
+@media (min-width:900px){#legal-content .faq-filter-row{flex-wrap:wrap;overflow:visible;padding-bottom:1px}}
 </style>
 </head>
 <body>
@@ -940,6 +960,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/ui/ltd/workbench-renderer.js"></script>
 <script src="src/core/pwa-install.js"></script>
 <script src="src/core/product-content.js"></script>
+<script src="src/app/help.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>
 <script defer src="src/app/billing-copy.js"></script>
