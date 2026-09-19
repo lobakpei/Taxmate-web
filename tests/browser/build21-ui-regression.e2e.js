@@ -18,6 +18,10 @@ let server,browser;
 function chromePath(){return [process.env.TAXMATE_CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find(item=>item&&fs.existsSync(item));}
 async function waitForServer(){const start=Date.now();while(Date.now()-start<15000){try{if((await fetch(`${origin}/index.html`)).ok)return;}catch(_){}await sleep(100);}throw new Error('preview server did not start');}
 async function shot(page,name,fullPage=true){const target=path.join(evidence,`${name}.png`);await page.screenshot({path:target,fullPage});return path.basename(target);}
+async function assertTaxMateYellow(page,selector,label){
+  const background=await page.locator(selector).first().evaluate(node=>getComputedStyle(node).backgroundColor);
+  assert.equal(background,'rgb(255, 190, 10)',`${label} uses TaxMate yellow, not a white primary state`);
+}
 async function assertNoOverlap(page,selector,label){
   const result=await page.locator(selector).evaluateAll(nodes=>nodes.filter(node=>{const style=getComputedStyle(node),box=node.getBoundingClientRect();return style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;}).map(node=>{const box=node.getBoundingClientRect();return{top:box.top,bottom:box.bottom,left:box.left,right:box.right,text:node.textContent.trim().replace(/\s+/g,' ').slice(0,80)};}));
   for(let i=0;i<result.length;i++)for(let j=i+1;j<result.length;j++){const a=result[i],b=result[j],x=Math.min(a.right,b.right)-Math.max(a.left,b.left),y=Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top);assert.ok(!(x>1&&y>1),`${label}: controls overlap: ${a.text} / ${b.text}`);}
@@ -42,7 +46,11 @@ async function main(){
   const page=await context.newPage(),pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
   await page.goto(`${origin}/index.html`,{waitUntil:'networkidle'});await page.locator('#nav button').first().waitFor();
   const screenshots=[];
-  for(const tab of ['home','income','expenses','receipts','tax','more']){await page.evaluate(name=>go(name),tab);await sleep(80);screenshots.push(await shot(page,`personal-${tab}-zh-dark`));}
+  for(const tab of ['home','income','expenses','tax','more']){
+    await page.evaluate(name=>go(name),tab);await sleep(80);
+    if(tab==='more')await assertTaxMateYellow(page,'[data-billing-cadence].on','Settings billing cadence');
+    screenshots.push(await shot(page,`personal-${tab}-zh-dark`));
+  }
   for(const kind of ['income','expense']){await page.evaluate(value=>openEntry(value),kind);await page.locator('#sb-entry.open').waitFor();assert.equal(await page.evaluate(()=>document.documentElement.classList.contains('sheet-open')&&document.body.classList.contains('sheet-open')),true,`${kind} sheet locks html and body`);await assertNoOverlap(page,'#sb-entry.open .catgrid>.catbtn',`${kind} categories`);await assertNoOverlap(page,'#sb-entry.open .sact>.btn',`${kind} footer`);screenshots.push(await shot(page,`personal-add-${kind}-zh-dark`,false));await page.evaluate(()=>closeSheet('entry'));}
   const personalSheets=[
     ['business',()=>page.evaluate(()=>openBiz(null,'sole'))],
@@ -56,10 +64,24 @@ async function main(){
     ['android-install',()=>page.evaluate(()=>openSheet('andinstall'))],
     ['ios-install',()=>page.evaluate(()=>openSheet('iosinstall'))]
   ];
-  for(const [name,open] of personalSheets){await open();const openSheet=page.locator('.sb.open');await openSheet.waitFor();await assertNoOverlap(page,'.sb.open .sact>.btn',`${name} actions`);screenshots.push(await shot(page,`personal-sheet-${name}-zh-dark`,false));await page.evaluate(()=>closeAllSheets());}
+  for(const [name,open] of personalSheets){
+    await open();const openSheet=page.locator('.sb.open');await openSheet.waitFor();
+    await assertNoOverlap(page,'.sb.open .sact>.btn',`${name} actions`);
+    if(name==='business')await assertTaxMateYellow(page,'#sb-lock.open .btn:not(.ghost)','Business upgrade CTA');
+    screenshots.push(await shot(page,`personal-sheet-${name}-zh-dark`,false));await page.evaluate(()=>closeAllSheets());
+  }
   await page.evaluate(()=>openPromotionSheet());await page.locator('#ob-root.active').waitFor();screenshots.push(await shot(page,'personal-promotion-code-zh-dark',false));await page.evaluate(()=>obClose());
 
-  await page.evaluate(()=>{ENTITLEMENT.snapshot={paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000,serverVerifiedAt:Date.now()};return openLtdCompany();});
+  // "Add receipts" is not a top-level destination. Exercise and evidence the
+  // only real user route: Home assistant -> missing-receipt task -> child page.
+  await page.evaluate(()=>{ENTITLEMENT.snapshot={paidTier:'pro',subscriptionStatus:'active',currentPeriodEnd:Date.now()+86400000,serverVerifiedAt:Date.now()};render();assistantOpen();});
+  const receiptTask=page.locator('#assistant-task-list [data-reason="receipt_photos_missing"]').first();
+  await receiptTask.waitFor();await receiptTask.locator('.assistant-task-row').click();
+  await page.waitForFunction(()=>S.tab==='receipts');
+  assert.equal(await page.locator('#nav button.on').getAttribute('data-tm-click'),"go('expenses')",'Add receipts remains an Expenses child route in navigation');
+  screenshots.push(await shot(page,'personal-expenses-add-receipts-via-assistant-zh-dark'));
+
+  await page.evaluate(()=>openLtdCompany());
   await page.waitForFunction(()=>document.body.classList.contains('ltd-active')&&!document.getElementById('taxmate-ltd-ui-root').hidden);await page.locator('.tm-workspace-shell').waitFor();
   screenshots.push(await shot(page,'ltd-overview-zh-dark'));
   await page.evaluate(async()=>{await TaxMateLtdUIFacade.onSetWorkspaceArea({area:'money'});});await page.locator('.tm-workspace-shell button[data-area="money"][aria-current="page"]').waitFor();
@@ -71,7 +93,7 @@ async function main(){
   await page.locator('.tm-scrim').waitFor();const bankLock=await modalAudit(page,'LTD bank reconciliation');await assertNoOverlap(page,'.tm-bankline,.tm-sbody>[data-action="bank-add-line"]','LTD bank statement rows and Add row');await assertNoOverlap(page,'.tm-sfoot>.tm-btn','LTD bank footer');
   const affixes=await page.locator('.tm-bankline .tm-inwrap.money').evaluateAll(nodes=>nodes.map(node=>{const affix=node.querySelector('.tm-affix.pre').getBoundingClientRect(),input=node.querySelector('input').getBoundingClientRect();return{affixRight:affix.right,inputLeft:input.left,gap:input.left-affix.right};}));assert.ok(affixes.every(item=>item.gap>=0),`bank currency affixes do not cover the values: ${JSON.stringify(affixes)}`);
   screenshots.push(await shot(page,'ltd-bank-reconciliation-zh-dark',false));
-  const receipt={status:'PASS',generatedAt:new Date().toISOString(),viewport:{width:390,height:844},locale:'zh-HK',theme:'dark',screenshots,incomeLock,bankLock,pageErrors};fs.writeFileSync(path.join(evidence,'acceptance.json'),`${JSON.stringify(receipt,null,2)}\n`);assert.deepEqual(pageErrors,[],'no browser page errors');
+  const receipt={status:'PASS',generatedAt:new Date().toISOString(),viewport:{width:390,height:844},locale:'zh-HK',theme:'dark',receiptWorkflowPath:['Home','TaxMate Assistant','Missing receipt task','Add receipts'],screenshots,incomeLock,bankLock,pageErrors};fs.writeFileSync(path.join(evidence,'acceptance.json'),`${JSON.stringify(receipt,null,2)}\n`);assert.deepEqual(pageErrors,[],'no browser page errors');
   console.log(`BUILD21_UI_REGRESSION PASS screenshots=${screenshots.length}`);
   await context.close();
 }

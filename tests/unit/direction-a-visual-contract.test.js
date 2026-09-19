@@ -13,13 +13,20 @@ const build=fs.readFileSync('scripts/build-hosting.js','utf8');
 
 test('Direction A exact surface tokens and local approved font are release assets',()=>{
   assert.match(html,/<html[^>]+data-direction-a="true"/);
-  assert.match(html,/src\/ui\/direction-a\.css\?v=20260905-1/);
+  assert.match(html,/src\/ui\/direction-a\.css\?v=20260919-2/);
   for(const token of ['#F6F3EC','#FFFFFF','#101821','#0F1620','#111A26','#1B2634','#F2F4F7','#0A0F16','#FFBE0A'])assert.ok(css.includes(token),`missing ${token}`);
   assert.match(css,/@font-face[\s\S]*font-family:'Plus Jakarta Sans'[\s\S]*plus-jakarta-sans-latin-500-800\.woff2/);
   assert.ok(fs.statSync('assets/fonts/plus-jakarta-sans-latin-500-800.woff2').size>20000);
   assert.match(sw,/src\/ui\/direction-a\.css/);
   assert.match(sw,/assets\/fonts\/plus-jakarta-sans-latin-500-800\.woff2/);
   assert.match(build,/assets', 'fonts/);
+});
+
+test('Direction A uses TaxMate yellow for primary actions and selected choices',()=>{
+  assert.match(css,/\.seg button\.on,[\s\S]*background:var\(--y\);color:var\(--y-ink\)/);
+  assert.match(css,/#ob-root \.ob-seg button\.on\{background:var\(--y\);color:var\(--y-ink\)/);
+  assert.doesNotMatch(html,/class="btn ink"/);
+  assert.doesNotMatch(app,/class="btn ink"/);
 });
 
 test('Direction A keeps Assistant on Home as a responsive overlay and preserves real handlers',()=>{

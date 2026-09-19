@@ -92,6 +92,6 @@ test('public FAQ uses the approved Direction A shell and real brand logo', () =>
   const publicHelp = Legal.publicPage('help');
   assert.match(publicHelp, /<html lang="en-GB" data-direction-a="true">/);
   assert.match(publicHelp, /src="\/assets\/brand\/derived\/taxmate-brand-logo-dark\.svg" alt="TaxMate"/);
-  assert.match(publicHelp, /href="\/src\/ui\/direction-a\.css\?v=20260905-1"/);
+  assert.match(publicHelp, /href="\/src\/ui\/direction-a\.css\?v=20260919-2"/);
   assert.doesNotMatch(publicHelp, /<a class="brand"[^>]*>TaxMate<\/a>/);
 });

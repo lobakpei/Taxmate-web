@@ -170,13 +170,33 @@ async function main() {
       assert.ok(responsiveShell.mainWidth <= 390.5, `mobile content fits the viewport: ${responsiveShell.mainWidth}`);
     }
 
-    for (const tab of ['home', 'income', 'expenses', 'receipts', 'tax', 'more']) {
+    for (const tab of ['home', 'income', 'expenses', 'tax', 'more']) {
       await page.evaluate(name => go(name), tab);
       await sleep(350);
+      if (tab === 'more') {
+        const selectedCadence = await page.locator('[data-billing-cadence].on').first().evaluate(node => getComputedStyle(node).backgroundColor);
+        assert.equal(selectedCadence, 'rgb(255, 190, 10)', `Settings ${viewport.name}/${theme} selected cadence uses TaxMate yellow`);
+      }
       const audit = await auditVisibleText(page, '#page');
       await page.screenshot({path: path.join(evidence, `app-${tab}-${viewport.name}-${theme}.png`), fullPage: true});
       results.push({surface: `app-${tab}`, viewport: viewport.name, theme, ...audit});
     }
+
+    // This workflow is deliberately separate from top-level navigation. A
+    // paid user reaches it only from the Assistant's missing-receipt task.
+    await page.evaluate(() => {
+      ENTITLEMENT.snapshot = {paidTier: 'pro', subscriptionStatus: 'active', currentPeriodEnd: Date.now() + 86400000, serverVerifiedAt: Date.now()};
+      render();
+      assistantOpen();
+    });
+    const receiptTask = page.locator('#assistant-task-list [data-reason="receipt_photos_missing"]').first();
+    await receiptTask.waitFor();
+    await receiptTask.locator('.assistant-task-row').click();
+    await page.waitForFunction(() => S.tab === 'receipts');
+    assert.equal(await page.locator('#nav button.on').getAttribute('data-tm-click'), "go('expenses')", 'Add receipts is shown as an Expenses child route');
+    const receiptAudit = await auditVisibleText(page, '#page');
+    await page.screenshot({path: path.join(evidence, `app-add-receipts-${viewport.name}-${theme}.png`), fullPage: true});
+    results.push({surface: 'app-add-receipts', viewport: viewport.name, theme, route: ['Home', 'TaxMate Assistant', 'Missing receipt task', 'Add receipts'], ...receiptAudit});
 
     await page.evaluate(() => go('settings'));
     const help = page.locator('[data-settings-section="help"]');

@@ -21,7 +21,6 @@ GROUPS = {
         "personal-home-zh-dark.png",
         "personal-income-zh-dark.png",
         "personal-expenses-zh-dark.png",
-        "personal-receipts-zh-dark.png",
         "personal-tax-zh-dark.png",
         "personal-more-zh-dark.png",
         "personal-add-income-zh-dark.png",
@@ -39,6 +38,7 @@ GROUPS = {
         "personal-sheet-android-install-zh-dark.png",
         "personal-sheet-ios-install-zh-dark.png",
         "personal-promotion-code-zh-dark.png",
+        "personal-expenses-add-receipts-via-assistant-zh-dark.png",
     ],
     "03-limited-company": [
         "ltd-overview-zh-dark.png",
@@ -72,6 +72,8 @@ def build(group, names):
         canvas.paste(image, (x, y))
         draw.rectangle((x, y + tile_h, x + tile_w, y + tile_h + label_h), fill="#152337")
         label = name.removesuffix("-zh-dark.png").replace("personal-sheet-", "").replace("personal-", "").replace("ltd-", "LTD ").replace("-", " ")
+        if name == "personal-expenses-add-receipts-via-assistant-zh-dark.png":
+            label = "Assistant > Add receipts"
         draw.text((x + 12, y + tile_h + 15), f"{index + 1:02d}  {label}", fill="white", font=SMALL)
     target = OUTPUT / f"TaxMate-Build21-{group}.png"
     canvas.save(target, optimize=True)

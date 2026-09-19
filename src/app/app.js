@@ -3525,16 +3525,16 @@ function planBlock(tier,context='settings'){
     const availability=proBillingAvailability();
     btn=availability.purchaseEnabled
       ? availability.mode==='local_review'
-        ? `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
-        : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('tier.choose',{p:name})}</button>`
-      : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
+        ? `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
+        : `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('tier.choose',{p:name})}</button>`
+      : `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   }
-  else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+  else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
   if(context==='onboarding')btn=billingConflict.active&&tier!=='free'
-    ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`
+    ? `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`
     : isCurrent
-      ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('tier.current')}</button>`
-      : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
+      ? `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('tier.current')}</button>`
+      : `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<section class="card plan-card" data-plan-card="${tier}" aria-labelledby="plan-${tier}-title" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3784,7 +3784,7 @@ function installCard(){
       <span class="t" style="font-size:15px">${t('pwa.install')}</span>
     </div>
     <div class="s" style="margin-bottom:14px">${t('pwa.installSub')}</div>
-    <button class="btn ink" data-tm-click="doInstall()">${t('pwa.install')}</button>
+    <button class="btn" data-tm-click="doInstall()">${t('pwa.install')}</button>
   </div>`;
 }
 function closePwaInstallSurfaces(){
@@ -4824,7 +4824,7 @@ function pageReceipts(){
 
       <div class="t" style="margin-bottom:6px">${t('car.rcTitle')}</div>
       <div class="s" style="margin-bottom:16px">${t('car.rcLockedBody')}</div>
-      <button class="btn ink" data-tm-click="lockSeeplans()">${t('car.rcLockedCta')}</button>
+      <button class="btn" data-tm-click="lockSeeplans()">${t('car.rcLockedCta')}</button>
     </div>`;
   }
 
@@ -5691,7 +5691,7 @@ function paintSync(){
         <div style="margin-top:10px"><button class="link danger" data-tm-click="leaveSync('${b.id}')">${t('sy.leave')}</button></div>
       </div>`;
   } else {
-    el.innerHTML = `<button class="btn ink" style="margin-bottom:12px" data-tm-click="enableSync('${BZ.id}')"> ${t('sy.enable')}</button>`;
+    el.innerHTML = `<button class="btn" style="margin-bottom:12px" data-tm-click="enableSync('${BZ.id}')"> ${t('sy.enable')}</button>`;
   }
 }
 function saveBiz(){
@@ -7204,7 +7204,7 @@ function sa104Card(){
   const mapping=TaxMateCore.mappingFor('SA104S',yr);
   const partBiz = S.businesses.filter(b=>b.structure==='partnership');
   if(!partBiz.length) return '';
-  if(!hasFeature('sa104'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('sa.104')+featBadge('sa104')+'</div><div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div><button class="btn ink" data-tm-click="lockGuard(\'sa104\')">'+t('lock.upgrade')+' </button></div>';
+  if(!hasFeature('sa104'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('sa.104')+featBadge('sa104')+'</div><div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div><button class="btn" data-tm-click="lockGuard(\'sa104\')">'+t('lock.upgrade')+' </button></div>';
   if(!mapping.supported) return '<div class="card"><div class="t"> '+t('sa.104')+'</div><div class="notice amber" style="margin-top:10px">'+t('sa.future')+'</div></div>';
   const boxes=mapping.boxes;
 
@@ -7263,7 +7263,7 @@ function currentQuarterIdx(yr){
 }
 
 function quarterlyCard(){
-  if(!hasFeature('mtdReady'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('qt.title')+featBadge('mtdReady')+'</div><div class="s" style="margin-bottom:12px">'+t('feat.mtdReady')+'</div><button class="btn ink" data-tm-click="lockGuard(\'mtdReady\')">'+t('lock.upgrade')+' </button></div>';
+  if(!hasFeature('mtdReady'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('qt.title')+featBadge('mtdReady')+'</div><div class="s" style="margin-bottom:12px">'+t('feat.mtdReady')+'</div><button class="btn" data-tm-click="lockGuard(\'mtdReady\')">'+t('lock.upgrade')+' </button></div>';
   const yr = S.year;
   const curQ = currentQuarterIdx(yr);
   const rows = [0,1,2,3].map(i=>{
@@ -8846,7 +8846,7 @@ document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefa
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
-  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260905-1',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
+  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260919-2',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
   else registerTaxMateServiceWorker();
 }

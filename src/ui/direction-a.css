@@ -233,8 +233,10 @@ html[data-direction-a="true"] .direction-a-list-action .fab{position:static;widt
 html[data-direction-a="true"] .fab-plus{transform:none;font-size:18px;line-height:1}
 html[data-direction-a="true"] .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin:12px 0 4px}
 html[data-direction-a="true"] .seg button{flex:1;min-width:0;border:0;background:none;color:var(--muted);font-size:13px;font-weight:700;padding:9px 4px;border-radius:10px;min-height:40px;white-space:normal;line-height:1.2;box-shadow:none}
-html[data-direction-a="true"] .seg button.on{background:var(--navy);color:#fff}
-html[data-direction-a="true"][data-theme="dark"] .seg button.on{background:#F2F4F7;color:#0F1620}
+/* A selected choice is an affirmative TaxMate action. Keep it yellow in both
+   themes; white belongs to cards and secondary controls, not active states. */
+html[data-direction-a="true"] .seg button.on,
+html[data-direction-a="true"][data-theme="dark"] .seg button.on{background:var(--y);color:var(--y-ink)}
 html[data-direction-a="true"] .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
 html[data-direction-a="true"] .chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:6px;padding:4px 8px;line-height:1.4;white-space:nowrap;border:1px solid transparent;box-shadow:none}
 html[data-direction-a="true"] .chip:not(.on){background:var(--brand-soft);color:var(--ink)}
@@ -354,7 +356,7 @@ html[data-direction-a="true"] #ob-root .ob-confetti{display:none}
 html[data-direction-a="true"] #ob-root .ob-btn{background:var(--y);color:var(--y-ink);border-radius:var(--r-m);box-shadow:none;min-height:50px}
 html[data-direction-a="true"] #ob-root .ob-btn.ghost,
 html[data-direction-a="true"] #ob-root .ob-btn.soft{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
-html[data-direction-a="true"] #ob-root .ob-seg button.on{background:var(--navy);color:var(--navy-ink);box-shadow:none}
+html[data-direction-a="true"] #ob-root .ob-seg button.on{background:var(--y);color:var(--y-ink);box-shadow:none}
 html[data-direction-a="true"] .ob-pfill{background:var(--y)}
 
 /* LTD real renderer --------------------------------------------------------- */
