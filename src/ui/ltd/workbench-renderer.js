@@ -3068,7 +3068,12 @@
     // footer button, a cancel control or the next sheet (UI-09).
     if(UI.toast) col.append(h('div',{class:'tm-toast',role:'status','aria-live':'polite'},[h('div',{class:'b',text:UI.toast})]));
     col.append(screen);
-    if(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard)col.setAttribute('inert','');
+    var modalOpen=!!(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard);
+    if(modalOpen)col.setAttribute('inert','');
+    if(typeof document!=='undefined'){
+      if(document.documentElement)document.documentElement.classList.toggle('ltd-sheet-open',modalOpen);
+      if(document.body)document.body.classList.toggle('ltd-sheet-open',modalOpen);
+    }
     app.append(col);
     // overlays: info sheet(s) from facade nav
     overlays().forEach(function(ov){ if(ov.type==='information') app.append(infoSheet(ov)); });

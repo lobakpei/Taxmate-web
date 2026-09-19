@@ -169,7 +169,7 @@ en:{
  'rc.imagesOnly':'Image files only',
  'rc.view':'View receipt',
  'rc.delete':'Delete receipt',
- 'rc.uploading':'Uploading…','rc.signinNeeded':'Please sign in again to save to the cloud',
+ 'rc.uploading':'Saving receipt…','rc.savedOffline':'Saved on this device — it will sync when you are online','rc.signinNeeded':'Please sign in again to save to the cloud',
  'rcb.tab':'Receipts',
  'rcb.title':'Add receipts',
  'rcb.intro':'Pick a category and month, then add a receipt for each expense that still needs one.',
@@ -667,7 +667,7 @@ zh:{
  'rc.imagesOnly':'只支援圖片檔',
  'rc.view':'查看收據',
  'rc.delete':'刪除收據',
- 'rc.uploading':'上傳中…','rc.signinNeeded':'請重新登入以儲存到雲端',
+ 'rc.uploading':'正在儲存收據…','rc.savedOffline':'已儲存喺呢部裝置，恢復連線後會自動同步','rc.signinNeeded':'請重新登入以儲存到雲端',
  'rcb.tab':'收據',
  'rcb.title':'新增收據',
  'rcb.intro':'揀分類同月份,然後為每筆仲未有收據嘅開支加收據。',
@@ -1160,7 +1160,7 @@ pl:{
  'rc.imagesOnly':'Tylko pliki graficzne',
  'rc.view':'Zobacz paragon',
  'rc.delete':'Usuń paragon',
- 'rc.uploading':'Przesyłanie…','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
+ 'rc.uploading':'Zapisywanie paragonu…','rc.savedOffline':'Zapisano na tym urządzeniu — synchronizacja nastąpi po połączeniu','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
  'rcb.tab':'Paragony',
  'rcb.title':'Dodaj paragony',
  'rcb.intro':'Wybierz kategorię i miesiąc, a następnie dodaj paragon do każdego wydatku, który go potrzebuje.',
@@ -1653,7 +1653,7 @@ ro:{
  'rc.imagesOnly':'Doar fișiere imagine',
  'rc.view':'Vezi bon',
  'rc.delete':'Șterge bon',
- 'rc.uploading':'Se încarcă…','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
+ 'rc.uploading':'Se salvează bonul…','rc.savedOffline':'Salvat pe acest dispozitiv — se va sincroniza când revii online','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
  'rcb.tab':'Bonuri',
  'rcb.title':'Adaugă bonuri',
  'rcb.intro':'Alege o categorie și o lună, apoi adaugă un bon pentru fiecare cheltuială care încă are nevoie.',
@@ -2146,7 +2146,7 @@ es:{
  'rc.imagesOnly':'Solo archivos de imagen',
  'rc.view':'Ver recibo',
  'rc.delete':'Eliminar recibo',
- 'rc.uploading':'Subiendo…','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
+ 'rc.uploading':'Guardando recibo…','rc.savedOffline':'Guardado en este dispositivo — se sincronizará cuando vuelvas a conectarte','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
  'rcb.tab':'Recibos',
  'rcb.title':'Añadir recibos',
  'rcb.intro':'Elige una categoría y un mes, luego añade un recibo a cada gasto que aún lo necesite.',
@@ -2639,7 +2639,7 @@ ur:{
  'rc.imagesOnly':'صرف تصویری فائلیں',
  'rc.view':'رسید دیکھیں',
  'rc.delete':'رسید حذف کریں',
- 'rc.uploading':'اپلوڈ ہو رہا ہے…','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
+ 'rc.uploading':'رسید محفوظ ہو رہی ہے…','rc.savedOffline':'اس ڈیوائس پر محفوظ ہے — آن لائن ہونے پر ہم آہنگ ہوگی','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
  'rcb.tab':'رسیدیں',
  'rcb.title':'رسیدیں شامل کریں',
  'rcb.intro':'ایک زمرہ اور مہینہ منتخب کریں، پھر ہر اُس خرچ کے لیے رسید شامل کریں جسے ابھی درکار ہے۔',
@@ -3792,7 +3792,7 @@ function closePwaInstallSurfaces(){
     const surface=document.getElementById('sb-'+id);
     if(surface)surface.classList.remove('open');
   });
-  if(!document.querySelector('.sb.open'))document.body.classList.remove('sheet-open');
+  if(!document.querySelector('.sb.open')){document.body.classList.remove('sheet-open');document.documentElement.classList.remove('sheet-open');}
 }
 function dismissInstallPromotion(){
   pwaLocalSet(PWA_KEYS.dismissedAt,Date.now());
@@ -3991,7 +3991,8 @@ function closePersonalSurfacesForLtd(){
   const active=document.activeElement;
   if(active&&active.closest&&active.closest('.sb,#taxmate-lightbox,#ob-root')&&typeof active.blur==='function')active.blur();
   document.querySelectorAll('.sb.open').forEach(surface=>surface.classList.remove('open'));
-  document.body.classList.remove('sheet-open');
+  document.body.classList.remove('sheet-open','ltd-sheet-open');
+  document.documentElement.classList.remove('sheet-open','ltd-sheet-open');
   const lightbox=document.getElementById('taxmate-lightbox');
   if(lightbox){lightbox.style.display='none';const image=lightbox.querySelector('img');if(image)image.removeAttribute('src');}
   const personalToast=document.getElementById('taxmate-toast');
@@ -4054,8 +4055,8 @@ window.TaxMateLtdProductionBridge=Object.freeze({
   theme:()=>S.settings.theme==='dark'?'dark':S.settings.theme==='light'?'light':matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',
   mount:()=>document.getElementById('taxmate-ltd-ui-root'),
   enterLtd(){closePersonalSurfacesForLtd();for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
-  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
-  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
+  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active','ltd-sheet-open');document.documentElement.classList.remove('ltd-sheet-open');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
+  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active','ltd-sheet-open');document.documentElement.classList.remove('ltd-sheet-open');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
   callTrusted:(name,data)=>callLtdTrusted(name,data),
   downloadWorkingPack(data){const blob=new Blob([JSON.stringify(data.payload,null,2)],{type:data.mimeType||'application/json'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=data.fileName||'taxmate-company-working-pack.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},
   refreshShell:()=>renderBackgroundAccount(),
@@ -4599,7 +4600,7 @@ function entryRow(e){
       <div class="t">${catLabel(c,e.desc||catName(c.id))}</div>
       <div class="s">${d}${e.desc?' · '+esc(catName(c.id)):''}${b?' · '+esc(b.name):''}${pctNote}</div>
     </div>
-    ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
+    ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl,e.receiptPath)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
     <div class="v num ${e.kind==='income'?'pos':'neg'}" style="margin-inline-start:${e.receiptUrl?4:0}px">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
   </button>`;
 }
@@ -5209,7 +5210,7 @@ function paintEntry(){
   rg.style.display = EN.kind==='expense' ? 'block' : 'none';
   const rw = document.getElementById('en-receipt-thumb-wrap');
   if(EN.receiptUrl){
-    rw.innerHTML = `<img class="receipt-thumb" src="${receiptDisplayUrl(EN.receiptUrl)}" data-tm-click="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
+    rw.innerHTML = `<img class="receipt-thumb" src="${receiptDisplayUrl(EN.receiptUrl,EN.receiptPath)}" data-tm-click="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
   } else if(!hasFeature('receiptPhoto')){
     rw.innerHTML = `<div class="receipt-add" data-tm-click="lockGuard('receiptPhoto')" title="${t('lock.title',{p:t('tier.plus')})}">${DIRECTION_A_LOCK_ICON}</div>`;
   } else if(canCaptureWithCamera()){
@@ -5843,7 +5844,7 @@ function sheetSnapshot(sheetEl){
   }).join('\u0001');
 }
 let sheetOpener=null;
-function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el._returnAction=sheetOpener?.getAttribute('data-tm-click'); el._returnScroll=window.scrollY; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{if(!el.classList.contains('open'))return;initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus({preventScroll:true});},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
+function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el._returnAction=sheetOpener?.getAttribute('data-tm-click'); el._returnScroll=window.scrollY; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); document.documentElement.classList.add('sheet-open'); setTimeout(()=>{if(!el.classList.contains('open'))return;initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus({preventScroll:true});},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb)closeSheet(sb.id.replace(/^sb-/,''));
@@ -5866,7 +5867,7 @@ function initSheetDrag(){
     document.addEventListener('mouseup',onEnd);
   });
 }
-function closeSheet(id){ const el=document.getElementById('sb-'+id); el.classList.remove('open'); document.body.classList.remove('sheet-open'); const opener=sheetOpener?.isConnected?sheetOpener:el._returnAction?Array.from(document.querySelectorAll('[data-tm-click]')).find(n=>n.getAttribute('data-tm-click')===el._returnAction):null; if(opener&&opener.focus)opener.focus({preventScroll:true}); if(id==='assistant'&&Number.isFinite(el._returnScroll))window.scrollTo({top:el._returnScroll,behavior:'instant'}); }
+function closeSheet(id){ const el=document.getElementById('sb-'+id); el.classList.remove('open'); document.body.classList.remove('sheet-open'); document.documentElement.classList.remove('sheet-open'); const opener=sheetOpener?.isConnected?sheetOpener:el._returnAction?Array.from(document.querySelectorAll('[data-tm-click]')).find(n=>n.getAttribute('data-tm-click')===el._returnAction):null; if(opener&&opener.focus)opener.focus({preventScroll:true}); if(id==='assistant'&&Number.isFinite(el._returnScroll))window.scrollTo({top:el._returnScroll,behavior:'instant'}); }
 
 /* Toast feedback */
 let _toastTimer=null;
@@ -5903,7 +5904,11 @@ function exportJSON(){
   a.click(); URL.revokeObjectURL(a.href);
 }
 function downloadBackupBlob(blob,name){let url,a;try{a=document.createElement('a');url=URL.createObjectURL(blob);a.href=url;a.download=name;a.hidden=true;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(error){if(a&&a.isConnected)a.remove();if(url)try{URL.revokeObjectURL(url);}catch(_){}throw TaxMateBackupExport.failure(TaxMateBackupExport.CATEGORIES.BROWSER_DOWNLOAD,{cause:error});}}
-function receiptDisplayUrl(url){const path=TaxMateLocalReceipts.pathFromUrl(url);return path?TaxMateLocalReceipts.cachedUrl(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path)||'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7':url;}
+function receiptDisplayUrl(url,receiptPath){
+  const path=receiptPath||TaxMateLocalReceipts.pathFromUrl(url),cached=path&&TaxMateLocalReceipts.cachedUrl(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path);
+  if(cached)return cached;
+  return TaxMateLocalReceipts.pathFromUrl(url)?'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7':url;
+}
 async function primeLocalReceiptUrls(){const scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE);for(const r of await TaxMateLocalReceipts.list(scope)){if(scope!==TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE))return;await TaxMateLocalReceipts.objectUrl(scope,r.path);}if(scope===TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE)&&!ACCOUNT_TRANSITION_PENDING)renderBackgroundAccount();}
 async function receiptBytesFromUrl(url,options={}){const path=TaxMateLocalReceipts.pathFromUrl(url);if(path){const binary=await TaxMateLocalReceipts.binary(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path);if(!binary)throw new Error('local_receipt_unavailable');return binary;}const response=await fetch(url,{signal:options.signal});if(!response.ok)throw Object.assign(new Error('receipt-download-failed'),{status:response.status});return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
 async function collectPortableReceipts(stateSnapshot=S,options={}){
@@ -6738,6 +6743,7 @@ async function sendSyncOperation(operation){
   const current=cloudUser();if(!current)throw Object.assign(new Error('Sign in required.'),{code:'unauthenticated'});assertActiveAccountUid(current.uid);
   if(operation.uid&&operation.uid!==current.uid||operation.ownerUid&&operation.ownerUid!==current.uid)throw Object.assign(new Error('Foreign sync operation blocked.'),{code:'account-owner-mismatch'});
   if(operation.kind==='partnership-entry'){
+    operation.record=await promoteLocalReceiptForSync(operation.record,current);
     const ref=FB.db.collection('partnerships').doc(operation.code).collection('entries').doc(operation.record.id);
     await writeRecordIfNewer(ref,operation.record);return;
   }
@@ -6753,7 +6759,11 @@ async function sendSyncOperation(operation){
     return;
   }
   if(operation.kind==='personal-state'){
-    const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState().map(record=>({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()}));
+    const operationMeta=cloudMetaFromState(),operationRecords=[];
+    for(const sourceRecord of personalRecordsFromState()){
+      const record=await promoteLocalReceiptForSync(sourceRecord,current);
+      operationRecords.push({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()});
+    }
     const metaRef=userRoot(operation.uid).collection('app').doc('meta');let serverMeta=operationMeta;
     await FB.db.runTransaction(async tx=>{
       const snap=await tx.get(metaRef),remote=snap.exists?cloudMetaForAccount(snap.data(),operation.uid,{forWrite:true}):{};
@@ -7674,11 +7684,34 @@ function generatePDF(){
 function storageBucket(){
   try{ return fbConfigured() && FB.ready ? firebase.storage() : null; }catch(e){ return null; }
 }
-function receiptPath(entryId){ const uid=assertActiveAccountUid(firebase.auth().currentUser&&firebase.auth().currentUser.uid);return `receipts/${uid}/photo-${crypto.randomUUID()}.jpg`; }
+async function promoteLocalReceiptForSync(record,user){
+  if(!record||record.deletedAt!=null||!record.receiptPath||!TaxMateLocalReceipts.pathFromUrl(record.receiptUrl))return record;
+  if(!user||user.isAnonymous||!TaxMateAccountStorage.ownsReceiptPath(record.receiptPath,user.uid))throw Object.assign(new Error('Local receipt owner mismatch.'),{code:'account-owner-mismatch'});
+  const scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),local=await TaxMateLocalReceipts.get(scope,record.receiptPath);
+  if(!local||!local.blob)throw Object.assign(new Error('Local receipt bytes are unavailable.'),{code:'local-receipt-unavailable'});
+  const ref=firebase.storage().ref(record.receiptPath);
+  await ref.put(local.blob,{contentType:local.blob.type||'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
+  const url=await ref.getDownloadURL(),next={...record,receiptUrl:url};
+  const canonical=S.entries.find(entry=>entry.id===record.id&&entry.receiptPath===record.receiptPath);
+  if(canonical&&TaxMateLocalReceipts.pathFromUrl(canonical.receiptUrl)){
+    canonical.receiptUrl=url;
+    persistCanonicalState(S);
+  }
+  return next;
+}
+function receiptOwnerId(){
+  const current=cloudUser();
+  if(current&&current.uid)return assertActiveAccountUid(current.uid);
+  if(ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE.kind==='firebase'&&ACTIVE_ACCOUNT_SCOPE.uid)return ACTIVE_ACCOUNT_SCOPE.uid;
+  return 'local';
+}
+function receiptPath(entryId){ return `receipts/${receiptOwnerId()}/photo-${crypto.randomUUID()}.jpg`; }
 function entryMutationAllowed(entry){
-  if(!entry||ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.retentionBlocked||CLOUD.controlsCached)return false;
+  if(!entry||ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.retentionBlocked)return false;
   const business=bizById(entry.bizId);if(!business)return false;
   if(!business.syncCode)return true; // Free ordinary/self-employed books remain editable.
+  const offline=typeof navigator!=='undefined'&&navigator.onLine===false;
+  if(CLOUD.controlsCached&&!offline)return false;
   const user=cloudUser(),sub=FB.subs[business.syncCode],member=sub&&sub.memberUid===user?.uid&&sub.membership;
   const cutoffs=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1];
   return !!(user&&member&&hasFeature('partnerSync')&&(!cutoff||entry.date>=cutoff));
@@ -7686,6 +7719,10 @@ function entryMutationAllowed(entry){
 async function entryMutationPreflight(entry){
   if(!entryMutationAllowed(entry)){showNotice(t('sy.title'),t('sy.readOnly'));return false;}
   const business=bizById(entry.bizId);if(!business.syncCode)return true;
+  // A server round-trip is impossible in flight mode.  Cached membership and
+  // paid access already passed entryMutationAllowed(), so keep the local edit
+  // and let the durable outbox revalidate and sync it after reconnection.
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return true;
   const user=cloudUser(),scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),generation=CLOUD.generation;
   try{
     if(navigator.onLine===false)throw new Error('shared-delete-needs-connection');
@@ -7728,25 +7765,33 @@ async function onReceiptFile(ev){
   // 上載期間禁用 Save 掣，避免收據未上完就儲存
   if(saveBtn){ saveBtn.disabled = true; saveBtn.style.opacity = '0.5'; saveBtn.textContent = ' ' + t('rc.uploading'); }
   try{
-    // 壓縮到 ~200KB
+    // Always save the compressed image to the account-owned device store first.
+    // This makes capture a genuine offline-first operation rather than an upload gate.
     const compressed = await compressImage(file, 1200, 0.82);
-    const db = await ensureFB(); if(!db){ st.textContent = t('rc.uploadErr'); return; }
-    const u = await ensureAuth(); if(!u){ st.textContent = t('rc.signinNeeded')||t('rc.uploadErr'); return; }
-    assertActiveAccountUid(u.uid);
-    // 等 auth token 真正 ready（匿名登入後 token 可能要一刻先 propagate）
-    try{ await u.getIdToken(); }catch(_){}
     const entId = EN.id || uid();
     if(!EN.id) EN.id = entId;
-    const path = receiptPath(entId);
-    const stor = firebase.storage();
-    const ref = stor.ref(path);
-    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
-    const url = await ref.getDownloadURL();
-    if(!await entryMutationPreflight(receiptEntry))return;
-    EN.receiptUrl = url;
+    const path = receiptPath(entId),scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE);
+    await TaxMateLocalReceipts.put(scope,path,compressed,{epoch:currentRetentionEpoch()});
+    await TaxMateLocalReceipts.objectUrl(scope,path);
+    EN.receiptUrl = TaxMateLocalReceipts.url(path,location.origin);
     EN.receiptPath = path;
-    st.textContent = '';
     paintEntry();
+    st.textContent = typeof navigator!=='undefined'&&navigator.onLine===false?t('rc.savedOffline'):'';
+    st.style.color='var(--muted)';
+
+    // Online capture may promote immediately.  A network failure is not a data
+    // failure: keep the local receipt and let the sync outbox retry later.
+    if(typeof navigator==='undefined'||navigator.onLine!==false){
+      try{
+        const db = await ensureFB(),u = await ensureAuth();
+        if(db&&u&&!u.isAnonymous){
+          assertActiveAccountUid(u.uid);try{await u.getIdToken();}catch(_){}
+          const promoted=await promoteLocalReceiptForSync({id:EN.id,bizId:receiptEntry.bizId,date:receiptEntry.date,receiptPath:path,receiptUrl:EN.receiptUrl},u);
+          EN.receiptUrl=promoted.receiptUrl;
+          paintEntry();st.textContent='';
+        }
+      }catch(error){console.warn('Receipt retained for later sync',{safeCode:'RECEIPT_LOCAL_PENDING'});st.textContent=t('rc.savedOffline');st.style.color='var(--muted)';}
+    }
   }catch(e){ console.warn(e); st.textContent=t('rc.uploadErr'); }
   finally{
     EN.uploading = false;
@@ -7831,7 +7876,7 @@ function openLightbox(url, path){
     lb.addEventListener('click',e=>{ if(e.target===lb) closeLightbox(); });
     document.body.appendChild(lb);
   }
-  document.getElementById('lb-img').src = receiptDisplayUrl(url);
+  document.getElementById('lb-img').src = receiptDisplayUrl(url,path);
   lb.style.display = 'flex';
   refreshReceiptMutationControls();
 }
@@ -7855,6 +7900,7 @@ function anySheetOpen(){
 function closeAllSheets(){
   document.querySelectorAll('.sb.open').forEach(o=>o.classList.remove('open'));
   document.body.classList.remove('sheet-open');
+  document.documentElement.classList.remove('sheet-open');
 }
 function setupBackButton(){
   // Seed two states: one base + one buffer the back button consumes first.

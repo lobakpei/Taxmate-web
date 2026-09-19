@@ -81,7 +81,7 @@ test('draft persistence has one-shot suppression while canonical emits always re
 });
 
 test('Ltd entry clears personal overlays without an automatic install prompt and has a CSS fail-safe',()=>{
-  assert.match(app,/function closePersonalSurfacesForLtd\(\)\{[\s\S]*querySelectorAll\('\.sb\.open'\)[\s\S]*classList\.remove\('sheet-open'\)[\s\S]*taxmate-lightbox[\s\S]*sheetOpener=null;[\s\S]*LB=\{url:'',path:''\};/);
+  assert.match(app,/function closePersonalSurfacesForLtd\(\)\{[\s\S]*querySelectorAll\('\.sb\.open'\)[\s\S]*document\.body\.classList\.remove\('sheet-open','ltd-sheet-open'\)[\s\S]*document\.documentElement\.classList\.remove\('sheet-open','ltd-sheet-open'\)[\s\S]*taxmate-lightbox[\s\S]*sheetOpener=null;[\s\S]*LB=\{url:'',path:''\};/);
   assert.doesNotMatch(app,/pwaProactivePending|maybeOpenPendingPwaSuggestion|schedulePwaInstallSuggestion/);
   assert.match(app,/enterLtd\(\)\{closePersonalSurfacesForLtd\(\);/);
   assert.match(app,/function openSheet\(id\)\{ if\(document\.body\.classList\.contains\('ltd-active'\)\)return false;/);
@@ -89,4 +89,5 @@ test('Ltd entry clears personal overlays without an automatic install prompt and
   assert.doesNotMatch(cleanup,/maybeOpenPendingPwaSuggestion|openSheet\(/);
   assert.match(html,/body\.ltd-active \.sb,[\s\S]*body\.ltd-active>#taxmate-lightbox,[\s\S]*body\.ltd-active>#taxmate-toast,[\s\S]*body\.ltd-active>#ob-root\{display:none!important;visibility:hidden!important;pointer-events:none!important\}/);
   assert.match(html,/body\.ltd-active\.sheet-open\{overflow:auto\}/);
+  assert.match(html,/html\.ltd-sheet-open,body\.ltd-active\.ltd-sheet-open\{overflow:hidden;overscroll-behavior:none\}/);
 });

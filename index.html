@@ -115,6 +115,9 @@ body.ltd-active>#taxmate-toast,
 body.ltd-active>#ob-root{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.ltd-active .sb *,body.ltd-active>#taxmate-lightbox *{pointer-events:none!important}
 body.ltd-active.sheet-open{overflow:auto}
+/* The LTD renderer owns its own fixed sheets.  Keep the document behind those
+   sheets completely still; the sheet body remains the only vertical scroller. */
+html.ltd-sheet-open,body.ltd-active.ltd-sheet-open{overflow:hidden;overscroll-behavior:none}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
@@ -311,7 +314,7 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 #en-repeat-months label:focus-within{outline:2px solid var(--brand);outline-offset:2px}
 #en-repeat-months small{display:block;font-size:11px;font-weight:400}
 .pctrow{display:flex;gap:8px;flex-wrap:wrap}
-.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
   cursor:pointer;display:flex;align-items:center;gap:8px;text-align:start;color:var(--ink)}
 .catbtn.on{border-color:var(--brand);background:var(--brand-soft);font-weight:800}
@@ -324,7 +327,7 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .sheet::-webkit-scrollbar-track{background:transparent}
 .sheet::-webkit-scrollbar-thumb{background:var(--border,#2d4a3a);border-radius:4px}
 .sheet{scrollbar-width:thin;scrollbar-color:var(--border,#2d4a3a) transparent}
-body.sheet-open{overflow:hidden}
+html.sheet-open,body.sheet-open{overflow:hidden;overscroll-behavior:none}
 .toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%) translateY(-80px);
   background:var(--ink);color:#fff;font-size:14px;font-weight:700;padding:11px 22px;border-radius:999px;
   z-index:400;box-shadow:0 8px 24px rgba(16,24,32,.25);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;white-space:nowrap}
@@ -335,7 +338,7 @@ body.sheet-open{overflow:hidden}
 .sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:4px auto 16px;cursor:grab;position:relative}
 .grab::after{content:"";position:absolute;top:-12px;bottom:-12px;left:-40px;right:-40px}
 .sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px;color:var(--ink)}
-.sheet .sact{display:flex;gap:10px;margin-top:20px}
+.sheet .sact{display:flex;gap:12px;margin-top:20px}
 .sheet .sact .btn{flex:1}
 
 /* ── collapsible settings section ── */
@@ -368,7 +371,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 /* UI-09: receipt actions — real TaxMate buttons, stacked, identical geometry.
    No separate icon tile: the empty state is exactly two (mobile) or one (desktop) control. */
 #en-receipt-thumb-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:100%}
-.rc-actions{display:flex;flex-direction:column;gap:8px;width:100%}
+.rc-actions{display:flex;flex-direction:column;gap:12px;width:100%}
 .rc-actions .btn{width:100%;border:1px solid transparent}
 .rc-actions .fhint{margin-top:2px}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
