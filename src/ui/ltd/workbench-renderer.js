@@ -299,7 +299,7 @@
   function textField(o){
     // o: {scope,label,fid,placeholder,infoId,hint,kind:'text'|'money'|'percent',inputmode,persist}
     var scope=o.scope, fid=o.fid, err=errFor(scope,fid), kind=o.kind||'text';
-    var wrapCls='tm-inwrap'+(err?' err':'');
+    var wrapCls='tm-inwrap '+kind+(err?' err':'');
     var affixPre = kind==='money' ? '\u00A3' : null;
     var affixSuf = kind==='percent' ? '%' : null;
     var input=h('input',{class:'tm-input'+(affixPre?' pre':'')+(affixSuf?' suf':''), type:'text',
@@ -1353,7 +1353,28 @@
     other.forEach(function(code){items.push({id:'reason:'+code,text:reasonText(code),action:'details',codes:[code]});});
     // Distinct engine reasons can describe the same user action (for example
     // an unavailable and an out-of-date CT estimate). Show that work once.
-    return items.filter(function(item,index,all){var key=item.action==='bank'?'bank':item.id;return all.findIndex(function(other){return (other.action==='bank'?'bank':other.id)===key;})===index;});
+    var unique=items.filter(function(item,index,all){var key=item.action==='bank'?'bank':item.id;return all.findIndex(function(other){return (other.action==='bank'?'bank':other.id)===key;})===index;});
+    // Statutory obligations are one review checklist, not twelve independent
+    // product workflows. Present one honest entry point instead of twelve rows
+    // with navigation chevrons that all open the same disclosure below.
+    var statutoryRows=unique.filter(function(item){return item.action==='checklist';});
+    if(statutoryRows.length){
+      var first=unique.findIndex(function(item){return item.action==='checklist';});
+      unique=unique.filter(function(item){return item.action!=='checklist';});
+      unique.splice(first,0,{id:'statutory',text:t('statutory.title'),sub:t('todo.count',{count:statutoryRows.length}),action:'checklist'});
+    }
+    return unique;
+  }
+  function revealStatutoryChecklist(){
+    UI.disc['tax.statutory']=true;
+    var focusChecklist=function(){
+      var target=document.querySelector('[data-action="open-checklist"]');
+      if(!target)return;
+      target.scrollIntoView({block:'start',behavior:'smooth'});
+      if(typeof target.focus==='function')target.focus({preventScroll:true});
+    };
+    if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack'){paint();setTimeout(focusChecklist,0);}
+    else{run('onSetWorkspaceArea',{area:'tax'},{});setTimeout(focusChecklist,80);}
   }
   function todoAction(item,asRow){
     var label=null, fn=null;
@@ -1361,12 +1382,12 @@
       case 'bank': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ openSheet('bank'); }; } break;
       case 'match': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ var rec=latestReconciliation(); if(rec&&rec.status!=='voided') openSheet('bankMatch',{recordId:rec.id}); else openSheet('bank'); }; } break;
       case 'checks': if(can('edit_company')){ label=t('todo.record_checks'); fn=function(){ openSheet('statutory',{factKeys:item.factKeys}); }; } break;
-      case 'checklist': label=t('todo.view_checklist'); fn=function(){ UI.disc['tax.statutory']=true;if(item.itemId)UI.disc['stat:'+item.itemId]=true; if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack') paint(); else run('onSetWorkspaceArea',{area:'tax'},{}); }; break;
+      case 'checklist': label=t('todo.view_checklist'); fn=revealStatutoryChecklist; break;
       case 'money': label=t('todo.view'); fn=function(){ run('onSetWorkspaceArea',{area:'money'},{}); }; break;
       case 'ct': label=t('tax.review_calculation'); fn=openTaxCalculation; break;
       case 'details': label=t('todo.details'); fn=function(){run('onPrepareCompanyYear',{},{scope:'ltd.tax.company-year',onReview:paint,onOk:paint});}; break;
     }
-    if(asRow)return fn?reviewLink(item.text,fn,null,{dataset:{todo:item.id,todoAction:item.id}}):h('div',{class:'tm-rec',dataset:{todo:item.id},text:item.text});
+    if(asRow)return fn?reviewLink(item.text,fn,item.sub||null,{dataset:{todo:item.id,todoAction:item.id}}):h('div',{class:'tm-rec',dataset:{todo:item.id},text:item.text});
     return label?btn(label,'g sm',fn,{dataset:{todoAction:item.id}}):null;
   }
   function todoList(items){
@@ -3085,6 +3106,9 @@
 
   root.TaxMateLtdWorkbenchRenderer = Object.freeze({
     render: render,
+    // Native/PWA Back closes a UI-local company sheet before changing the
+    // canonical workflow route. Return true only when this layer consumed it.
+    handleBack: function(){ if(!UI.sheet)return false; closeSheet(); return true; },
     // optional hooks so a production shell can drive locale/theme from app settings
     setLocale: function(l){ UI.locale=l; UI.mountedKey=null; paint(); },
     setTheme: function(th){ UI.theme=th; UI.mountedKey=null; paint(); },

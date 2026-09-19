@@ -3441,6 +3441,15 @@ function trackEvent(name,params){try{if(!window.TaxMateAnalytics||!TaxMateAnalyt
 
 async function loadEntitlementFromCloud(uid){
   assertActiveAccountUid(uid);const cacheKey=accountSlotKey('entitlement-cache');
+  // Flight mode must not wait for a server-only Firestore read to time out.
+  // The cache key is scoped to the active Firebase UID, and only a previously
+  // server-verified snapshot can grant offline access in the resolver.
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){
+    ENTITLEMENT.snapshot=null;
+    try{ENTITLEMENT.snapshot=JSON.parse(localStorage.getItem(cacheKey));}catch(_){}
+    ENTITLEMENT.loaded=true;
+    return ENTITLEMENT.snapshot;
+  }
   try{
     const ref=userRoot(uid).collection('entitlements').doc('current');let doc=await ref.get({source:'server'});
     if(!doc.exists){
@@ -7852,6 +7861,26 @@ function setupBackButton(){
   if(!STATE_LOAD_ERROR){history.pushState({tm:'base'}, '');history.pushState({tm:'buffer'}, '');}
   window.addEventListener('popstate', (e)=>{
     if(STATE_LOAD_ERROR){if(e.state&&['base','buffer'].includes(e.state.tm))history.back();return;}
+    // LTD has its own route stack and local sheets. Consume Back inside that
+    // stack; at the company workspace root the decorated facade returns to the
+    // personal Dashboard instead of letting Android close the whole app.
+    if(document.body.classList.contains('ltd-active')){
+      history.pushState({tm:'buffer'}, '');
+      if(window.TaxMateLtdWorkbenchRenderer?.handleBack?.())return;
+      const facade=window.TaxMateLtdUIFacade;
+      if(facade&&typeof facade.onBack==='function')Promise.resolve(facade.onBack()).catch(error=>console.error('Ltd Back navigation failed',error));
+      else window.TaxMateLtdProductionBridge?.exitToBusinesses?.();
+      return;
+    }
+    // Keep onboarding/tours inside the app as well. Use the page's own visible
+    // Back control so its existing draft and confirmation rules remain intact.
+    const onboarding=document.querySelector('#ob-root.active');
+    if(onboarding){
+      history.pushState({tm:'buffer'}, '');
+      const back=Array.from(onboarding.querySelectorAll('.ob-back')).find(node=>node.offsetParent!==null&&!node.disabled);
+      if(back)back.click();
+      return;
+    }
     // A sheet is open → check for dirty data before closing
     if(anySheetOpen()){
       // 對比快照：開 sheet 時 vs 而家，有任何欄位變咗就當 dirty

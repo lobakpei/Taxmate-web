@@ -44,6 +44,14 @@ test('active Pro remains fully available without a retention deadline',()=>{
   assert.equal(decision.retention,undefined);
 });
 
+test('server-cached permanent Pro remains fully available offline after the normal verification window',()=>{
+  const now=Date.UTC(2026,8,5,12),snapshot={promotions:{FOUNDER:{status:'active',tier:'pro',startsAt:1,expiresAt:null,permanent:true}},serverVerifiedAt:1};
+  const decision=Access.decide({action:'cloud_hydrate',snapshot,now,offline:true,hasExistingLtdData:true});
+  assert.equal(decision.allowed,true);
+  assert.equal(decision.mode,'approved_mapping');
+  assert.equal(decision.requiredTier,'pro');
+});
+
 test('a later paid Plus expiry overrides the old Pro archive date, including legacy promotions',()=>{
   const at=Date.UTC(2026,8,5),snapshot={...formerPro,currentPeriodEnd:Date.UTC(2026,7,1),ltdArchive:{startedAt:endedAt}};
   assert.equal(Access.retention(snapshot,at,true).deleteOnDate,'2027-04-06');

@@ -106,7 +106,8 @@ test('the year and pack screens lead with figures and one action, with detail on
   assert.match(renderer,/function todoItems\(opts\)/);
   assert.match(renderer,/var DIRECTOR_CHECK_CODES=/);
   assert.match(renderer,/else if\(\/\^statutory_\/\.test\(c\)\)[\s\S]{0,260}items\.push\(\{id:'statutory:'\+item\.id,text:itemTitle\(item\),action:'checklist',itemId:item\.id\}\)/);
-  assert.match(renderer,/case 'checklist':[\s\S]{0,260}if\(item\.itemId\)UI\.disc\['stat:'\+item\.itemId\]=true/);
+  assert.match(renderer,/var statutoryRows=unique\.filter[\s\S]{0,420}id:'statutory'[\s\S]{0,180}action:'checklist'/);
+  assert.match(renderer,/case 'checklist':[\s\S]{0,160}fn=revealStatutoryChecklist/);
   assert.match(renderer,/function statutoryDisclosure\(opts\)/);
   assert.match(renderer,/out\.push\(h\('div',\{class:'tm-keyfigures'\},\[figRows\(fig,KEY_ROWS,'profitAndLoss'\)\]\)\)/);
   assert.match(renderer,/disclosure\('year\.details', t\('year\.view_details'\)/);

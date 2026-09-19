@@ -68,5 +68,6 @@ test('callable uses base options and the shared client bootstraps only after a s
   const server=fs.readFileSync('functions/index.js','utf8'),client=fs.readFileSync('src/app/app.js','utf8'),start=client.indexOf('async function loadEntitlementFromCloud(uid)'),end=client.indexOf('\nfunction currentTier()',start),body=client.slice(start,end);
   assert.match(server,/exports\.bootstrapAccountStorageControls=onCall\(baseOpts/);assert.doesNotMatch(server,/exports\.bootstrapAccountStorageControls=onCall\((?:opts|appStoreOpts|appStorePurchaseOpts)/);
   assert.match(body,/let doc=await ref\.get\(\{source:'server'\}\);\s*if\(!doc\.exists\)\{[\s\S]*callSecureFunction\('bootstrapAccountStorageControls',\{\}\)[\s\S]*doc=await ref\.get\(\{source:'server'\}\)/);
+  assert.match(body,/navigator\.onLine===false[\s\S]*JSON\.parse\(localStorage\.getItem\(cacheKey\)\)[\s\S]*ENTITLEMENT\.loaded=true;[\s\S]*return ENTITLEMENT\.snapshot;[\s\S]*try\{\s*const ref=/,'flight mode restores the UID-scoped entitlement before attempting a server-only read');
   assert.equal((body.match(/callSecureFunction\('bootstrapAccountStorageControls'/g)||[]).length,1);
 });

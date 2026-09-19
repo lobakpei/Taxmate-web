@@ -296,11 +296,11 @@ html[data-direction-a="true"] .assistant-home-card .assistant-count{display:bloc
 html[data-direction-a="true"] .assistant-home-card .link{margin:0;color:var(--muted)}
 html[data-direction-a="true"] .sb{background:rgba(15,22,32,.5);align-items:flex-end;justify-content:center}
 html[data-direction-a="true"] .sb>.sheet{
-  width:100%;max-width:520px;max-height:92vh;margin:0;padding:10px 20px calc(26px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);
+  width:100%;max-width:520px;max-height:92vh;margin:0;padding:14px 20px calc(26px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);
   border-radius:24px 24px 0 0;box-sizing:border-box;box-shadow:var(--e-sheet);overflow-y:auto;overflow-x:hidden;
 }
-html[data-direction-a="true"] .sb>.sheet>.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 12px}
-html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;margin:0 0 4px;color:var(--ink)}
+html[data-direction-a="true"] .sb>.sheet>.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 16px}
+html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;margin:0 0 18px;color:var(--ink)}
 html[data-direction-a="true"] .sb>.sheet>.btn:last-child,
 html[data-direction-a="true"] .sb>.sheet>.sact:last-child{margin-bottom:calc(12px + env(safe-area-inset-bottom))}
 html[data-direction-a="true"] #sb-assistant>.sheet{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
@@ -408,8 +408,8 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choices.row .tm-choice{al
 html[data-direction-a="true"] #cc-emojis{display:none;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 @media (hover:hover) and (pointer:fine){html[data-direction-a="true"] #cc-emojis{display:grid}}
 html[data-direction-a="true"] #cc-emojis .emojibtn{min-height:44px;aspect-ratio:auto}
-html[data-direction-a="true"] .entry-amount{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.5em;direction:ltr}
-html[data-direction-a="true"] .entry-amount .cur{position:static;transform:none;font-size:1.5em}
+html[data-direction-a="true"] .entry-amount{display:grid;grid-template-columns:minmax(30px,auto) minmax(0,1fr);align-items:center;gap:8px;direction:ltr}
+html[data-direction-a="true"] .entry-amount .cur{position:static;transform:none;display:grid;place-items:center;min-width:30px;font-size:1.5em}
 html[data-direction-a="true"] .entry-amount input[type=number]{min-width:0;font-size:1.5em;padding:12px 14px}
 html[data-direction-a="true"] .category-emoji{display:inline;font-size:1em;line-height:1}
 html[data-direction-a="true"] :is(.income-total-hint,.expense-total-hint){margin:-4px 0 14px}
@@ -638,7 +638,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app[data-theme="light"]{
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn.s{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-review-tax .v{font-size:22px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{background:transparent;border:0;box-shadow:none}
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 8px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head .tm-stitle{font-size:21px;line-height:1.3;margin:0;font-weight:800;min-width:0;flex:1;overflow-wrap:anywhere}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;border:0;background:none;color:var(--ink);font-size:22px;cursor:pointer}
 

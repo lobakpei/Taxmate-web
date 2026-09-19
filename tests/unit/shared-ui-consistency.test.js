@@ -10,6 +10,7 @@ const app=read('src/app/app.js');
 const billing=read('src/app/billing-ui.js');
 const ltd=read('src/ui/ltd/workbench-renderer.js');
 const ltdCss=read('src/ui/ltd/workbench.css');
+const direction=read('src/ui/direction-a.css');
 const actions=read('src/app/action-dispatch.js');
 
 function section(source,start,end){
@@ -79,6 +80,28 @@ test('LTD sheets with a footer dismiss action do not add a duplicate close cross
   const bankMatch=section(ltd,'function sheetBankMatch()','function bankEventAmount(');
   assert.match(bankMatch,/if\(!rec\)[^\n]*showClose:false/);
   assert.doesNotMatch(bankMatch,/return sheet\(\{ title:t\('bank\.match_title'\), showClose:false/);
+});
+
+test('all shared money inputs reserve a real layout column for their currency or percent affix',()=>{
+  assert.match(html,/\.entry-amount\{display:grid;grid-template-columns:minmax\(30px,auto\) minmax\(0,1fr\)/);
+  assert.match(html,/\.ob-amt\{display:grid;grid-template-columns:minmax\(28px,auto\) minmax\(0,1fr\)/);
+  assert.match(html,/\.ob-famt\{display:grid;grid-template-columns:minmax\(20px,auto\) minmax\(0,1fr\)/);
+  assert.match(ltd,/var wrapCls='tm-inwrap '\+kind/);
+  assert.match(ltdCss,/\.tm-inwrap\.money\{display:grid;grid-template-columns:minmax\(28px,auto\) minmax\(0,1fr\)/);
+  assert.match(ltdCss,/\.tm-affix\.pre\{position:static;grid-column:1/);
+  assert.match(ltdCss,/\.tm-affix\.suf\{position:static;grid-column:2/);
+});
+
+test('personal and LTD sheet headers reserve stable title space',()=>{
+  assert.match(direction,/\.sb>\.sheet>\.stitle\{[^}]*margin:0 0 18px/);
+  assert.match(direction,/#taxmate-ltd-ui-root \.tm-dialog-head\{[^}]*padding:18px 20px 8px/);
+  assert.match(ltdCss,/\.tm-dialog-head\{[^}]*padding:18px 20px 8px/);
+});
+
+test('company obligations are one honest checklist entry and disclosures separate direct children',()=>{
+  assert.match(ltd,/var statutoryRows=unique\.filter/);
+  assert.match(ltd,/id:'statutory',text:t\('statutory\.title'\),sub:t\('todo\.count'/);
+  assert.match(ltdCss,/\.tm-disc>\.dc\{[^}]*display:flex;flex-direction:column;gap:12px/);
 });
 
 test('Web billing overlap shows every live provider management route and blocks another plan',()=>{
