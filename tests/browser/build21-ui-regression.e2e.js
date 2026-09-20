@@ -22,6 +22,9 @@ async function assertTaxMateYellow(page,selector,label){
   const background=await page.locator(selector).first().evaluate(node=>getComputedStyle(node).backgroundColor);
   assert.equal(background,'rgb(255, 190, 10)',`${label} uses TaxMate yellow, not a white primary state`);
 }
+async function pageHeaderMetrics(page,selector){
+  return page.locator(selector).evaluate(node=>{const style=getComputedStyle(node),box=node.getBoundingClientRect();return{backgroundColor:style.backgroundColor,color:style.color,borderBottomLeftRadius:style.borderBottomLeftRadius,borderBottomRightRadius:style.borderBottomRightRadius,paddingTop:style.paddingTop,paddingRight:style.paddingRight,paddingBottom:style.paddingBottom,paddingLeft:style.paddingLeft,width:Math.round(box.width*100)/100,height:Math.round(box.height*100)/100};});
+}
 async function assertNoOverlap(page,selector,label){
   const result=await page.locator(selector).evaluateAll(nodes=>nodes.filter(node=>{const style=getComputedStyle(node),box=node.getBoundingClientRect();return style.display!=='none'&&style.visibility!=='hidden'&&box.width>0&&box.height>0;}).map(node=>{const box=node.getBoundingClientRect();return{top:box.top,bottom:box.bottom,left:box.left,right:box.right,text:node.textContent.trim().replace(/\s+/g,' ').slice(0,80)};}));
   for(let i=0;i<result.length;i++)for(let j=i+1;j<result.length;j++){const a=result[i],b=result[j],x=Math.min(a.right,b.right)-Math.max(a.left,b.left),y=Math.min(a.bottom,b.bottom)-Math.max(a.top,b.top);assert.ok(!(x>1&&y>1),`${label}: controls overlap: ${a.text} / ${b.text}`);}
@@ -45,9 +48,10 @@ async function main(){
   await context.addInitScript(json=>{localStorage.setItem('taxmateuk_account_v1:local:onboarding-done','1');localStorage.setItem('taxmateuk_analytics_consent','denied');localStorage.setItem('taxmateuk_account_v1:local:canonical',json);sessionStorage.setItem('tmCarouselDismissed','["pwa"]');},JSON.stringify(state));
   const page=await context.newPage(),pageErrors=[];page.on('pageerror',error=>pageErrors.push(error.message));
   await page.goto(`${origin}/index.html`,{waitUntil:'networkidle'});await page.locator('#nav button').first().waitFor();
-  const screenshots=[];
+  const screenshots=[];let taxHeader;
   for(const tab of ['home','income','expenses','tax','more']){
     await page.evaluate(name=>go(name),tab);await sleep(80);
+    if(tab==='tax')taxHeader=await pageHeaderMetrics(page,'[data-page-header="tax"]');
     if(tab==='more')await assertTaxMateYellow(page,'[data-billing-cadence].on','Settings billing cadence');
     screenshots.push(await shot(page,`personal-${tab}-zh-dark`));
   }
@@ -79,6 +83,8 @@ async function main(){
   await receiptTask.waitFor();await receiptTask.locator('.assistant-task-row').click();
   await page.waitForFunction(()=>S.tab==='receipts');
   assert.equal(await page.locator('#nav button.on').getAttribute('data-tm-click'),"go('expenses')",'Add receipts remains an Expenses child route in navigation');
+  const receiptHeader=await pageHeaderMetrics(page,'[data-page-header="receipts"]');
+  assert.deepEqual(receiptHeader,taxHeader,'Add receipts and Personal tax use the same top-bar geometry and palette');
   screenshots.push(await shot(page,'personal-expenses-add-receipts-via-assistant-zh-dark'));
 
   await page.evaluate(()=>openLtdCompany());

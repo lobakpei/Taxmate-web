@@ -4744,7 +4744,7 @@ function pageTax(){
   const taxReviewNotice=tx.taxEstimateSupported?'':`<div class="notice amber" data-partnership-tax-review>${t('part.reviewTax')}</div>`;
 
   return `
-  <h1 class="h1 review01-page-title">${t('review01.personalTax')}</h1>
+  <h1 class="h1 review01-page-title" data-page-header="tax">${t('review01.personalTax')}</h1>
   <div class="card review01-tax-summary">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
     <div class="big num ${tx.taxEstimateSupported?moneyCls(Math.max(tx.liability,0),'out'):''}">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
@@ -4814,12 +4814,14 @@ function rcbSetMonth(v){ RCB.month=v; render(); }
 
 function pageReceipts(){
   const yr = S.year;
-  const backBtn = `<button class="btn ghost" style="width:auto;padding:8px 14px;margin-bottom:12px" data-tm-click="go('expenses')">‹ ${t('nav.expenses')}</button>`;
+  const pageHeader = `<div class="h1 review01-page-title review01-receipts-page-title" data-page-header="receipts">
+    <button type="button" class="review01-receipts-page-back" data-tm-click="go('expenses')" aria-label="‹ ${t('nav.expenses')}">‹ ${t('nav.expenses')}</button>
+    <span>${t('rcb.title')}</span>
+  </div>`;
 
   // Pro gate：未夠 Pro 就唔畀入，引導升級
   if(!hasFeature('receiptPhoto')){
-    return `${backBtn}
-    <div class="h1">${t('rcb.title')}</div>
+    return `${pageHeader}
     <div class="card" style="text-align:center;padding:28px 18px">
 
       <div class="t" style="margin-bottom:6px">${t('car.rcTitle')}</div>
@@ -4899,8 +4901,7 @@ function pageReceipts(){
     </div>`;
   }
 
-  return `${backBtn}
-  <div class="h1">${t('rcb.title')}</div>
+  return `${pageHeader}
   ${assistantAllTasks().filter(task=>task.kind==='receipt_missing'&&task.businessId===RCB.bizId).map(assistantTaskOptions).join('')}
   ${controls}
   ${body}`;

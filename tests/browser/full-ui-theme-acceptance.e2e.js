@@ -170,9 +170,14 @@ async function main() {
       assert.ok(responsiveShell.mainWidth <= 390.5, `mobile content fits the viewport: ${responsiveShell.mainWidth}`);
     }
 
+    let taxHeader;
     for (const tab of ['home', 'income', 'expenses', 'tax', 'more']) {
       await page.evaluate(name => go(name), tab);
       await sleep(350);
+      if (tab === 'tax') taxHeader = await page.locator('[data-page-header="tax"]').evaluate(node => {
+        const style = getComputedStyle(node), box = node.getBoundingClientRect();
+        return {backgroundColor: style.backgroundColor, color: style.color, borderBottomLeftRadius: style.borderBottomLeftRadius, borderBottomRightRadius: style.borderBottomRightRadius, paddingTop: style.paddingTop, paddingRight: style.paddingRight, paddingBottom: style.paddingBottom, paddingLeft: style.paddingLeft, width: Math.round(box.width * 100) / 100, height: Math.round(box.height * 100) / 100};
+      });
       if (tab === 'more') {
         const selectedCadence = await page.locator('[data-billing-cadence].on').first().evaluate(node => getComputedStyle(node).backgroundColor);
         assert.equal(selectedCadence, 'rgb(255, 190, 10)', `Settings ${viewport.name}/${theme} selected cadence uses TaxMate yellow`);
@@ -194,6 +199,11 @@ async function main() {
     await receiptTask.locator('.assistant-task-row').click();
     await page.waitForFunction(() => S.tab === 'receipts');
     assert.equal(await page.locator('#nav button.on').getAttribute('data-tm-click'), "go('expenses')", 'Add receipts is shown as an Expenses child route');
+    const receiptHeader = await page.locator('[data-page-header="receipts"]').evaluate(node => {
+      const style = getComputedStyle(node), box = node.getBoundingClientRect();
+      return {backgroundColor: style.backgroundColor, color: style.color, borderBottomLeftRadius: style.borderBottomLeftRadius, borderBottomRightRadius: style.borderBottomRightRadius, paddingTop: style.paddingTop, paddingRight: style.paddingRight, paddingBottom: style.paddingBottom, paddingLeft: style.paddingLeft, width: Math.round(box.width * 100) / 100, height: Math.round(box.height * 100) / 100};
+    });
+    assert.deepEqual(receiptHeader, taxHeader, `Add receipts ${viewport.name}/${theme} shares the Personal tax top-bar geometry and palette`);
     const receiptAudit = await auditVisibleText(page, '#page');
     await page.screenshot({path: path.join(evidence, `app-add-receipts-${viewport.name}-${theme}.png`), fullPage: true});
     results.push({surface: 'app-add-receipts', viewport: viewport.name, theme, route: ['Home', 'TaxMate Assistant', 'Missing receipt task', 'Add receipts'], ...receiptAudit});
