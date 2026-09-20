@@ -710,13 +710,14 @@ html[data-direction-a="true"] .row .t,
 html[data-direction-a="true"] .entry .t{overflow-wrap:anywhere;font-size:14px;font-weight:700;line-height:1.5}
 html[data-direction-a="true"] .row .v,
 html[data-direction-a="true"] .entry .v{flex-shrink:0;font-size:14px}
-html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 14px;padding:4px 16px 20px;border-radius:0 0 24px 24px}
+html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 12px;padding:4px 16px 14px;border-radius:0 0 22px 22px}
 html[data-direction-a="true"] .review01-receipts-page-back{
-  appearance:none;width:auto;min-height:32px;margin:0 0 10px;padding:2px 4px;border:0;
+  appearance:none;display:block;width:auto;min-height:0;margin:-6px 0 0;padding:0 4px 2px;border:0;
   border-radius:0;background:transparent;color:var(--muted);box-shadow:none;font:inherit;font-size:12.5px;font-weight:700;line-height:1.2;cursor:pointer;
 }
 html[data-direction-a="true"] .review01-receipts-page-back:hover{color:var(--ink);background:transparent;filter:none}
 html[data-direction-a="true"] .review01-receipts-page-back:focus-visible{outline:2px solid var(--y);outline-offset:3px}
+html[data-direction-a="true"] .review01-receipts-page-back+.review01-task-context{margin-top:0}
 html[data-direction-a="true"] .review01-tax-summary .big{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-1px;margin:8px 0}
 html[data-direction-a="true"] .review01-tax-summary .hi,
 html[data-direction-a="true"] .review01-tax-summary .label{font-size:12.5px;color:var(--muted)}

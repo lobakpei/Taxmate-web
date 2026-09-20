@@ -204,6 +204,8 @@ async function main() {
       return {backgroundColor: style.backgroundColor, color: style.color, borderBottomLeftRadius: style.borderBottomLeftRadius, borderBottomRightRadius: style.borderBottomRightRadius, paddingTop: style.paddingTop, paddingRight: style.paddingRight, paddingBottom: style.paddingBottom, paddingLeft: style.paddingLeft, width: Math.round(box.width * 100) / 100, height: Math.round(box.height * 100) / 100};
     });
     assert.deepEqual(receiptHeader, taxHeader, `Add receipts ${viewport.name}/${theme} shares the Personal tax top-bar geometry and palette`);
+    assert.equal(receiptHeader.paddingBottom, '14px', `Add receipts ${viewport.name}/${theme} uses the standard compact app caption height`);
+    assert.equal(receiptHeader.borderBottomLeftRadius, '22px', `Add receipts ${viewport.name}/${theme} uses the standard app caption corner radius`);
     assert.equal(await page.locator('[data-page-header="receipts"] .review01-receipts-page-back').count(), 0, `Add receipts ${viewport.name}/${theme} has no Back control inside its title bar`);
     assert.equal(await page.locator('[data-page-header="receipts"] + .review01-receipts-page-back').count(), 1, `Add receipts ${viewport.name}/${theme} places its small Back control below the title bar`);
     const receiptAudit = await auditVisibleText(page, '#page');
