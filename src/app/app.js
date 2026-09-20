@@ -4814,10 +4814,8 @@ function rcbSetMonth(v){ RCB.month=v; render(); }
 
 function pageReceipts(){
   const yr = S.year;
-  const pageHeader = `<div class="h1 review01-page-title review01-receipts-page-title" data-page-header="receipts">
-    <button type="button" class="review01-receipts-page-back" data-tm-click="go('expenses')" aria-label="‹ ${t('nav.expenses')}">‹ ${t('nav.expenses')}</button>
-    <span>${t('rcb.title')}</span>
-  </div>`;
+  const pageHeader = `<h1 class="h1 review01-page-title" data-page-header="receipts">${t('rcb.title')}</h1>
+    <button type="button" class="review01-receipts-page-back" data-tm-click="go('expenses')">‹ ${t('nav.expenses')}</button>`;
 
   // Pro gate：未夠 Pro 就唔畀入，引導升級
   if(!hasFeature('receiptPhoto')){

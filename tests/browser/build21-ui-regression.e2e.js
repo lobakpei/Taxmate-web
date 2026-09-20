@@ -85,6 +85,8 @@ async function main(){
   assert.equal(await page.locator('#nav button.on').getAttribute('data-tm-click'),"go('expenses')",'Add receipts remains an Expenses child route in navigation');
   const receiptHeader=await pageHeaderMetrics(page,'[data-page-header="receipts"]');
   assert.deepEqual(receiptHeader,taxHeader,'Add receipts and Personal tax use the same top-bar geometry and palette');
+  assert.equal(await page.locator('[data-page-header="receipts"] .review01-receipts-page-back').count(),0,'Expenses Back is not inside the Add receipts title bar');
+  assert.equal(await page.locator('[data-page-header="receipts"] + .review01-receipts-page-back').count(),1,'Expenses Back is a small control below the title bar');
   screenshots.push(await shot(page,'personal-expenses-add-receipts-via-assistant-zh-dark'));
 
   await page.evaluate(()=>openLtdCompany());

@@ -711,12 +711,11 @@ html[data-direction-a="true"] .entry .t{overflow-wrap:anywhere;font-size:14px;fo
 html[data-direction-a="true"] .row .v,
 html[data-direction-a="true"] .entry .v{flex-shrink:0;font-size:14px}
 html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 14px;padding:4px 16px 20px;border-radius:0 0 24px 24px}
-html[data-direction-a="true"] .review01-receipts-page-title{display:flex;align-items:center;gap:10px}
 html[data-direction-a="true"] .review01-receipts-page-back{
-  appearance:none;flex:0 0 auto;margin:0;padding:4px 10px 4px 0;border:0;border-inline-end:1px solid var(--navy-line);
-  border-radius:0;background:transparent;color:var(--navy-mute);box-shadow:none;font:inherit;font-size:13px;font-weight:700;line-height:1.2;cursor:pointer;
+  appearance:none;width:auto;min-height:32px;margin:0 0 10px;padding:2px 4px;border:0;
+  border-radius:0;background:transparent;color:var(--muted);box-shadow:none;font:inherit;font-size:12.5px;font-weight:700;line-height:1.2;cursor:pointer;
 }
-html[data-direction-a="true"] .review01-receipts-page-back:hover{color:#fff;background:transparent;filter:none}
+html[data-direction-a="true"] .review01-receipts-page-back:hover{color:var(--ink);background:transparent;filter:none}
 html[data-direction-a="true"] .review01-receipts-page-back:focus-visible{outline:2px solid var(--y);outline-offset:3px}
 html[data-direction-a="true"] .review01-tax-summary .big{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-1px;margin:8px 0}
 html[data-direction-a="true"] .review01-tax-summary .hi,

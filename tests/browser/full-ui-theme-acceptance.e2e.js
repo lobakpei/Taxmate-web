@@ -204,6 +204,8 @@ async function main() {
       return {backgroundColor: style.backgroundColor, color: style.color, borderBottomLeftRadius: style.borderBottomLeftRadius, borderBottomRightRadius: style.borderBottomRightRadius, paddingTop: style.paddingTop, paddingRight: style.paddingRight, paddingBottom: style.paddingBottom, paddingLeft: style.paddingLeft, width: Math.round(box.width * 100) / 100, height: Math.round(box.height * 100) / 100};
     });
     assert.deepEqual(receiptHeader, taxHeader, `Add receipts ${viewport.name}/${theme} shares the Personal tax top-bar geometry and palette`);
+    assert.equal(await page.locator('[data-page-header="receipts"] .review01-receipts-page-back').count(), 0, `Add receipts ${viewport.name}/${theme} has no Back control inside its title bar`);
+    assert.equal(await page.locator('[data-page-header="receipts"] + .review01-receipts-page-back').count(), 1, `Add receipts ${viewport.name}/${theme} places its small Back control below the title bar`);
     const receiptAudit = await auditVisibleText(page, '#page');
     await page.screenshot({path: path.join(evidence, `app-add-receipts-${viewport.name}-${theme}.png`), fullPage: true});
     results.push({surface: 'app-add-receipts', viewport: viewport.name, theme, route: ['Home', 'TaxMate Assistant', 'Missing receipt task', 'Add receipts'], ...receiptAudit});
