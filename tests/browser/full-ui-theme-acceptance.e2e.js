@@ -112,6 +112,14 @@ async function auditVisibleText(page, scope = 'body') {
   });
 }
 
+async function captureScreenshot(page, target, viewport, fullPage = viewport.name === 'desktop') {
+  const png = await page.screenshot({path: target, fullPage});
+  if (viewport.name === 'mobile' && !fullPage) {
+    assert.equal(png.readUInt32BE(16), viewport.width, `${path.basename(target)} keeps the real phone viewport width`);
+    assert.equal(png.readUInt32BE(20), viewport.height, `${path.basename(target)} keeps the real phone viewport height`);
+  }
+}
+
 async function main() {
   fs.mkdirSync(evidence, {recursive: true});
   server = spawn(process.execPath, ['scripts/preview-server.js'], {
@@ -183,7 +191,7 @@ async function main() {
         assert.equal(selectedCadence, 'rgb(255, 190, 10)', `Settings ${viewport.name}/${theme} selected cadence uses TaxMate yellow`);
       }
       const audit = await auditVisibleText(page, '#page');
-      await page.screenshot({path: path.join(evidence, `app-${tab}-${viewport.name}-${theme}.png`), fullPage: true});
+      await captureScreenshot(page, path.join(evidence, `app-${tab}-${viewport.name}-${theme}.png`), viewport);
       results.push({surface: `app-${tab}`, viewport: viewport.name, theme, ...audit});
     }
 
@@ -209,7 +217,7 @@ async function main() {
     assert.equal(await page.locator('[data-page-header="receipts"] .review01-receipts-page-back').count(), 0, `Add receipts ${viewport.name}/${theme} has no Back control inside its title bar`);
     assert.equal(await page.locator('[data-page-header="receipts"] + .review01-receipts-page-back').count(), 1, `Add receipts ${viewport.name}/${theme} places its small Back control below the title bar`);
     const receiptAudit = await auditVisibleText(page, '#page');
-    await page.screenshot({path: path.join(evidence, `app-add-receipts-${viewport.name}-${theme}.png`), fullPage: true});
+    await captureScreenshot(page, path.join(evidence, `app-add-receipts-${viewport.name}-${theme}.png`), viewport);
     results.push({surface: 'app-add-receipts', viewport: viewport.name, theme, route: ['Home', 'TaxMate Assistant', 'Missing receipt task', 'Add receipts'], ...receiptAudit});
 
     await page.evaluate(() => go('settings'));
@@ -225,7 +233,7 @@ async function main() {
     else assert.equal(inAppFilters.scrollbarWidth, 'none', 'mobile in-app FAQ hides the visual scrollbar while retaining swipe');
     await page.locator('#sb-legal .sheet').evaluate(node => { node.scrollTop = 0; });
     await page.locator('#sb-legal [data-faq-root]').evaluate(node => { node.scrollTop = 0; });
-    await page.screenshot({path: path.join(evidence, `app-faq-${viewport.name}-${theme}.png`), fullPage: false});
+    await captureScreenshot(page, path.join(evidence, `app-faq-${viewport.name}-${theme}.png`), viewport, false);
     results.push({surface: 'app-faq', viewport: viewport.name, theme, ...faqAudit});
 
     await page.evaluate(() => {
@@ -247,7 +255,7 @@ async function main() {
     const renderedRatio = ltdLogoMetrics.width / ltdLogoMetrics.height;
     assert.ok(ltdLogoMetrics.complete && ltdLogoMetrics.naturalWidth > 0 && ltdLogoMetrics.width >= 60 && Math.abs(naturalRatio-renderedRatio) < .05 && /taxmate-brand-logo-dark\.svg$/.test(ltdLogoMetrics.src || ''), `Limited Company ${viewport.name}/${theme} official logo is loaded, visible and not distorted: ${JSON.stringify(ltdLogoMetrics)}`);
     const ltdAudit = await auditVisibleText(page, '#taxmate-ltd-ui-root');
-    await page.screenshot({path: path.join(evidence, `app-limited-company-${viewport.name}-${theme}.png`), fullPage: true});
+    await captureScreenshot(page, path.join(evidence, `app-limited-company-${viewport.name}-${theme}.png`), viewport);
     results.push({surface: 'app-limited-company', viewport: viewport.name, theme, ...ltdAudit});
     await context.close();
   }
@@ -274,7 +282,7 @@ async function main() {
         if (viewport.name === 'desktop') assert.deepEqual(filters, {overflowX: 'visible', flexWrap: 'wrap', scrollbarWidth: 'none', fits: true}, 'desktop public FAQ topics wrap without a scrollbar');
         else assert.equal(filters.scrollbarWidth, 'none', 'mobile public FAQ hides the visual scrollbar while retaining swipe');
       }
-      await page.screenshot({path: path.join(evidence, `${surface}-${viewport.name}-${theme}.png`), fullPage: true});
+      await captureScreenshot(page, path.join(evidence, `${surface}-${viewport.name}-${theme}.png`), viewport);
       results.push({surface, viewport: viewport.name, theme, ...audit});
       await context.close();
     }

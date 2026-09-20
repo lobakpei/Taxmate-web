@@ -17,7 +17,7 @@ let server,browser;
 
 function chromePath(){return [process.env.TAXMATE_CHROME_PATH,'C:/Program Files/Google/Chrome/Application/chrome.exe','C:/Program Files (x86)/Google/Chrome/Application/chrome.exe'].find(item=>item&&fs.existsSync(item));}
 async function waitForServer(){const start=Date.now();while(Date.now()-start<15000){try{if((await fetch(`${origin}/index.html`)).ok)return;}catch(_){}await sleep(100);}throw new Error('preview server did not start');}
-async function shot(page,name,fullPage=true){const target=path.join(evidence,`${name}.png`);await page.screenshot({path:target,fullPage});return path.basename(target);}
+async function shot(page,name,fullPage=false){const target=path.join(evidence,`${name}.png`),png=await page.screenshot({path:target,fullPage});if(!fullPage){assert.equal(png.readUInt32BE(16),390,`${name} screenshot keeps the 390px phone width`);assert.equal(png.readUInt32BE(20),844,`${name} screenshot keeps the 844px phone height`);}return path.basename(target);}
 async function assertTaxMateYellow(page,selector,label){
   const background=await page.locator(selector).first().evaluate(node=>getComputedStyle(node).backgroundColor);
   assert.equal(background,'rgb(255, 190, 10)',`${label} uses TaxMate yellow, not a white primary state`);
