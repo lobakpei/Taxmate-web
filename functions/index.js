@@ -29,7 +29,10 @@ const AccountWriteFence=require('./account-write-fence');
 const AccountStorageBootstrap=require('./account-storage-bootstrap');
 const GooglePlayBilling=require('./google-play-billing');
 const AppStoreBilling=require('./app-store-billing');
-const exposeGooglePlayFunctions=process.env.GOOGLE_PLAY_PROVIDER_READY==='true';
+// Firebase CLI discovers exports before it loads project .env values into the
+// discovery process. Keep Play endpoints discoverable; the runtime provider
+// configuration still fails closed until GOOGLE_PLAY_PROVIDER_READY is true.
+const exposeGooglePlayFunctions=true;
 const exposeAppStoreFunctions=process.env.APP_STORE_PROVIDER_READY==='true';
 const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET'), COMPANIES_HOUSE_API_KEY=defineSecret('COMPANIES_HOUSE_API_KEY');
 const APP_STORE_ROOT_CA=exposeAppStoreFunctions?defineSecret('APP_STORE_ROOT_CA_BASE64'):null,APP_STORE_PRIVATE_KEY=exposeAppStoreFunctions?defineSecret('APP_STORE_PRIVATE_KEY'):null;
