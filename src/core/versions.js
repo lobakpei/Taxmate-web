@@ -10,7 +10,7 @@
     TAX_RULESET_VERSION: '2026-27.2026-08-17.1',
     FORM_MAPPING_VERSION: '2025-26.2026-04-06.1',
     SYNC_SCHEMA_VERSION: 5,
-    PWA_CACHE_VERSION: 'taxmate-v2-build21-ui-acceptance-20260919-1'
+    PWA_CACHE_VERSION: 'taxmate-v2-build21-ui-acceptance-20260921-2'
   });
   return { VERSIONS };
 });

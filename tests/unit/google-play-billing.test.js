@@ -157,6 +157,17 @@ test('RTDN accepts Pub/Sub JSON or base64 and omits raw purchase tokens from orp
   assert.equal(result.status,'unlinked');assert.equal(JSON.stringify(orphan).includes(token),false);assert.equal(orphan.tokenHash,Play.hashToken(token));
 });
 
+test('RTDN acknowledges Google Play test notifications without treating them as purchases',async()=>{
+  const payload={version:'1.0',packageName:Play.PACKAGE_NAME,eventTimeMillis:String(now),testNotification:{version:'1.0'}};
+  assert.equal(Play.parseNotification({data:{message:{json:payload}}}).testNotification,true);
+  assert.equal(Play.parseNotification({message:{data:Buffer.from(JSON.stringify(payload)).toString('base64')}}).testNotification,true);
+  const db=new FakeDb(),provider={getSubscription:async()=>{throw Error('test notification must not reach provider');}};
+  const service=Play.createService({db,configuration:IDS,provider,now:()=>now});
+  assert.deepEqual(await service.handleNotification({data:{message:{json:payload}}}),{verified:false,status:'test_notification'});
+  assert.equal(db.rows.size,0);
+  await assert.rejects(()=>service.handleNotification({data:{message:{json:{...payload,packageName:'other.app'}}}}),error=>error.reason==='package');
+});
+
 test('authenticated pre-binding lets an out-of-app RTDN recover, grant and acknowledge after process loss',async()=>{
   const payload={version:'1.0',packageName:Play.PACKAGE_NAME,eventTimeMillis:String(now),subscriptionNotification:{version:'1.0',notificationType:2,purchaseToken:token,subscriptionId:'taxmate_pro'}},response=subscription({acknowledged:false});
   delete response.externalAccountIdentifiers;response.outOfAppPurchaseContext={expiredExternalAccountIdentifiers:{obfuscatedExternalAccountId:Play.hashAccount(uid)}};
