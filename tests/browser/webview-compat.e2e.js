@@ -71,8 +71,9 @@ function mime(file){return({'.html':'text/html; charset=utf-8','.js':'text/javas
     await page.locator('[data-tm-click="openAddBusinessFlow()"]:visible').click();
     await page.waitForFunction(()=>document.body.classList.contains('ltd-active')&&TaxMateLtdUIFacade.getSnapshot().navigation.routes.slice(-1)[0]?.screenId==='business.category-choice');
     assert.equal(await page.evaluate(()=>accountLtdUiFacts().route),'business.category-choice');
-    await page.evaluate(()=>TaxMateLtdUIFacade.onOpenHome());
+    await page.evaluate(()=>history.back());
     await page.waitForFunction(()=>!document.body.classList.contains('ltd-active')&&S.tab==='home');
+    assert.equal(await page.evaluate(()=>document.visibilityState),'visible','Back from LTD stays inside the running app');
     assert.equal(await page.evaluate(()=>accountHomeUiFacts().ready),true);
 
     await page.locator('[data-tm-click="openAddBusinessFlow()"]:visible').click();

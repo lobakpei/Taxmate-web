@@ -16,7 +16,7 @@ test('the app accepts the quarantine recovery state and binds the current epoch 
 test('server deletion mirrors non-ready state atomically and receipt preparation receives the asserted epoch',()=>{
   assert.match(server,/status:'deleting'[\s\S]*tx\.set\(entitlementRef,\{accountResetStatus:'deleting',accountResetEpoch:resetEpoch,accountResetEpochString:String\(resetEpoch\)\}/);
   assert.match(server,/accountResetStatus:'billing_quarantined'/);
-  assert.match(server,/cleanResetAdmissions[\s\S]*\['billing_quarantined','deleting','failed'\]/);
+  assert.match(server,/cleanResetAdmissions[\s\S]*\['billing_quarantined','deleting','identity_deleting','failed'\]/);
   assert.match(server,/ReceiptAdmission\.prepareBatch\([^\n]*accountResetEpoch:req\.data\?\.accountResetEpoch/);
 });
 

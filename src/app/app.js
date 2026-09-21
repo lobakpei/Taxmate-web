@@ -169,7 +169,7 @@ en:{
  'rc.imagesOnly':'Image files only',
  'rc.view':'View receipt',
  'rc.delete':'Delete receipt',
- 'rc.uploading':'Uploading…','rc.signinNeeded':'Please sign in again to save to the cloud',
+ 'rc.uploading':'Saving receipt…','rc.savedOffline':'Saved on this device — it will sync when you are online','rc.signinNeeded':'Please sign in again to save to the cloud',
  'rcb.tab':'Receipts',
  'rcb.title':'Add receipts',
  'rcb.intro':'Pick a category and month, then add a receipt for each expense that still needs one.',
@@ -667,7 +667,7 @@ zh:{
  'rc.imagesOnly':'只支援圖片檔',
  'rc.view':'查看收據',
  'rc.delete':'刪除收據',
- 'rc.uploading':'上傳中…','rc.signinNeeded':'請重新登入以儲存到雲端',
+ 'rc.uploading':'正在儲存收據…','rc.savedOffline':'已儲存喺呢部裝置，恢復連線後會自動同步','rc.signinNeeded':'請重新登入以儲存到雲端',
  'rcb.tab':'收據',
  'rcb.title':'新增收據',
  'rcb.intro':'揀分類同月份,然後為每筆仲未有收據嘅開支加收據。',
@@ -1160,7 +1160,7 @@ pl:{
  'rc.imagesOnly':'Tylko pliki graficzne',
  'rc.view':'Zobacz paragon',
  'rc.delete':'Usuń paragon',
- 'rc.uploading':'Przesyłanie…','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
+ 'rc.uploading':'Zapisywanie paragonu…','rc.savedOffline':'Zapisano na tym urządzeniu — synchronizacja nastąpi po połączeniu','rc.signinNeeded':'Zaloguj się ponownie, aby zapisać w chmurze',
  'rcb.tab':'Paragony',
  'rcb.title':'Dodaj paragony',
  'rcb.intro':'Wybierz kategorię i miesiąc, a następnie dodaj paragon do każdego wydatku, który go potrzebuje.',
@@ -1653,7 +1653,7 @@ ro:{
  'rc.imagesOnly':'Doar fișiere imagine',
  'rc.view':'Vezi bon',
  'rc.delete':'Șterge bon',
- 'rc.uploading':'Se încarcă…','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
+ 'rc.uploading':'Se salvează bonul…','rc.savedOffline':'Salvat pe acest dispozitiv — se va sincroniza când revii online','rc.signinNeeded':'Conectează-te din nou pentru a salva în cloud',
  'rcb.tab':'Bonuri',
  'rcb.title':'Adaugă bonuri',
  'rcb.intro':'Alege o categorie și o lună, apoi adaugă un bon pentru fiecare cheltuială care încă are nevoie.',
@@ -2146,7 +2146,7 @@ es:{
  'rc.imagesOnly':'Solo archivos de imagen',
  'rc.view':'Ver recibo',
  'rc.delete':'Eliminar recibo',
- 'rc.uploading':'Subiendo…','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
+ 'rc.uploading':'Guardando recibo…','rc.savedOffline':'Guardado en este dispositivo — se sincronizará cuando vuelvas a conectarte','rc.signinNeeded':'Inicia sesión de nuevo para guardar en la nube',
  'rcb.tab':'Recibos',
  'rcb.title':'Añadir recibos',
  'rcb.intro':'Elige una categoría y un mes, luego añade un recibo a cada gasto que aún lo necesite.',
@@ -2639,7 +2639,7 @@ ur:{
  'rc.imagesOnly':'صرف تصویری فائلیں',
  'rc.view':'رسید دیکھیں',
  'rc.delete':'رسید حذف کریں',
- 'rc.uploading':'اپلوڈ ہو رہا ہے…','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
+ 'rc.uploading':'رسید محفوظ ہو رہی ہے…','rc.savedOffline':'اس ڈیوائس پر محفوظ ہے — آن لائن ہونے پر ہم آہنگ ہوگی','rc.signinNeeded':'کلاؤڈ میں محفوظ کرنے کے لیے دوبارہ سائن ان کریں',
  'rcb.tab':'رسیدیں',
  'rcb.title':'رسیدیں شامل کریں',
  'rcb.intro':'ایک زمرہ اور مہینہ منتخب کریں، پھر ہر اُس خرچ کے لیے رسید شامل کریں جسے ابھی درکار ہے۔',
@@ -3066,20 +3066,26 @@ Object.assign(I18N.pl,{'m.eraseProviderHistory':'Usuwanie zostało wstrzymane, p
 Object.assign(I18N.ro,{'m.eraseProviderHistory':'Ștergerea este întreruptă deoarece acest cont are istoric de plăți Google Play sau App Store. Datele TaxMate rămân disponibile. Verifică toate abonamentele din magazine, apoi contactează support@taxmate.uk sau încearcă din nou.'});
 Object.assign(I18N.es,{'m.eraseProviderHistory':'La eliminación está en pausa porque esta cuenta tiene historial de pagos de Google Play o App Store. Tus datos de TaxMate siguen disponibles. Revisa todas las suscripciones de las tiendas y después contacta con support@taxmate.uk o vuelve a intentarlo.'});
 Object.assign(I18N.ur,{'m.eraseProviderHistory':'حذف کرنا روک دیا گیا ہے کیونکہ اس اکاؤنٹ میں Google Play یا App Store کی ادائیگی کی تاریخ موجود ہے۔ آپ کا TaxMate ڈیٹا دستیاب رہے گا۔ تمام اسٹور سبسکرپشنز دیکھیں، پھر support@taxmate.uk سے رابطہ کریں یا دوبارہ حذف کرنے کی کوشش کریں۔'});
+Object.assign(I18N.en,{'m.eraseCloud':'Delete my TaxMate account and data','m.eraseCloudT':'Delete your TaxMate account?','m.eraseCloudM':'This permanently deletes your TaxMate sign-in identity, personal cloud records, receipts and data on this device. Shared partnership records remain for other members. Limited billing and security records may be retained where required. Export a backup first.','m.erasedAll':'Your TaxMate account, sign-in identity and personal data have been deleted. Shared partnership records may remain for other members.'});
+Object.assign(I18N.zh,{'m.eraseCloud':'刪除 TaxMate 帳戶及資料','m.eraseCloudT':'刪除你嘅 TaxMate 帳戶？','m.eraseCloudM':'呢個會永久刪除你嘅 TaxMate 登入身份、個人雲端記錄、收據同本機資料。其他合夥人仍會保留佢哋嘅共享記錄。法例或安全需要嘅少量付款記錄可能保留。請先匯出備份。','m.erasedAll':'你嘅 TaxMate 帳戶、登入身份同個人資料已刪除；其他合夥人仍可能保留共享記錄。'});
+Object.assign(I18N.pl,{'m.eraseCloud':'Usuń konto TaxMate i dane','m.eraseCloudT':'Usunąć konto TaxMate?','m.eraseCloudM':'To trwale usuwa tożsamość logowania TaxMate, osobiste dane w chmurze, paragony i dane na tym urządzeniu. Dane wspólne pozostają dostępne dla innych wspólników. Ograniczone dane rozliczeniowe i bezpieczeństwa mogą zostać zachowane, gdy jest to wymagane. Najpierw wyeksportuj kopię.','m.erasedAll':'Konto TaxMate, tożsamość logowania i dane osobiste zostały usunięte. Dane wspólne mogą pozostać u innych wspólników.'});
+Object.assign(I18N.ro,{'m.eraseCloud':'Șterge contul TaxMate și datele','m.eraseCloudT':'Ștergi contul TaxMate?','m.eraseCloudM':'Aceasta șterge definitiv identitatea de autentificare TaxMate, datele personale din cloud, chitanțele și datele de pe acest dispozitiv. Înregistrările comune rămân pentru ceilalți parteneri. Datele limitate de facturare și securitate pot fi păstrate când este necesar. Exportă mai întâi o copie.','m.erasedAll':'Contul TaxMate, identitatea de autentificare și datele personale au fost șterse. Înregistrările comune pot rămâne la ceilalți parteneri.'});
+Object.assign(I18N.es,{'m.eraseCloud':'Eliminar mi cuenta y datos de TaxMate','m.eraseCloudT':'¿Eliminar tu cuenta de TaxMate?','m.eraseCloudM':'Esto elimina permanentemente tu identidad de acceso a TaxMate, tus datos personales en la nube, recibos y datos de este dispositivo. Los registros compartidos permanecen para otros socios. Pueden conservarse datos limitados de facturación y seguridad cuando sea necesario. Exporta primero una copia.','m.erasedAll':'Se han eliminado tu cuenta de TaxMate, identidad de acceso y datos personales. Otros socios pueden conservar registros compartidos.'});
+Object.assign(I18N.ur,{'m.eraseCloud':'میرا TaxMate اکاؤنٹ اور ڈیٹا حذف کریں','m.eraseCloudT':'کیا آپ اپنا TaxMate اکاؤنٹ حذف کرنا چاہتے ہیں؟','m.eraseCloudM':'اس سے آپ کی TaxMate لاگ اِن شناخت، ذاتی کلاؤڈ ریکارڈز، رسیدیں اور اس ڈیوائس کا ڈیٹا مستقل حذف ہو جائے گا۔ مشترکہ ریکارڈز دوسرے شراکت داروں کے پاس رہ سکتے ہیں۔ ضروری محدود بلنگ اور سیکیورٹی ریکارڈز محفوظ رہ سکتے ہیں۔ پہلے بیک اپ برآمد کریں۔','m.erasedAll':'آپ کا TaxMate اکاؤنٹ، لاگ اِن شناخت اور ذاتی ڈیٹا حذف ہو گیا ہے۔ مشترکہ ریکارڈز دوسرے شراکت داروں کے پاس رہ سکتے ہیں۔'});
 
 // Complete Founder Preview correction copy. English remains canonical; every key below has
 // an explicit six-locale value so onboarding, billing accessibility and sync status never
 // fall back to English in Urdu/RTL or another supported locale.
 Object.assign(I18N.en,{
-  'billing.cadenceAria':'Billing cadence','billing.launch':'Launch price','billing.monthlyAria':'Standard price £11.99; launch price £9.99 per month.','billing.reviewPurchase':'Review Pro purchase locally','billing.reviewNote':'Local review only — no payment or production request.','billing.purchaseUnavailable':'Pro purchase is not available yet. Promotion codes still work.',
+  'billing.cadenceAria':'Billing cadence','billing.launch':'Launch price','billing.monthlyAria':'Standard price £11.99; launch price £9.99 per month.','billing.reviewPurchase':'Review Pro purchase locally','billing.reviewNote':'Local review only — no payment or production request.','billing.purchaseUnavailable':'Pro purchase is not available yet. Promotion codes still\u00a0work.',
   'sync.offline':'Offline','sync.offlinePending':'Offline — {n} change(s) waiting','sync.signIn':'Waiting for sign-in','sync.signInPending':'Waiting for sign-in — {n} pending','sync.restoreFailed':'Cloud restore failed — will retry','sync.restoring':'Restoring cloud data…','sync.checking':'Checking cloud data…','sync.readFailed':'Cloud sync read failed — will retry','sync.partnerDenied':'Partnership sync access failed — local data is safe','sync.writeDenied':'Sync write access failed — local data is safe','sync.retrying':'Sync retrying — {n} change(s) waiting','sync.syncing':'Syncing — {n} change(s) waiting','sync.finishing':'Finishing sync…','sync.synced':'Synced',
   'ob.signInLtdContext':'Sign in to continue setting up your Limited Company.','ob.signInPartnerContext':'Sign in to continue connecting with Partner Sync.','ob.bizRequired':'Enter a business name to continue.','ob.partnerConnectedResult':'This partnership is now connected.','ob.continueDashboard':'Continue to dashboard','ob.localPurchaseWorking':'Updating your local review entitlement…',
-  'help.title':'Help & support','help.body':'Task-based help for records, tax estimates, receipts, plans, backups and partnerships.','help.open':'Open Help & support'
+  'help.title':'Help & support','help.body':'Search quick answers about records, tax estimates, receipts, plans, backups, partnerships and Limited Companies.','help.open':'Browse FAQs'
 });
 Object.assign(I18N.zh,{
   'billing.cadenceAria':'收費週期','billing.launch':'推出優惠價','billing.monthlyAria':'標準價每月 £11.99；推出優惠價每月 £9.99。','billing.reviewPurchase':'本機預覽 Pro 購買流程','billing.reviewNote':'只供本機預覽，不會付款或連接 production。','billing.purchaseUnavailable':'Pro 購買暫未開放；推廣代碼仍可使用。',
   'sync.offline':'離線','sync.offlinePending':'離線 — {n} 項變更等候中','sync.signIn':'等待登入','sync.signInPending':'等待登入 — {n} 項等候中','sync.restoreFailed':'雲端還原失敗 — 將會重試','sync.restoring':'正在還原雲端資料…','sync.checking':'正在核對雲端資料…','sync.readFailed':'讀取雲端同步失敗 — 將會重試','sync.partnerDenied':'合夥同步權限失敗 — 本機資料安全','sync.writeDenied':'同步寫入權限失敗 — 本機資料安全','sync.retrying':'同步重試中 — {n} 項變更等候中','sync.syncing':'同步中 — {n} 項變更等候中','sync.finishing':'正在完成同步…','sync.synced':'已同步',
-  'ob.signInLtdContext':'登入以繼續設定你嘅有限公司。','ob.signInPartnerContext':'登入以繼續連接 Partner Sync。','ob.bizRequired':'請輸入業務名稱先繼續。','ob.partnerConnectedResult':'呢個合夥業務已經連接。','ob.continueDashboard':'繼續前往主頁','ob.localPurchaseWorking':'正在更新本機預覽權限…','help.title':'幫助與支援','help.body':'查看記錄、稅務估算、收據、方案、備份及合夥功能指引。','help.open':'開啟幫助與支援'
+  'ob.signInLtdContext':'登入以繼續設定你嘅有限公司。','ob.signInPartnerContext':'登入以繼續連接 Partner Sync。','ob.bizRequired':'請輸入業務名稱先繼續。','ob.partnerConnectedResult':'呢個合夥業務已經連接。','ob.continueDashboard':'繼續前往主頁','ob.localPurchaseWorking':'正在更新本機預覽權限…','help.title':'幫助與支援','help.body':'搜尋記錄、稅務估算、收據、方案、備份、合夥及有限公司嘅常見問題。','help.open':'瀏覽常見問題'
 });
 Object.assign(I18N.pl,{
   'billing.cadenceAria':'Okres rozliczeniowy','billing.launch':'Cena startowa','billing.monthlyAria':'Cena standardowa 11,99 GBP; cena startowa 9,99 GBP miesięcznie.','billing.reviewPurchase':'Sprawdź zakup Pro lokalnie','billing.reviewNote':'Tylko podgląd lokalny — bez płatności i żądań produkcyjnych.','billing.purchaseUnavailable':'Zakup Pro nie jest jeszcze dostępny. Kody promocyjne nadal działają.',
@@ -3130,6 +3136,21 @@ Object.assign(I18N.pl,{'ret.manageTitle':'Zanim zarządzisz subskrypcją','ret.m
 Object.assign(I18N.ro,{'ret.manageTitle':'Înainte de a gestiona abonamentul','ret.manageBody':'Dacă anulezi, exporturile plătite PDF și Receipt Pack se încheie când se termină accesul plătit: {end}. Descarcă aceste rapoarte cât timp planul este activ.\n\nCreează un Full Backup ZIP pentru a-ți restaura datele mai târziu, inclusiv fișierele bonurilor. Un PDF este pentru consultare, nu pentru restaurare. Backupul de bază rămâne disponibil în Free.\n\n{deletion}\n\nPoți reveni și exporta mai întâi sau poți continua să gestionezi abonamentul.','ret.endContinuing':'Continuă în baza altui drept plătit','ret.endCheck':'Verifică perioada de facturare','ret.deleteKnown':'Dacă rămâi pe Free, datele contabile istorice din întregul cont sunt șterse la {date}. Continuarea pe Plus sau Pro îți păstrează istoricul.','ret.deleteContinuing':'Celălalt drept plătit în curs îți păstrează datele istorice disponibile.','ret.deleteUnknown':'Data ștergerii datelor necesită verificare; nu trebuie ghicită.','ret.title':'Datele și istoricul tău','ret.paidEnds':'Funcțiile plătite se încheie: {date}','ret.paidContinuing':'Acces plătit: continuă','ret.paidNone':'Momentan fără acces plătit','ret.paidCheck':'Sfârșitul accesului plătit: necesită verificare','ret.keptUntil':'Istoricul se păstrează până la {date}; se șterge de la {deleteOn} dacă ești încă pe Free.','ret.cleanupNone':'Curățare: nu s-a executat nicio ștergere a istoricului pe acest cont.','ret.cleanupPurging':'Curățare: în curs — istoricul expirat este eliminat în siguranță; sincronizarea este oprită până când serverul confirmă finalizarea.','ret.cleanupComplete':'Curățare: finalizată — serverul a confirmat eliminarea înregistrărilor dinainte de {date}.','ret.cleanupWarnings':'Curățare: înregistrări eliminate; unele fișiere de bonuri sunt încă în curs de eliminare și vor fi reîncercate automat.','ret.cleanupFailed':'Curățare: ultima încercare a eșuat și va fi reîncercată automat. Nimic nu este raportat ca șters până când serverul confirmă.','ret.duty':'Păstrarea evidențelor pentru HMRC este responsabilitatea ta; retenția TaxMate nu este o promisiune de stocare pe șase ani. Descarcă un Full Backup înainte de orice dată de ștergere.','ret.pausedTitle':'Se verifică istoricul contului','ret.pausedBody':'Istoricul expirat este eliminat în siguranță. Înregistrările din anul curent sunt protejate; sincronizarea este oprită până când serverul confirmă finalizarea.','ret.failedTitle':'Curățarea istoricului necesită o nouă încercare','ret.failedBody':'Ultima încercare de curățare nu s-a finalizat. Nimic nu a fost raportat ca șters; TaxMate va reîncerca automat, iar sincronizarea rămâne oprită până la finalizare.','sync.retention':'Istoricul expirat este eliminat în siguranță. Sincronizarea în cloud se va relua când contul este pregătit.','sync.retentionFailed':'Curățarea istoricului a eșuat și va fi reîncercată. Sincronizarea în cloud rămâne oprită.'});
 Object.assign(I18N.es,{'ret.manageTitle':'Antes de gestionar tu suscripción','ret.manageBody':'Si cancelas, las exportaciones de pago (PDF y Receipt Pack) terminan cuando termine tu acceso de pago: {end}. Descarga estos informes mientras tu plan esté activo.\n\nCrea un Full Backup ZIP para restaurar tus datos más adelante, incluidos los archivos de recibos. Un PDF es para consulta, no para restaurar. La copia básica sigue disponible en Free.\n\n{deletion}\n\nPuedes volver y exportar primero, o continuar para gestionar tu suscripción.','ret.endContinuing':'Continúa con otro derecho de pago','ret.endCheck':'Comprueba tu periodo de facturación','ret.deleteKnown':'Si sigues en Free, los datos contables históricos de toda tu cuenta se eliminan el {date}. Seguir en Plus o Pro conserva tu historial.','ret.deleteContinuing':'Tu otro derecho de pago en curso mantiene disponibles tus datos históricos.','ret.deleteUnknown':'La fecha de eliminación de datos requiere comprobación; no debe adivinarse.','ret.title':'Tus datos e historial','ret.paidEnds':'Las funciones de pago terminan: {date}','ret.paidContinuing':'Acceso de pago: en curso','ret.paidNone':'Sin acceso de pago en este momento','ret.paidCheck':'Fin del acceso de pago: requiere comprobación','ret.keptUntil':'Historial conservado hasta el {date}; se elimina desde el {deleteOn} si sigues en Free.','ret.cleanupNone':'Limpieza: no se ha ejecutado ninguna eliminación de historial en esta cuenta.','ret.cleanupPurging':'Limpieza: en curso — el historial caducado se está eliminando de forma segura; la sincronización está en pausa hasta que el servidor confirme.','ret.cleanupComplete':'Limpieza: completa — el servidor confirmó la eliminación de los registros anteriores al {date}.','ret.cleanupWarnings':'Limpieza: registros eliminados; algunos archivos de recibos aún se están eliminando y se reintentará automáticamente.','ret.cleanupFailed':'Limpieza: el último intento falló y se reintentará automáticamente. Nada se da por eliminado hasta que el servidor lo confirme.','ret.duty':'Conservar los registros para HMRC es tu responsabilidad; la retención de TaxMate no es una promesa de almacenamiento de seis años. Descarga un Full Backup antes de cualquier fecha de eliminación.','ret.pausedTitle':'Comprobando el historial de la cuenta','ret.pausedBody':'El historial caducado se está eliminando de forma segura. Tus registros del ejercicio actual están protegidos; la sincronización está en pausa hasta que el servidor confirme.','ret.failedTitle':'La limpieza del historial necesita un reintento','ret.failedBody':'El último intento de limpieza no se completó. Nada se ha dado por eliminado; TaxMate reintentará automáticamente y la sincronización sigue en pausa hasta que termine.','sync.retention':'El historial caducado se está eliminando de forma segura. La sincronización en la nube se reanudará cuando la cuenta esté lista.','sync.retentionFailed':'La limpieza del historial falló y se reintentará. La sincronización en la nube sigue en pausa.'});
 Object.assign(I18N.ur,{'ret.manageTitle':'سبسکرپشن سنبھالنے سے پہلے','ret.manageBody':'اگر آپ منسوخ کرتے ہیں تو بامعاوضہ PDF اور Receipt Pack ایکسپورٹ آپ کی بامعاوضہ رسائی ختم ہونے پر بند ہو جائیں گے: {end}۔ پلان فعال رہنے تک یہ رپورٹس ڈاؤن لوڈ کریں۔\n\nبعد میں ڈیٹا بحال کرنے کے لیے Full Backup ZIP بنائیں، رسیدوں کی فائلوں سمیت۔ PDF صرف حوالے کے لیے ہے، بحالی کے لیے نہیں۔ Free میں بنیادی بیک اپ دستیاب رہتا ہے۔\n\n{deletion}\n\nآپ واپس جا کر پہلے ایکسپورٹ کر سکتے ہیں، یا سبسکرپشن سنبھالنے کے لیے آگے بڑھ سکتے ہیں۔','ret.endContinuing':'کسی اور بامعاوضہ حق کے تحت جاری','ret.endCheck':'اپنی بلنگ مدت جانچیں','ret.deleteKnown':'اگر آپ Free پر رہتے ہیں تو پورے اکاؤنٹ کا تاریخی حساب کتاب {date} کو حذف ہو جائے گا۔ Plus یا Pro جاری رکھنے سے تاریخ محفوظ رہتی ہے۔','ret.deleteContinuing':'آپ کا دوسرا جاری بامعاوضہ حق آپ کا تاریخی ڈیٹا دستیاب رکھتا ہے۔','ret.deleteUnknown':'ڈیٹا حذف ہونے کی تاریخ جانچ طلب ہے؛ اندازہ نہیں لگایا جا سکتا۔','ret.title':'آپ کا ڈیٹا اور تاریخ','ret.paidEnds':'بامعاوضہ خصوصیات ختم: {date}','ret.paidContinuing':'بامعاوضہ رسائی: جاری','ret.paidNone':'فی الحال کوئی بامعاوضہ رسائی نہیں','ret.paidCheck':'بامعاوضہ رسائی کا اختتام: جانچ درکار','ret.keptUntil':'تاریخ {date} تک محفوظ؛ اگر آپ اب بھی Free پر ہیں تو {deleteOn} سے حذف۔','ret.cleanupNone':'صفائی: اس اکاؤنٹ پر تاریخ ہٹانے کا کوئی عمل نہیں چلا۔','ret.cleanupPurging':'صفائی: جاری — ختم شدہ تاریخ محفوظ طریقے سے ہٹائی جا رہی ہے؛ سرور کی تصدیق تک سنک روکا گیا ہے۔','ret.cleanupComplete':'صفائی: مکمل — سرور نے {date} سے پہلے کے ریکارڈ ہٹانے کی تصدیق کر دی۔','ret.cleanupWarnings':'صفائی: ریکارڈ ہٹا دیے گئے؛ کچھ رسید فائلیں ابھی ہٹائی جا رہی ہیں اور خود بخود دوبارہ کوشش ہوگی۔','ret.cleanupFailed':'صفائی: آخری کوشش ناکام رہی اور خود بخود دوبارہ کوشش ہوگی۔ سرور کی تصدیق تک کچھ بھی حذف شدہ نہیں سمجھا جاتا۔','ret.duty':'HMRC کے لیے ریکارڈ رکھنا آپ کی ذمہ داری ہے؛ TaxMate کی محفوظ مدت چھ سالہ ذخیرے کا وعدہ نہیں۔ کسی بھی حذف کی تاریخ سے پہلے Full Backup ڈاؤن لوڈ کریں۔','ret.pausedTitle':'اکاؤنٹ کی تاریخ جانچی جا رہی ہے','ret.pausedBody':'ختم شدہ تاریخ محفوظ طریقے سے ہٹائی جا رہی ہے۔ آپ کے موجودہ سال کے ریکارڈ محفوظ ہیں؛ سرور کی تصدیق تک سنک روکا گیا ہے۔','ret.failedTitle':'تاریخ کی صفائی کو دوبارہ کوشش درکار ہے','ret.failedBody':'صفائی کی آخری کوشش مکمل نہیں ہوئی۔ کچھ بھی حذف شدہ رپورٹ نہیں ہوا؛ TaxMate خود بخود دوبارہ کوشش کرے گا اور مکمل ہونے تک سنک رکا رہے گا۔','sync.retention':'ختم شدہ تاریخ محفوظ طریقے سے ہٹائی جا رہی ہے۔ اکاؤنٹ تیار ہونے پر کلاؤڈ سنک بحال ہوگا۔','sync.retentionFailed':'تاریخ کی صفائی ناکام رہی اور دوبارہ کوشش ہوگی۔ کلاؤڈ سنک رکا رہے گا۔'});
+Object.assign(I18N.en,{'ret.details':'Data retention details'});
+Object.assign(I18N.zh,{'ret.details':'資料保留詳情'});
+Object.assign(I18N.pl,{'ret.details':'Szczegóły przechowywania danych'});
+Object.assign(I18N.ro,{'ret.details':'Detalii despre păstrarea datelor'});
+Object.assign(I18N.es,{'ret.details':'Detalles de conservación de datos'});
+Object.assign(I18N.ur,{'ret.details':'ڈیٹا محفوظ رکھنے کی تفصیل'});
+
+// HMRC position field help: concise labels stay visible; explanations are user-opened.
+Object.assign(I18N.en,{'a.info':'Information','a.outsideLabel':'Tax collected outside Self Assessment','a.propertyLabel':'Gross property income for MTD assessment (optional)','a.propertyComplete':'I have included all relevant gross property income','a.poaInfo':'What: advance payments towards this year’s Self Assessment. Where to find it: your HMRC online account or the payment reminders dated 31 January and 31 July. What to enter: the total already paid for this tax year, or 0.','a.priorInfo':'What: an underpayment or overpayment from last year carried into this year. Where to find it: your HMRC tax calculation (SA302) or account statement. What to enter: HMRC’s carried amount — positive for underpaid, negative for overpaid, or 0.','a.outsideInfo':'What: tax already collected before Self Assessment, usually through PAYE. Where to find it: your P60, P45, payslips or HMRC online account. What to enter: the percentage of your total tax collected at source, from 0 to 100.','a.propertyInfo':'What: gross UK property income before expenses, used only for the MTD qualifying-income check. Where to find it: your property statements and rent records. What to enter: the complete gross amount for this tax year, or 0 if none; TaxMate does not provide landlord bookkeeping.'});
+Object.assign(I18N.zh,{'a.info':'資料','a.outsideLabel':'Self Assessment 以外已收取嘅稅款','a.propertyLabel':'用於 MTD 評估嘅物業總收入（選填）','a.propertyComplete':'我已包括所有相關物業總收入','a.poaInfo':'係乜：本稅務年度 Self Assessment 嘅預繳稅款。喺邊度搵：HMRC 網上帳戶，或者 1 月 31 日及 7 月 31 日付款通知。應填乜：本稅務年度已繳總額；冇就填 0。','a.priorInfo':'係乜：上年度少繳或多繳而帶到今年嘅調整。喺邊度搵：HMRC 稅務計算（SA302）或帳戶結單。應填乜：HMRC 帶入嘅金額；少繳填正數，多繳填負數，冇就填 0。','a.outsideInfo':'係乜：Self Assessment 前已收取嘅稅，通常係 PAYE。喺邊度搵：P60、P45、糧單或 HMRC 網上帳戶。應填乜：總稅款中已從來源收取嘅百分比，0 至 100。','a.propertyInfo':'係乜：扣除開支前嘅英國物業總收入，只用於 MTD 合資格收入檢查。喺邊度搵：物業結單同租金記錄。應填乜：本稅務年度完整總額；冇就填 0。TaxMate 唔提供業主記帳。'});
+Object.assign(I18N.pl,{'a.info':'Informacje','a.outsideLabel':'Podatek pobrany poza Self Assessment','a.propertyLabel':'Przychód brutto z nieruchomości do oceny MTD (opcjonalnie)','a.propertyComplete':'Uwzględniono cały odpowiedni przychód brutto z nieruchomości','a.poaInfo':'Co to jest: zaliczki na tegoroczne Self Assessment. Gdzie znaleźć: konto HMRC lub wezwania z 31 stycznia i 31 lipca. Co wpisać: sumę zapłaconą za ten rok podatkowy albo 0.','a.priorInfo':'Co to jest: niedopłata lub nadpłata z poprzedniego roku przeniesiona na bieżący. Gdzie znaleźć: obliczenie HMRC (SA302) lub wyciąg z konta. Co wpisać: kwotę przeniesioną przez HMRC — dodatnią dla niedopłaty, ujemną dla nadpłaty albo 0.','a.outsideInfo':'Co to jest: podatek pobrany przed Self Assessment, zwykle przez PAYE. Gdzie znaleźć: P60, P45, paski płacowe lub konto HMRC. Co wpisać: procent całego podatku pobranego u źródła, od 0 do 100.','a.propertyInfo':'Co to jest: brytyjski przychód brutto z nieruchomości przed kosztami, tylko do oceny progu MTD. Gdzie znaleźć: wyciągi i ewidencję czynszu. Co wpisać: pełną kwotę brutto za ten rok albo 0; TaxMate nie prowadzi księgowości wynajmu.'});
+Object.assign(I18N.ro,{'a.info':'Informații','a.outsideLabel':'Impozit colectat în afara Self Assessment','a.propertyLabel':'Venit brut din proprietăți pentru evaluarea MTD (opțional)','a.propertyComplete':'Am inclus toate veniturile brute relevante din proprietăți','a.poaInfo':'Ce este: plăți în avans pentru Self Assessment din acest an. Unde găsești: contul HMRC sau notificările din 31 ianuarie și 31 iulie. Ce introduci: totalul deja plătit pentru acest an fiscal sau 0.','a.priorInfo':'Ce este: o plată insuficientă sau în plus din anul trecut transferată în acest an. Unde găsești: calculul HMRC (SA302) sau extrasul contului. Ce introduci: suma transferată de HMRC — pozitivă pentru plată insuficientă, negativă pentru plată în plus sau 0.','a.outsideInfo':'Ce este: impozit deja colectat înainte de Self Assessment, de obicei prin PAYE. Unde găsești: P60, P45, fluturași sau contul HMRC. Ce introduci: procentul din impozitul total colectat la sursă, între 0 și 100.','a.propertyInfo':'Ce este: venitul brut din proprietăți din Regatul Unit înainte de cheltuieli, doar pentru verificarea pragului MTD. Unde găsești: extrasele proprietății și evidența chiriei. Ce introduci: suma brută completă pentru acest an sau 0; TaxMate nu oferă contabilitate pentru proprietari.'});
+Object.assign(I18N.es,{'a.info':'Información','a.outsideLabel':'Impuesto cobrado fuera de Self Assessment','a.propertyLabel':'Ingresos brutos de propiedades para evaluar MTD (opcional)','a.propertyComplete':'He incluido todos los ingresos brutos relevantes de propiedades','a.poaInfo':'Qué es: anticipos del Self Assessment de este año. Dónde encontrarlo: tu cuenta de HMRC o los avisos del 31 de enero y 31 de julio. Qué introducir: el total ya pagado para este ejercicio, o 0.','a.priorInfo':'Qué es: un pago insuficiente o excesivo del año anterior trasladado a este. Dónde encontrarlo: el cálculo de HMRC (SA302) o el estado de cuenta. Qué introducir: el importe trasladado por HMRC — positivo si faltó pagar, negativo si pagaste de más, o 0.','a.outsideInfo':'Qué es: impuesto ya cobrado antes del Self Assessment, normalmente mediante PAYE. Dónde encontrarlo: P60, P45, nóminas o cuenta de HMRC. Qué introducir: el porcentaje del impuesto total cobrado en origen, de 0 a 100.','a.propertyInfo':'Qué es: ingresos brutos de propiedades del Reino Unido antes de gastos, solo para comprobar el umbral MTD. Dónde encontrarlo: extractos y registros de alquiler. Qué introducir: el total bruto completo del ejercicio o 0; TaxMate no ofrece contabilidad para arrendadores.'});
+Object.assign(I18N.ur,{'a.info':'معلومات','a.outsideLabel':'Self Assessment سے باہر وصول شدہ ٹیکس','a.propertyLabel':'MTD جائزے کے لیے مجموعی جائیداد آمدنی (اختیاری)','a.propertyComplete':'میں نے تمام متعلقہ مجموعی جائیداد آمدنی شامل کی ہے','a.poaInfo':'کیا ہے: اس سال کے Self Assessment کی پیشگی ادائیگیاں۔ کہاں ملے گا: HMRC آن لائن اکاؤنٹ یا 31 جنوری اور 31 جولائی کے نوٹس۔ کیا لکھیں: اس ٹیکس سال میں ادا شدہ کل رقم، یا 0۔','a.priorInfo':'کیا ہے: پچھلے سال کی کم یا زیادہ ادائیگی جو اس سال منتقل ہوئی۔ کہاں ملے گا: HMRC ٹیکس حساب (SA302) یا اکاؤنٹ اسٹیٹمنٹ۔ کیا لکھیں: HMRC کی منتقل رقم — کم ادائیگی مثبت، زیادہ ادائیگی منفی، یا 0۔','a.outsideInfo':'کیا ہے: Self Assessment سے پہلے وصول شدہ ٹیکس، عموماً PAYE کے ذریعے۔ کہاں ملے گا: P60، P45، پے سلپس یا HMRC اکاؤنٹ۔ کیا لکھیں: کل ٹیکس کا ماخذ پر وصول شدہ فیصد، 0 سے 100۔','a.propertyInfo':'کیا ہے: اخراجات سے پہلے برطانیہ کی مجموعی جائیداد آمدنی، صرف MTD حد کے جائزے کے لیے۔ کہاں ملے گا: جائیداد اسٹیٹمنٹس اور کرایہ ریکارڈ۔ کیا لکھیں: اس سال کی مکمل مجموعی رقم یا 0؛ TaxMate مالک مکان کی بک کیپنگ نہیں دیتا۔'});
+
 Object.assign(I18N.zh,{'plan.proBillingPending':'設定好推出收費後先會開放 Pro 結帳','feat.ltd':'一間營運中有限公司'});
 Object.assign(I18N.pl,{'plan.proBillingPending':'Płatność Pro będzie dostępna po skonfigurowaniu ceny startowej','feat.ltd':'Jedna aktywna spółka z o.o.'});
 Object.assign(I18N.ro,{'plan.proBillingPending':'Plata Pro va fi disponibilă după configurarea prețului de lansare','feat.ltd':'O societate cu răspundere limitată activă'});
@@ -3426,6 +3447,15 @@ function trackEvent(name,params){try{if(!window.TaxMateAnalytics||!TaxMateAnalyt
 
 async function loadEntitlementFromCloud(uid){
   assertActiveAccountUid(uid);const cacheKey=accountSlotKey('entitlement-cache');
+  // Flight mode must not wait for a server-only Firestore read to time out.
+  // The cache key is scoped to the active Firebase UID, and only a previously
+  // server-verified snapshot can grant offline access in the resolver.
+  if(typeof navigator!=='undefined'&&navigator.onLine===false){
+    ENTITLEMENT.snapshot=null;
+    try{ENTITLEMENT.snapshot=JSON.parse(localStorage.getItem(cacheKey));}catch(_){}
+    ENTITLEMENT.loaded=true;
+    return ENTITLEMENT.snapshot;
+  }
   try{
     const ref=userRoot(uid).collection('entitlements').doc('current');let doc=await ref.get({source:'server'});
     if(!doc.exists){
@@ -3501,16 +3531,16 @@ function planBlock(tier,context='settings'){
     const availability=proBillingAvailability();
     btn=availability.purchaseEnabled
       ? availability.mode==='local_review'
-        ? `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
-        : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('tier.choose',{p:name})}</button>`
-      : `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
+        ? `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('billing.reviewPurchase')}</button><div class="s local-review-note">${t('billing.reviewNote')}</div>`
+        : `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="startProPurchase('settings')">${t('tier.choose',{p:name})}</button>`
+      : `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('plan.proBillingPending')}</button>`;
   }
-  else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
+  else if(!permanent&&!isCurrent&&tier!=='free')btn=`<button class="btn" style="margin-top:12px;width:100%" data-tm-click="setTier('${tier}')">${t('tier.choose',{p:name})}</button>`;
   if(context==='onboarding')btn=billingConflict.active&&tier!=='free'
-    ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`
+    ? `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('billing.conflictBlocked')}</button>`
     : isCurrent
-      ? `<button class="btn ink" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('tier.current')}</button>`
-      : `<button class="btn ink" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
+      ? `<button class="btn" style="margin-top:12px;width:100%" disabled aria-disabled="true">${t('tier.current')}</button>`
+      : `<button class="btn" style="margin-top:12px;width:100%" data-tm-click="obChoosePlan('${tier}')" ${tier!=='free'&&!proBillingAvailability().purchaseEnabled?'disabled aria-disabled="true"':''}>${t('tier.choose',{p:name})}</button>`;
   const ring = isCurrent ? 'border:1px solid var(--brand);' : 'border:1px solid var(--line);';
   return `<section class="card plan-card" data-plan-card="${tier}" aria-labelledby="plan-${tier}-title" style="${ring}margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
@@ -3664,12 +3694,15 @@ function retentionStatusCard(){
   // Dates: the entitlement boundary while paid access is still running; otherwise the
   // server-owned control (cutoff/deleteOn) is the only authority. Never a guess.
   const kept=dates?t('ret.keptUntil',{date:retentionDateLabel(dates.retainThroughDate),deleteOn:retentionDateLabel(dates.deleteOnDate)}):accessEnd.status==='continuing'?t('ret.deleteContinuing'):control?t('ret.keptUntil',{date:retentionDateLabel(control.retainThroughDate||new Date(new Date(control.deleteOnDate+'T00:00:00Z').getTime()-86400000).toISOString().slice(0,10)),deleteOn:retentionDateLabel(control.deleteOnDate)}):t('ret.deleteUnknown');
-  return `<div class="card" data-retention-card data-retention-status="${esc(control?control.status:'none')}">
-        <div class="t" style="margin-bottom:6px">${t('ret.title')}</div>
+  return `<div class="card retention-card" data-retention-card data-retention-status="${esc(control?control.status:'none')}">
+        <div class="t retention-card-title">${t('ret.title')}</div>
         <div class="s" data-retention-paid>${esc(paid)}</div>
-        <div class="s" data-retention-kept style="margin-top:4px">${esc(kept)}</div>
-        <div class="s${tone?' notice '+tone:''}" data-retention-cleanup style="margin-top:8px;font-weight:700">${esc(retentionCleanupLine(control))}</div>
-        <div class="s" style="margin-top:8px">${t('ret.duty')}</div>
+        <div class="s" data-retention-kept>${esc(kept)}</div>
+        <details class="retention-card-details">
+          <summary>${t('ret.details')}</summary>
+          <div class="s${tone?' notice '+tone:''}" data-retention-cleanup>${esc(retentionCleanupLine(control))}</div>
+          <div class="s retention-duty">${t('ret.duty')}</div>
+        </details>
       </div>`;
 }
 function openBillingProvider(provider){
@@ -3757,7 +3790,7 @@ function installCard(){
       <span class="t" style="font-size:15px">${t('pwa.install')}</span>
     </div>
     <div class="s" style="margin-bottom:14px">${t('pwa.installSub')}</div>
-    <button class="btn ink" data-tm-click="doInstall()">${t('pwa.install')}</button>
+    <button class="btn" data-tm-click="doInstall()">${t('pwa.install')}</button>
   </div>`;
 }
 function closePwaInstallSurfaces(){
@@ -3765,7 +3798,7 @@ function closePwaInstallSurfaces(){
     const surface=document.getElementById('sb-'+id);
     if(surface)surface.classList.remove('open');
   });
-  if(!document.querySelector('.sb.open'))document.body.classList.remove('sheet-open');
+  if(!document.querySelector('.sb.open')){document.body.classList.remove('sheet-open');document.documentElement.classList.remove('sheet-open');}
 }
 function dismissInstallPromotion(){
   pwaLocalSet(PWA_KEYS.dismissedAt,Date.now());
@@ -3964,7 +3997,8 @@ function closePersonalSurfacesForLtd(){
   const active=document.activeElement;
   if(active&&active.closest&&active.closest('.sb,#taxmate-lightbox,#ob-root')&&typeof active.blur==='function')active.blur();
   document.querySelectorAll('.sb.open').forEach(surface=>surface.classList.remove('open'));
-  document.body.classList.remove('sheet-open');
+  document.body.classList.remove('sheet-open','ltd-sheet-open');
+  document.documentElement.classList.remove('sheet-open','ltd-sheet-open');
   const lightbox=document.getElementById('taxmate-lightbox');
   if(lightbox){lightbox.style.display='none';const image=lightbox.querySelector('img');if(image)image.removeAttribute('src');}
   const personalToast=document.getElementById('taxmate-toast');
@@ -4027,8 +4061,8 @@ window.TaxMateLtdProductionBridge=Object.freeze({
   theme:()=>S.settings.theme==='dark'?'dark':S.settings.theme==='light'?'light':matchMedia('(prefers-color-scheme: dark)').matches?'dark':'light',
   mount:()=>document.getElementById('taxmate-ltd-ui-root'),
   enterLtd(){closePersonalSurfacesForLtd();for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=true;}const mount=this.mount();mount.hidden=false;document.body.classList.add('ltd-active');window.scrollTo(0,0);},
-  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
-  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
+  exitToBusinesses(){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active','ltd-sheet-open');document.documentElement.classList.remove('ltd-sheet-open');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}S.tab='home';save();render();window.scrollTo(0,0);},
+  exitToLegacyBusiness(structure,businessId){const mount=this.mount();mount.hidden=true;document.body.classList.remove('ltd-active','ltd-sheet-open');document.documentElement.classList.remove('ltd-sheet-open');for(const selector of ['.top','#page','#nav']){const element=document.querySelector(selector);if(element)element.hidden=false;}render();openBiz(businessId||null,structure||'sole');},
   callTrusted:(name,data)=>callLtdTrusted(name,data),
   downloadWorkingPack(data){const blob=new Blob([JSON.stringify(data.payload,null,2)],{type:data.mimeType||'application/json'}),url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download=data.fileName||'taxmate-company-working-pack.json';anchor.click();setTimeout(()=>URL.revokeObjectURL(url),1000);},
   refreshShell:()=>renderBackgroundAccount(),
@@ -4045,13 +4079,13 @@ const uid = () => Date.now().toString(36)+Math.random().toString(36).slice(2,7);
 const fmt = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{minimumFractionDigits:2,maximumFractionDigits:2});
 const fmt0 = n => (n<0?'−':'')+'£'+Math.abs(n).toLocaleString('en-GB',{maximumFractionDigits:0});
 /* Money semantics (UI-01). role: 'in' income / positive column, 'out' explicit cost, tax
-   or liability column (expense colour whenever non-zero), 'signed' by sign. Zero stays ink.
+   or liability column, 'signed' by sign. Role-labelled zeroes keep their semantic colour.
    Presentation only: no value, sign, calculation or accounting classification changes. */
 const moneyCls = (value, role) => {
   if(value==null) return '';
   const n=Number(value);
   if(!isFinite(n)) return '';
-  if(n===0) return '';
+  if(role==='in') return 'pos';
   if(role==='out') return 'neg';
   return n>0?'pos':n<0?'neg':'';
 };
@@ -4249,10 +4283,10 @@ const DIRECTION_A_LOCK_ICON='<svg class="direction-a-inline-icon" aria-hidden="t
 function welcome(){
   const steps = t('w.steps').split('\n').map(s=>`<div style="margin-bottom:8px;font-size:14.5px">${esc(s)}</div>`).join('');
   return `
-  ${proBanner()}
   <div class="hero">
     <div class="hi" style="font-size:22px;font-weight:800">${t('w.title')}</div>
     <div style="margin-top:8px;font-size:14.5px;opacity:.95;line-height:1.55">${t('w.sub')}</div>
+    ${proBanner()}
   </div>
   <div class="notice green">${DIRECTION_A_LOCK_ICON}${t('w.priv')}</div>
   <div class="card">${steps}
@@ -4397,9 +4431,9 @@ function proBanner(){
   if(currentTier()!=='free') return '';
   // 今次 session 撳咗 ✕ → 唔出（下次開 app 又會出）
   try{ if(sessionStorage.getItem('tmProBannerHidden')==='1') return ''; }catch(e){}
-  return `<div id="pro-banner" style="display:flex;align-items:center;gap:10px;background:var(--card);border:1px solid var(--line);color:var(--ink);padding:12px 14px;border-radius:14px;margin-bottom:14px;font-weight:600;font-size:14px;cursor:pointer" data-tm-click="lockSeeplans()">
-    <span style="flex:1;line-height:1.35">${t('review01.explorePlans')}</span>
-    <button data-tm-click="event.stopPropagation();hideProBanner()" style="background:var(--bg);border:none;color:var(--muted);width:26px;height:26px;border-radius:50%;font-size:16px;font-weight:800;cursor:pointer;flex-shrink:0;line-height:1">✕</button>
+  return `<div id="pro-banner" class="welcome-plan-banner" data-tm-click="lockSeeplans()">
+    <span>${t('review01.explorePlans')}</span>
+    <button class="welcome-plan-dismiss" data-tm-click="event.stopPropagation();hideProBanner()" aria-label="${t('c.cancel')}">✕</button>
   </div>`;
 }
 function hideProBanner(){
@@ -4572,7 +4606,7 @@ function entryRow(e){
       <div class="t">${catLabel(c,e.desc||catName(c.id))}</div>
       <div class="s">${d}${e.desc?' · '+esc(catName(c.id)):''}${b?' · '+esc(b.name):''}${pctNote}</div>
     </div>
-    ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
+    ${e.receiptUrl?`<img class="receipt-thumb" style="width:36px;height:36px;margin-inline-start:8px" src="${receiptDisplayUrl(e.receiptUrl,e.receiptPath)}" data-tm-click="event.stopPropagation();openLightbox('${e.receiptUrl}','${e.receiptPath||''}')">`:``}
     <div class="v num ${e.kind==='income'?'pos':'neg'}" style="margin-inline-start:${e.receiptUrl?4:0}px">${e.kind==='income'?'+':'−'}${fmt(e.kind==='income'?e.amount:effExact(e)).replace('−','')}</div>
   </button>`;
 }
@@ -4716,7 +4750,7 @@ function pageTax(){
   const taxReviewNotice=tx.taxEstimateSupported?'':`<div class="notice amber" data-partnership-tax-review>${t('part.reviewTax')}</div>`;
 
   return `
-  <h1 class="h1 review01-page-title">${t('review01.personalTax')}</h1>
+  <h1 class="h1 review01-page-title" data-page-header="tax">${t('review01.personalTax')}</h1>
   <div class="card review01-tax-summary">
     <div class="label">${t('tax.bill',{y:S.year})}</div>
     <div class="big num ${tx.taxEstimateSupported?moneyCls(Math.max(tx.liability,0),'out'):''}">${tx.taxEstimateSupported?fmt(Math.max(tx.liability,0)):'—'}</div>
@@ -4786,17 +4820,17 @@ function rcbSetMonth(v){ RCB.month=v; render(); }
 
 function pageReceipts(){
   const yr = S.year;
-  const backBtn = `<button class="btn ghost" style="width:auto;padding:8px 14px;margin-bottom:12px" data-tm-click="go('expenses')">‹ ${t('nav.expenses')}</button>`;
+  const pageHeader = `<h1 class="h1 review01-page-title" data-page-header="receipts">${t('rcb.title')}</h1>
+    <button type="button" class="review01-receipts-page-back" data-tm-click="go('expenses')">‹ ${t('nav.expenses')}</button>`;
 
   // Pro gate：未夠 Pro 就唔畀入，引導升級
   if(!hasFeature('receiptPhoto')){
-    return `${backBtn}
-    <div class="h1">${t('rcb.title')}</div>
+    return `${pageHeader}
     <div class="card" style="text-align:center;padding:28px 18px">
 
       <div class="t" style="margin-bottom:6px">${t('car.rcTitle')}</div>
       <div class="s" style="margin-bottom:16px">${t('car.rcLockedBody')}</div>
-      <button class="btn ink" data-tm-click="lockSeeplans()">${t('car.rcLockedCta')}</button>
+      <button class="btn" data-tm-click="lockSeeplans()">${t('car.rcLockedCta')}</button>
     </div>`;
   }
 
@@ -4871,8 +4905,7 @@ function pageReceipts(){
     </div>`;
   }
 
-  return `${backBtn}
-  <div class="h1">${t('rcb.title')}</div>
+  return `${pageHeader}
   ${assistantAllTasks().filter(task=>task.kind==='receipt_missing'&&task.businessId===RCB.bizId).map(assistantTaskOptions).join('')}
   ${controls}
   ${body}`;
@@ -5070,7 +5103,6 @@ function pageMore(){
         <div class="t" style="margin-bottom:6px">${t('help.title')}</div>
         <div class="s" style="margin-bottom:12px">${t('help.body')}</div>
         <button class="btn soft" data-tm-click="openLegal('help')">${t('help.open')}</button>
-        <a href="mailto:support@taxmate.uk" style="display:block;margin-top:10px;color:var(--brand-deep);font-weight:700;text-align:center">support@taxmate.uk</a>
       </div>
     </div>
   </details>
@@ -5104,6 +5136,7 @@ function openLegal(which){
   if(!el) return;
   if(!window.TaxMateLegal){showNotice(t('sec.legal'),t('review01.legalUnavailable'));return;}
   el.innerHTML=which==='help'?TaxMateLegal.helpHtml:which==='privacy'?TaxMateLegal.privacyHtml:TaxMateLegal.termsHtml;
+  if(which==='help'&&window.TaxMateFAQ)TaxMateFAQ.reset(el);
   openSheet('legal');
 }
 
@@ -5182,7 +5215,7 @@ function paintEntry(){
   rg.style.display = EN.kind==='expense' ? 'block' : 'none';
   const rw = document.getElementById('en-receipt-thumb-wrap');
   if(EN.receiptUrl){
-    rw.innerHTML = `<img class="receipt-thumb" src="${receiptDisplayUrl(EN.receiptUrl)}" data-tm-click="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
+    rw.innerHTML = `<img class="receipt-thumb" src="${receiptDisplayUrl(EN.receiptUrl,EN.receiptPath)}" data-tm-click="openLightbox('${EN.receiptUrl}','${EN.receiptPath||''}')">`;
   } else if(!hasFeature('receiptPhoto')){
     rw.innerHTML = `<div class="receipt-add" data-tm-click="lockGuard('receiptPhoto')" title="${t('lock.title',{p:t('tier.plus')})}">${DIRECTION_A_LOCK_ICON}</div>`;
   } else if(canCaptureWithCamera()){
@@ -5663,7 +5696,7 @@ function paintSync(){
         <div style="margin-top:10px"><button class="link danger" data-tm-click="leaveSync('${b.id}')">${t('sy.leave')}</button></div>
       </div>`;
   } else {
-    el.innerHTML = `<button class="btn ink" style="margin-bottom:12px" data-tm-click="enableSync('${BZ.id}')"> ${t('sy.enable')}</button>`;
+    el.innerHTML = `<button class="btn" style="margin-bottom:12px" data-tm-click="enableSync('${BZ.id}')"> ${t('sy.enable')}</button>`;
   }
 }
 function saveBiz(){
@@ -5722,6 +5755,7 @@ function deleteBiz(){
 /* ═══════════ HMRC position sheet ═══════════ */
 function openAdj(){
   const d = yd();
+  document.querySelectorAll('#sb-adj .field-info[open]').forEach(details=>details.removeAttribute('open'));
   document.getElementById('adj-poa').value = d.poaPaid||'';
   document.getElementById('adj-prior').value = d.priorAdj||'';
   document.getElementById('adj-poa-outside').value = d.poaOutsidePercent||'';
@@ -5771,7 +5805,7 @@ async function eraseEverything(){
   safeActionTrace('erase_everything','started',correlation,'settings');
   let cloudOk=!accountUser,serverResult=null;
   if(accountUser){
-    try{serverResult=await callSecureFunction('deleteAccountData',{});cloudOk=serverResult&&serverResult.deleted===true;}
+    try{serverResult=await callSecureFunction('deleteAccountData',{});cloudOk=serverResult&&serverResult.deleted===true&&serverResult.authIdentityDeleted===true;}
     catch(error){
       cloudOk=false;const billingReason=String(error&&error.reason||''),billingActionRequired=['active_billing','active_google_play_billing','active_app_store_billing','google_play_status_required','app_store_status_required','billing_purchase_pending','billing_provider_event_pending'].includes(billingReason);
       console.warn('Account deletion stopped',{category:'account_deletion',safeCode:billingActionRequired?'ACCOUNT_DELETE_BILLING_ACTION_REQUIRED':'ACCOUNT_DELETE_SERVER_STAGE_FAILED',stage:'server_pipeline',correlation});
@@ -5815,7 +5849,7 @@ function sheetSnapshot(sheetEl){
   }).join('\u0001');
 }
 let sheetOpener=null;
-function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el._returnAction=sheetOpener?.getAttribute('data-tm-click'); el._returnScroll=window.scrollY; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); setTimeout(()=>{if(!el.classList.contains('open'))return;initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus({preventScroll:true});},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
+function openSheet(id){ if(document.body.classList.contains('ltd-active'))return false; const el=document.getElementById('sb-'+id); sheetOpener=document.activeElement; el._returnAction=sheetOpener?.getAttribute('data-tm-click'); el._returnScroll=window.scrollY; el.setAttribute('role','dialog'); el.setAttribute('aria-modal','true'); el.classList.add('open'); document.body.classList.add('sheet-open'); document.documentElement.classList.add('sheet-open'); setTimeout(()=>{if(!el.classList.contains('open'))return;initSheetDrag(); const target=el.querySelector('input:not([type=hidden]),select,textarea,button,[href]'); if(target) target.focus({preventScroll:true});},50); const sh=el.querySelector('.sheet'); if(sh) sh.dataset.snap=sheetSnapshot(sh); history.pushState({tm:'sheet'}, ''); return true; }
 function closeParentSheet(el){
   const sb = el.closest('.sb');
   if(sb)closeSheet(sb.id.replace(/^sb-/,''));
@@ -5838,7 +5872,7 @@ function initSheetDrag(){
     document.addEventListener('mouseup',onEnd);
   });
 }
-function closeSheet(id){ const el=document.getElementById('sb-'+id); el.classList.remove('open'); document.body.classList.remove('sheet-open'); const opener=sheetOpener?.isConnected?sheetOpener:el._returnAction?Array.from(document.querySelectorAll('[data-tm-click]')).find(n=>n.getAttribute('data-tm-click')===el._returnAction):null; if(opener&&opener.focus)opener.focus({preventScroll:true}); if(id==='assistant'&&Number.isFinite(el._returnScroll))window.scrollTo({top:el._returnScroll,behavior:'instant'}); }
+function closeSheet(id){ const el=document.getElementById('sb-'+id); el.classList.remove('open'); document.body.classList.remove('sheet-open'); document.documentElement.classList.remove('sheet-open'); const opener=sheetOpener?.isConnected?sheetOpener:el._returnAction?Array.from(document.querySelectorAll('[data-tm-click]')).find(n=>n.getAttribute('data-tm-click')===el._returnAction):null; if(opener&&opener.focus)opener.focus({preventScroll:true}); if(id==='assistant'&&Number.isFinite(el._returnScroll))window.scrollTo({top:el._returnScroll,behavior:'instant'}); }
 
 /* Toast feedback */
 let _toastTimer=null;
@@ -5875,7 +5909,11 @@ function exportJSON(){
   a.click(); URL.revokeObjectURL(a.href);
 }
 function downloadBackupBlob(blob,name){let url,a;try{a=document.createElement('a');url=URL.createObjectURL(blob);a.href=url;a.download=name;a.hidden=true;document.body.appendChild(a);a.click();a.remove();setTimeout(()=>URL.revokeObjectURL(url),30000);}catch(error){if(a&&a.isConnected)a.remove();if(url)try{URL.revokeObjectURL(url);}catch(_){}throw TaxMateBackupExport.failure(TaxMateBackupExport.CATEGORIES.BROWSER_DOWNLOAD,{cause:error});}}
-function receiptDisplayUrl(url){const path=TaxMateLocalReceipts.pathFromUrl(url);return path?TaxMateLocalReceipts.cachedUrl(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path)||'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7':url;}
+function receiptDisplayUrl(url,receiptPath){
+  const path=receiptPath||TaxMateLocalReceipts.pathFromUrl(url),cached=path&&TaxMateLocalReceipts.cachedUrl(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path);
+  if(cached)return cached;
+  return TaxMateLocalReceipts.pathFromUrl(url)?'data:image/gif;base64,R0lGODlhAQABAIAAAAAAAP///yH5BAEAAAAALAAAAAABAAEAAAIBRAA7':url;
+}
 async function primeLocalReceiptUrls(){const scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE);for(const r of await TaxMateLocalReceipts.list(scope)){if(scope!==TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE))return;await TaxMateLocalReceipts.objectUrl(scope,r.path);}if(scope===TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE)&&!ACCOUNT_TRANSITION_PENDING)renderBackgroundAccount();}
 async function receiptBytesFromUrl(url,options={}){const path=TaxMateLocalReceipts.pathFromUrl(url);if(path){const binary=await TaxMateLocalReceipts.binary(TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),path);if(!binary)throw new Error('local_receipt_unavailable');return binary;}const response=await fetch(url,{signal:options.signal});if(!response.ok)throw Object.assign(new Error('receipt-download-failed'),{status:response.status});return{bytes:new Uint8Array(await response.arrayBuffer()),mimeType:(response.headers.get('content-type')||'image/jpeg').split(';')[0]};}
 async function collectPortableReceipts(stateSnapshot=S,options={}){
@@ -6710,6 +6748,7 @@ async function sendSyncOperation(operation){
   const current=cloudUser();if(!current)throw Object.assign(new Error('Sign in required.'),{code:'unauthenticated'});assertActiveAccountUid(current.uid);
   if(operation.uid&&operation.uid!==current.uid||operation.ownerUid&&operation.ownerUid!==current.uid)throw Object.assign(new Error('Foreign sync operation blocked.'),{code:'account-owner-mismatch'});
   if(operation.kind==='partnership-entry'){
+    operation.record=await promoteLocalReceiptForSync(operation.record,current);
     const ref=FB.db.collection('partnerships').doc(operation.code).collection('entries').doc(operation.record.id);
     await writeRecordIfNewer(ref,operation.record);return;
   }
@@ -6725,7 +6764,11 @@ async function sendSyncOperation(operation){
     return;
   }
   if(operation.kind==='personal-state'){
-    const operationMeta=cloudMetaFromState(),operationRecords=personalRecordsFromState().map(record=>({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()}));
+    const operationMeta=cloudMetaFromState(),operationRecords=[];
+    for(const sourceRecord of personalRecordsFromState()){
+      const record=await promoteLocalReceiptForSync(sourceRecord,current);
+      operationRecords.push({...record,accountOwnerUid:operation.uid,retentionEpoch:currentRetentionEpoch(),accountResetEpoch:currentAccountResetEpoch()});
+    }
     const metaRef=userRoot(operation.uid).collection('app').doc('meta');let serverMeta=operationMeta;
     await FB.db.runTransaction(async tx=>{
       const snap=await tx.get(metaRef),remote=snap.exists?cloudMetaForAccount(snap.data(),operation.uid,{forWrite:true}):{};
@@ -7166,7 +7209,7 @@ function sa104Card(){
   const mapping=TaxMateCore.mappingFor('SA104S',yr);
   const partBiz = S.businesses.filter(b=>b.structure==='partnership');
   if(!partBiz.length) return '';
-  if(!hasFeature('sa104'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('sa.104')+featBadge('sa104')+'</div><div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div><button class="btn ink" data-tm-click="lockGuard(\'sa104\')">'+t('lock.upgrade')+' </button></div>';
+  if(!hasFeature('sa104'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('sa.104')+featBadge('sa104')+'</div><div class="s" style="margin-bottom:12px">'+t('sa.partNote')+'</div><button class="btn" data-tm-click="lockGuard(\'sa104\')">'+t('lock.upgrade')+' </button></div>';
   if(!mapping.supported) return '<div class="card"><div class="t"> '+t('sa.104')+'</div><div class="notice amber" style="margin-top:10px">'+t('sa.future')+'</div></div>';
   const boxes=mapping.boxes;
 
@@ -7225,7 +7268,7 @@ function currentQuarterIdx(yr){
 }
 
 function quarterlyCard(){
-  if(!hasFeature('mtdReady'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('qt.title')+featBadge('mtdReady')+'</div><div class="s" style="margin-bottom:12px">'+t('feat.mtdReady')+'</div><button class="btn ink" data-tm-click="lockGuard(\'mtdReady\')">'+t('lock.upgrade')+' </button></div>';
+  if(!hasFeature('mtdReady'))return '<div class="card"><div class="t" style="margin-bottom:6px"> '+t('qt.title')+featBadge('mtdReady')+'</div><div class="s" style="margin-bottom:12px">'+t('feat.mtdReady')+'</div><button class="btn" data-tm-click="lockGuard(\'mtdReady\')">'+t('lock.upgrade')+' </button></div>';
   const yr = S.year;
   const curQ = currentQuarterIdx(yr);
   const rows = [0,1,2,3].map(i=>{
@@ -7646,11 +7689,34 @@ function generatePDF(){
 function storageBucket(){
   try{ return fbConfigured() && FB.ready ? firebase.storage() : null; }catch(e){ return null; }
 }
-function receiptPath(entryId){ const uid=assertActiveAccountUid(firebase.auth().currentUser&&firebase.auth().currentUser.uid);return `receipts/${uid}/photo-${crypto.randomUUID()}.jpg`; }
+async function promoteLocalReceiptForSync(record,user){
+  if(!record||record.deletedAt!=null||!record.receiptPath||!TaxMateLocalReceipts.pathFromUrl(record.receiptUrl))return record;
+  if(!user||user.isAnonymous||!TaxMateAccountStorage.ownsReceiptPath(record.receiptPath,user.uid))throw Object.assign(new Error('Local receipt owner mismatch.'),{code:'account-owner-mismatch'});
+  const scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),local=await TaxMateLocalReceipts.get(scope,record.receiptPath);
+  if(!local||!local.blob)throw Object.assign(new Error('Local receipt bytes are unavailable.'),{code:'local-receipt-unavailable'});
+  const ref=firebase.storage().ref(record.receiptPath);
+  await ref.put(local.blob,{contentType:local.blob.type||'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
+  const url=await ref.getDownloadURL(),next={...record,receiptUrl:url};
+  const canonical=S.entries.find(entry=>entry.id===record.id&&entry.receiptPath===record.receiptPath);
+  if(canonical&&TaxMateLocalReceipts.pathFromUrl(canonical.receiptUrl)){
+    canonical.receiptUrl=url;
+    persistCanonicalState(S);
+  }
+  return next;
+}
+function receiptOwnerId(){
+  const current=cloudUser();
+  if(current&&current.uid)return assertActiveAccountUid(current.uid);
+  if(ACTIVE_ACCOUNT_SCOPE&&ACTIVE_ACCOUNT_SCOPE.kind==='firebase'&&ACTIVE_ACCOUNT_SCOPE.uid)return ACTIVE_ACCOUNT_SCOPE.uid;
+  return 'local';
+}
+function receiptPath(entryId){ return `receipts/${receiptOwnerId()}/photo-${crypto.randomUUID()}.jpg`; }
 function entryMutationAllowed(entry){
-  if(!entry||ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.retentionBlocked||CLOUD.controlsCached)return false;
+  if(!entry||ACCOUNT_TRANSITION_PENDING||CLOUD.deletionBlocked||CLOUD.retentionBlocked)return false;
   const business=bizById(entry.bizId);if(!business)return false;
   if(!business.syncCode)return true; // Free ordinary/self-employed books remain editable.
+  const offline=typeof navigator!=='undefined'&&navigator.onLine===false;
+  if(CLOUD.controlsCached&&!offline)return false;
   const user=cloudUser(),sub=FB.subs[business.syncCode],member=sub&&sub.memberUid===user?.uid&&sub.membership;
   const cutoffs=[member&&member.retentionCutoffDate||'',CLOUD.retentionControl?.cutoffDate||''].sort(),cutoff=cutoffs[cutoffs.length-1];
   return !!(user&&member&&hasFeature('partnerSync')&&(!cutoff||entry.date>=cutoff));
@@ -7658,6 +7724,10 @@ function entryMutationAllowed(entry){
 async function entryMutationPreflight(entry){
   if(!entryMutationAllowed(entry)){showNotice(t('sy.title'),t('sy.readOnly'));return false;}
   const business=bizById(entry.bizId);if(!business.syncCode)return true;
+  // A server round-trip is impossible in flight mode.  Cached membership and
+  // paid access already passed entryMutationAllowed(), so keep the local edit
+  // and let the durable outbox revalidate and sync it after reconnection.
+  if(typeof navigator!=='undefined'&&navigator.onLine===false)return true;
   const user=cloudUser(),scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE),generation=CLOUD.generation;
   try{
     if(navigator.onLine===false)throw new Error('shared-delete-needs-connection');
@@ -7700,25 +7770,33 @@ async function onReceiptFile(ev){
   // 上載期間禁用 Save 掣，避免收據未上完就儲存
   if(saveBtn){ saveBtn.disabled = true; saveBtn.style.opacity = '0.5'; saveBtn.textContent = ' ' + t('rc.uploading'); }
   try{
-    // 壓縮到 ~200KB
+    // Always save the compressed image to the account-owned device store first.
+    // This makes capture a genuine offline-first operation rather than an upload gate.
     const compressed = await compressImage(file, 1200, 0.82);
-    const db = await ensureFB(); if(!db){ st.textContent = t('rc.uploadErr'); return; }
-    const u = await ensureAuth(); if(!u){ st.textContent = t('rc.signinNeeded')||t('rc.uploadErr'); return; }
-    assertActiveAccountUid(u.uid);
-    // 等 auth token 真正 ready（匿名登入後 token 可能要一刻先 propagate）
-    try{ await u.getIdToken(); }catch(_){}
     const entId = EN.id || uid();
     if(!EN.id) EN.id = entId;
-    const path = receiptPath(entId);
-    const stor = firebase.storage();
-    const ref = stor.ref(path);
-    await ref.put(compressed, {contentType:'image/jpeg',customMetadata:{retentionEpoch:String(currentRetentionEpoch()),accountResetEpoch:String(currentAccountResetEpoch())}});
-    const url = await ref.getDownloadURL();
-    if(!await entryMutationPreflight(receiptEntry))return;
-    EN.receiptUrl = url;
+    const path = receiptPath(entId),scope=TaxMateAccountStorage.token(ACTIVE_ACCOUNT_SCOPE);
+    await TaxMateLocalReceipts.put(scope,path,compressed,{epoch:currentRetentionEpoch()});
+    await TaxMateLocalReceipts.objectUrl(scope,path);
+    EN.receiptUrl = TaxMateLocalReceipts.url(path,location.origin);
     EN.receiptPath = path;
-    st.textContent = '';
     paintEntry();
+    st.textContent = typeof navigator!=='undefined'&&navigator.onLine===false?t('rc.savedOffline'):'';
+    st.style.color='var(--muted)';
+
+    // Online capture may promote immediately.  A network failure is not a data
+    // failure: keep the local receipt and let the sync outbox retry later.
+    if(typeof navigator==='undefined'||navigator.onLine!==false){
+      try{
+        const db = await ensureFB(),u = await ensureAuth();
+        if(db&&u&&!u.isAnonymous){
+          assertActiveAccountUid(u.uid);try{await u.getIdToken();}catch(_){}
+          const promoted=await promoteLocalReceiptForSync({id:EN.id,bizId:receiptEntry.bizId,date:receiptEntry.date,receiptPath:path,receiptUrl:EN.receiptUrl},u);
+          EN.receiptUrl=promoted.receiptUrl;
+          paintEntry();st.textContent='';
+        }
+      }catch(error){console.warn('Receipt retained for later sync',{safeCode:'RECEIPT_LOCAL_PENDING'});st.textContent=t('rc.savedOffline');st.style.color='var(--muted)';}
+    }
   }catch(e){ console.warn(e); st.textContent=t('rc.uploadErr'); }
   finally{
     EN.uploading = false;
@@ -7803,7 +7881,7 @@ function openLightbox(url, path){
     lb.addEventListener('click',e=>{ if(e.target===lb) closeLightbox(); });
     document.body.appendChild(lb);
   }
-  document.getElementById('lb-img').src = receiptDisplayUrl(url);
+  document.getElementById('lb-img').src = receiptDisplayUrl(url,path);
   lb.style.display = 'flex';
   refreshReceiptMutationControls();
 }
@@ -7827,12 +7905,33 @@ function anySheetOpen(){
 function closeAllSheets(){
   document.querySelectorAll('.sb.open').forEach(o=>o.classList.remove('open'));
   document.body.classList.remove('sheet-open');
+  document.documentElement.classList.remove('sheet-open');
 }
 function setupBackButton(){
   // Seed two states: one base + one buffer the back button consumes first.
   if(!STATE_LOAD_ERROR){history.pushState({tm:'base'}, '');history.pushState({tm:'buffer'}, '');}
   window.addEventListener('popstate', (e)=>{
     if(STATE_LOAD_ERROR){if(e.state&&['base','buffer'].includes(e.state.tm))history.back();return;}
+    // LTD has its own route stack and local sheets. Consume Back inside that
+    // stack; at the company workspace root the decorated facade returns to the
+    // personal Dashboard instead of letting Android close the whole app.
+    if(document.body.classList.contains('ltd-active')){
+      history.pushState({tm:'buffer'}, '');
+      if(window.TaxMateLtdWorkbenchRenderer?.handleBack?.())return;
+      const facade=window.TaxMateLtdUIFacade;
+      if(facade&&typeof facade.onBack==='function')Promise.resolve(facade.onBack()).catch(error=>console.error('Ltd Back navigation failed',error));
+      else window.TaxMateLtdProductionBridge?.exitToBusinesses?.();
+      return;
+    }
+    // Keep onboarding/tours inside the app as well. Use the page's own visible
+    // Back control so its existing draft and confirmation rules remain intact.
+    const onboarding=document.querySelector('#ob-root.active');
+    if(onboarding){
+      history.pushState({tm:'buffer'}, '');
+      const back=Array.from(onboarding.querySelectorAll('.ob-back')).find(node=>node.offsetParent!==null&&!node.disabled);
+      if(back)back.click();
+      return;
+    }
     // A sheet is open → check for dirty data before closing
     if(anySheetOpen()){
       // 對比快照：開 sheet 時 vs 而家，有任何欄位變咗就當 dirty
@@ -7977,6 +8076,7 @@ function obRender(){
   }
   const fns={login:obScrLogin,entry:obScrEntry,'ltd-choice':obScrLtdChoice,'ltd-registration':obScrLtdRegistration,'partner-code':obScrPartnerCode,'partner-confirm':obScrPartnerConfirm,'partner-success':obScrPartnerSuccess,'pro-gate':obScrProGate,redeem:obScrRedeem,'intent-loading':obScrIntentLoading,biz:obScrBiz,pickbiz:obScrPickBiz,start:obScrStart,month:obScrMonth,done:obScrDone};
   const r=obEnsureRoot();
+  r.dataset.obScreen=OB.screen;
   // 同一頁重繪（加分類／加行／改日期）保住捲動位置；轉頁或轉月先跳返頂
   const view = OB.screen + (OB.screen==='month' ? ':'+OB.cursor : '');
   const keep = (OB._lastView===view) ? r.scrollTop : 0;
@@ -8177,11 +8277,11 @@ function obScrProGate(){
   const error=OB._promoError||OB._intentError||'',message=OB._intentMessage||'';
   const availability=proBillingAvailability();
   const purchaseNote=availability.mode==='local_review'?t('billing.reviewNote'):availability.purchaseEnabled?'':t('billing.purchaseUnavailable');
-  return obShell(obProgress(20,'',"obReturnFromProGate()"),`<h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
-    <div class="ob-seg" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
-    ${['free','plus','pro'].map(tier=>planBlock(tier,'onboarding')).join('')}
-    ${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy" role="status">${esc(message)}</div>`:''}${error?`<div class="ob-error show" role="alert">${esc(error)}</div>`:''}
-    <button class="ob-btn ghost" data-tm-click="obOpenRedeem()">${flowText('redeem')}</button><button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${flowText('checkAccess')}</button>`,
+  return obShell(obProgress(20,'',"obReturnFromProGate()"),`<div class="ob-pro-gate"><h1>${t('ob.proRequired')}</h1><p class="ob-lede">${t('ob.proRequiredBody')}</p>
+    <div class="ob-seg ob-gate-cadence" role="group" aria-label="${t('billing.cadenceAria')}"><button type="button" class="${BILLING_CADENCE==='monthly'?'on':''}" data-billing-cadence="monthly" aria-pressed="${BILLING_CADENCE==='monthly'}" data-tm-click="setBillingCadence('monthly')">${t('billing.monthly')}</button><button type="button" class="${BILLING_CADENCE==='yearly'?'on':''}" data-billing-cadence="yearly" aria-pressed="${BILLING_CADENCE==='yearly'}" data-tm-click="setBillingCadence('yearly')">${t('billing.yearly')}</button></div>
+    <div class="ob-gate-plans">${['free','plus','pro'].map(tier=>planBlock(tier,'onboarding')).join('')}</div>
+    <div class="ob-gate-status">${purchaseNote?`<div class="ob-busy">${purchaseNote}</div>`:''}${message?`<div class="ob-busy" role="status">${esc(message)}</div>`:''}${error?`<div class="ob-error show" role="alert">${esc(error)}</div>`:''}</div>
+    <div class="ob-gate-actions"><button class="ob-btn ghost" data-tm-click="obOpenRedeem()">${flowText('redeem')}</button><button class="ob-btn ghost" data-tm-click="obRefreshPaidAccess()">${flowText('checkAccess')}</button></div></div>`,
     '');
 }
 function obReturnFromProGate(){if(!OB)return;OB._promoError='';OB._intentMessage='';obGo(OB.pendingIntent?.returnScreen||'entry');}
@@ -8751,7 +8851,7 @@ document.addEventListener('touchmove', e=>{ if(e.touches.length>1) e.preventDefa
 
 // ── PWA: register service worker for offline + add-to-home ──
 if('serviceWorker' in navigator){
-  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260905-1',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
+  const registerTaxMateServiceWorker=()=>navigator.serviceWorker.register('/sw.js?v=20260919-2',{updateViaCache:'none'}).then(registration=>registration.update().catch(()=>{})).catch(err=>console.warn('SW reg failed', err));
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',registerTaxMateServiceWorker,{once:true});
   else registerTaxMateServiceWorker();
 }

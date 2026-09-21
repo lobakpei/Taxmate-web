@@ -17,11 +17,16 @@ const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, B
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
   assert.equal(Legal.POLICY_VERSION,'2026-09-14.store-auth.1');
-  assert.equal(Legal.PRIVACY_LAST_UPDATED,'14 September 2026');
+  assert.equal(Legal.PRIVACY_LAST_UPDATED,'21 September 2026');
   assert.equal(Legal.PUBLIC_CORRESPONDENCE_ADDRESS,APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS);
   assert.equal(privacy,Legal.publicPage('privacy'));
   assert.equal(terms,Legal.publicPage('terms'));
   assert.equal(read('help.html'),Legal.publicPage('help'));
+  assert.equal(read('delete-account.html'),Legal.publicPage('delete-account'));
+  assert.match(read('delete-account.html'),/Request account deletion/);
+  assert.match(read('delete-account.html'),/Settings → Delete my TaxMate account and data/);
+  assert.match(read('delete-account.html'),/This does not delete your Google or Apple account/);
+  assert.match(read('delete-account.html'),/mailto:support@taxmate\.uk\?subject=TaxMate%20account%20deletion/);
   for(const text of [privacy,terms,Legal.privacyHtml,Legal.termsHtml]){
     assert.match(text,/Hau Ying Ou-Yang/);
     assert.match(text,/support@taxmate\.uk/);
@@ -74,16 +79,16 @@ test('public and in-app legal surfaces share the current policy identity and cor
     assert.match(text,/Google Play obfuscated account identifiers, purchase tokens and token hashes/i);
     assert.match(text,/App Store app-account tokens or hashes, transaction and original-transaction identifiers or hashes/i);
     assert.match(text,/signed transaction/i);
-    assert.match(text,/does not delete the Firebase Authentication sign-in identity/i);
-    assert.match(text,/account-reset marker/i);
-    assert.match(text,/server-only provider billing/i);
-    assert.match(text,/fresh, empty TaxMate data lifecycle/i);
-    assert.match(text,/active, pending or otherwise uncertain[\s\S]*must be managed[\s\S]*or reconciled/i);
+    assert.match(text,/deletes the Firebase Authentication sign-in identity/i);
+    assert.match(text,/account-deletion marker/i);
+    assert.match(text,/server-only Stripe, Google Play and App Store billing mappings/i);
+    assert.match(text,/new, empty account/i);
+    assert.match(text,/active, pending or uncertain[\s\S]*must be managed[\s\S]*or reconciled/i);
   }
   for(const text of [read('help.html'),Legal.helpHtml]){
     assert.match(text,/Firebase Authentication sign-in identity/i);
-    assert.match(text,/server-only provider billing records and deletion tombstones/i);
-    assert.match(text,/fresh, empty TaxMate data lifecycle/i);
+    assert.match(text,/limited provider billing records and tombstones/i);
+    assert.match(text,/new, empty TaxMate account/i);
   }
   assert.match(app,/TaxMateLegal\.helpHtml/);
   assert.match(app,/TaxMateLegal\.privacyHtml/);

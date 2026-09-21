@@ -102,8 +102,7 @@ html[data-direction-a="true"] .h2{font-size:var(--t-section);font-weight:800;let
 html[data-direction-a="true"] .sub{font-size:var(--t-hint);color:var(--muted)}
 html[data-direction-a="true"] body[data-direction-page="income"]>#page>.h1:first-child,
 html[data-direction-a="true"] body[data-direction-page="expenses"]>#page>.h1:first-child,
-html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child,
-html[data-direction-a="true"] body[data-direction-page="receipts"]>#page>.h1:first-child{
+html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child{
   background:var(--navy);color:#fff;margin:0 -16px 12px;padding:4px 16px 14px;
   border-radius:0 0 22px 22px;
 }
@@ -135,6 +134,9 @@ html[data-direction-a="true"] .hero .pill .pv{font-size:15.5px;font-weight:700;c
 html[data-direction-a="true"] .hero [data-home-partnership-share-note],
 html[data-direction-a="true"] .hero [data-home-partnership-review]{font-size:12.5px!important;color:var(--navy-mute);line-height:1.45}
 html[data-direction-a="true"] .hero[data-home-ltd-only-hero] .pill{justify-content:center;background:var(--y);color:var(--y-ink);border-radius:16px;border:0;padding:14px 16px}
+html[data-direction-a="true"] .welcome-plan-banner{display:flex;align-items:center;gap:10px;margin:18px 0 0;padding:12px 14px;border:1px solid var(--navy-line);border-radius:14px;background:var(--navy2);color:#fff;font-size:14px;font-weight:700;line-height:1.4;cursor:pointer}
+html[data-direction-a="true"] .welcome-plan-banner>span{flex:1;min-width:0}
+html[data-direction-a="true"] .welcome-plan-dismiss{display:grid;place-items:center;flex:0 0 44px;width:44px;height:44px;margin:-8px -8px -8px 0;border:0;border-radius:50%;background:transparent;color:var(--navy-mute);font-size:17px;font-weight:800;cursor:pointer}
 
 /* Cards, rows, lists --------------------------------------------------------- */
 html[data-direction-a="true"] .card{background:var(--card);border:1px solid var(--line);border-radius:var(--r-m);padding:14px;box-shadow:var(--e-card);margin-bottom:10px}
@@ -230,11 +232,13 @@ html[data-direction-a="true"] .direction-a-list-action .fab{position:static;widt
 html[data-direction-a="true"] .fab-plus{transform:none;font-size:18px;line-height:1}
 html[data-direction-a="true"] .seg{display:flex;background:var(--card);border:1px solid var(--line);border-radius:14px;padding:4px;gap:4px;margin:12px 0 4px}
 html[data-direction-a="true"] .seg button{flex:1;min-width:0;border:0;background:none;color:var(--muted);font-size:13px;font-weight:700;padding:9px 4px;border-radius:10px;min-height:40px;white-space:normal;line-height:1.2;box-shadow:none}
-html[data-direction-a="true"] .seg button.on{background:var(--navy);color:#fff}
-html[data-direction-a="true"][data-theme="dark"] .seg button.on{background:#F2F4F7;color:#0F1620}
+/* A selected choice is an affirmative TaxMate action. Keep it yellow in both
+   themes; white belongs to cards and secondary controls, not active states. */
+html[data-direction-a="true"] .seg button.on,
+html[data-direction-a="true"][data-theme="dark"] .seg button.on{background:var(--y);color:var(--y-ink)}
 html[data-direction-a="true"] .chips{display:flex;gap:6px;overflow-x:auto;padding:2px 0 10px;scrollbar-width:none}
 html[data-direction-a="true"] .chip{flex:0 0 auto;display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:700;border-radius:6px;padding:4px 8px;line-height:1.4;white-space:nowrap;border:1px solid transparent;box-shadow:none}
-html[data-direction-a="true"] .chip:not(.on){background:var(--brand-soft);color:var(--muted)}
+html[data-direction-a="true"] .chip:not(.on){background:var(--brand-soft);color:var(--ink)}
 html[data-direction-a="true"] .chip.on{background:var(--navy);color:#fff;border-color:var(--navy)}
 
 /* Forms, notices and disclosure -------------------------------------------- */
@@ -293,11 +297,11 @@ html[data-direction-a="true"] .assistant-home-card .assistant-count{display:bloc
 html[data-direction-a="true"] .assistant-home-card .link{margin:0;color:var(--muted)}
 html[data-direction-a="true"] .sb{background:rgba(15,22,32,.5);align-items:flex-end;justify-content:center}
 html[data-direction-a="true"] .sb>.sheet{
-  width:100%;max-width:520px;max-height:92vh;margin:0;padding:10px 20px calc(26px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);
+  width:100%;max-width:520px;max-height:92vh;margin:0;padding:14px 20px calc(26px + env(safe-area-inset-bottom));background:var(--card);color:var(--ink);
   border-radius:24px 24px 0 0;box-sizing:border-box;box-shadow:var(--e-sheet);overflow-y:auto;overflow-x:hidden;
 }
-html[data-direction-a="true"] .sb>.sheet>.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:6px auto 12px}
-html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;margin:0 0 4px;color:var(--ink)}
+html[data-direction-a="true"] .sb>.sheet>.grab{width:38px;height:4px;border-radius:2px;background:var(--line);margin:4px auto 16px}
+html[data-direction-a="true"] .sb>.sheet>.stitle{font-size:var(--t-sheet);font-weight:800;letter-spacing:-.3px;line-height:1.25;margin:0 0 18px;color:var(--ink)}
 html[data-direction-a="true"] .sb>.sheet>.btn:last-child,
 html[data-direction-a="true"] .sb>.sheet>.sact:last-child{margin-bottom:calc(12px + env(safe-area-inset-bottom))}
 html[data-direction-a="true"] #sb-assistant>.sheet{padding-bottom:calc(12px + env(safe-area-inset-bottom))}
@@ -351,7 +355,7 @@ html[data-direction-a="true"] #ob-root .ob-confetti{display:none}
 html[data-direction-a="true"] #ob-root .ob-btn{background:var(--y);color:var(--y-ink);border-radius:var(--r-m);box-shadow:none;min-height:50px}
 html[data-direction-a="true"] #ob-root .ob-btn.ghost,
 html[data-direction-a="true"] #ob-root .ob-btn.soft{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
-html[data-direction-a="true"] #ob-root .ob-seg button.on{background:var(--navy);color:var(--navy-ink);box-shadow:none}
+html[data-direction-a="true"] #ob-root .ob-seg button.on{background:var(--y);color:var(--y-ink);box-shadow:none}
 html[data-direction-a="true"] .ob-pfill{background:var(--y)}
 
 /* LTD real renderer --------------------------------------------------------- */
@@ -359,6 +363,8 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root,
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app{min-height:100vh;background:var(--bg);color:var(--ink);font-family:var(--font);overflow-x:hidden}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{width:100%;max-width:520px;margin:0 auto;padding:0 16px calc(var(--nav-h) + 40px + env(safe-area-inset-bottom));min-height:100vh;display:block}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-top{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px 0 8px;min-height:56px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-top .tm-logo{display:flex;align-items:center;width:auto;height:22px;padding:0;border:0;background:transparent}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-top .tm-logo img{display:block;width:auto;height:22px;object-fit:contain;object-position:left center}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand{font-size:0}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand::before{content:'';display:block;width:119px;height:22px;background:url('/assets/brand/derived/taxmate-brand-logo-dark.svg') left center/contain no-repeat}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-brand .mk,
@@ -397,14 +403,14 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .v.pos{color:var(-
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-metric .v.neg{color:var(--money-out)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-recs{display:flex;flex-direction:column;gap:8px;margin-top:12px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-rec{background:var(--card);color:var(--ink);border:1px solid var(--line);border-radius:var(--r-m);padding:12px 14px;min-height:56px}
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choices{display:flex;flex-direction:column;gap:12px;margin-top:8px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choice{background:var(--card);color:var(--ink);border:1.5px solid var(--line);border-radius:var(--r-m);padding:14px;min-height:60px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-choices.row .tm-choice{align-items:center}
 html[data-direction-a="true"] #cc-emojis{display:none;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
 @media (hover:hover) and (pointer:fine){html[data-direction-a="true"] #cc-emojis{display:grid}}
 html[data-direction-a="true"] #cc-emojis .emojibtn{min-height:44px;aspect-ratio:auto}
-html[data-direction-a="true"] .entry-amount{display:grid;grid-template-columns:auto minmax(0,1fr);align-items:center;gap:.5em;direction:ltr}
-html[data-direction-a="true"] .entry-amount .cur{position:static;transform:none;font-size:1.5em}
+html[data-direction-a="true"] .entry-amount{display:grid;grid-template-columns:minmax(30px,auto) minmax(0,1fr);align-items:center;gap:8px;direction:ltr}
+html[data-direction-a="true"] .entry-amount .cur{position:static;transform:none;display:grid;place-items:center;min-width:30px;font-size:1.5em}
 html[data-direction-a="true"] .entry-amount input[type=number]{min-width:0;font-size:1.5em;padding:12px 14px}
 html[data-direction-a="true"] .category-emoji{display:inline;font-size:1em;line-height:1}
 html[data-direction-a="true"] :is(.income-total-hint,.expense-total-hint){margin:-4px 0 14px}
@@ -460,8 +466,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-
   html[data-direction-a="true"] body:not(.ltd-active)>main>.hero:first-child{border-radius:22px;margin:0 0 14px;padding:0 20px 20px}
   html[data-direction-a="true"] body[data-direction-page="income"]>#page>.h1:first-child,
   html[data-direction-a="true"] body[data-direction-page="expenses"]>#page>.h1:first-child,
-  html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child,
-  html[data-direction-a="true"] body[data-direction-page="receipts"]>#page>.h1:first-child{border-radius:22px;margin:0 0 12px;padding:14px 20px}
+  html[data-direction-a="true"] body[data-direction-page="more"]>#page>.h1:first-child{border-radius:22px;margin:0 0 12px;padding:14px 20px}
   html[data-direction-a="true"] .homecta{grid-template-columns:1fr 1fr}
   html[data-direction-a="true"] .sb{align-items:center}
   html[data-direction-a="true"] .sb>.sheet{border-radius:24px;max-height:88vh;margin:16px}
@@ -539,7 +544,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-statgroup{border-top:1px 
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row .tm-price{margin-top:6px;text-align:start;line-height:1.4;color:var(--ink);font-weight:800}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-price .tm-price-standard{color:var(--muted);font-weight:600;margin-inline-end:4px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-row-locked .rt:empty{display:none}
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choices.row{flex-direction:row;gap:6px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choices.row{flex-direction:row;gap:12px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choices.row>*{flex:1}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choice{min-height:44px;padding:10px 8px;justify-content:center;text-align:center}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-fact .tm-choice .ct{font-size:13.5px}
@@ -569,8 +574,44 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-tabs{display:none}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button{font-size:11px;line-height:1.2;padding:4px 3px;gap:4px;color:#B8BCC1}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button .tm-navicon{width:20px;height:20px;padding:3px 8px;box-sizing:content-box;border-radius:9px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-bottom-nav button.on .tm-navicon{width:20px;height:20px;padding:3px 8px}
+
+/* Pay yourself is a short decision screen, not a dashboard. Keep its company
+   context compact, join the dividend status to its next action, and present
+   the director-loan options as one list instead of three competing cards. */
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet.slim{
+  padding-bottom:12px;border-radius:0 0 20px 20px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-top{
+  min-height:54px;padding:7px 0 3px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-wsback{
+  min-height:38px;padding:5px 0
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-workspace-pay .tm-summary-sheet .tm-wstitle{
+  margin:0 0 3px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary{margin-top:14px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-record-actions{margin:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-btn{
+  min-height:50px;border-radius:14px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-primary .tm-btn:only-child{
+  background:var(--y);border-color:var(--y);color:var(--y-ink)
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend{
+  margin-top:12px;background:var(--card);border:1px solid var(--line);border-radius:16px;overflow:hidden
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend .tm-notice.neutral{
+  margin:0;padding:14px;border:0;border-radius:0;background:transparent
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-dividend>.tm-btn{
+  width:calc(100% - 24px);min-height:48px;margin:0 12px 12px;border-radius:12px
+}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-links{margin-top:12px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-pay-links .tm-rec{min-height:58px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:14px;margin-top:12px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric{display:flex;justify-content:space-between;align-items:baseline;width:100%;border:0;border-top:1px solid var(--line);border-radius:0;padding:11px 0;gap:12px;box-shadow:none;text-align:start}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric:first-child{border-top:0}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .v{font-size:14px;white-space:nowrap}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .l{font-size:14px;overflow-wrap:anywhere}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-metric .st{display:none}
@@ -579,6 +620,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-tax .v{font-size:2
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links{display:flex;flex-direction:column;gap:0;background:var(--card);border:1px solid var(--line);border-radius:16px;margin-top:12px;overflow:hidden}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links .tm-rec{border:0;border-radius:0;border-top:1px solid var(--line);margin:0;min-height:60px;padding:13px 14px;text-align:start}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-links .tm-rec:first-child{border-top:0}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo-more{margin-top:10px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo{min-height:60px;padding:13px 14px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-todo .rl{font-size:14px;line-height:1.5}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-sheet .tm-btn{min-height:50px}
@@ -597,7 +639,7 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-app[data-theme="light"]{
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-btn.s{background:var(--card);color:var(--ink);border:1.5px solid var(--line)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-review-summary .tm-review-tax .v{font-size:22px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-col{background:transparent;border:0;box-shadow:none}
-html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:0 20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:18px 20px 8px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-head .tm-stitle{font-size:21px;line-height:1.3;margin:0;font-weight:800;min-width:0;flex:1;overflow-wrap:anywhere}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid;place-items:center;flex:0 0 44px;width:44px;min-width:44px;height:44px;padding:0;border:0;background:none;color:var(--ink);font-size:22px;cursor:pointer}
 
@@ -606,6 +648,9 @@ html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-dialog-close{display:grid
    retain their existing layout and behaviour. */
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog-scrim{align-items:center;padding:16px;background:rgba(15,22,32,.32);backdrop-filter:none}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog{width:min(460px,100%);max-height:min(82dvh,620px);border-radius:20px;overflow:hidden}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog .tm-dialog-head{padding:20px 20px 6px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog .tm-sbody{padding:6px 20px 20px}
+html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-info-dialog .tm-sfoot{padding:14px 20px calc(14px + env(safe-area-inset-bottom))}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-top{min-height:52px}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-exit{min-height:44px;padding:8px 12px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--ink)}
 html[data-direction-a="true"] #taxmate-ltd-ui-root .tm-setup-review-card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:18px;margin-top:14px;overflow:hidden}
@@ -665,7 +710,14 @@ html[data-direction-a="true"] .row .t,
 html[data-direction-a="true"] .entry .t{overflow-wrap:anywhere;font-size:14px;font-weight:700;line-height:1.5}
 html[data-direction-a="true"] .row .v,
 html[data-direction-a="true"] .entry .v{flex-shrink:0;font-size:14px}
-html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 14px;padding:4px 16px 20px;border-radius:0 0 24px 24px}
+html[data-direction-a="true"] .review01-page-title{background:var(--navy);color:#fff;margin:0 -16px 12px;padding:4px 16px 14px;border-radius:0 0 22px 22px}
+html[data-direction-a="true"] .review01-receipts-page-back{
+  appearance:none;display:block;width:auto;min-height:0;margin:-6px 0 0;padding:0 4px 2px;border:0;
+  border-radius:0;background:transparent;color:var(--muted);box-shadow:none;font:inherit;font-size:12.5px;font-weight:700;line-height:1.2;cursor:pointer;
+}
+html[data-direction-a="true"] .review01-receipts-page-back:hover{color:var(--ink);background:transparent;filter:none}
+html[data-direction-a="true"] .review01-receipts-page-back:focus-visible{outline:2px solid var(--y);outline-offset:3px}
+html[data-direction-a="true"] .review01-receipts-page-back+.review01-task-context{margin-top:0}
 html[data-direction-a="true"] .review01-tax-summary .big{font-size:34px;font-weight:800;line-height:1.2;letter-spacing:-1px;margin:8px 0}
 html[data-direction-a="true"] .review01-tax-summary .hi,
 html[data-direction-a="true"] .review01-tax-summary .label{font-size:12.5px;color:var(--muted)}
@@ -691,6 +743,26 @@ html[data-direction-a="true"] :is(#sb-refund,#sb-billing,[data-billing-overview]
 html[data-direction-a="true"] #sb-refund textarea{min-height:96px}
 html[data-direction-a="true"] .review01-billing-kv{display:flex;justify-content:space-between;align-items:baseline;gap:12px;flex-wrap:wrap;padding:10px 0;border-bottom:1px solid var(--line)}
 html[data-direction-a="true"] .review01-billing-kv strong{min-width:0;overflow-wrap:anywhere;font-variant-numeric:tabular-nums}
+html[data-direction-a="true"] .billing-page-content{display:flex;flex-direction:column;gap:14px}
+html[data-direction-a="true"] .billing-page-content>.review01-back{align-self:flex-start}
+html[data-direction-a="true"] .review01-billing-current{display:grid;grid-template-columns:minmax(0,auto) minmax(160px,1fr);align-items:center;gap:16px;padding:18px}
+html[data-direction-a="true"] .review01-billing-current h2{margin:3px 0 0;font-size:25px;line-height:1.15}
+html[data-direction-a="true"] .review01-billing-funded{margin:0;padding-inline-start:16px;border-inline-start:1px solid var(--line);line-height:1.55}
+html[data-direction-a="true"] .billing-page-actions{display:flex;flex-direction:column;gap:10px;margin-top:4px;padding-top:16px;border-top:1px solid var(--line)}
+html[data-direction-a="true"] .billing-page-actions .small{margin:0;text-align:center}
+html[data-direction-a="true"] .billing-plan-actions{margin-bottom:14px}
+html[data-direction-a="true"] .billing-subscription-card{padding:18px;margin-bottom:14px}
+html[data-direction-a="true"] .billing-card-actions{display:flex;flex-direction:column;gap:10px;margin-top:16px}
+html[data-direction-a="true"] .billing-empty-plan{display:flex;flex-direction:column;gap:10px}
+html[data-direction-a="true"] .billing-sheet-content{display:flex;flex-direction:column;gap:10px}
+html[data-direction-a="true"] .billing-action{margin:0}
+html[data-direction-a="true"] .retention-card{padding:18px}
+html[data-direction-a="true"] .retention-card-title{margin-bottom:8px}
+html[data-direction-a="true"] [data-retention-kept]{margin-top:5px}
+html[data-direction-a="true"] .retention-card-details{margin-top:12px;border-top:1px solid var(--line);padding-top:10px}
+html[data-direction-a="true"] .retention-card-details>summary{min-height:44px;display:flex;align-items:center;cursor:pointer;font-size:13px;font-weight:800;color:var(--ink)}
+html[data-direction-a="true"] .retention-card-details [data-retention-cleanup]{margin-top:8px;font-weight:700}
+html[data-direction-a="true"] .retention-duty{margin-top:10px}
 html[data-direction-a="true"] .review01-billing-event{padding:12px 0;border-top:1px solid var(--line);overflow-wrap:anywhere}
 html[data-direction-a="true"] .review01-billing-id{overflow-wrap:anywhere;font-size:12.5px;color:var(--muted)}
 html[data-direction-a="true"] .review01-billing-source{white-space:pre-wrap;overflow-wrap:anywhere;font:inherit;font-size:13px;color:var(--muted)}
@@ -717,9 +789,18 @@ html[data-direction-a="true"] .btn:active,html[data-direction-a="true"] #ob-root
 
 /* Checkout and redemption remain operable above the onboarding shell. */
 body:has(#ob-root.active) #sb-billing.open,body:has(#ob-root.active) #sb-promo.open{z-index:10001}
+body:has(#ob-root.active)>.top{visibility:hidden}
 
 /* Welcome and chooser share one header; Back never consumes a full content row. */
 html[data-direction-a="true"] #ob-root .ob-entry-shell{position:relative;padding-top:52px}
 html[data-direction-a="true"] #ob-root .ob-entry-header{position:absolute;inset:0 16px auto;height:48px}
 html[data-direction-a="true"] #ob-root .ob-entry-back{width:auto;min-width:64px;min-height:44px;display:inline-flex;gap:6px;align-items:center;padding:0 8px;background:transparent;border:0;box-shadow:none;border-radius:8px;font-size:14px;color:var(--muted)}
 html[data-direction-a="true"] #ob-root .ob-entry-back span{font-size:24px}
+html[data-direction-a="true"] #ob-root[data-ob-screen="pro-gate"] .ob-progtop{padding-bottom:14px}
+html[data-direction-a="true"] #ob-root[data-ob-screen="pro-gate"] .ob-logo{margin:18px 0 22px}
+html[data-direction-a="true"] #ob-root[data-ob-screen="pro-gate"] .ob-pro-gate>h1{margin-bottom:10px}
+
+@media(max-width:420px){
+  html[data-direction-a="true"] .review01-billing-current{grid-template-columns:1fr;gap:12px}
+  html[data-direction-a="true"] .review01-billing-funded{padding-inline-start:0;padding-top:12px;border-inline-start:0;border-top:1px solid var(--line)}
+}

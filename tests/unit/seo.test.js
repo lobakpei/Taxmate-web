@@ -125,5 +125,5 @@ test('404 page is non-indexable and provides useful navigation',()=>{
   const page=read('404.html');
   assert.match(page,/<meta name="robots" content="noindex,nofollow">/);
   assert.match(page,/<h1>Page not found<\/h1>/);
-  assert.match(page,/<a href="\/">Return to TaxMate<\/a>/);
+  assert.match(page,/<a\b[^>]*href="\/"[^>]*>Return to TaxMate<\/a>/);
 });

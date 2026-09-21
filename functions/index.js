@@ -5,7 +5,7 @@ const {onDocumentWritten,onDocumentCreated}=require('firebase-functions/v2/fires
 const {onSchedule}=require('firebase-functions/v2/scheduler');
 const {onMessagePublished}=require('firebase-functions/v2/pubsub');
 const {defineSecret,defineString}=require('firebase-functions/params');
-const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldValue}=require('firebase-admin/firestore'); const {getStorage}=require('firebase-admin/storage');
+const {initializeApp}=require('firebase-admin/app'); const {getFirestore,FieldValue}=require('firebase-admin/firestore'); const {getStorage}=require('firebase-admin/storage'); const {getAuth}=require('firebase-admin/auth');
 const Stripe=require('stripe'); initializeApp(); const db=getFirestore();
 const FounderPromotions=require('./founder-promotions');
 const CompaniesHouseLookup=require('./companies-house-lookup');
@@ -29,7 +29,10 @@ const AccountWriteFence=require('./account-write-fence');
 const AccountStorageBootstrap=require('./account-storage-bootstrap');
 const GooglePlayBilling=require('./google-play-billing');
 const AppStoreBilling=require('./app-store-billing');
-const exposeGooglePlayFunctions=process.env.GOOGLE_PLAY_PROVIDER_READY==='true';
+// Firebase CLI discovers exports before it loads project .env values into the
+// discovery process. Keep Play endpoints discoverable; the runtime provider
+// configuration still fails closed until GOOGLE_PLAY_PROVIDER_READY is true.
+const exposeGooglePlayFunctions=true;
 const exposeAppStoreFunctions=process.env.APP_STORE_PROVIDER_READY==='true';
 const STRIPE_SECRET=defineSecret('STRIPE_SECRET_KEY'), STRIPE_WEBHOOK_SECRET=defineSecret('STRIPE_WEBHOOK_SECRET'), COMPANIES_HOUSE_API_KEY=defineSecret('COMPANIES_HOUSE_API_KEY');
 const APP_STORE_ROOT_CA=exposeAppStoreFunctions?defineSecret('APP_STORE_ROOT_CA_BASE64'):null,APP_STORE_PRIVATE_KEY=exposeAppStoreFunctions?defineSecret('APP_STORE_PRIVATE_KEY'):null;
@@ -87,7 +90,7 @@ for(const [name,document]of [['cleanPersonalAdmission','users/{uid}/entries/{ent
 exports.cleanRevokedSharedAdmissions=onDocumentWritten({region:'europe-west2',document:'partnerships/{code}/members/{uid}',retry:true},async event=>AdmissionLifecycle.cleanupUid({db,uid:event.params.uid,partnershipId:event.params.code}));
 exports.cleanRevokedPaidAdmissions=onDocumentWritten({region:'europe-west2',document:'users/{uid}/entitlements/current',retry:true},async event=>AdmissionLifecycle.cleanupUid({db,uid:event.params.uid}));
 exports.cleanResetAdmissions=onDocumentWritten({region:'europe-west2',document:'accountResets/{uid}',retry:true},async event=>{
-  if(['billing_quarantined','deleting','failed'].includes(event.data?.after.data()?.status))return AdmissionLifecycle.cleanupUid({db,uid:event.params.uid});
+  if(['billing_quarantined','deleting','identity_deleting','failed'].includes(event.data?.after.data()?.status))return AdmissionLifecycle.cleanupUid({db,uid:event.params.uid});
 });
 exports.runReceiptCleanupJob=onDocumentCreated({region:'europe-west2',document:'receiptCleanupWakeups/{requestId}',retry:true},async event=>{
   return ReceiptCleanup.processJob({db,bucket:getStorage().bucket(),jobId:event.data.data().jobId});
@@ -299,16 +302,34 @@ async function enterDeletionBillingQuarantine({uid,resetRef,reservationRef,corre
     tx.set(entitlementRef,{accountResetStatus:'billing_quarantined',accountResetEpoch:resetEpoch,accountResetEpochString:String(resetEpoch)},{merge:true});
   });
 }
-async function completeDeletionAfterBillingQuarantine({resetRef,reservationRef,correlationId,resetEpoch}){
-  let completedEpoch=null;
+async function beginIdentityDeletionAfterBillingQuarantine({resetRef,reservationRef,correlationId,resetEpoch}){
+  let nextEpoch=null;
   await db.runTransaction(async tx=>{
     const [resetSnap,reservationSnap]=await Promise.all([tx.get(resetRef),tx.get(reservationRef)]),fence=resetSnap.exists?resetSnap.data()||{}:{},reservation=reservationSnap.exists?reservationSnap.data()||{}:{};
     if(fence.status!=='billing_quarantined'||fence.correlationId!==correlationId||Number(fence.resetEpoch||0)!==resetEpoch)throw new Error('account_deletion_quarantine_changed');
     if(reservation.status==='provider_pending')throw new Error('billing_reservation_created_after_quarantine');
-    completedEpoch=Math.max(Date.now(),resetEpoch+1);tx.set(resetRef,{schemaVersion:1,status:'complete',resetEpoch:completedEpoch,correlationId,deletionId:correlationId,completedFromResetEpoch:resetEpoch,updatedAt:FieldValue.serverTimestamp()});
+    nextEpoch=Math.max(Date.now(),resetEpoch+1);tx.set(resetRef,{schemaVersion:1,status:'identity_deleting',resetEpoch:nextEpoch,correlationId,deletionId:correlationId,completedFromResetEpoch:resetEpoch,updatedAt:FieldValue.serverTimestamp()});
+  });
+  return nextEpoch;
+}
+async function finalizeDeletedAuthIdentity(uid,correlationId){
+  const resetRef=db.doc(`accountResets/${uid}`),snapshot=await resetRef.get(),before=snapshot.exists?snapshot.data()||{}:{};
+  if(before.status==='deleted'&&before.correlationId===correlationId)return Number(before.resetEpoch);
+  if(before.status!=='identity_deleting'||before.correlationId!==correlationId)throw new Error('account_deletion_identity_fence_changed');
+  try{await getAuth().deleteUser(uid);}catch(error){if(error&&error.code!=='auth/user-not-found')throw error;}
+  let completedEpoch=null;
+  await db.runTransaction(async tx=>{
+    const current=await tx.get(resetRef),value=current.exists?current.data()||{}:{};
+    if(value.status==='deleted'&&value.correlationId===correlationId){completedEpoch=Number(value.resetEpoch);return;}
+    if(value.status!=='identity_deleting'||value.correlationId!==correlationId)throw new Error('account_deletion_identity_fence_changed');
+    completedEpoch=Number(value.resetEpoch);tx.set(resetRef,{...value,status:'deleted',authIdentityDeleted:true,authDeletedAt:Date.now(),updatedAt:FieldValue.serverTimestamp()});
   });
   return completedEpoch;
 }
+exports.finishAccountIdentityDeletion=onDocumentWritten({region:'europe-west2',document:'accountResets/{uid}',retry:true},async event=>{
+  const after=event.data?.after.data();if(after?.status!=='identity_deleting')return;
+  await finalizeDeletedAuthIdentity(event.params.uid,String(after.correlationId||''));
+});
 async function quarantineStripeBillingEvent({uid,event,customerId,mapping}){
   return BillingWebhook.quarantineDeletionEvent({db,uid,event,customerId,mapping,serverTimestamp:()=>FieldValue.serverTimestamp()});
 }
@@ -597,19 +618,25 @@ exports.leavePartnership=onCall(baseOpts,async req=>{
   return{left:true,partnershipDeleted:deletePartnership};
 });
 exports.deleteAccountData=onCall(accountDeletionOpts,async req=>{
-  const user=auth(req),uid=user.uid,resetRef=db.doc(`accountResets/${uid}`),entitlementRef=db.doc(`users/${uid}/entitlements/current`),reservationRef=db.doc(`billingPurchaseReservations/${uid}`);let correlationId=crypto.randomUUID(),deletionStartedAt=Date.now(),resetEpoch=0,resumeQuarantined=false;
+  const user=auth(req),uid=user.uid,resetRef=db.doc(`accountResets/${uid}`),entitlementRef=db.doc(`users/${uid}/entitlements/current`),reservationRef=db.doc(`billingPurchaseReservations/${uid}`);let correlationId=crypto.randomUUID(),deletionStartedAt=Date.now(),resetEpoch=0,resumeQuarantined=false,resumeIdentityDeletion=false,alreadyDeleted=false;
   await db.runTransaction(async tx=>{
     const [resetSnap,reservationSnap]=await Promise.all([tx.get(resetRef),tx.get(reservationRef)]),prior=resetSnap.exists?resetSnap.data()||{}:{},status=String(prior.status||''),epoch=prior.resetEpoch==null?0:Number(prior.resetEpoch);
-    if(!Number.isSafeInteger(epoch)||epoch<0||status&&!['complete','deleting','failed','billing_quarantined'].includes(status))throw new HttpsError('failed-precondition','Account reset state is invalid',{reason:'account_reset'});
+    if(!Number.isSafeInteger(epoch)||epoch<0||status&&!['complete','deleting','failed','billing_quarantined','identity_deleting','deleted'].includes(status))throw new HttpsError('failed-precondition','Account reset state is invalid',{reason:'account_reset'});
     if(status==='deleting')throw new HttpsError('failed-precondition','Account deletion is already in progress',{reason:'account_reset'});
-    if(reservationSnap.exists&&reservationSnap.data().status==='provider_pending')throw new HttpsError('failed-precondition','A provider purchase must be reconciled before deleting TaxMate data',{reason:'billing_purchase_pending'});
     resetEpoch=epoch;
+    if(status==='deleted'||status==='identity_deleting'){
+      correlationId=String(prior.deletionId||prior.correlationId||'');if(!correlationId)throw new HttpsError('failed-precondition','Account deletion recovery identity is missing',{reason:'account_reset'});
+      alreadyDeleted=status==='deleted';resumeIdentityDeletion=status==='identity_deleting';return;
+    }
+    if(reservationSnap.exists&&reservationSnap.data().status==='provider_pending')throw new HttpsError('failed-precondition','A provider purchase must be reconciled before deleting TaxMate data',{reason:'billing_purchase_pending'});
     if(status==='billing_quarantined'||status==='failed'&&prior.billingQuarantined===true){resumeQuarantined=true;correlationId=String(prior.deletionId||prior.correlationId||'');deletionStartedAt=Number(prior.deletionStartedAt)||deletionStartedAt;if(!correlationId)throw new HttpsError('failed-precondition','Account deletion recovery identity is missing',{reason:'account_reset'});tx.set(resetRef,{...prior,schemaVersion:1,status:'billing_quarantined',resetEpoch,correlationId,deletionId:correlationId,deletionStartedAt,updatedAt:FieldValue.serverTimestamp()});tx.set(entitlementRef,{accountResetStatus:'billing_quarantined',accountResetEpoch:resetEpoch,accountResetEpochString:String(resetEpoch)},{merge:true});return;}
     tx.set(resetRef,{schemaVersion:1,status:'deleting',resetEpoch,correlationId,deletionId:correlationId,deletionStartedAt,billingEventWatermark:null,billingEventProvider:null,updatedAt:FieldValue.serverTimestamp()});
     tx.set(entitlementRef,{accountResetStatus:'deleting',accountResetEpoch:resetEpoch,accountResetEpochString:String(resetEpoch)},{merge:true});
   });
   let stripeCustomerId=null,customer,customerRef,stage='billing_preflight',partnershipRecordsRetained=0,partnershipsDeleted=0,destructiveStarted=false;
   try{
+    if(alreadyDeleted)return{deleted:true,resetEpoch,authIdentityDeleted:true,partnershipRecordsRetained:0,partnershipsDeleted:0};
+    if(resumeIdentityDeletion){stage='identity_deleting';const completedEpoch=await finalizeDeletedAuthIdentity(uid,correlationId);return{deleted:true,resetEpoch:completedEpoch,authIdentityDeleted:true,partnershipRecordsRetained:0,partnershipsDeleted:0};}
     if(!resumeQuarantined){
     customerRef=db.doc(`billingCustomers/${uid}`);
     const [customerSnap,playMappings,appStoreAccount,appStoreTokens,appStoreMappings,appStoreNotifications]=await Promise.all([customerRef.get(),db.collection('googlePlayPurchaseTokens').where('uid','==',uid).get(),db.doc(`appStoreAccounts/${uid}`).get(),db.collection('appStoreAccountTokens').where('uid','==',uid).get(),db.collection('appStoreTransactions').where('uid','==',uid).get(),db.collection('appStoreNotifications').where('uid','==',uid).get()]);customer=customerSnap;
@@ -639,9 +666,15 @@ exports.deleteAccountData=onCall(accountDeletionOpts,async req=>{
     for(const file of receiptFiles)await ReceiptCleanup.cleanupReceiptWithRetry({db,bucket,path:file.name,ignorePersonalUid:uid});
     stage='promotions';const redemptions=await db.collection('promotionRedemptions').where('uid','==',uid).get();for(let i=0;i<redemptions.docs.length;i+=400){const batch=db.batch();for(const doc of redemptions.docs.slice(i,i+400))batch.delete(doc.ref);await batch.commit();}
     stage='user_data';await db.recursiveDelete(db.doc(`users/${uid}`));await db.doc(`accountClaims/${uid}`).delete().catch(()=>{});await db.recursiveDelete(db.doc(`accountQuarantines/${uid}`)).catch(()=>{});
-    stage='complete';const completedEpoch=await completeDeletionAfterBillingQuarantine({resetRef,reservationRef,correlationId,resetEpoch});
-    return{deleted:true,resetEpoch:completedEpoch,partnershipRecordsRetained,partnershipsDeleted,authIdentityRetained:true};
+    stage='identity_handoff';await beginIdentityDeletionAfterBillingQuarantine({resetRef,reservationRef,correlationId,resetEpoch});
+    stage='identity_deleting';
+    const completedEpoch=await finalizeDeletedAuthIdentity(uid,correlationId);
+    return{deleted:true,resetEpoch:completedEpoch,partnershipRecordsRetained,partnershipsDeleted,authIdentityDeleted:true};
   }catch(error){
+    if(stage==='identity_deleting'){
+      console.error('account-deletion-identity-pending',{category:'account_deletion',correlationId});
+      throw new HttpsError('unavailable','Account identity deletion is still pending and will be retried',{reason:'auth_deletion_pending',correlationId});
+    }
     const reason=error instanceof HttpsError&&error.details&&error.details.reason,recoverable=!destructiveStarted&&['active_billing','active_google_play_billing','active_app_store_billing','google_play_status_required','app_store_status_required','billing_purchase_pending','billing_provider_event_pending'].includes(reason);
     await db.runTransaction(async tx=>{const entitlement=await tx.get(entitlementRef);tx.set(resetRef,recoverable?{schemaVersion:1,status:'complete',resetEpoch,correlationId,lastDeletionBlockedReason:reason,updatedAt:FieldValue.serverTimestamp()}:{schemaVersion:1,status:'failed',resetEpoch,correlationId,deletionId:correlationId,deletionStartedAt,billingQuarantined:destructiveStarted===true,failedStage:stage,updatedAt:FieldValue.serverTimestamp()});if(entitlement.exists)tx.set(entitlementRef,{accountResetStatus:recoverable?'complete':'failed',accountResetEpoch:resetEpoch,accountResetEpochString:String(resetEpoch)},{merge:true});}).catch(()=>{});
     console.error('account-deletion-failed',{category:'account_deletion',stage,correlationId,recoverable});if(error instanceof HttpsError)throw error;throw new HttpsError('internal','Account deletion could not be completed',{reason:'delete_pipeline_failed',stage,correlationId});

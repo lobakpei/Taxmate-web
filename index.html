@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- build: 2026-09-13.shared-ui-store-billing-build13.1 -->
+<!-- build: 2026-09-19.build21-ui-acceptance.1 -->
 <html lang="en-GB" data-direction-a="true">
 <head>
 <script src="src/app/bootstrap.js"></script>
@@ -69,7 +69,8 @@ html{ touch-action:auto; }
   --btn-dark:#16202B;
   --brand-action-ink:#10231B;
   /* Money semantics (UI-01): independent of the brand palette. in = income / positive,
-     out = explicit cost or negative. Zero stays neutral; unknown values are never £0. */
+     out = explicit cost or negative. Role-labelled zero keeps its semantic colour;
+     unsigned summary zero stays neutral and unknown values are never £0. */
   --money-in:#067A4B; --money-out:#E5484D; --money-in-navy:#5FD891; --money-out-navy:#FF8A8F;
   --r-lg:24px; --r-md:18px; --r-sm:12px;
   --shadow:0 1px 2px rgba(22,32,43,.05),0 10px 30px rgba(22,32,43,.07);
@@ -114,6 +115,9 @@ body.ltd-active>#taxmate-toast,
 body.ltd-active>#ob-root{display:none!important;visibility:hidden!important;pointer-events:none!important}
 body.ltd-active .sb *,body.ltd-active>#taxmate-lightbox *{pointer-events:none!important}
 body.ltd-active.sheet-open{overflow:auto}
+/* The LTD renderer owns its own fixed sheets.  Keep the document behind those
+   sheets completely still; the sheet body remains the only vertical scroller. */
+html.ltd-sheet-open,body.ltd-active.ltd-sheet-open{overflow:hidden;overscroll-behavior:none}
 .year-pill{margin-inline-start:auto;position:relative}
 .year-pill select{appearance:none;-webkit-appearance:none;font-family:inherit;font-weight:700;font-size:14px;color:var(--ink);
   background:var(--card);border:1px solid var(--line);border-radius:999px;padding:8px 30px 8px 14px;box-shadow:var(--shadow-sm)}
@@ -282,6 +286,23 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .amt{position:relative}
 .amt .cur{position:absolute;inset-inline-start:15px;top:50%;transform:translateY(-50%);font-size:21px;font-weight:800;color:var(--muted)}
 .amt input{padding-inline-start:38px;font-size:24px;font-weight:800}
+.entry-amount{display:grid;grid-template-columns:minmax(30px,auto) minmax(0,1fr);align-items:center;gap:8px;direction:ltr}
+.entry-amount .cur{position:static;inset:auto;transform:none;display:grid;place-items:center;min-width:30px}
+.entry-amount input{min-width:0;padding-inline:14px}
+.amount-input{display:grid;grid-template-columns:38px minmax(0,1fr);align-items:stretch;direction:ltr}
+.amount-input .cur{position:static;transform:none;display:grid;place-items:center;font-size:21px;line-height:1}
+.amount-input input{min-width:0;padding-inline:12px}
+.field-label-with-info{display:block;position:relative;min-height:34px;padding-inline-end:44px;margin-bottom:7px}
+.field-label-with-info>label{display:block;min-width:0;margin:0}
+.field-info{position:absolute;inset-inline-end:-10px;top:-10px;width:44px;margin:0}
+.field-info>summary{position:relative;display:grid;place-items:center;width:44px;height:44px;list-style:none;cursor:pointer;color:var(--muted);font:800 12px/1 Georgia,serif}
+.field-info>summary::-webkit-details-marker{display:none}
+.field-info>summary::before{content:'';position:absolute;width:18px;height:18px;border:1.6px solid currentColor;border-radius:50%}
+.field-info>.fhint{position:absolute;z-index:3;inset-inline-end:0;top:42px;width:min(360px,calc(100vw - 48px));padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:var(--card);box-shadow:var(--shadow);color:var(--muted);line-height:1.55}
+.field-info[open]{position:static;width:calc(100% + 44px);margin:8px 0 0;margin-inline-end:-44px}
+.field-info[open]>summary{position:absolute;inset-inline-end:-10px;top:-10px}
+.field-info[open]>.fhint{position:static;width:auto;margin:0;box-shadow:none}
+.field-check{display:flex;gap:8px;align-items:flex-start;margin-top:10px;font-weight:600}
 .seg{display:flex;background:#EEF1F4;border-radius:999px;padding:4px}
 .seg button{flex:1;min-width:0;border:0;background:none;border-radius:999px;padding:9px 6px;font-size:14px;font-weight:700;color:var(--muted);cursor:pointer}
 .seg button.on{background:#fff;color:var(--ink);box-shadow:var(--shadow-sm)}
@@ -293,7 +314,7 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 #en-repeat-months label:focus-within{outline:2px solid var(--brand);outline-offset:2px}
 #en-repeat-months small{display:block;font-size:11px;font-weight:400}
 .pctrow{display:flex;gap:8px;flex-wrap:wrap}
-.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.catgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
 .catbtn{font-size:13.5px;font-weight:600;padding:11px 12px;border:1.5px solid var(--line);background:#fff;border-radius:var(--r-sm);
   cursor:pointer;display:flex;align-items:center;gap:8px;text-align:start;color:var(--ink)}
 .catbtn.on{border-color:var(--brand);background:var(--brand-soft);font-weight:800}
@@ -306,18 +327,18 @@ input.err{border-color:var(--coral);background:var(--coral-soft)}
 .sheet::-webkit-scrollbar-track{background:transparent}
 .sheet::-webkit-scrollbar-thumb{background:var(--border,#2d4a3a);border-radius:4px}
 .sheet{scrollbar-width:thin;scrollbar-color:var(--border,#2d4a3a) transparent}
-body.sheet-open{overflow:hidden}
+html.sheet-open,body.sheet-open{overflow:hidden;overscroll-behavior:none}
 .toast{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:50%;transform:translateX(-50%) translateY(-80px);
   background:var(--ink);color:#fff;font-size:14px;font-weight:700;padding:11px 22px;border-radius:999px;
   z-index:400;box-shadow:0 8px 24px rgba(16,24,32,.25);transition:transform .3s cubic-bezier(.2,.9,.3,1.2);pointer-events:none;white-space:nowrap}
 .toast.show{transform:translateX(-50%) translateY(0)}
 .sb.open{display:flex}
 .sheet{background:var(--bg);width:100%;max-width:640px;max-height:92vh;overflow-y:auto;
-  border-radius:28px 28px 0 0;padding:10px 20px calc(26px + env(safe-area-inset-bottom))}
-.sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:6px auto 16px;cursor:grab;position:relative}
+  border-radius:28px 28px 0 0;padding:14px 20px calc(26px + env(safe-area-inset-bottom))}
+.sheet .grab{width:44px;height:5px;background:#D6DBE2;border-radius:3px;margin:4px auto 16px;cursor:grab;position:relative}
 .grab::after{content:"";position:absolute;top:-12px;bottom:-12px;left:-40px;right:-40px}
 .sheet .stitle{font-size:21px;font-weight:800;letter-spacing:-.4px;margin-bottom:18px;color:var(--ink)}
-.sheet .sact{display:flex;gap:10px;margin-top:20px}
+.sheet .sact{display:flex;gap:12px;margin-top:20px}
 .sheet .sact .btn{flex:1}
 
 /* ── collapsible settings section ── */
@@ -350,7 +371,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 /* UI-09: receipt actions — real TaxMate buttons, stacked, identical geometry.
    No separate icon tile: the empty state is exactly two (mobile) or one (desktop) control. */
 #en-receipt-thumb-wrap{display:flex;flex-direction:column;align-items:flex-start;gap:10px;width:100%}
-.rc-actions{display:flex;flex-direction:column;gap:8px;width:100%}
+.rc-actions{display:flex;flex-direction:column;gap:12px;width:100%}
 .rc-actions .btn{width:100%;border:1px solid transparent}
 .rc-actions .fhint{margin-top:2px}
 .lightbox{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:300;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:16px}
@@ -489,17 +510,37 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 #legal-content .content-lede{color:var(--ink);font-size:15px;line-height:1.6;margin:0 0 14px}
 #legal-content .content-date{color:var(--muted);font-size:12px;font-weight:700;margin:0 0 16px}
 #legal-content .content-group{margin:0 0 20px}
-#legal-content .content-group>h3{font-size:16px;line-height:1.3;margin:0 0 8px}
+#legal-content .content-group>h2,#legal-content .content-group>h3{font-size:16px;line-height:1.3;margin:0 0 8px}
 #legal-content .content-accordion{border:1px solid var(--line);border-radius:14px;background:var(--card);margin:8px 0;overflow:hidden}
-#legal-content .content-accordion summary{cursor:pointer;font-size:14px;font-weight:800;line-height:1.35;padding:14px 16px;list-style:none}
+#legal-content .content-accordion summary{cursor:pointer;font-size:14px;font-weight:800;line-height:1.35;padding:14px 16px;list-style:none;display:grid;grid-template-columns:minmax(0,1fr) 24px;align-items:start;gap:12px}
 #legal-content .content-accordion summary::-webkit-details-marker{display:none}
-#legal-content .content-accordion summary::after{content:'+';color:var(--brand-deep);float:right;font-size:18px;margin-left:10px}
+#legal-content .content-accordion summary::after{content:'+';color:var(--brand-deep);font-size:18px;line-height:1;justify-self:end;margin:0}
 #legal-content .content-accordion[open] summary::after{content:'−'}
 #legal-content .content-accordion .content-body{border-top:1px solid var(--line);color:var(--muted);font-size:13px;line-height:1.65;padding:13px 16px 15px}
 #legal-content .content-accordion .content-body p{margin:0 0 8px}
 #legal-content .content-accordion .content-body p:last-child{margin-bottom:0}
 #legal-content .content-accordion .content-body ul{margin:6px 0;padding-left:20px}
 #legal-content .content-accordion .content-body a{color:var(--brand-deep);font-weight:700}
+#legal-content .faq-search-wrap{position:relative;margin:0 0 18px}
+#legal-content .faq-search-wrap label>span{display:block;color:var(--ink);font-size:14px;font-weight:800;margin:0 0 8px}
+#legal-content .faq-search-wrap input{width:100%;min-height:48px;padding:12px 62px 12px 15px;border:1.5px solid var(--line);border-radius:14px;background:var(--card);color:var(--ink);font-family:inherit;font-size:14px;font-weight:600;line-height:1.35;outline:none}
+#legal-content .faq-search-wrap input:focus{border-color:var(--brand-deep);box-shadow:0 0 0 3px rgba(10,169,104,.18)}
+#legal-content .faq-clear{position:absolute;right:6px;bottom:4px;min-height:40px;padding:5px 10px;border:0;border-radius:9px;background:var(--brand-soft);color:var(--brand-deep);font-family:inherit;font-size:12px;font-weight:800;line-height:1;cursor:pointer}
+#legal-content .faq-popular{margin:0 0 20px}
+#legal-content .faq-popular h2,#legal-content .faq-filter-label{font-size:14px;font-weight:850;line-height:1.3;margin:0 0 9px}
+#legal-content .faq-popular-grid{display:grid;gap:8px}
+#legal-content .faq-popular-button{display:grid;grid-template-columns:minmax(0,1fr) 20px;align-items:center;gap:8px;width:100%;min-height:48px;padding:11px 13px;border:1px solid var(--line);border-radius:12px;background:var(--card);color:var(--ink);font-family:inherit;font-size:13px;font-weight:750;line-height:1.35;text-align:left;cursor:pointer}
+#legal-content .faq-popular-button span{color:var(--brand-deep);font-size:20px;justify-self:end}
+#legal-content .faq-filter-wrap{margin:0 0 18px}
+#legal-content .faq-filter-row{display:flex;gap:8px;overflow-x:auto;padding:1px 1px 7px;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+#legal-content .faq-filter-row::-webkit-scrollbar{display:none}
+#legal-content .faq-filter{flex:0 0 auto;min-height:44px;padding:9px 13px;border:1px solid var(--line);border-radius:999px;background:var(--card);color:var(--muted);font-family:inherit;font-size:12px;font-weight:800;line-height:1.2;cursor:pointer}
+#legal-content .faq-filter.is-active{border-color:var(--brand);background:var(--brand-soft);color:var(--brand-deep)}
+#legal-content .faq-empty{border:1px dashed var(--line);border-radius:14px;padding:16px;margin:0 0 18px;color:var(--muted);font-size:13px;line-height:1.55;text-align:center}
+#legal-content .faq-contact{margin-top:22px}
+#legal-content .faq-contact p{margin:8px 0 12px;color:var(--muted);font-size:13px;line-height:1.55}
+#legal-content .faq-support-link{display:flex;align-items:center;justify-content:center;min-height:44px;padding:10px 14px;border-radius:12px;background:var(--y);color:var(--y-ink)!important;font-size:13px;font-weight:850;text-decoration:none}
+@media (min-width:900px){#legal-content .faq-filter-row{flex-wrap:wrap;overflow:visible;padding-bottom:1px}}
 </style>
 </head>
 <body>
@@ -660,7 +701,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="stitle" id="lock-title" style="margin-top:12px;text-align:center"></div>
     <div class="s" id="lock-body" style="margin:8px 16px 20px;text-align:center"></div>
   </div>
-  <button class="btn ink" style="margin-bottom:10px" data-tm-click="lockSeeplans()" data-i18n="lock.upgrade"></button>
+  <button class="btn" style="margin-bottom:10px" data-tm-click="lockSeeplans()" data-i18n="lock.upgrade"></button>
   <button class="btn ghost" data-tm-click="closeSheet('lock')" data-i18n="c.cancel"></button>
 </div></div>
 
@@ -697,7 +738,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
     <div class="s" style="margin:0 16px 20px;text-align:center" data-i18n="pwa.homeBody"></div>
   </div>
   <div class="sact">
-    <button class="btn ink" data-tm-click="doInstall()" data-i18n="pwa.installCta"></button>
+    <button class="btn" data-tm-click="doInstall()" data-i18n="pwa.installCta"></button>
     <button class="btn ghost" data-tm-click="dismissInstallPromotion()" data-i18n="pwa.notNow"></button>
   </div>
 </div></div>
@@ -739,29 +780,25 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   <div class="stitle" data-i18n="a.title"></div>
   <div class="sub" style="margin-bottom:18px" data-i18n="a.sub"></div>
   <div class="fg">
-    <label for="adj-poa" data-i18n="a.poaLabel"></label>
-    <div class="fhint" data-i18n="a.poaHint"></div>
-    <div class="amt"><span class="cur">£</span>
+    <div class="field-label-with-info"><label for="adj-poa" data-i18n="a.poaLabel"></label><details class="field-info"><summary data-i18n-aria="a.info">i</summary><div class="fhint" data-i18n="a.poaInfo"></div></details></div>
+    <div class="amt amount-input"><span class="cur">£</span>
       <input type="number" id="adj-poa" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
   </div>
   <div class="fg">
-    <label for="adj-prior" data-i18n="a.priorLabel"></label>
-    <div class="fhint" data-i18n="a.priorHint"></div>
-    <div class="amt"><span class="cur">£</span>
+    <div class="field-label-with-info"><label for="adj-prior" data-i18n="a.priorLabel"></label><details class="field-info"><summary data-i18n-aria="a.info">i</summary><div class="fhint" data-i18n="a.priorInfo"></div></details></div>
+    <div class="amt amount-input"><span class="cur">£</span>
       <input type="number" id="adj-prior" inputmode="decimal" step="0.01" placeholder="0.00"></div>
   </div>
   <div class="fg">
-    <label for="adj-poa-outside">Tax collected outside Self Assessment</label>
-    <div class="fhint">Enter the percentage of your total tax already collected at source (for example through PAYE). More than 80% can remove Payments on Account.</div>
-    <div class="amt"><span class="cur">%</span>
+    <div class="field-label-with-info"><label for="adj-poa-outside" data-i18n="a.outsideLabel"></label><details class="field-info"><summary data-i18n-aria="a.info">i</summary><div class="fhint" data-i18n="a.outsideInfo"></div></details></div>
+    <div class="amt amount-input"><span class="cur">%</span>
       <input type="number" id="adj-poa-outside" inputmode="decimal" step="0.01" min="0" max="100" placeholder="0"></div>
   </div>
   <div class="fg">
-    <label for="adj-property">Gross property income for MTD assessment (optional)</label>
-    <div class="fhint">Gross UK property income before expenses. Used only to assess MTD qualifying income; TaxMate does not provide landlord bookkeeping.</div>
-    <div class="amt"><span class="cur">£</span>
+    <div class="field-label-with-info"><label for="adj-property" data-i18n="a.propertyLabel"></label><details class="field-info"><summary data-i18n-aria="a.info">i</summary><div class="fhint" data-i18n="a.propertyInfo"></div></details></div>
+    <div class="amt amount-input"><span class="cur">£</span>
       <input type="number" id="adj-property" inputmode="decimal" step="0.01" min="0" placeholder="0.00"></div>
-    <label style="display:flex;gap:8px;align-items:center;margin-top:8px;font-weight:600"><input type="checkbox" id="adj-property-complete" style="width:auto"> I have included all relevant gross property income</label>
+    <label class="field-check"><input type="checkbox" id="adj-property-complete" style="width:auto"> <span data-i18n="a.propertyComplete"></span></label>
   </div>
   <div class="sact">
     <button class="btn ghost" data-tm-click="closeSheet('adj')" data-i18n="c.cancel"></button>
@@ -929,6 +966,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
 <script src="src/ui/ltd/workbench-renderer.js"></script>
 <script src="src/core/pwa-install.js"></script>
 <script src="src/core/product-content.js"></script>
+<script src="src/app/help.js"></script>
 <script src="src/app/action-dispatch.js"></script>
 <script defer src="src/app/app.js"></script>
 <script defer src="src/app/billing-copy.js"></script>
@@ -1001,9 +1039,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   #ob-root label{display:block;font-size:13px;font-weight:700;margin-bottom:8px;color:var(--ink)}
   #ob-root input[type=text],#ob-root input[type=number]{width:100%;min-height:48px;font-family:inherit;font-size:17px;font-weight:600;color:var(--ink);background:var(--bg);border:1.5px solid var(--line);border-radius:14px;padding:14px 16px;outline:none}
   #ob-root input:focus{border-color:var(--brand);box-shadow:0 0 0 3px color-mix(in srgb,var(--brand) 24%,transparent)}
-  .ob-amt{position:relative}
-  .ob-amt .ob-cur{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:17px;font-weight:700;color:var(--muted)}
-  .ob-amt input{padding-left:34px}
+  .ob-amt{display:grid;grid-template-columns:minmax(28px,auto) minmax(0,1fr);align-items:center;gap:8px;direction:ltr}
+  .ob-amt .ob-cur{position:static;transform:none;display:grid;place-items:center;font-size:17px;font-weight:700;color:var(--muted)}
+  .ob-amt input{min-width:0;padding-inline:14px}
   .ob-hint{font-size:12.5px;color:var(--muted);margin-top:6px;line-height:1.5}
   #ob-root .ob-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;min-height:48px;padding:16px 20px;border:0;cursor:pointer;font-family:inherit;font-size:16px;font-weight:800;border-radius:14px;background:var(--brand);color:var(--brand-action-ink);box-shadow:0 6px 16px rgba(10,169,104,.28);transition:transform .12s,filter .12s}
   #ob-root .ob-btn:hover:not(:disabled){filter:saturate(1.08) brightness(.98)}
@@ -1050,9 +1088,9 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-fline{display:flex;align-items:center;gap:5px}
   .ob-fline .ob-daywrap{flex-shrink:0}
   .ob-fdesc{flex:1;min-width:0;font-family:inherit;font-size:13px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 10px;color:var(--ink)}
-  .ob-famt{position:relative;width:82px;flex-shrink:0}
-  .ob-famt .ob-cur{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:700;color:var(--muted)}
-  .ob-famt input{width:100%;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 6px 9px 21px;color:var(--ink);font-variant-numeric:tabular-nums}
+  .ob-famt{display:grid;grid-template-columns:minmax(20px,auto) minmax(0,1fr);align-items:center;gap:4px;direction:ltr;width:104px;flex-shrink:0}
+  .ob-famt .ob-cur{position:static;transform:none;display:grid;place-items:center;font-size:14px;font-weight:700;color:var(--muted)}
+  .ob-famt input{width:100%;min-width:0;font-family:inherit;font-size:14px;background:var(--bg);border:1.5px solid var(--line);border-radius:10px;padding:9px 8px;color:var(--ink);font-variant-numeric:tabular-nums}
   .ob-fline .ob-del{background:none;border:0;color:var(--muted);font-size:18px;cursor:pointer;padding:0 1px;flex-shrink:0}
   .ob-addcat{display:block;width:100%;font-size:14px;color:var(--brand-deep);font-weight:800;cursor:pointer;background:var(--brand-soft);border:1.5px dashed var(--brand);border-radius:12px;padding:12px;font-family:inherit;margin-top:4px}
   /* simple (ungrouped) income body: no folder border */
@@ -1083,7 +1121,13 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-totalpill .ob-tpv{font-size:16px;font-weight:800;color:var(--brand-deep)}
   .ob-foot{position:fixed;left:0;right:0;bottom:0;background:var(--bg);box-shadow:0 -8px 20px -6px rgba(0,0,0,.3);padding:14px 18px calc(16px + env(safe-area-inset-bottom));z-index:10000}
   .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0}
-  .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0 0}
+  .ob-foot .ob-wrap{max-width:480px;margin:0 auto;padding:0;display:flex;flex-direction:column;gap:10px}
+  .ob-pro-gate{display:flex;flex-direction:column}
+  .ob-gate-cadence{margin-bottom:18px}
+  .ob-gate-plans{display:flex;flex-direction:column;gap:14px}
+  #ob-root .ob-gate-plans .plan-card{margin:0!important}
+  .ob-gate-status{display:grid;gap:8px;margin-top:18px;text-wrap:balance}
+  .ob-gate-actions{display:flex;flex-direction:column;gap:10px;margin-top:18px;padding-top:18px;border-top:1px solid var(--line)}
   .partner-success-card{margin-bottom:4px!important}
   .local-review-note{text-align:center;margin-top:8px;color:var(--muted)}
   .ob-center{text-align:center}.ob-mt8{margin-top:8px}
@@ -1097,7 +1141,7 @@ details.help .hb{padding:0 16px 14px;font-size:14px;color:var(--ink);line-height
   .ob-confetti{font-size:40px;text-align:center;margin-bottom:4px;animation:obpop .5s cubic-bezier(.2,.7,.2,1)}
   @keyframes obpop{from{transform:scale(0)}60%{transform:scale(1.2)}to{transform:scale(1)}}
 </style>
-<link rel="stylesheet" href="src/ui/direction-a.css?v=20260905-1">
+<link rel="stylesheet" href="src/ui/direction-a.css?v=20260919-2">
 </body>
 </html>
 

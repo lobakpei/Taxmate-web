@@ -42,7 +42,7 @@ test('all contextual advice stays in Assistant and PWA chrome uses one deep rele
   assert.equal((html.match(/<meta name="theme-color"/g)||[]).length,1);
   assert.match(html,/<meta name="theme-color" content="#0F1620">/);
   assert.equal(manifest.theme_color,'#0F1620');assert.equal(manifest.background_color,'#0F1620');
-  assert.match(html,/manifest\.json\?v=20260905-1/);assert.match(app,/sw\.js\?v=20260905-1/);
+  assert.match(html,/manifest\.json\?v=20260905-1/);assert.match(app,/sw\.js\?v=20260919-2/);
   assert.match(sw,/manifest\.json\?v=20260905-1/);assert.ok(sw.includes(VERSIONS.PWA_CACHE_VERSION));
 });
 

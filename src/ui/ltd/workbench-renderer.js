@@ -299,7 +299,7 @@
   function textField(o){
     // o: {scope,label,fid,placeholder,infoId,hint,kind:'text'|'money'|'percent',inputmode,persist}
     var scope=o.scope, fid=o.fid, err=errFor(scope,fid), kind=o.kind||'text';
-    var wrapCls='tm-inwrap'+(err?' err':'');
+    var wrapCls='tm-inwrap '+kind+(err?' err':'');
     var affixPre = kind==='money' ? '\u00A3' : null;
     var affixSuf = kind==='percent' ? '%' : null;
     var input=h('input',{class:'tm-input'+(affixPre?' pre':'')+(affixSuf?' suf':''), type:'text',
@@ -596,7 +596,7 @@
   function topBar(){
     var yr=taxYearLabel();
     return h('div',{class:'tm-summary-sheet slim'},[h('div',{class:'tm-top'},[
-      webBrandHome([h('span',{class:'mk',text:'T'}), h('span',{},['Tax',h('span',{class:'mk2',text:'Mate'})])],'tm-brand'),
+      webLogo('top'),
       yr? h('div',{class:'tm-year',text:yr}) : null
     ])]);
   }
@@ -1082,7 +1082,7 @@
       h('div',{class:'cs',text:pp.startDate?t('workspace.company_period',{start:isoToDisplay(pp.startDate),end:isoToDisplay(pp.endDate)}):''})
     ])]);
     var bottom=h('nav',{class:'tm-bottom-nav','aria-label':t('nav.company_sections')},tabs.map(function(tb){return h('button',{class:active===tb[0]?'on':'',type:'button','aria-current':active===tb[0]?'page':null,dataset:{area:tb[0]},onClick:function(){selectWorkspace(tb[0]);}},[directionNavIcon(tb[0]),h('span',{text:t(tb[1])})]);}));
-    return h('div',{class:'tm-workspace-shell'},[rail,h('div',{class:'main'},[mainCol]),side,bottom]);
+    return h('div',{class:'tm-workspace-shell tm-workspace-'+area},[rail,h('div',{class:'main'},[mainCol]),side,bottom]);
   }
   function companyRow(){ return (S().businessList||[]).filter(function(b){return b.businessType==='limited_company';})[0]; }
   function founderPct(){ var sh=(S().company&&S().company.profile&&S().company.profile.shareholders)||[]; var me=sh.filter(function(x){return x.isAccountHolder;})[0]; return me?Math.round((me.ownershipBasisPoints||0)/100):100; }
@@ -1119,7 +1119,7 @@
     if(items.length)nodes.push(todoList(items));
     if(state!=='history_missing'&&state!=='unavailable')nodes.push(btn(t(state==='not_calculated'?'tax.calculate':'tax.review_calculation'),'s',openTaxCalculation,{dataset:{action:'dividend-tax-next'}}));
     else nodes.push(reviewLink(t('workspace.records'),function(){selectWorkspace('records');},null,{dataset:{action:'dividend-records-next'}}));
-    return h('div',{dataset:{dividendState:state}},nodes);
+    return h('div',{class:'tm-pay-dividend',dataset:{dividendState:state}},nodes);
   }
 
   /* ---- entitlement-aware visibility (handlers + backend checks unchanged) ---- */
@@ -1353,7 +1353,28 @@
     other.forEach(function(code){items.push({id:'reason:'+code,text:reasonText(code),action:'details',codes:[code]});});
     // Distinct engine reasons can describe the same user action (for example
     // an unavailable and an out-of-date CT estimate). Show that work once.
-    return items.filter(function(item,index,all){var key=item.action==='bank'?'bank':item.id;return all.findIndex(function(other){return (other.action==='bank'?'bank':other.id)===key;})===index;});
+    var unique=items.filter(function(item,index,all){var key=item.action==='bank'?'bank':item.id;return all.findIndex(function(other){return (other.action==='bank'?'bank':other.id)===key;})===index;});
+    // Statutory obligations are one review checklist, not twelve independent
+    // product workflows. Present one honest entry point instead of twelve rows
+    // with navigation chevrons that all open the same disclosure below.
+    var statutoryRows=unique.filter(function(item){return item.action==='checklist';});
+    if(statutoryRows.length){
+      var first=unique.findIndex(function(item){return item.action==='checklist';});
+      unique=unique.filter(function(item){return item.action!=='checklist';});
+      unique.splice(first,0,{id:'statutory',text:t('statutory.title'),sub:t('todo.count',{count:statutoryRows.length}),action:'checklist'});
+    }
+    return unique;
+  }
+  function revealStatutoryChecklist(){
+    UI.disc['tax.statutory']=true;
+    var focusChecklist=function(){
+      var target=document.querySelector('[data-action="open-checklist"]');
+      if(!target)return;
+      target.scrollIntoView({block:'start',behavior:'smooth'});
+      if(typeof target.focus==='function')target.focus({preventScroll:true});
+    };
+    if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack'){paint();setTimeout(focusChecklist,0);}
+    else{run('onSetWorkspaceArea',{area:'tax'},{});setTimeout(focusChecklist,80);}
   }
   function todoAction(item,asRow){
     var label=null, fn=null;
@@ -1361,12 +1382,12 @@
       case 'bank': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ openSheet('bank'); }; } break;
       case 'match': if(can('create_event')){ label=t('todo.go_match'); fn=function(){ var rec=latestReconciliation(); if(rec&&rec.status!=='voided') openSheet('bankMatch',{recordId:rec.id}); else openSheet('bank'); }; } break;
       case 'checks': if(can('edit_company')){ label=t('todo.record_checks'); fn=function(){ openSheet('statutory',{factKeys:item.factKeys}); }; } break;
-      case 'checklist': label=t('todo.view_checklist'); fn=function(){ UI.disc['tax.statutory']=true;if(item.itemId)UI.disc['stat:'+item.itemId]=true; if(routeId()==='ltd.workspace.tax'||routeId()==='ltd.tax.company-year'||routeId()==='ltd.tax.self-filing-pack') paint(); else run('onSetWorkspaceArea',{area:'tax'},{}); }; break;
+      case 'checklist': label=t('todo.view_checklist'); fn=revealStatutoryChecklist; break;
       case 'money': label=t('todo.view'); fn=function(){ run('onSetWorkspaceArea',{area:'money'},{}); }; break;
       case 'ct': label=t('tax.review_calculation'); fn=openTaxCalculation; break;
       case 'details': label=t('todo.details'); fn=function(){run('onPrepareCompanyYear',{},{scope:'ltd.tax.company-year',onReview:paint,onOk:paint});}; break;
     }
-    if(asRow)return fn?reviewLink(item.text,fn,null,{dataset:{todo:item.id,todoAction:item.id}}):h('div',{class:'tm-rec',dataset:{todo:item.id},text:item.text});
+    if(asRow)return fn?reviewLink(item.text,fn,item.sub||null,{dataset:{todo:item.id,todoAction:item.id}}):h('div',{class:'tm-rec',dataset:{todo:item.id},text:item.text});
     return label?btn(label,'g sm',fn,{dataset:{todoAction:item.id}}):null;
   }
   function todoList(items){
@@ -1423,7 +1444,7 @@
       btn(t('money.add_income'),'p',function(){openSheet('income');}),
       btn(t('money.add_expense'),'s',function(){openSheet('expense');})]));
     var items=todoItems({codes:yearTodoCodes()});
-    if(items.length){nodes.push(h('div',{class:'tm-h sm',text:t('todo.title')}));nodes.push(todoList(items.slice(0,3)));if(items.length>3)nodes.push(reviewLink(t('todo.more',{count:items.length-3}),function(){selectWorkspace('tax');},null,{dataset:{action:'open-remaining-todo'}}));}
+    if(items.length){nodes.push(h('div',{class:'tm-h sm',text:t('todo.title')}));nodes.push(todoList(items.slice(0,3)));if(items.length>3)nodes.push(reviewLink(t('todo.more',{count:items.length-3}),function(){selectWorkspace('tax');},null,{class:'tm-rec tm-todo-more',dataset:{action:'open-remaining-todo'}}));}
     nodes.push(h('div',{class:'tm-review-links'},[
       reviewLink(t('review01.year'),function(){selectWorkspace('tax');},null,{dataset:{action:'open-todo'}}),
       reviewLink(t('bank.title'),bankEntry,null,{dataset:{action:'open-bank'}}),
@@ -1503,16 +1524,17 @@
     if(can('create_scenario')&&(ap.amountMinor>0||pot.amountMinor>0))actions.push(btn(t('tax.compare'),'p',function(){openSheet('scenario');}));
     if(can('confirm_salary'))actions.push(btn(t('tax.record_salary'),'s',function(){openSheet('salary');}));
     if(dividendAvailable()&&can('declare_dividend'))actions.push(btn(t('tax.record_declaration'),'s',function(){openSheet('dividend');}));
-    if(actions.length)nodes.push(h('div',{class:'tm-record-actions col'},actions));
+    if(actions.length)nodes.push(h('div',{class:'tm-pay-primary'},[
+      h('div',{class:'tm-record-actions col'},actions)
+    ]));
     var dividendStateNotice=dividendNotice();if(dividendStateNotice)nodes.push(dividendStateNotice);
     nodes.push(disclosure('tax.records',t('records.salary_dividend'),salaryDividendRecordsBody(),{action:'open-salary-dividends'}));
-    nodes.push(h('div',{class:'tm-review-links'},[
-      reviewLink(t('term.company_owes_you'),function(){run('onOpenMetric',{metricId:'directorLoan'},{});})
-    ]));
-    if(can('create_event'))nodes.push(h('div',{class:'tm-review-links'},[
+    var companyMoneyLinks=[reviewLink(t('term.company_owes_you'),function(){run('onOpenMetric',{metricId:'directorLoan'},{});})];
+    if(can('create_event'))companyMoneyLinks.push(
       reviewLink(t('money.lend'),function(){openSheet('lend');}),
       reviewLink(t('money.repay'),function(){openSheet('repay');})
-    ]));
+    );
+    nodes.push(h('div',{class:'tm-review-links tm-pay-links'},companyMoneyLinks));
     var ro=readOnlyNotice();if(ro)nodes.push(ro);
     return workspaceShell('pay',nodes);
   }
@@ -3046,7 +3068,12 @@
     // footer button, a cancel control or the next sheet (UI-09).
     if(UI.toast) col.append(h('div',{class:'tm-toast',role:'status','aria-live':'polite'},[h('div',{class:'b',text:UI.toast})]));
     col.append(screen);
-    if(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard)col.setAttribute('inert','');
+    var modalOpen=!!(UI.sheet||overlays().length||pendingDiscard()||UI.webHomeDiscard);
+    if(modalOpen)col.setAttribute('inert','');
+    if(typeof document!=='undefined'){
+      if(document.documentElement)document.documentElement.classList.toggle('ltd-sheet-open',modalOpen);
+      if(document.body)document.body.classList.toggle('ltd-sheet-open',modalOpen);
+    }
     app.append(col);
     // overlays: info sheet(s) from facade nav
     overlays().forEach(function(ov){ if(ov.type==='information') app.append(infoSheet(ov)); });
@@ -3084,6 +3111,9 @@
 
   root.TaxMateLtdWorkbenchRenderer = Object.freeze({
     render: render,
+    // Native/PWA Back closes a UI-local company sheet before changing the
+    // canonical workflow route. Return true only when this layer consumed it.
+    handleBack: function(){ if(!UI.sheet)return false; closeSheet(); return true; },
     // optional hooks so a production shell can drive locale/theme from app settings
     setLocale: function(l){ UI.locale=l; UI.mountedKey=null; paint(); },
     setTheme: function(th){ UI.theme=th; UI.mountedKey=null; paint(); },

@@ -23,6 +23,7 @@
     "test:ltd:actual-app": "node scripts/run-ltd-actual-app-browser.js",
     "test:ltd:year-end:browser": "node tests/browser/ltd-year-end-ui.e2e.js",
     "test:personal-shell:browser": "node tests/browser/personal-shell-ui.e2e.js",
+    "test:ui:regression:browser": "node tests/browser/build21-ui-regression.e2e.js",
     "evidence:direction-a:fable": "node scripts/capture-direction-a-fable.js",
     "evidence:direction-a:compare": "node scripts/build-direction-a-comparison.js",
     "evidence:ltd-fable-rereview": "node scripts/run-ltd-fable-rereview-evidence.js",

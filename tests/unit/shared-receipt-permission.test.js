@@ -25,8 +25,11 @@ test('R2 handler preflight sees a server-side downgrade even while the UI entitl
 test('R2 stale membership, epoch and account-scope responses reject before local mutation',async()=>{
  for(const reason of ['member','epoch','scope']){const r=runtime();if(reason==='member')r.c.FB.db.collection=()=>({doc:()=>({collection:()=>({doc:()=>({get:async()=>({exists:false})})})})});if(reason==='epoch')r.c.readAccountControls=async()=>({retention:{epoch:1}});if(reason==='scope')r.c.readAccountControls=async()=>{r.c.ACTIVE_ACCOUNT_SCOPE='another';return{};};assert.equal(await r.c.entryMutationPreflight(r.entry),false);assert.equal(r.removed(),0);}
 });
-test('R2 direct and offline shared handlers reject; pending or rejected cloud mutations keep local bytes',async()=>{
- const r=runtime();r.c.navigator.onLine=false;await r.c.deleteEntry();assert.equal(r.c.S.entries.length,1);r.c.S.entries=[];await r.c.deleteReceiptFromStorage(r.entry.receiptPath);assert.equal(r.removed(),0);r.c.navigator.onLine=true;await r.c.deleteReceiptFromStorage(r.entry.receiptPath);assert.equal(r.removed(),0);
+test('R2 authorised shared edits use cached rights offline and pending cloud mutations keep local bytes',async()=>{
+ const r=runtime();r.c.CLOUD.controlsCached=true;r.c.navigator.onLine=false;assert.equal(r.c.entryMutationAllowed(r.entry),true);assert.equal(await r.c.entryMutationPreflight(r.entry),true);await r.c.deleteEntry();assert.equal(r.c.S.entries.length,1);r.c.S.entries=[];await r.c.deleteReceiptFromStorage(r.entry.receiptPath);assert.equal(r.removed(),0);r.c.navigator.onLine=true;assert.equal(r.c.entryMutationAllowed(r.entry),false);await r.c.deleteReceiptFromStorage(r.entry.receiptPath);assert.equal(r.removed(),0);
+});
+test('R2 ordinary books stay editable even when account controls are cached',async()=>{
+ const r=runtime(false);r.c.CLOUD.controlsCached=true;assert.equal(r.c.entryMutationAllowed(r.entry),true);assert.equal(await r.c.entryMutationPreflight(r.entry),true);
 });
 test('R2 an authorised member tombstones a shared row but never deletes its bytes before server ACK',async()=>{
  const r=runtime();await r.c.deleteEntry();await r.confirm();assert.equal(r.c.S.entries.length,0);assert.equal(r.c.S.tombstones.length,1);assert.equal(r.removed(),0);

@@ -21,7 +21,14 @@
   function resolve(snapshot,now,offline){
     const t=Number(now)||Date.now();
     if(!snapshot||typeof snapshot!=='object') return {tier:'free',source:'none',reason:'missing'};
+    // A permanent Founder/Pro grant has no provider expiry to re-check. Once the
+    // server-verified, UID-scoped entitlement snapshot is cached, keep that grant
+    // usable offline and reconcile any later revocation on the next connection.
+    // Time-limited promotions and paid subscriptions still fail closed when the
+    // cached server verification is stale.
     const verified=Number(snapshot.serverVerifiedAt)||0;
+    const promo=activePromotion(snapshot,t);
+    if(offline&&verified&&promo&&promo.permanent===true) return {tier:promo.tier,source:'promotion',reason:'offline-permanent',expiresAt:null,permanent:true,promoCode:promo.code};
     if(offline&&(!verified||t-verified>72*3600*1000)) return {tier:'free',source:'offline-expired',reason:'verification-stale'};
     const legacyPaid=ACTIVE.has(snapshot.subscriptionStatus)&&TIERS[snapshot.paidTier]>0&&(!snapshot.currentPeriodEnd||t<Number(snapshot.currentPeriodEnd))?snapshot.paidTier:'free';
     const funded=snapshot.paidAccess,paidTier=funded?(Number(funded.proExpiresAt)>t?'pro':Number(funded.plusExpiresAt)>t?'plus':'free'):legacyPaid;
@@ -30,7 +37,6 @@
     const stripeExpiry=paidTier==='pro'?Number(funded?.proExpiresAt||snapshot.currentPeriodEnd||Infinity):paidTier==='plus'?Number(funded?.plusExpiresAt||snapshot.currentPeriodEnd||Infinity):0;
     const purchased=[{tier:paidTier,source:'stripe',expiresAt:stripeExpiry,access:null},{tier:playTier,source:'google_play',expiresAt:Number(playAccess.expiresAt)||0,access:playAccess},{tier:appStoreTier,source:'app_store',expiresAt:Number(appStoreAccess.expiresAt)||0,access:appStoreAccess}].sort((a,b)=>TIERS[b.tier]-TIERS[a.tier]||b.expiresAt-a.expiresAt)[0];
     const purchasedTier=purchased.tier;
-    const promo=activePromotion(snapshot,t);
     if(TIERS[purchasedTier]>0&&(!promo||TIERS[purchasedTier]>=TIERS[promo.tier])) return purchased.source==='stripe'?{tier:purchasedTier,source:'stripe',reason:snapshot.subscriptionStatus}: {tier:purchasedTier,source:purchased.source,reason:purchased.access.status||'active',expiresAt:Number(purchased.access.expiresAt),autoRenewEnabled:purchased.access.autoRenewEnabled===true};
     if(promo) return {tier:promo.tier,source:'promotion',reason:'active',expiresAt:promo.expiresAt===null?null:Number(promo.expiresAt),permanent:promo.permanent===true||promo.expiresAt===null,promoCode:promo.code};
     if(snapshot.graceUntil&&t<Number(snapshot.graceUntil)&&TIERS[snapshot.lastPaidTier]>0) return {tier:snapshot.lastPaidTier,source:'grace',reason:'payment-retry'};

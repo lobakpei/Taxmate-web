@@ -40,7 +40,7 @@ fs.mkdirSync(destination, {recursive: true});
 
 for (const file of rootFiles) fs.copyFileSync(path.join(root, file), path.join(destination, file));
 const content = require(path.join(root, 'src', 'core', 'product-content.js'));
-for (const kind of ['help', 'privacy', 'terms']) fs.writeFileSync(path.join(destination, `${kind}.html`), content.publicPage(kind));
+for (const kind of ['help', 'privacy', 'delete-account', 'terms']) fs.writeFileSync(path.join(destination, `${kind}.html`), content.publicPage(kind));
 fs.cpSync(path.join(root, 'src'), path.join(destination, 'src'), {recursive: true});
 fs.rmSync(path.join(destination, 'src', 'core', 'legal.js'), {force: true});
 fs.cpSync(path.join(root, 'assets', 'brand', 'derived'), path.join(destination, 'assets', 'brand', 'derived'), {recursive: true});

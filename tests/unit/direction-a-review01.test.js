@@ -24,6 +24,13 @@ test('approved Pay yourself uses existing permission-checked tax route and retai
   assert.equal(facade.getSnapshot().navigation.routes.at(-1).screenId,'ltd.workspace.records');
   assert.equal(JSON.stringify(driver.state),before);
 });
+test('Pay yourself has a dedicated compact shell and one grouped company-money list',()=>{
+  assert.match(source,/class:'tm-workspace-shell tm-workspace-'\+area/);
+  assert.match(source,/class:'tm-pay-primary'/);
+  assert.match(source,/class:'tm-pay-dividend'/);
+  assert.match(source,/class:'tm-review-links tm-pay-links'/);
+  assert.equal((source.match(/class:'tm-review-links tm-pay-links'/g)||[]).length,1);
+});
 test('F05 candidates use signed company-bank postings, including net salary, not gross or description',()=>{
   const h=helpers(),rec={entityId:'company',startDate:'2026-01-01',endDate:'2026-12-31'};
   const ev={status:'committed',sourceTransaction:{beneficiaryEntityId:'company',date:'2026-09-01',amountMinor:120000},journals:[{postings:[{accountCode:'COMPANY_BANK',debitMinor:0,creditMinor:91000}]}]};
