@@ -38,11 +38,17 @@ test('terminal store history can be retained while active or unknown billing sto
 });
 
 test('account deletion enters an atomic billing quarantine before erasing data and can resume the same fenced deletion',()=>{
-  const source=fs.readFileSync('functions/index.js','utf8'),start=source.indexOf('exports.deleteAccountData='),body=source.slice(start),enter=body.indexOf('enterDeletionBillingQuarantine'),erase=body.indexOf("stage='user_data'"),complete=body.indexOf('completeDeletionAfterBillingQuarantine');
-  assert.ok(enter>=0&&erase>enter&&complete>erase);
+  const source=fs.readFileSync('functions/index.js','utf8'),app=fs.readFileSync('src/app/app.js','utf8'),start=source.indexOf('exports.deleteAccountData='),body=source.slice(start),enter=body.indexOf('enterDeletionBillingQuarantine'),erase=body.indexOf("stage='user_data'"),identity=body.indexOf('beginIdentityDeletionAfterBillingQuarantine');
+  assert.ok(enter>=0&&erase>enter&&identity>erase);
   assert.match(body,/status==='billing_quarantined'\|\|status==='failed'&&prior\.billingQuarantined===true/);
   assert.match(body,/status:'billing_quarantined'/);
   assert.match(body,/billingQuarantined:destructiveStarted===true/);
-  const completion=source.slice(source.indexOf('async function completeDeletionAfterBillingQuarantine'),source.indexOf('async function quarantineStripeBillingEvent'));
+  const completion=source.slice(source.indexOf('async function beginIdentityDeletionAfterBillingQuarantine'),source.indexOf('async function quarantineStripeBillingEvent'));
   assert.doesNotMatch(completion,/billingDeletionSignals|billingEventWatermark/,'late old-epoch provider events are quarantined and cannot invalidate completed destructive work');
+  assert.match(completion,/status:'identity_deleting'/);
+  assert.match(completion,/getAuth\(\)\.deleteUser\(uid\)/);
+  assert.match(completion,/status:'deleted',authIdentityDeleted:true/);
+  assert.match(source,/exports\.finishAccountIdentityDeletion=onDocumentWritten\(\{region:'europe-west2',document:'accountResets\/\{uid\}',retry:true\}/);
+  assert.match(body,/stage='identity_handoff';await beginIdentityDeletionAfterBillingQuarantine[\s\S]*stage='identity_deleting'/);
+  assert.match(app,/serverResult\.deleted===true&&serverResult\.authIdentityDeleted===true/);
 });

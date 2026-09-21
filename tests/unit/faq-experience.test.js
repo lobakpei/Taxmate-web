@@ -55,7 +55,7 @@ test('FAQ covers the whole customer journey rather than selected features', () =
     'Does the Companies House check cost a verification fee?',
     'Does TaxMate file CT600 or company accounts?',
     'How do I install TaxMate on iPhone?',
-    'What happens when I delete my account data?',
+    'What happens when I delete my account?',
     'I paid but my plan did not update',
     'When should I contact HMRC or an accountant instead of TaxMate support?'
   ];

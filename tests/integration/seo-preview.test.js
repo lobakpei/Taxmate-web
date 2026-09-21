@@ -20,7 +20,7 @@ test('public preview pages return 200 and unknown paths return a real 404',async
   const server=spawn(process.execPath,['scripts/preview-server.js'],{cwd:root,env:{...process.env,TAXMATE_PREVIEW_PORT:String(port)},stdio:'ignore'});
   try{
     await waitForServer();
-    for(const pathname of ['/','/help.html','/privacy.html','/terms.html','/robots.txt','/sitemap.xml']){
+    for(const pathname of ['/','/help.html','/privacy.html','/delete-account.html','/terms.html','/robots.txt','/sitemap.xml']){
       const response=await fetch(base+pathname);
       assert.equal(response.status,200,pathname);
     }
