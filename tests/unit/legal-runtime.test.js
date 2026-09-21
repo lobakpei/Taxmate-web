@@ -13,7 +13,15 @@ const bootstrap=read('src/app/bootstrap.js');
 const sentry=read('src/app/sentry-bootstrap.js');
 const functions=read('functions/index.js');
 const hosting=read('firebase.json');
+const serviceWorker=read('sw.js');
 const APPROVED_PUBLIC_CORRESPONDENCE_ADDRESS='Unit 170198, PO Box 7169, Poole, BH15 9EL';
+
+test('published account-deletion route survives an installed offline shell',()=>{
+  assert.match(serviceWorker,/const SHELL = \[[^\n]*'\/delete-account\.html'/);
+  assert.match(serviceWorker,/const exact = await c\.match\(url\.pathname, \{ ignoreSearch: true \}\)/);
+  assert.match(serviceWorker,/if \(isNavigation\)[\s\S]*?return exact \|\| c\.match\('\/index\.html'/);
+  assert.equal((serviceWorker.match(/'\/delete-account\.html'/g)||[]).length,3);
+});
 
 test('public and in-app legal surfaces share the current policy identity and core facts',()=>{
   assert.equal(Legal.POLICY_VERSION,'2026-09-14.store-auth.1');
