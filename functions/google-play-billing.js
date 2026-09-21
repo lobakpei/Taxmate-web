@@ -253,6 +253,7 @@ function createService({db,configuration:inputConfiguration,provider=defaultProv
   async function handleNotification(payload){
     const notice=parseNotification(payload),config=configured(inputConfiguration);
     if(notice.packageName!==config.packageName)fail('package','Google Play notification package mismatch');
+    if(notice.testNotification)return{verified:false,status:'test_notification'};
     const tokenHash=hashToken(notice.purchaseToken),tokenRef=db.doc(`googlePlayPurchaseTokens/${tokenHash}`),mapped=await tokenRef.get();
     if(mapped.exists){
       const mapping=mapped.data()||{},uid=text(mapping.uid);if(!uid)fail('ownership','Google Play token mapping is invalid');
@@ -342,9 +343,14 @@ function parseNotification(input){
     try{payload=JSON.parse(Buffer.from(message.data,'base64').toString('utf8'));}catch(error){fail('notification','Invalid Google Play notification');}
   }
   if(!payload||typeof payload!=='object')fail('notification','Invalid Google Play notification');
+  const packageName=text(payload.packageName);
+  if(payload.testNotification&&typeof payload.testNotification==='object'&&!payload.subscriptionNotification&&!payload.voidedPurchaseNotification&&!payload.oneTimeProductNotification){
+    if(!packageName||!text(payload.testNotification.version))fail('notification','Invalid Google Play test notification');
+    return{packageName,testNotification:true};
+  }
   const subscription=payload.subscriptionNotification;
   if(!subscription||typeof subscription!=='object')fail('notification','Unsupported Google Play notification');
-  const packageName=text(payload.packageName),token=purchaseToken(subscription.purchaseToken),notificationType=Number(subscription.notificationType);
+  const token=purchaseToken(subscription.purchaseToken),notificationType=Number(subscription.notificationType);
   if(!packageName||!Number.isInteger(notificationType)||notificationType<1)fail('notification','Invalid Google Play notification');
   return{packageName,purchaseToken:token,subscriptionId:text(subscription.subscriptionId)||null,notificationType,eventTimeMillis:/^\d{1,18}$/.test(text(payload.eventTimeMillis))?text(payload.eventTimeMillis):null};
 }
